@@ -19,7 +19,7 @@ This directory holds the 薄肌俱乐部 promotional website. It is a Next.js 16
 | `public/images/portraits/` | Processed public portraits |
 | `scripts/` | Python helpers: `copy_sweep.py` checks the copy, `portraits.py` processes portraits |
 | `docs/` | Chinese planning documents from the original project |
-| `app.config.ts`, `public/manus-routes.json` | Manus hosting metadata. The site does not read them |
+| `app.config.ts`, `public/manus-routes.json` | Manus hosting metadata. The site does not read them. `logoUrl` points to the Boji app icon on the asset host |
 
 Keep source code in `src/`. Keep configuration files (`next.config.ts`, `tsconfig.json`, `postcss.config.mjs`, `package.json`) and `public/` at the package root.
 
@@ -33,6 +33,7 @@ Run these commands in this directory:
 
 ## Rules
 
-- Reference every asset through a local path under `public/`. Do not add `/manus-storage/` paths or other hosted storage paths.
+- Keep the files that only this site uses in `public/` and reference them by local path. Use the asset host `https://assets.leanmuscle.club` only for the generic files in the repository-level `assets/public/`, such as the app icon.
+- Do not add `/manus-storage/` paths, `files.manuscdn.com` URLs or other hosted storage URLs.
 - Keep the site static. Do not add API routes, server actions or other features that `output: "export"` does not support.
 - The `No.` on the parody member card is a decorative hash of the entered name. It is not a Boji membership number. Do not connect it to the membership API, and do not describe it as a server-issued number.

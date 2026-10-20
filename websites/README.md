@@ -36,4 +36,4 @@ pnpm build      # 静态构建，产物在 out/
 - `plan.md`、`TODO.md` 和 `notes.md` 移到了 `docs/`。文档中的 `/home/ubuntu/...` 路径指向原 Manus 沙盒，在本仓库中不存在。
 - 源码目录 `app/`、`components/` 和 `lib/` 移到了 `src/`，`@/` 别名指向 `src/`。`docs/` 中的旧路径没有同步修改。
 - 删除了 `scripts/fetch_preview.py`，因为它依赖 Manus 存储接口。
-- `app.config.ts` 和 `public/manus-routes.json` 是 Manus 托管用的元数据，暂时保留。
+- `app.config.ts` 和 `public/manus-routes.json` 是 Manus 托管用的元数据，暂时保留。`app.config.ts` 的 `logoUrl` 原先指向 `files.manuscdn.com` 上的西兰花图标，现在改为仓库根目录 `assets/public/` 中的 Boji 应用图标，地址是 `https://assets.leanmuscle.club/boji-icon.png`。
