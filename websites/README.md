@@ -4,7 +4,7 @@
 
 ## 本地运行
 
-在仓库根目录进入 devenv（`devenv shell`，或用 direnv 加载 `.envrc`）。devenv 提供 Node.js 24 和 pnpm 12，并在本目录执行 `pnpm install`。devenv 还提供 Python 3 以及 Pillow 和 rembg，用于运行 `scripts/` 中的脚本。`portraits.py` 第一次运行时会把 rembg 模型下载到 `~/.u2net`。
+在仓库根目录进入 devenv（`devenv shell`，或用 direnv 加载 `.envrc`）。devenv 提供 Node.js 26 和 pnpm 12，并在本目录执行 `pnpm install`。devenv 还提供 Python 3 以及 Pillow 和 rembg，用于运行 `scripts/` 中的脚本。`portraits.py` 第一次运行时会把 rembg 模型下载到 `~/.u2net`。
 
 然后在本目录运行：
 

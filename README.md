@@ -80,7 +80,7 @@ Boji 把薄肌理论变成每天可以打卡的记录：
 
 | 目录 | devenv 提供的工具 |
 | --- | --- |
-| `animations/`、`websites/` | Node.js 24 和 pnpm 12 |
+| `animations/`、`websites/` | Node.js 26 和 pnpm 12 |
 | `bizserver/` | Rust（版本由 `bizserver/rust-toolchain.toml` 决定）、`protoc`、`buf`、OpenSSL 和 `pkg-config` |
 | `android/` | JDK 17，并设置 `JAVA_HOME` |
 | `websites/scripts/` | Python 3，带 Pillow 和 rembg |

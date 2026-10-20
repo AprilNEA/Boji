@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Generates the Boji exercise Lottie animations from a 2D rig.",
   "engines": {
-    "node": ">=24",
+    "node": ">=26",
     "pnpm": ">=12"
   },
   "scripts": {
@@ -17,7 +17,7 @@
     "render": "tsx scripts/render.ts .renders 8 '#F7F5F0'"
   },
   "devDependencies": {
-    "@types/node": "^24.0.0",
+    "@types/node": "^26.6.5",
     "lottie-web": "^5.13.0",
     "playwright-core": "^1.64.1",
     "tsx": "^4.20.0",

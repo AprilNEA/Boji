@@ -34,7 +34,7 @@ Enter the devenv shell at the repository root with `devenv shell`, or with diren
 
 | Directory | Tools from devenv |
 | --- | --- |
-| `animations/`, `websites/` | Node.js 24 and pnpm. devenv runs `pnpm install` in both directories |
+| `animations/`, `websites/` | Node.js 26 and pnpm. devenv runs `pnpm install` in both directories |
 | `bizserver/` | Rust from `bizserver/rust-toolchain.toml` through the `rust-overlay` input, `protoc`, `buf`, OpenSSL and `pkg-config` |
 | `crates/` | The same Rust version as `bizserver/`. `crates/rust-toolchain.toml` repeats it for rustup users |
 | `android/` | JDK 17 and `JAVA_HOME`. The Gradle wrapper provides Gradle |

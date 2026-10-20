@@ -1,9 +1,9 @@
 { pkgs, lib, config, ... }:
 {
-  # Toolchain for animations/ and websites/: Node.js LTS, pnpm, tsx and TypeScript (via pnpm).
+  # Toolchain for animations/ and websites/: Node.js 26, pnpm, tsx and TypeScript (via pnpm).
   languages.javascript = {
     enable = true;
-    package = pkgs.nodejs_24;
+    package = pkgs.nodejs_26;
     directory = "./animations";
     pnpm = {
       enable = true;

@@ -4,7 +4,7 @@ This directory generates the exercise Lottie animations for the iOS and Android 
 
 ## Toolchain
 
-- Use the devenv shell from the repository root (`devenv shell`, or direnv with `.envrc`). It provides Node.js 24 and pnpm 12, and it runs `pnpm install` in this directory.
+- Use the devenv shell from the repository root (`devenv shell`, or direnv with `.envrc`). It provides Node.js 26 and pnpm 12, and it runs `pnpm install` in this directory.
 - Use pnpm only. Do not add `package-lock.json`, `yarn.lock` or `bun.lock`.
 - Run TypeScript with tsx. Do not add a build step that emits JavaScript.
 - Keep `tsconfig.json` strict. Write imports with the `.ts` extension. Use erasable syntax only: no `enum`, `namespace` or parameter properties.

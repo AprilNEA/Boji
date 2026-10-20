@@ -6,7 +6,7 @@
 
 ## 快速开始
 
-你必须先安装 [devenv](https://devenv.sh)。仓库根目录的 `devenv.nix` 提供 Node.js 24 和 pnpm 12。TypeScript 和 tsx 是 `package.json` 中的开发依赖，版本由 `pnpm-lock.yaml` 锁定。
+你必须先安装 [devenv](https://devenv.sh)。仓库根目录的 `devenv.nix` 提供 Node.js 26 和 pnpm 12。TypeScript 和 tsx 是 `package.json` 中的开发依赖，版本由 `pnpm-lock.yaml` 锁定。
 
 1. 在仓库根目录运行 `devenv shell`。如果你使用 direnv，运行一次 `direnv allow`，之后进入仓库时环境会自动加载。devenv 加载环境时会在 `animations/` 中运行 `pnpm install`。
 2. 进入 `animations/` 目录。
