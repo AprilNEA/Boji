@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
 import { useRef } from "react";
+import { COLORS } from "@/lib/colors";
 
 type Props = {
   text: string;
@@ -11,7 +12,7 @@ type Props = {
 };
 
 /** Apple-manifesto style: characters light up one by one as you scroll. */
-export function ScrollWordHighlight({ text, className = "", dim = "#3a3a3c", bright = "#f5f5f7" }: Props) {
+export function ScrollWordHighlight({ text, className = "", dim = COLORS.smoke, bright = COLORS.paper }: Props) {
   const ref = useRef<HTMLParagraphElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.85", "end 0.45"] });
   const tokens = segment(text);

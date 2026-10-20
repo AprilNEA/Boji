@@ -16,6 +16,7 @@ This directory holds the 薄肌俱乐部 promotional website. It is a Next.js 16
 | `src/app/` | Routes. Each `page.tsx` only sets metadata and renders a page component |
 | `src/components/` | Page components, grouped by page, plus `layout/` and `ui/` |
 | `src/lib/content.ts` | Copy, data tables and asset paths (`IMG`, `LAUNCH_FILM`) |
+| `src/lib/colors.ts` | Color values that JavaScript needs (Motion animations, SVG attributes) |
 | `public/media/` | Generated images and the launch film, downloaded from the former Manus storage |
 | `public/images/portraits/` | Processed public portraits |
 | `scripts/` | Python helpers: `copy_sweep.py` checks the copy, `portraits.py` processes portraits |
@@ -40,3 +41,14 @@ Run these commands in this directory:
 - Do not add `/manus-storage/` paths, `files.manuscdn.com` URLs or other hosted storage URLs.
 - Keep the site static. Do not add API routes, server actions or other features that `output: "export"` does not support.
 - The `No.` on the parody member card is a decorative hash of the entered name. It is not a Boji membership number. Do not connect it to the membership API, and do not describe it as a server-issued number.
+
+## Styling
+
+The layout follows Apple keynote pages. The colors follow the Boji app: `ios/Boji/Views/DesignSystem.swift` and `android/app/src/main/kotlin/club/leanmuscle/boji/ui/theme/BojiColors.kt`.
+
+- Use the theme tokens in `src/app/globals.css`: `paper`, `mist`, the warm grays (`fog` to `ink`), `green`, `mint`, `accent`, `water` and `sleep`. Do not add arbitrary hex classes such as `text-[#86868b]`. If no token fits, add one to `@theme`.
+- Take colors for Motion and SVG attributes from `src/lib/colors.ts`. Keep its values equal to the tokens in `globals.css`.
+- `.t-brand`, `.t-brand-anim`, `.link-apple` and `.badge-new` read the `--tone-*` variables. Add `on-dark` to every dark section and dark card. Add `on-light` to a light area inside a dark one.
+- Use `bg-paper` for light pages and sections, `bg-mist` for alternate light sections, and `bg-white` for cards on them. Keep dark sections `bg-black`, because the portraits, the chip and the stage images have black backgrounds.
+- The logo is the standing figure of the app icon. `src/components/ui/Logo.tsx` and `public/favicon.svg` copy its path from `ios/Boji/Resources/AppIcon.icon/Assets/mark.svg`. If the app icon changes, update both files. Use `AppIcon` for small app icons, for example in notifications.
+- Do not bring back the broccoli silhouette as a logo. The broccoli accessory and the green T-shirt are products, not brand marks.

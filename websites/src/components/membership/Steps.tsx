@@ -1,5 +1,6 @@
 // 由客户端页面（入会页、选购页）引入，自动作为客户端模块运行。
 import { motion } from "motion/react";
+import { COLORS } from "@/lib/colors";
 
 /** 入会流程顶部的步骤条：已完成和当前步骤为黑色圆点，之后的步骤为灰色。 */
 export function Steps({ steps, current }: { steps: readonly string[]; current: number }) {
@@ -11,8 +12,8 @@ export function Steps({ steps, current }: { steps: readonly string[]; current: n
             className="t-num flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-semibold"
             initial={false}
             animate={{
-              backgroundColor: i <= current ? "#1d1d1f" : "#e8e8ed",
-              color: i <= current ? "#ffffff" : "#86868b",
+              backgroundColor: i <= current ? COLORS.ink : COLORS.fog,
+              color: i <= current ? "#ffffff" : COLORS.ash,
             }}
             transition={{ duration: 0.5 }}
           >

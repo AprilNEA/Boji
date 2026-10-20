@@ -19,7 +19,7 @@ export function ComparePage() {
   const models = selected.map((id) => COMPARE_MODELS.find((m) => m.id === id) ?? COMPARE_MODELS[0]);
 
   return (
-    <div className="bg-white text-ink">
+    <div className="bg-paper text-ink">
       <section className="pt-[calc(var(--nav-h)+clamp(56px,9vh,110px))]">
         <div className="container-apple text-center">
           <motion.h1
@@ -41,7 +41,7 @@ export function ComparePage() {
         </div>
       </section>
 
-      <section className="sticky top-[var(--nav-h)] z-20 mt-12 border-b border-black/10 bg-white/85 backdrop-blur-xl">
+      <section className="sticky top-[var(--nav-h)] z-20 mt-12 border-b border-black/10 bg-paper/85 backdrop-blur-xl">
         <div className="container-apple grid grid-cols-3 gap-3 py-3 sm:gap-8">
           {selected.map((id, col) => (
             <ModelSelect key={col} value={id} onChange={(v) => setColumn(col, v)} />
@@ -64,12 +64,12 @@ export function ComparePage() {
                 >
                   <Silhouette
                     model={m.id}
-                    className={`h-[clamp(130px,20vw,220px)] w-auto ${m.id === "pro" ? "text-ink" : m.id === "justin" ? "text-[#a1a1a6]" : "text-[#d2d2d7]"}`}
+                    className={`h-[clamp(130px,20vw,220px)] w-auto ${m.id === "pro" ? "text-ink" : m.id === "justin" ? "text-haze" : "text-silver"}`}
                   />
                   <div className="mt-6 h-5 text-[12px] font-semibold">
                     {m.badge && <span className="badge-new">{m.badge}</span>}
                   </div>
-                  <h2 className={`mt-1 text-[clamp(17px,2.4vw,28px)] font-semibold tracking-[-0.02em] ${m.id === "pro" ? "t-broc" : ""}`}>
+                  <h2 className={`mt-1 text-[clamp(17px,2.4vw,28px)] font-semibold tracking-[-0.02em] ${m.id === "pro" ? "t-brand" : ""}`}>
                     {m.name}
                   </h2>
                   <p className="mt-2 min-h-[44px] text-[clamp(12px,1.4vw,15px)] text-ash">{m.tagline}</p>
@@ -127,9 +127,9 @@ export function ComparePage() {
 
 function Value({ text, highlight }: { text: string; highlight: boolean }) {
   if (text === "●")
-    return <span className={`inline-block h-3 w-3 rounded-full ${highlight ? "bg-broc" : "bg-ink"}`} aria-label="支持" />;
-  if (text === "—") return <span className="text-[#c7c7cc]" aria-label="不支持">—</span>;
-  return <span className={highlight ? "t-broc" : ""}>{text}</span>;
+    return <span className={`inline-block h-3 w-3 rounded-full ${highlight ? "bg-green" : "bg-ink"}`} aria-label="支持" />;
+  if (text === "—") return <span className="text-pewter" aria-label="不支持">—</span>;
+  return <span className={highlight ? "t-brand" : ""}>{text}</span>;
 }
 
 function ModelSelect({ value, onChange }: { value: ModelId; onChange: (v: ModelId) => void }) {
@@ -139,7 +139,7 @@ function ModelSelect({ value, onChange }: { value: ModelId; onChange: (v: ModelI
       <select
         value={value}
         onChange={(e) => onChange(e.target.value as ModelId)}
-        className="w-full cursor-pointer appearance-none rounded-[12px] border border-black/15 bg-white py-2.5 pl-3 pr-8 text-[clamp(12px,1.5vw,15px)] font-semibold text-ink transition-colors hover:border-black/30 focus:border-link focus:outline-none"
+        className="w-full cursor-pointer appearance-none rounded-[12px] border border-black/15 bg-white py-2.5 pl-3 pr-8 text-[clamp(12px,1.5vw,15px)] font-semibold text-ink transition-colors hover:border-black/30 focus:border-accent focus:outline-none"
       >
         {COMPARE_MODELS.map((m) => (
           <option key={m.id} value={m.id}>

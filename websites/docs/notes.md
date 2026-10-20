@@ -25,6 +25,7 @@
 - 2L 水瓶（透明）：/manus-storage/async-images/fcTniVtI5sDNGeVmorPCsM/image-4.webp
 - 智能戒指（透明）：/manus-storage/async-images/fcTniVtI5sDNGeVmorPCsM/image-5.webp
 - M13 芯片（16:9 黑底）：/manus-storage/async-images/gYnnK3slwmG78FXDh3iHSv/image-1.webp
+  - 2026 年 10 月 20 日：图中的西兰花标志已换成 Boji 人形，电路走线从荧光绿调为薄荷绿。
 - 舞台剪影（16:9，人物在右三分之一）：/manus-storage/async-images/gYnnK3slwmG78FXDh3iHSv/image-2.webp
 - 理论页黑白引体向上背影（16:9）：/manus-storage/async-images/gYnnK3slwmG78FXDh3iHSv/image-3.webp
 - 薄肌 Pro 生活方式（4:5，白 T 恤，浅灰底）：/manus-storage/async-images/gYnnK3slwmG78FXDh3iHSv/image-4.webp

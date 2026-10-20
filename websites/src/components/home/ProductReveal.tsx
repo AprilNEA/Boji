@@ -31,7 +31,7 @@ export function ProductReveal() {
           <motion.div style={reduce ? undefined : { opacity: textOpacity, y: textY }} className="relative z-10 text-center">
             <p className="t-eyebrow badge-new">全新</p>
             <h2 className="t-hero mt-1">
-              <span className="t-broc-anim">薄肌</span>
+              <span className="t-brand-anim">薄肌</span>
             </h2>
             <div className="mt-6 flex items-center justify-center gap-6">
               <PillLink href="/store/">选购</PillLink>
@@ -42,7 +42,7 @@ export function ProductReveal() {
           <div className="relative mt-[clamp(8px,3vh,32px)] h-[min(50vh,480px)] w-[min(86vw,520px)]">
             <motion.div
               aria-hidden
-              className="absolute inset-[10%] rounded-full bg-[radial-gradient(closest-side,rgba(168,224,99,0.5),rgba(168,224,99,0))] blur-2xl"
+              className="absolute inset-[10%] rounded-full bg-[radial-gradient(closest-side,rgba(140,213,188,0.5),rgba(140,213,188,0))] blur-2xl"
               style={{ opacity: glow }}
             />
             <motion.img
@@ -58,7 +58,7 @@ export function ProductReveal() {
             style={reduce ? undefined : { opacity: captionOpacity, y: captionY }}
             className="t-title absolute bottom-[clamp(32px,8vh,80px)] px-6 text-center"
           >
-            穿衣显瘦，<span className="t-broc">脱衣有肉。</span>
+            穿衣显瘦，<span className="t-brand">脱衣有肉。</span>
           </motion.p>
         </div>
       </div>
@@ -79,7 +79,7 @@ export function ProductReveal() {
 
 export function StatValue({ stat, className = "" }: { stat: ProductStat; className?: string }) {
   return (
-    <div className={`t-broc whitespace-nowrap text-[clamp(44px,5.6vw,72px)] font-bold leading-none tracking-[-0.04em] ${className}`}>
+    <div className={`t-brand whitespace-nowrap text-[clamp(44px,5.6vw,72px)] font-bold leading-none tracking-[-0.04em] ${className}`}>
       {stat.count !== undefined ? (
         <CountUp to={stat.count} suffix={stat.suffix ?? ""} />
       ) : (

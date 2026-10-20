@@ -30,7 +30,7 @@ export function StorePage() {
   };
 
   return (
-    <div className="min-h-[100svh] bg-white text-ink">
+    <div className="min-h-[100svh] bg-paper text-ink">
       <AnimatePresence mode="wait">
         {stage === "config" && (
           <Panel key="config">

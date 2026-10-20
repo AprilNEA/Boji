@@ -26,7 +26,7 @@ export function FoundersHero() {
       <motion.div style={reduce ? undefined : { scale, opacity, y }} className="origin-top pt-[calc(var(--nav-h)+clamp(40px,7vh,88px))]">
         <div className="container-wide flex flex-col items-center text-center">
           <motion.p
-            className="t-eyebrow text-[#a1a1a6]"
+            className="t-eyebrow text-haze"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1.0, ease: EASE_APPLE }}
@@ -107,14 +107,14 @@ function FounderPortrait({ founder, delay }: { founder: Founder; delay: number }
         <AnimatePresence>
           {hover && (
             <motion.blockquote
-              className="absolute inset-x-3 bottom-3 rounded-[18px] border border-white/10 bg-[rgba(30,30,32,0.62)] px-4 py-3.5 text-left backdrop-blur-[24px] sm:inset-x-4 sm:bottom-4 sm:px-5 sm:py-4"
+              className="absolute inset-x-3 bottom-3 rounded-[18px] border border-white/10 bg-[rgba(31,30,28,0.62)] px-4 py-3.5 text-left backdrop-blur-[24px] sm:inset-x-4 sm:bottom-4 sm:px-5 sm:py-4"
               initial={{ opacity: 0, y: 18, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.98 }}
               transition={{ duration: 0.55, ease: EASE_APPLE }}
             >
               <p className="text-[clamp(15px,1.6vw,21px)] font-semibold leading-snug tracking-[-0.01em] text-white">{founder.quote}</p>
-              <footer className="mt-1 text-[12px] text-[#a1a1a6]">— {founder.quoteSource}</footer>
+              <footer className="mt-1 text-[12px] text-haze">— {founder.quoteSource}</footer>
             </motion.blockquote>
           )}
         </AnimatePresence>
@@ -122,13 +122,13 @@ function FounderPortrait({ founder, delay }: { founder: Founder; delay: number }
 
       <figcaption className="mt-5 text-center">
         <div className="text-[clamp(19px,2vw,24px)] font-semibold tracking-[-0.015em]">
-          {founder.name} <span className="font-[Inter_Variable] font-medium text-[#a1a1a6]">{founder.en}</span>
+          {founder.name} <span className="font-[Inter_Variable] font-medium text-haze">{founder.en}</span>
         </div>
-        <div className="mt-1 flex items-center justify-center gap-2 text-[clamp(13px,1.4vw,17px)] text-[#a1a1a6]">
+        <div className="mt-1 flex items-center justify-center gap-2 text-[clamp(13px,1.4vw,17px)] text-haze">
           {isSun && (
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-broc-light opacity-60" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-broc-light" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-mint" />
             </span>
           )}
           <span>{founder.title}</span>

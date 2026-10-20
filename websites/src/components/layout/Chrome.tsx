@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion, useScroll, useSpring, useTransform } from "motion/react";
 import { useEffect, useState } from "react";
+import { AppIcon } from "@/components/ui/AppIcon";
 import { Logo } from "@/components/ui/Logo";
 import { EASE_APPLE } from "@/lib/motion";
 
@@ -51,9 +52,7 @@ export function CookieBanner() {
           transition={{ duration: 0.8, ease: EASE_APPLE }}
           className="glass-light fixed inset-x-3 bottom-3 z-[60] mx-auto flex max-w-[560px] items-center gap-4 rounded-[22px] border border-black/5 px-5 py-4 shadow-[0_18px_60px_rgba(0,0,0,0.18)] sm:bottom-6"
         >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[11px] bg-black text-broc-light">
-            <Logo className="h-5 w-auto" />
-          </div>
+          <AppIcon className="h-10 w-10" />
           <div className="min-w-0 flex-1 text-[14px] leading-snug text-ink">
             <p className="font-semibold">本站不使用 Cookie。</p>
             <p className="text-ash">含糖量过高。</p>
@@ -97,7 +96,7 @@ export function ScrollIndicator() {
   return (
     <motion.div
       aria-hidden
-      className="pointer-events-none fixed right-[3px] z-[55] h-[56px] rounded-full bg-[#86868b] mix-blend-difference"
+      className="pointer-events-none fixed right-[3px] z-[55] h-[56px] rounded-full bg-ash mix-blend-difference"
       style={{ width, top, opacity }}
     />
   );

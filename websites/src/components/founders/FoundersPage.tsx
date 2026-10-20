@@ -21,7 +21,7 @@ export function FoundersPage() {
   }, [open, lenis]);
 
   return (
-    <div className="bg-white text-ink">
+    <div className="bg-paper text-ink">
       <section className="pt-[calc(var(--nav-h)+clamp(56px,9vh,110px))]">
         <div className="container-wide">
           <motion.h1
@@ -82,7 +82,7 @@ export function FoundersPage() {
           >
             <Link href="/join/" className="group block">
               <div className="flex aspect-[4/5] w-full items-center justify-center rounded-[22px] border-[1.5px] border-dashed border-black/20 bg-mist transition-colors duration-500 group-hover:border-black/40">
-                <Silhouette model="pro" className="h-[46%] w-auto text-[#d2d2d7] transition-colors duration-500 group-hover:text-ink" />
+                <Silhouette model="pro" className="h-[46%] w-auto text-silver transition-colors duration-500 group-hover:text-ink" />
               </div>
               <div className="mt-5 text-[24px] font-semibold tracking-[-0.02em]">你</div>
               <div className="mt-1 text-[17px] text-ash">下一位践行者 · 体脂待定</div>
@@ -153,11 +153,11 @@ function BioPanel({ founder, onClose }: { founder: Founder; onClose: () => void 
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.8, ease: EASE_APPLE }}
             >
-              <blockquote className="mt-8 border-l-2 border-broc pl-4 text-[21px] font-semibold leading-snug tracking-[-0.01em]">
+              <blockquote className="mt-8 border-l-2 border-green pl-4 text-[21px] font-semibold leading-snug tracking-[-0.01em]">
                 {founder.quote}
                 <footer className="mt-1 text-[13px] font-normal text-ash">— {founder.quoteSource}</footer>
               </blockquote>
-              <div className="mt-8 space-y-4 text-[17px] leading-relaxed text-[#424245]">
+              <div className="mt-8 space-y-4 text-[17px] leading-relaxed text-graphite">
                 {founder.bio.map((p) => (
                   <p key={p}>{p}</p>
                 ))}

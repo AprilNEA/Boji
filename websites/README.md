@@ -44,9 +44,27 @@ Python 自带的服务器不会返回 `404.html`，所以用它预览时看不�
 | `/join/` | 入会：宣誓并领取会员卡 |
 | `/calculator/` | 旧链接，在客户端跳转到 `/store/` |
 
+## 视觉风格
+
+网站沿用苹果发布会的版式，颜色取自 Boji App。色值以 iOS 的 `ios/Boji/Views/DesignSystem.swift` 和 Android 的 `BojiColors.kt` 为准，网站的颜色令牌在 `src/app/globals.css` 中定义。
+
+| 用途 | 令牌 | 色值 |
+| --- | --- | --- |
+| 浅色页面背景 | `paper` | `#F7F5F0` |
+| 交替的浅色区块和页脚 | `mist` | `#EFEBE4` |
+| 正文 | `ink` | `#1E1D1B` |
+| 次要文字 | `ash`、`ash-dark` | `#898681`、`#706E69` |
+| 产品名和关键数字的渐变 | `green`、`mint` | 浅色背景上从 `#4A9A7D` 到 `#1C5242`，深色背景上从 `#D3F2E6` 到 `#4FAE8E` |
+| 按钮、链接和全新角标 | `accent` | `#C7401F`，深色背景上为 `#FF7A4D` |
+| 喝水卡和睡眠卡 | `water`、`sleep` | `#1F5FA8`、`#7A4FA3` |
+
+深色区块保持纯黑，因为人像、芯片图和舞台图都是黑底。浅色区块上的卡片用白色。Logo、favicon 和通知中的小图标使用 App 图标中的站立人形，路径来自 `ios/Boji/Resources/AppIcon.icon/Assets/mark.svg`。
+
 ## 素材
 
 生成图片和发布会短片原先存放在 Manus 项目存储中，迁移时已从线上站点下载到 `public/media/`。代码通过 `src/lib/content.ts` 中的 `IMG` 和 `LAUNCH_FILM` 引用这些文件。
+
+`public/media/chip.webp` 中的西兰花标志已换成 Boji 人形，电路走线从荧光绿调为薄荷绿。
 
 ## 迁移说明
 

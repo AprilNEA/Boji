@@ -2,16 +2,40 @@
 @import "lenis/dist/lenis.css";
 
 @theme {
+  /* Keynote stage. Dark sections stay pure black because the portraits, the chip and the stage photos have black backgrounds. */
   --color-stage: #000000;
-  --color-mist: #f5f5f7;
-  --color-ink: #1d1d1f;
-  --color-ash: #86868b;
-  --color-ash-dark: #6e6e73;
-  --color-link: #0071e3;
-  --color-link-dark: #2997ff;
-  --color-new: #f56300;
-  --color-broc-light: #a8e063;
-  --color-broc: #2f7d32;
+
+  /* Boji warm neutrals. Each one has the OKLab lightness of the Apple gray it replaces, with the hue of the Boji page color. */
+  --color-paper: #f7f5f0; /* Boji page background. Light sections and near-white text on dark */
+  --color-mist: #efebe4; /* Alternate light sections */
+  --color-fog: #ebe8e1; /* Was #e8e8ed */
+  --color-fog-strong: #dfdcd5; /* Was #dcdce0 */
+  --color-silver: #d5d2cb; /* Was #d2d2d7 */
+  --color-pewter: #cac7c0; /* Was #c7c7cc */
+  --color-haze: #a4a19b; /* Was #a1a1a6. Secondary text on dark */
+  --color-ash: #898681; /* Was #86868b */
+  --color-ash-dark: #706e69; /* Was #6e6e73 */
+  --color-graphite: #44423f; /* Was #424245 */
+  --color-smoke: #3b3a37; /* Was #3a3a3c */
+  --color-ink: #1e1d1b; /* Was #1d1d1f */
+
+  /* Boji brand colors: ios/Boji/Views/DesignSystem.swift and android/.../ui/theme/BojiColors.kt */
+  --color-green: #266652;
+  --color-green-deep: #1c5242;
+  --color-mint: #8cd5bc;
+  --color-accent: #c7401f;
+  --color-accent-deep: #9e2e16; /* Small text on mist and other low-contrast light backgrounds */
+  --color-accent-bright: #ff7a4d; /* Accent on dark */
+  --color-water: #1f5fa8;
+  --color-water-mid: #5b8fd6;
+  --color-water-light: #a6c8ff;
+  --color-sleep: #7a4fa3;
+  --color-sleep-light: #ddb8ff;
+
+  /* App icon: ios/Boji/Resources/AppIcon.icon */
+  --color-mark: #3d574c;
+  --color-icon: #edeee9;
+
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter Variable", "PingFang SC",
     "Hiragino Sans GB", "Noto Sans SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
   --font-display: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter Variable", "PingFang SC",
@@ -19,9 +43,26 @@
   --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/*
+ * Tone variables. Light backgrounds use the default values.
+ * `.on-dark` switches them for dark sections and dark cards, and `.on-light` switches them back inside a dark area.
+ */
 :root {
   --nav-h: 44px;
   --scroll-thickness: 6px;
+}
+
+:root,
+.on-light {
+  --tone-accent: var(--color-accent);
+  --tone-brand: linear-gradient(120deg, #4a9a7d 0%, #2f7a60 35%, #266652 65%, #1c5242 100%);
+  --tone-sheen: linear-gradient(110deg, #1c5242 0%, #2f7a60 25%, #7cc7ab 40%, #2f7a60 55%, #1c5242 80%, #2f7a60 100%);
+}
+
+.on-dark {
+  --tone-accent: var(--color-accent-bright);
+  --tone-brand: linear-gradient(120deg, #d3f2e6 0%, #8cd5bc 38%, #6cc3a5 70%, #4fae8e 100%);
+  --tone-sheen: linear-gradient(110deg, #4fae8e 0%, #8cd5bc 25%, #e3f7ee 40%, #8cd5bc 55%, #4fae8e 80%, #8cd5bc 100%);
 }
 
 html {
@@ -42,12 +83,12 @@ body {
   font-size: 17px;
   line-height: 1.47;
   letter-spacing: -0.01em;
-  background: #fff;
+  background: var(--color-paper);
   overflow-x: clip;
 }
 
 ::selection {
-  background: rgba(168, 224, 99, 0.35);
+  background: rgba(140, 213, 188, 0.45);
 }
 
 /* ---------- Typography ---------- */
@@ -109,23 +150,24 @@ body {
   font-feature-settings: "tnum" 1;
 }
 
-.t-broc {
-  background: linear-gradient(120deg, #c4ef7a 0%, #a8e063 28%, #56ab2f 62%, #2f7d32 100%);
+/* Brand gradient text for the product name and key numbers. Forest green on light, mint on dark. */
+.t-brand {
+  background: var(--tone-brand);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-.t-broc-anim {
-  background: linear-gradient(110deg, #2f7d32 0%, #a8e063 25%, #e2ffb0 40%, #a8e063 55%, #2f7d32 80%, #a8e063 100%);
+.t-brand-anim {
+  background: var(--tone-sheen);
   background-size: 250% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: broc-sheen 6s var(--ease-apple) infinite;
+  animation: brand-sheen 6s var(--ease-apple) infinite;
 }
 
-@keyframes broc-sheen {
+@keyframes brand-sheen {
   0% {
     background-position: 100% 0;
   }
@@ -135,13 +177,14 @@ body {
   }
 }
 
+/* 薄肌 Intelligence: the Boji habit colors (calm, water, sleep, accent). Used on dark only. */
 .intelligence-text {
-  background: linear-gradient(100deg, #c4ef7a 0%, #a8e063 22%, #5ac8fa 48%, #2997ff 68%, #a8e063 100%);
+  background: linear-gradient(100deg, #8cd5bc 0%, #a6c8ff 30%, #ddb8ff 55%, #ff9a75 78%, #8cd5bc 100%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: broc-sheen 8s ease-in-out infinite alternate;
+  animation: brand-sheen 8s ease-in-out infinite alternate;
 }
 
 /* ---------- Boot loader: "正在燃脂…" (pure CSS, exits by itself) ---------- */
@@ -221,33 +264,33 @@ body {
 }
 
 .glass {
-  background: rgba(22, 22, 23, 0.72);
+  background: rgba(23, 22, 21, 0.72);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   backdrop-filter: saturate(180%) blur(20px);
 }
 
 .glass-light {
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(252, 250, 246, 0.78);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   backdrop-filter: saturate(180%) blur(20px);
 }
 
 /* ---------- Global nav themes (Apple: dark glass on dark pages, light glass on light pages) ---------- */
 .nav-dark {
-  --nav-bg-top: rgba(22, 22, 23, 0.6);
-  --nav-bg: rgba(22, 22, 23, 0.8);
-  --nav-solid: #161617;
-  --nav-fg: #e8e8ed;
+  --nav-bg-top: rgba(23, 22, 21, 0.6);
+  --nav-bg: rgba(23, 22, 21, 0.8);
+  --nav-solid: #171615;
+  --nav-fg: #ebe8e1;
   --nav-strong: #ffffff;
-  --nav-muted: #86868b;
+  --nav-muted: #898681;
 }
 .nav-light {
-  --nav-bg-top: rgba(250, 250, 252, 0.72);
-  --nav-bg: rgba(250, 250, 252, 0.84);
-  --nav-solid: #fafafc;
-  --nav-fg: #1d1d1f;
-  --nav-strong: #1d1d1f;
-  --nav-muted: #6e6e73;
+  --nav-bg-top: rgba(252, 250, 246, 0.72);
+  --nav-bg: rgba(252, 250, 246, 0.84);
+  --nav-solid: #fcfaf6;
+  --nav-fg: #1e1d1b;
+  --nav-strong: #1e1d1b;
+  --nav-muted: #706e69;
 }
 .nav-glass {
   -webkit-backdrop-filter: saturate(180%) blur(20px);
@@ -284,12 +327,12 @@ body {
 }
 
 .btn-primary {
-  background: var(--color-link);
+  background: var(--color-accent);
   color: #fff;
 }
 
 .btn-primary:hover {
-  background: #0077ed;
+  background: #b23a1c;
 }
 
 .btn-outline {
@@ -312,17 +355,12 @@ body {
   display: inline-flex;
   align-items: baseline;
   gap: 2px;
-  color: var(--color-link);
+  color: var(--tone-accent);
   font-family: "Inter Variable", var(--font-sans);
   font-weight: 400;
   transition:
     font-weight 0.45s var(--ease-apple),
     letter-spacing 0.45s var(--ease-apple);
-}
-
-.on-dark .link-apple,
-.link-apple.on-dark {
-  color: var(--color-link-dark);
 }
 
 .link-apple:hover {
@@ -368,7 +406,7 @@ body {
 /* ---------- Badges & misc ---------- */
 
 .badge-new {
-  color: var(--color-new);
+  color: var(--tone-accent);
   font-weight: 600;
   letter-spacing: 0;
 }
@@ -376,6 +414,14 @@ body {
 .hairline {
   height: 1px;
   background: rgba(0, 0, 0, 0.12);
+}
+
+/* Light Boji app icon (AppIcon.icon: automatic gradient from #EDEEE9, figure #3D574C) */
+.app-icon {
+  border-radius: 22.5%;
+  background: linear-gradient(180deg, #f6f7f3 0%, #edeee9 50%, #e1e3dc 100%);
+  color: var(--color-mark);
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.08);
 }
 
 .on-dark .hairline {
@@ -400,11 +446,11 @@ body {
   display: none;
 }
 
-/* Apple Card titanium */
+/* Apple Card titanium, warmed toward the Boji chalk membership card (#F0EBD9 -> #D9DECC) */
 .titanium {
   background:
-    radial-gradient(120% 140% at 0% 0%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 55%),
-    linear-gradient(135deg, #fbfbfd 0%, #e8e8ed 38%, #f5f5f7 52%, #d2d2d7 78%, #ececf0 100%);
+    radial-gradient(120% 140% at 0% 0%, rgba(255, 253, 247, 0.95) 0%, rgba(255, 253, 247, 0) 55%),
+    linear-gradient(135deg, #fbf9f2 0%, #ece6d6 38%, #f3efe2 52%, #d7dacb 78%, #e9eadf 100%);
 }
 
 .titanium-brush {
@@ -418,7 +464,7 @@ body {
 }
 
 .laser {
-  color: rgba(60, 60, 67, 0.55);
+  color: rgba(31, 56, 48, 0.58);
   text-shadow:
     0 1px 0 rgba(255, 255, 255, 0.9),
     0 -0.5px 0 rgba(0, 0, 0, 0.12);

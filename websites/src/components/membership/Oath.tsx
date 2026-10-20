@@ -1,6 +1,7 @@
 // 由客户端页面（入会页、选购页）引入，自动作为客户端模块运行。
 import { motion } from "motion/react";
 import { useState } from "react";
+import { ACCENT_RGB, COLORS } from "@/lib/colors";
 import { OATHS } from "@/lib/content";
 
 /** 入会宣誓：填写会员姓名，逐条确认誓词，然后庄严入会。入会页和选购页结账共用。 */
@@ -38,7 +39,7 @@ export function Oath({
           value={name}
           onChange={(e) => setName(e.target.value.slice(0, 16))}
           placeholder=" "
-          className="peer w-full rounded-[14px] border border-black/20 px-4 pb-2.5 pt-6 text-[17px] transition-colors focus:border-link focus:outline-none focus:ring-4 focus:ring-link/15"
+          className="peer w-full rounded-[14px] border border-black/20 px-4 pb-2.5 pt-6 text-[17px] transition-colors focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/15"
         />
         <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[17px] text-ash transition-all duration-300 peer-focus:top-4 peer-focus:text-[12px] peer-[:not(:placeholder-shown)]:top-4 peer-[:not(:placeholder-shown)]:text-[12px]">
           会员姓名（将激光刻印在会员卡上）
@@ -58,8 +59,8 @@ export function Oath({
               <motion.span
                 className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-[1.5px]"
                 animate={{
-                  backgroundColor: checked[i] ? "#0071e3" : "rgba(0,0,0,0)",
-                  borderColor: checked[i] ? "#0071e3" : "rgba(0,0,0,0.25)",
+                  backgroundColor: checked[i] ? COLORS.accent : "rgba(0,0,0,0)",
+                  borderColor: checked[i] ? COLORS.accent : "rgba(0,0,0,0.25)",
                   scale: checked[i] ? [1, 1.15, 1] : 1,
                 }}
                 transition={{ duration: 0.35 }}
@@ -68,7 +69,7 @@ export function Oath({
                   <motion.path d="M2.5 7.5 5.5 10.5 11.5 3.5" initial={false} animate={{ pathLength: checked[i] ? 1 : 0 }} transition={{ duration: 0.35 }} />
                 </svg>
               </motion.span>
-              <span className={`text-[19px] transition-colors duration-300 ${checked[i] ? "text-ink" : "text-[#424245]"}`}>{o}</span>
+              <span className={`text-[19px] transition-colors duration-300 ${checked[i] ? "text-ink" : "text-graphite"}`}>{o}</span>
             </button>
           </li>
         ))}
@@ -85,7 +86,11 @@ export function Oath({
           disabled={!ready}
           onClick={onDone}
           className="btn-pill btn-primary min-w-[240px] text-[19px]"
-          animate={ready ? { boxShadow: ["0 0 0 0 rgba(0,113,227,0.45)", "0 0 0 14px rgba(0,113,227,0)"] } : { boxShadow: "0 0 0 0 rgba(0,113,227,0)" }}
+          animate={
+            ready
+              ? { boxShadow: [`0 0 0 0 rgba(${ACCENT_RGB},0.45)`, `0 0 0 14px rgba(${ACCENT_RGB},0)`] }
+              : { boxShadow: `0 0 0 0 rgba(${ACCENT_RGB},0)` }
+          }
           transition={ready ? { duration: 1.6, repeat: Infinity } : { duration: 0.3 }}
         >
           庄严入会

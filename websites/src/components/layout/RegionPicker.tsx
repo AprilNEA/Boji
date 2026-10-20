@@ -59,7 +59,7 @@ export function RegionPicker() {
           >
             <p className="text-[12px] font-semibold text-ash">选择国家或地区</p>
 
-            <blockquote className="mt-3 border-l-2 border-[#5aa832] pl-3">
+            <blockquote className="mt-3 border-l-2 border-green pl-3">
               <p className="text-[17px] font-semibold tracking-[-0.01em] text-ink">“逐水草而居。”</p>
               <footer className="mt-0.5 text-[11px] text-ash">— 孙宇晨，与邵艾伦的播客对谈</footer>
             </blockquote>

@@ -50,7 +50,7 @@ export function Footer() {
 
         <p className="border-b border-black/10 py-5 text-ink/80">
           如果你对本站内容有任何疑问或投诉，或者感到被冒犯，请发送邮件至{" "}
-          <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#0066cc] underline-offset-2 hover:underline">
+          <a href={`mailto:${CONTACT_EMAIL}`} className="text-accent-deep underline-offset-2 hover:underline">
             {CONTACT_EMAIL}
           </a>
           。我们会认真对待每一封来信，并及时修改或删除相关内容。
@@ -128,8 +128,8 @@ function DiscordIcon() {
         fill="currentColor"
         d="M19.5 5.3A17 17 0 0 0 15.3 4l-.5 1a15.7 15.7 0 0 0-5.6 0l-.5-1a17 17 0 0 0-4.2 1.3C1.8 9.3 1.1 13.2 1.4 17a17 17 0 0 0 5.2 2.6l1.1-1.8a11 11 0 0 1-1.7-.8l.4-.3a12.2 12.2 0 0 0 11.2 0l.4.3c-.5.3-1.1.6-1.7.8l1.1 1.8a17 17 0 0 0 5.2-2.6c.4-4.4-.7-8.3-3.1-11.7Z"
       />
-      <circle cx="8.8" cy="13.2" r="1.7" fill="#f5f5f7" />
-      <circle cx="15.2" cy="13.2" r="1.7" fill="#f5f5f7" />
+      <circle cx="8.8" cy="13.2" r="1.7" fill="var(--color-mist)" />
+      <circle cx="15.2" cy="13.2" r="1.7" fill="var(--color-mist)" />
     </svg>
   );
 }

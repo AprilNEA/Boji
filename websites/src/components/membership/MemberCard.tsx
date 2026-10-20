@@ -73,7 +73,7 @@ export function MemberCard({
             <div className="titanium-brush absolute inset-0 opacity-70" />
             <div className="relative flex h-full flex-col justify-between p-[7%]">
               <div className="flex items-start justify-between">
-                <Logo className="h-[30px] w-auto text-[#8e8e93] [filter:drop-shadow(0_1px_0_rgba(255,255,255,0.9))]" />
+                <Logo className="h-[30px] w-auto text-mark/55 [filter:drop-shadow(0_1px_0_rgba(255,255,255,0.9))]" />
                 <span className="laser t-num text-right text-[12px] font-semibold leading-tight tracking-[0.02em]">
                   {deliveryAt ? (
                     <>
@@ -102,7 +102,7 @@ export function MemberCard({
         <button type="button" onClick={save} disabled={saving} className="btn-pill btn-primary min-w-[200px]">
           {saving ? "正在刻印…" : "保存会员卡"}
         </button>
-        <button type="button" onClick={onRestart} className="btn-pill btn-outline min-w-[160px] text-link">
+        <button type="button" onClick={onRestart} className="btn-pill btn-outline min-w-[160px] text-accent">
           重新宣誓
         </button>
       </div>

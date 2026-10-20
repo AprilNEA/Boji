@@ -222,7 +222,7 @@ function SearchPanel() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="搜索 薄肌俱乐部"
-          className="w-full bg-transparent text-[24px] font-semibold tracking-[-0.02em] text-[var(--nav-strong)] placeholder:text-[#86868b] focus:outline-none"
+          className="w-full bg-transparent text-[24px] font-semibold tracking-[-0.02em] text-[var(--nav-strong)] placeholder:text-ash focus:outline-none"
         />
       </motion.div>
       <motion.div variants={item} className="mt-8 text-[12px] text-[var(--nav-muted)]">

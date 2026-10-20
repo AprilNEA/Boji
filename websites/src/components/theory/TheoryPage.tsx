@@ -83,7 +83,7 @@ function TheoryHero() {
       <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black" />
       <motion.div style={{ y: textY }} className="relative flex h-full flex-col items-center justify-end pb-[14vh] text-center">
         <motion.p
-          className="t-eyebrow text-[#a1a1a6]"
+          className="t-eyebrow text-haze"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.4, ease: EASE_APPLE }}
@@ -99,7 +99,7 @@ function TheoryHero() {
           薄肌理论。
         </motion.h1>
         <motion.p
-          className="t-subhead mt-5 text-[#d2d2d7]"
+          className="t-subhead mt-5 text-silver"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.9, ease: EASE_APPLE }}
@@ -125,10 +125,10 @@ function Principles() {
     <section className="border-t border-white/10">
       <div className="container-wide pt-[clamp(80px,10vw,140px)]">
         <Reveal>
-          <p className="t-eyebrow text-[#86868b]">薄肌理论</p>
+          <p className="t-eyebrow text-ash">薄肌理论</p>
           <h2 className="t-headline mt-2">
             <span className="inline-block">全文很短。</span>
-            <span className="inline-block text-[#6e6e73]">够你练一辈子。</span>
+            <span className="inline-block text-ash-dark">够你练一辈子。</span>
           </h2>
         </Reveal>
       </div>
@@ -149,13 +149,13 @@ function Principles() {
                   transition={{ duration: 0.7, ease: EASE_APPLE }}
                   className="absolute inset-0"
                 >
-                  <div className="t-num font-[Inter_Variable] text-[22px] font-light text-[#6e6e73]">0{active + 1}</div>
+                  <div className="t-num font-[Inter_Variable] text-[22px] font-light text-ash-dark">0{active + 1}</div>
                   <div className="mt-2 text-[clamp(72px,9vw,128px)] font-bold leading-none tracking-[-0.05em]">
-                    <span className={active === 0 ? "t-broc" : ""}>{current.key}</span>
+                    <span className={active === 0 ? "t-brand" : ""}>{current.key}</span>
                   </div>
                   <div className="mt-6 flex items-baseline gap-3">
                     <span className="t-num text-[34px] font-semibold tracking-[-0.03em]">{current.stat}</span>
-                    <span className="text-[15px] text-[#86868b]">{current.statLabel}</span>
+                    <span className="text-[15px] text-ash">{current.statLabel}</span>
                   </div>
                 </motion.div>
               </AnimatePresence>
@@ -167,7 +167,7 @@ function Principles() {
           {PRINCIPLES.map((p, i) => (
             <div key={p.key} className="flex min-h-[85svh] flex-col justify-center py-16">
               <div className="md:hidden">
-                <div className="t-num text-[17px] text-[#6e6e73]">0{i + 1}</div>
+                <div className="t-num text-[17px] text-ash-dark">0{i + 1}</div>
                 <div className="mt-1 text-[64px] font-bold leading-none tracking-[-0.05em]">{p.key}</div>
               </div>
               <motion.h3
@@ -178,7 +178,7 @@ function Principles() {
                 {p.title}
               </motion.h3>
               <motion.p
-                className="t-body-lg mt-5 max-w-[460px] text-[#a1a1a6]"
+                className="t-body-lg mt-5 max-w-[460px] text-haze"
                 animate={{ opacity: active === i ? 1 : 0.25 }}
                 transition={{ duration: 0.6 }}
               >
@@ -200,7 +200,7 @@ function QuoteBand() {
           <blockquote className="t-headline">
             “我已经正式开始练了。”
           </blockquote>
-          <p className="mt-6 text-[17px] text-[#86868b]">— 孙宇晨，首席践行官，2026 年 10 月 10 日</p>
+          <p className="mt-6 text-[17px] text-ash">— 孙宇晨，首席践行官，2026 年 10 月 10 日</p>
         </Reveal>
         <Reveal delay={0.15} className="mt-14 flex flex-wrap items-center justify-center gap-6">
           <PillLink href="/store/">选购薄肌</PillLink>

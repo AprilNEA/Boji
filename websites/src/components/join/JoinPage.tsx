@@ -26,7 +26,7 @@ export function JoinPage() {
   };
 
   return (
-    <div className="min-h-[100svh] bg-white text-ink">
+    <div className="min-h-[100svh] bg-paper text-ink">
       <div className="pb-[clamp(96px,12vw,160px)] pt-[calc(var(--nav-h)+clamp(40px,7vh,80px))]">
         <Steps steps={JOIN_STEPS} current={stage === "oath" ? 0 : 1} />
         <AnimatePresence mode="wait">

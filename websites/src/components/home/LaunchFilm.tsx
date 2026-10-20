@@ -118,7 +118,7 @@ export function LaunchFilm({ ref }: { ref?: Ref<LaunchFilmHandle> }) {
       >
         <div
           ref={frameRef}
-          className="group relative aspect-video overflow-hidden rounded-[clamp(18px,2.4vw,32px)] bg-[#0a0a0a] shadow-[0_40px_120px_rgba(90,168,50,0.12)] ring-1 ring-white/10"
+          className="group relative aspect-video overflow-hidden rounded-[clamp(18px,2.4vw,32px)] bg-[#0a0a0a] shadow-[0_40px_120px_rgba(140,213,188,0.1)] ring-1 ring-white/10"
         >
           <video
             ref={videoRef}
@@ -187,7 +187,7 @@ export function LaunchFilm({ ref }: { ref?: Ref<LaunchFilmHandle> }) {
           </div>
         </div>
 
-        <div className="mt-5 flex items-center justify-between px-1 text-[clamp(13px,1.3vw,15px)] text-[#86868b]">
+        <div className="mt-5 flex items-center justify-between px-1 text-[clamp(13px,1.3vw,15px)] text-ash">
           <span>薄肌俱乐部 · 2026 秋季发布会影片</span>
           <span className="t-num">{LAUNCH_FILM.duration}</span>
         </div>
@@ -203,8 +203,8 @@ function ControlButton({ label, onClick, children }: { label: string; onClick: (
       aria-label={label}
       title={label}
       onClick={onClick}
-      className="flex h-9 w-9 items-center justify-center rounded-full bg-[rgba(30,30,32,0.55)] text-white backdrop-blur-xl ring-1 ring-white/15"
-      whileHover={{ scale: 1.08, backgroundColor: "rgba(60,60,64,0.7)" }}
+      className="flex h-9 w-9 items-center justify-center rounded-full bg-[rgba(31,30,28,0.55)] text-white backdrop-blur-xl ring-1 ring-white/15"
+      whileHover={{ scale: 1.08, backgroundColor: "rgba(62,60,56,0.7)" }}
       whileTap={{ scale: 0.94 }}
       transition={{ type: "spring", stiffness: 420, damping: 24 }}
     >

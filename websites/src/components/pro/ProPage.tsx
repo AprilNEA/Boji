@@ -40,7 +40,7 @@ const SPECS: { group: string; rows: [string, string][] }[] = [
 
 export function ProPage() {
   return (
-    <div className="bg-white text-ink">
+    <div className="bg-paper text-ink">
       <ProductHero />
       <Highlights />
       <Colors />
@@ -49,7 +49,7 @@ export function ProPage() {
         <div className="container-apple text-center">
           <Reveal>
             <h2 className="t-headline">
-              <span className="t-broc">薄肌</span>，¥0 起。
+              <span className="t-brand">薄肌</span>，¥0 起。
             </h2>
             <p className="t-subhead mt-3 text-ash">另需：戒掉含糖饮料。</p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
@@ -79,7 +79,7 @@ function ProductHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.2, ease: EASE_APPLE }}
         >
-          <span className="t-broc-anim">薄肌</span>
+          <span className="t-brand-anim">薄肌</span>
         </motion.h1>
         <motion.p
           className="t-subhead mt-4"
@@ -134,7 +134,7 @@ function Highlights() {
   };
 
   return (
-    <section className="section-pad overflow-x-clip bg-white">
+    <section className="section-pad overflow-x-clip bg-paper">
       <div className="container-wide">
         <Reveal>
           <h2 className="t-title">了解亮点。</h2>
@@ -152,7 +152,7 @@ function Highlights() {
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 1.1, delay: i * 0.07, ease: EASE_APPLE }}
             className={`relative h-[min(680px,78vh)] w-[min(372px,82vw)] shrink-0 snap-start overflow-hidden rounded-[28px] ${
-              h.dark ? "bg-black text-white" : "bg-mist text-ink"
+              h.dark ? "on-dark bg-black text-white" : "bg-white text-ink"
             }`}
           >
             {h.cover && h.img && (
@@ -162,12 +162,12 @@ function Highlights() {
               </>
             )}
             <div className="relative z-10 p-8">
-              <p className={`text-[14px] font-semibold ${h.dark ? "text-[#a1a1a6]" : "text-ash"}`}>{h.eyebrow}</p>
+              <p className={`text-[14px] font-semibold ${h.dark ? "text-haze" : "text-ash"}`}>{h.eyebrow}</p>
               <h3 className="mt-2 text-[28px] font-semibold leading-[1.14] tracking-[-0.02em]">{h.title}</h3>
-              <p className={`mt-2 text-[17px] ${h.dark ? "text-[#a1a1a6]" : "text-ash"}`}>{h.body}</p>
+              <p className={`mt-2 text-[17px] ${h.dark ? "text-haze" : "text-ash"}`}>{h.body}</p>
             </div>
             {h.big && (
-              <div className="t-broc t-num absolute inset-x-0 bottom-10 text-center text-[clamp(120px,30vw,180px)] font-bold leading-none tracking-[-0.06em]">
+              <div className="t-brand t-num absolute inset-x-0 bottom-10 text-center text-[clamp(120px,30vw,180px)] font-bold leading-none tracking-[-0.06em]">
                 {h.big}
               </div>
             )}
@@ -191,7 +191,7 @@ function Highlights() {
             type="button"
             aria-label={d === -1 ? "上一张" : "下一张"}
             onClick={() => scrollBy(d)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#e8e8ed] text-ink transition-colors hover:bg-[#dcdce0]"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-fog text-ink transition-colors hover:bg-fog-strong"
           >
             <svg viewBox="0 0 10 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
               <path d={d === -1 ? "M8 2 2 8l6 6" : "M2 2l6 6-6 6"} />
@@ -280,7 +280,7 @@ function Colors() {
 
 function Specs() {
   return (
-    <section className="bg-white section-pad">
+    <section className="bg-paper section-pad">
       <div className="container-apple">
         <Reveal>
           <h2 className="t-headline">技术规格</h2>

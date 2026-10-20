@@ -2,7 +2,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo } from "react";
 import { Reveal } from "@/components/ui/Reveal";
-import { Logo } from "@/components/ui/Logo";
+import { AppIcon } from "@/components/ui/AppIcon";
 import {
   FREQ_OPTIONS,
   START_OPTIONS,
@@ -78,10 +78,10 @@ export function Configurator({
           {/* 左侧：产品图 + 预计交付 */}
           <div>
             <div className="sticky top-[calc(var(--nav-h)+24px)]">
-              <div className="relative flex aspect-[4/3.4] items-center justify-center overflow-hidden rounded-[28px] bg-mist">
+              <div className="relative flex aspect-[4/3.4] items-center justify-center overflow-hidden rounded-[28px] bg-white">
                 <motion.div
                   aria-hidden
-                  className="absolute inset-[18%] rounded-full bg-[radial-gradient(closest-side,rgba(168,224,99,0.6),rgba(168,224,99,0))] blur-2xl"
+                  className="absolute inset-[18%] rounded-full bg-[radial-gradient(closest-side,rgba(140,213,188,0.6),rgba(140,213,188,0))] blur-2xl"
                   animate={{ opacity: complete ? 1 : 0.25, scale: complete ? 1.1 : 0.9 }}
                   transition={{ duration: 1.2, ease: EASE_APPLE }}
                 />
@@ -112,7 +112,7 @@ export function Configurator({
                           {result.label.main} <span className="text-[17px] font-normal text-ash">{result.label.weekday}</span>
                         </>
                       ) : (
-                        <span className="text-[#c7c7cc]">完成选择后显示</span>
+                        <span className="text-pewter">完成选择后显示</span>
                       )}
                     </motion.div>
                   </AnimatePresence>
@@ -156,7 +156,7 @@ export function Configurator({
             </Step>
 
             <Step index={4} title="以旧换新。" question="你的旧身材可以折抵多少？" enabled={sugar !== null}>
-              <div className="rounded-[14px] bg-mist px-5 py-4 text-[15px]">
+              <div className="rounded-[14px] bg-white px-5 py-4 text-[15px]">
                 经评估，你的旧身材可折抵 <span className="t-num font-semibold">¥0</span>。我们会负责把它慢慢回收掉。
               </div>
             </Step>
@@ -168,12 +168,10 @@ export function Configurator({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
                   transition={{ duration: 0.8, ease: EASE_APPLE }}
-                  className="rounded-[22px] bg-mist p-7"
+                  className="rounded-[22px] bg-white p-7"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-black text-broc-light">
-                      <Logo className="h-5 w-auto" />
-                    </div>
+                    <AppIcon className="h-10 w-10" />
                     <div>
                       <div className="text-[17px] font-semibold">你的薄肌</div>
                       <div className="t-num text-[13px] text-ash">预计 {result.label.main}交付</div>
@@ -256,7 +254,7 @@ function Options({
             {selected && (
               <motion.span
                 layoutId={`opt-${options.map((x) => x.key).join("-")}`}
-                className="absolute inset-0 rounded-[14px] border-2 border-link"
+                className="absolute inset-0 rounded-[14px] border-2 border-accent"
                 transition={{ type: "spring", stiffness: 420, damping: 34 }}
               />
             )}

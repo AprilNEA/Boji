@@ -2,11 +2,15 @@
 
 import { motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "motion/react";
 import { useRef, useState } from "react";
-import { Logo } from "@/components/ui/Logo";
+import { AppIcon } from "@/components/ui/AppIcon";
+import { COLORS } from "@/lib/colors";
 import { NOTIFICATIONS } from "@/lib/content";
 import { EASE_APPLE } from "@/lib/motion";
 
 const STEPS = [0.12, 0.38, 0.64] as const;
+
+/** 手机外圈的光环：Boji 的平静绿、喝水蓝、品牌绿、睡眠紫和训练橙。 */
+const RING = `conic-gradient(from 0deg, ${COLORS.mint}, ${COLORS.waterLight}, ${COLORS.green}, ${COLORS.sleepLight}, ${COLORS.accentBright}, ${COLORS.mint})`;
 
 export function IntelligenceSection() {
   const ref = useRef<HTMLDivElement>(null);
@@ -32,8 +36,8 @@ export function IntelligenceSection() {
               <h2 className="t-headline">
                 <span className="intelligence-text">薄肌 Intelligence。</span>
               </h2>
-              <p className="t-subhead mt-4 text-[#f5f5f7]">拍一下，就知道。</p>
-              <p className="t-body-lg mx-auto mt-5 max-w-[460px] text-[#86868b] md:mx-0">
+              <p className="t-subhead mt-4 text-paper">拍一下，就知道。</p>
+              <p className="t-body-lg mx-auto mt-5 max-w-[460px] text-ash md:mx-0">
                 饭前拍一张，AI 算好热量。训练录一段，AI 记好组数。睡眠戒指的数据，第二天早上已经整理成一份日报。
               </p>
               <ol className="mx-auto mt-10 hidden max-w-[420px] space-y-1 md:mx-0 md:block">
@@ -74,11 +78,11 @@ function Phone({ active, ringRotate }: { active: number; ringRotate: MotionValue
         className="absolute -inset-[3px] rounded-[58px] opacity-80 blur-[18px]"
         style={{
           rotate: ringRotate,
-          background: "conic-gradient(from 0deg, #a8e063, #2997ff, #2f7d32, #c4ef7a, #0071e3, #a8e063)",
+          background: RING,
         }}
       />
-      <div className="relative aspect-[9/19.5] h-[min(72vh,640px)] rounded-[54px] bg-[#1d1d1f] p-[10px] shadow-[0_40px_120px_rgba(0,0,0,0.6)]">
-        <div className="relative h-full w-full overflow-hidden rounded-[45px] bg-[radial-gradient(120%_70%_at_50%_0%,#1f3b1f_0%,#0b130b_45%,#000_100%)]">
+      <div className="relative aspect-[9/19.5] h-[min(72vh,640px)] rounded-[54px] bg-ink p-[10px] shadow-[0_40px_120px_rgba(0,0,0,0.6)]">
+        <div className="relative h-full w-full overflow-hidden rounded-[45px] bg-[radial-gradient(120%_70%_at_50%_0%,#1d3a31_0%,#0b1612_45%,#000_100%)]">
           <div className="absolute left-1/2 top-[10px] h-[26px] w-[34%] -translate-x-1/2 rounded-full bg-black" />
           <div className="pt-[18%] text-center">
             <div className="text-[13px] font-semibold text-white/75">10月16日 星期五</div>
@@ -91,7 +95,7 @@ function Phone({ active, ringRotate }: { active: number; ringRotate: MotionValue
             {NOTIFICATIONS.map((n, i) => (
               <motion.div
                 key={n.title}
-                className="rounded-[20px] bg-[rgba(60,60,64,0.55)] p-3 backdrop-blur-[24px]"
+                className="rounded-[20px] bg-[rgba(62,60,56,0.55)] p-3 backdrop-blur-[24px]"
                 initial={false}
                 animate={
                   active >= i
@@ -101,9 +105,7 @@ function Phone({ active, ringRotate }: { active: number; ringRotate: MotionValue
                 transition={{ type: "spring", stiffness: 260, damping: 26 }}
               >
                 <div className="flex items-start gap-2.5">
-                  <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[8px] bg-black text-broc-light">
-                    <Logo className="h-[16px] w-auto" />
-                  </div>
+                  <AppIcon className="h-[30px] w-[30px]" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-baseline justify-between gap-2">
                       <span className="truncate text-[13px] font-semibold text-white">{n.title}</span>

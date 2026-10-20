@@ -3,6 +3,7 @@
 import { motion, useReducedMotion, useScroll, useSpring, useTransform, type MotionValue } from "motion/react";
 import { useRef } from "react";
 import { Reveal } from "@/components/ui/Reveal";
+import { COLORS } from "@/lib/colors";
 import { IMG } from "@/lib/content";
 
 /** Circuit traces that travel from the frame edges into the chip. */
@@ -35,7 +36,7 @@ export function ChipSection() {
           />
           <motion.div
             aria-hidden
-            className="absolute left-1/2 top-1/2 h-[60vmin] w-[60vmin] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(168,224,99,0.32),rgba(168,224,99,0))] mix-blend-screen"
+            className="absolute left-1/2 top-1/2 h-[60vmin] w-[60vmin] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(140,213,188,0.32),rgba(140,213,188,0))] mix-blend-screen"
             style={{ opacity: glow }}
           />
           <svg
@@ -46,8 +47,8 @@ export function ChipSection() {
           >
             <defs>
               <linearGradient id="trace" x1="0" x2="1">
-                <stop offset="0" stopColor="#2f7d32" />
-                <stop offset="1" stopColor="#c4ef7a" />
+                <stop offset="0" stopColor={COLORS.green} />
+                <stop offset="1" stopColor={COLORS.mint} />
               </linearGradient>
               <filter id="traceGlow" x="-20%" y="-20%" width="140%" height="140%">
                 <feGaussianBlur stdDeviation="3" result="b" />
@@ -68,7 +69,7 @@ export function ChipSection() {
             className="absolute inset-x-0 bottom-[clamp(40px,10vh,110px)] px-6 text-center"
           >
             <p className="t-eyebrow">
-              M13 <span className="t-broc">意志力芯片</span>
+              M13 <span className="t-brand">意志力芯片</span>
             </p>
             <h2 className="t-headline mt-3 font-[Inter_Variable] tracking-[-0.035em]">Regardless of how you feel.</h2>
           </motion.div>
@@ -79,12 +80,12 @@ export function ChipSection() {
         <div className="border-t border-white/15 pt-16">
           <Reveal>
             <p className="t-title max-w-[820px] !leading-[1.25]">
-              <span className="inline-block text-[#86868b]">它不问心情。</span>
+              <span className="inline-block text-ash">它不问心情。</span>
               <span className="inline-block">只管你今天去练。</span>
             </p>
           </Reveal>
           <Reveal delay={0.12}>
-            <p className="t-body-lg mt-6 max-w-[640px] text-[#a1a1a6]">下雨、加班、心情不好，都不影响它启动。</p>
+            <p className="t-body-lg mt-6 max-w-[640px] text-haze">下雨、加班、心情不好，都不影响它启动。</p>
           </Reveal>
         </div>
       </div>

@@ -11,7 +11,7 @@ const TEASER_MODELS = COMPARE_MODELS.filter((m) => m.id !== "justin");
 
 export function CompareTeaser() {
   return (
-    <section className="bg-white section-pad text-ink">
+    <section className="bg-paper section-pad text-ink">
       <div className="container-apple text-center">
         <Reveal>
           <h2 className="t-headline">哪一款适合你？</h2>
@@ -32,9 +32,9 @@ export function CompareTeaser() {
                 transition={{ duration: 1.1, delay: i * 0.12, ease: EASE_APPLE }}
                 className="flex flex-col items-center"
               >
-                <Silhouette model={m.id} className={`h-[clamp(120px,18vw,200px)] w-auto ${isThin ? "text-ink" : "text-[#d2d2d7]"}`} />
+                <Silhouette model={m.id} className={`h-[clamp(120px,18vw,200px)] w-auto ${isThin ? "text-ink" : "text-silver"}`} />
                 <div className="mt-6 h-5 text-[12px] font-semibold">{m.badge && <span className="badge-new">{m.badge}</span>}</div>
-                <h3 className={`mt-1 text-[clamp(19px,2.4vw,28px)] font-semibold tracking-[-0.02em] ${isThin ? "t-broc" : ""}`}>{m.name}</h3>
+                <h3 className={`mt-1 text-[clamp(19px,2.4vw,28px)] font-semibold tracking-[-0.02em] ${isThin ? "t-brand" : ""}`}>{m.name}</h3>
                 <p className="mt-2 min-h-[42px] text-[clamp(12px,1.4vw,15px)] text-ash">{m.tagline}</p>
                 <dl className="mt-6 w-full space-y-4 border-t border-black/10 pt-6 text-[clamp(12px,1.4vw,15px)]">
                   <div>
@@ -66,7 +66,7 @@ export function PriceTeaser() {
       <div className="container-wide text-center">
         <Reveal>
           <h2 className="t-hero">
-            <span className="t-broc">薄肌</span>，¥0 起。
+            <span className="t-brand">薄肌</span>，¥0 起。
           </h2>
           <p className="t-subhead mt-4 text-ash">另需：戒掉含糖饮料。</p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
