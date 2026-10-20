@@ -3,27 +3,35 @@ options:
   bundleIdPrefix: club.leanmuscle
   deploymentTarget:
     iOS: '26.0'
+    watchOS: '26.0'
   xcodeVersion: '27.1'
 settings:
   base:
     SWIFT_VERSION: '5.0'
-    MARKETING_VERSION: '0.3.0'
-    CURRENT_PROJECT_VERSION: '3'
-    DEVELOPMENT_TEAM: ''
+    MARKETING_VERSION: '0.5.0'
+    CURRENT_PROJECT_VERSION: '5'
+    DEVELOPMENT_TEAM: 8U3ZJ258K9
+    CODE_SIGN_STYLE: Automatic
     GENERATE_INFOPLIST_FILE: YES
     SWIFT_STRICT_CONCURRENCY: complete
     BOJI_API_BASE_URL: ''
-    BOJI_APPLE_SIGN_IN_ENABLED: 'NO'
-    BOJI_WALLET_PASS_TYPE_IDENTIFIER: ''
+    BOJI_APPLE_SIGN_IN_ENABLED: 'YES'
+    BOJI_WALLET_PASS_TYPE_IDENTIFIER: pass.club.leanmuscle.boji.membership
 targets:
   Boji:
     type: application
     platform: iOS
     sources:
       - path: Boji
+      - path: Shared
+    dependencies:
+      - target: BojiWidgets
+        embed: true
+      - target: BojiWatch
+        embed: true
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.aprilnea.boji
+        PRODUCT_BUNDLE_IDENTIFIER: club.leanmuscle.boji
         INFOPLIST_FILE: Boji/Info.plist
         CODE_SIGN_ENTITLEMENTS: Boji/Boji.entitlements
         INFOPLIST_KEY_CFBundleDisplayName: 薄肌
@@ -33,6 +41,33 @@ targets:
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: 'UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight'
         TARGETED_DEVICE_FAMILY: '1,2'
+  BojiWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: BojiWidgets
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: club.leanmuscle.boji.widgets
+        INFOPLIST_FILE: BojiWidgets/Info.plist
+        CODE_SIGN_ENTITLEMENTS: BojiWidgets/BojiWidgets.entitlements
+        APPLICATION_EXTENSION_API_ONLY: YES
+        SKIP_INSTALL: YES
+        TARGETED_DEVICE_FAMILY: '1,2'
+  BojiWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - path: BojiWatch
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: club.leanmuscle.boji.watchkitapp
+        INFOPLIST_FILE: BojiWatch/Info.plist
+        CODE_SIGN_ENTITLEMENTS: BojiWatch/BojiWatch.entitlements
+        SKIP_INSTALL: YES
+        TARGETED_DEVICE_FAMILY: '4'
   BojiTests:
     type: bundle.unit-test
     platform: iOS
@@ -58,3 +93,7 @@ schemes:
       targets:
         - BojiTests
         - BojiUITests
+  BojiWatch:
+    build:
+      targets:
+        BojiWatch: all

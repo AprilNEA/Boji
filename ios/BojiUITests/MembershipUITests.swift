@@ -35,7 +35,7 @@ final class MembershipUITests: XCTestCase {
     func testGuestDoesNotReceiveAnAutomaticCard() {
         let app = launchApp()
         XCTAssertTrue(app.buttons["membership-auth-start"].exists)
-        XCTAssertFalse(app.staticTexts["TEST-000001"].exists)
+        XCTAssertFalse(app.staticTexts["PREVIEW-MEMBER"].exists)
         XCTAssertTrue(app.staticTexts["免费社区会员"].exists)
     }
 

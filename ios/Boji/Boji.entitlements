@@ -3,4 +3,5 @@
 <plist version="1.0"><dict>
     <key>com.apple.developer.healthkit</key><true/>
     <key>com.apple.developer.applesignin</key><array><string>Default</string></array>
+    <key>com.apple.security.application-groups</key><array><string>group.club.leanmuscle.boji</string></array>
 </dict></plist>

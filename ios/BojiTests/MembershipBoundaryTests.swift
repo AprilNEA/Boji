@@ -61,7 +61,7 @@ final class MembershipBoundaryTests: XCTestCase {
     }
 
     private func card(status: String = "active", tier: String = "community", expiresAt: Date? = nil) -> ClubMember {
-        ClubMember(id: "card-1", userId: "user-1", memberNumber: "BJ-test", displayName: "测试会员", joinedAt: Date(timeIntervalSince1970: 1_792_483_200), tier: tier, status: status, entitlements: ["local_tracking"], expiresAt: expiresAt)
+        ClubMember(id: "card-1", userId: "user-1", memberNumber: "sample-member", displayName: "测试会员", joinedAt: Date(timeIntervalSince1970: 1_792_483_200), tier: tier, status: status, entitlements: ["local_tracking"], expiresAt: expiresAt)
     }
     private func record() -> MembershipCacheRecord {
         MembershipCacheRecord(serviceOrigin: "https://example.test", account: MembershipAccount(id: "user-1", name: "测试会员", email: "member@example.test", emailVerified: true), card: card(), lastSyncedAt: Date(timeIntervalSince1970: 1_792_483_201))

@@ -1,6 +1,6 @@
 # Apple 生态接入说明
 
-**0.3.0 已加入三项能力的客户端代码。** 顺序为 HealthKit 只读查询、Apple 登录和 Wallet。真实 Apple 登录与钱包签发仍需开发者配置，不能把编译通过当作真机验收。
+**HealthKit、Apple 登录与 Wallet 已有客户端代码。** 0.4.0 使用已注册标识，并加入小组件和 Watch 配套。当前工程配置见[已注册能力实现说明](capability-implementation.md)。真实服务仍需单独验收。
 
 ## 1. HealthKit 只读查询
 
@@ -18,8 +18,8 @@
 
 ### 真机准备
 
-1. 在 `DEVELOPMENT_TEAM` 配置自己的团队。
-2. 为 `com.aprilnea.boji` 启用 HealthKit。
+1. 确认签名团队 `8U3ZJ258K9` 的证书可用。
+2. 使用已启用 HealthKit 的 `club.leanmuscle.boji`。
 3. 使用包含相应能力的签名配置构建。
 4. 在真机主动授权，检查已有样本和空数据场景。
 
@@ -37,7 +37,7 @@
 
 | 配置 | 默认值 | 用途 |
 | --- | --- | --- |
-| `BOJI_APPLE_SIGN_IN_ENABLED` | `NO` | 完成签名配置后改为 `YES` |
+| `BOJI_APPLE_SIGN_IN_ENABLED` | `YES` | 客户端能力开关，仍需后端就绪 |
 | `BOJI_API_BASE_URL` | 空 | 正式环境必须使用 HTTPS |
 | `/api/capabilities.appleSignIn` | 后端决定 | 确认服务端 Apple 配置就绪 |
 
@@ -55,7 +55,7 @@
 
 | 配置 | 默认值 | 用途 |
 | --- | --- | --- |
-| `BOJI_WALLET_PASS_TYPE_IDENTIFIER` | 空 | 与服务端 Pass Type ID 一致 |
+| `BOJI_WALLET_PASS_TYPE_IDENTIFIER` | `pass.club.leanmuscle.boji.membership` | 与服务端 Pass Type ID 一致 |
 | `/api/capabilities.walletPass` | 后端决定 | 确认服务端签发能力 |
 
 服务未配置证书时，钱包接口返回 `503 WALLET_NOT_CONFIGURED`。无卡、未验证邮箱和暂停会员会被后端拒绝。钱包卡仅展示身份，不提供支付或场馆核销。
@@ -82,7 +82,7 @@ xcodebuild -project Boji.xcodeproj -scheme Boji \
 
 验证结果见[Apple 生态验证记录](apple-integration-verification.md)。自动测试使用隔离提供器，不读取真实健康数据。界面测试使用空健康数据，不打开真实 Apple 登录。
 
-当前还未实现 HealthKit 写入、独立 Watch App 或快捷指令。账号删除与 Apple 授权撤销仍需在上架前完善。还需发布隐私政策，并完成真机签名和 App Store 审核。
+当前还未实现 HealthKit 写入、Watch 独立登录或快捷指令。账号删除与 Apple 授权撤销仍需在上架前完善。还需发布隐私政策，并完成真机签名和 App Store 审核。
 
 健康数据不能用于广告画像或出售。后续若增加云端健康功能，必须先设计独立同意和删除机制，不能沿用会员授权。[5]
 

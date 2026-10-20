@@ -13,6 +13,9 @@ final class MembershipStore {
         case enroll
         case appleSignIn
         case wallet
+        case security
+        case changePassword
+        case revokeOtherSessions
     }
 
     private let configuration: MembershipServiceConfiguration?
@@ -33,6 +36,7 @@ final class MembershipStore {
     private(set) var isLoadingCapabilities = false
     private(set) var capabilitiesError: String?
     private(set) var requiresEmailVerification = false
+    private(set) var authSession: BetterAuthSession?
     let isConfigured: Bool
     let serviceURL: String
     let isTestEnvironment: Bool
@@ -155,6 +159,10 @@ final class MembershipStore {
             let token = try await api.signIn(email: email, password: password)
             await completeAuthentication(token: token, operation: operation, action: .signIn)
         } catch {
+            if case MembershipAPIError.server(let status, _) = error, status == 401 {
+                if isCurrent(operation) { errorMessage = "邮箱或密码不正确，请检查后重试。" }
+                return
+            }
             handle(error, action: .signIn, operation: operation)
         }
     }
@@ -290,6 +298,106 @@ final class MembershipStore {
             notice = "已提交重置请求。若邮箱可用，请检查收件箱。"
         } catch {
             handle(error, action: .passwordReset, operation: operation)
+        }
+    }
+
+    func refreshAuthSession() async {
+        guard let token = tokenStore.loadToken(), isConfigured else {
+            authSession = nil
+            errorMessage = "请先登录后再查看账号安全。"
+            return
+        }
+        guard let operation = beginOperation() else { return }
+        defer { finishOperation(operation) }
+        authSession = nil
+        do {
+            guard let session = try await api.getSession(token: token) else {
+                handle(MembershipAPIError.server(statusCode: 401, code: "UNAUTHORIZED"), action: .security, operation: operation)
+                return
+            }
+            guard isCurrent(operation) else { return }
+            guard account?.id == nil || account?.id == session.user.id else {
+                _ = clearLocalSessionStorage()
+                clearPublishedIdentity()
+                errorMessage = "账号状态不一致，请重新登录。"
+                return
+            }
+            authSession = session
+            account = session.user
+            requiresEmailVerification = !session.user.emailVerified
+        } catch { handle(error, action: .security, operation: operation) }
+    }
+
+    func changePassword(currentPassword: String, newPassword: String) async -> Bool {
+        guard !currentPassword.isEmpty, (8...128).contains(newPassword.count) else {
+            errorMessage = "请输入当前密码，新密码需为 8 至 128 个字符。"
+            return false
+        }
+        guard currentPassword != newPassword else {
+            errorMessage = "新密码不能与当前密码相同。"
+            return false
+        }
+        guard isConfigured, let token = tokenStore.loadToken(), let account else {
+            errorMessage = "请先登录后再修改密码。"
+            return false
+        }
+        guard let operation = beginOperation() else { return false }
+        defer { finishOperation(operation) }
+        do {
+            let newToken = try await api.changePassword(currentPassword: currentPassword, newPassword: newPassword, token: token)
+            guard isCurrent(operation) else { return false }
+            authSession = nil
+            guard let newToken else {
+                _ = clearLocalSessionStorage()
+                clearPublishedIdentity()
+                notice = "密码已修改，请使用新密码重新登录。"
+                return true
+            }
+            do { try tokenStore.saveToken(newToken) }
+            catch {
+                _ = clearLocalSessionStorage()
+                clearPublishedIdentity()
+                errorMessage = "密码已修改，但登录状态无法安全保存。请重新登录。"
+                return true
+            }
+            do {
+                let session = try await api.getSession(token: newToken)
+                guard isCurrent(operation) else { return true }
+                guard let session, session.user.id == account.id else {
+                    _ = clearLocalSessionStorage()
+                    clearPublishedIdentity()
+                    notice = "密码已修改，请重新登录以确认会话。"
+                    return true
+                }
+                authSession = session
+                self.account = session.user
+                notice = "密码已修改，其他会话已退出。"
+            } catch {
+                handle(error, action: .security, operation: operation)
+                if isCurrent(operation) { notice = "密码已修改。请刷新确认当前登录状态。" }
+            }
+            return true
+        } catch {
+            handle(error, action: .changePassword, operation: operation)
+            return false
+        }
+    }
+
+    func revokeOtherSessions() async -> Bool {
+        guard isConfigured, let token = tokenStore.loadToken(), account != nil else {
+            errorMessage = "请先登录后再管理会话。"
+            return false
+        }
+        guard let operation = beginOperation() else { return false }
+        defer { finishOperation(operation) }
+        do {
+            try await api.revokeOtherSessions(token: token)
+            guard isCurrent(operation) else { return false }
+            notice = "其他登录会话已退出，当前会话保留。"
+            return true
+        } catch {
+            handle(error, action: .revokeOtherSessions, operation: operation)
+            return false
         }
     }
 
@@ -484,6 +592,25 @@ final class MembershipStore {
             return
         }
 
+        if case .server(let statusCode, let code) = apiError {
+            if statusCode == 429 {
+                errorMessage = "操作过于频繁，请稍后再试。"
+                return
+            }
+            if action == .changePassword, code == "INVALID_PASSWORD" || code == "INVALID_CURRENT_PASSWORD" {
+                errorMessage = "当前密码不正确，请重新输入。"
+                return
+            }
+            if action == .changePassword, code == "PASSWORD_NOT_FOUND" || code == "CREDENTIAL_ACCOUNT_NOT_FOUND" {
+                errorMessage = "此账号尚未设置邮箱密码，请使用原登录方式。"
+                return
+            }
+            if code == "SESSION_NOT_FRESH" {
+                errorMessage = "此操作需要重新登录后再试。"
+                return
+            }
+        }
+
         if case .server(let statusCode, _) = apiError, statusCode == 401 {
             _ = clearLocalSessionStorage()
             clearPublishedIdentity()
@@ -559,6 +686,7 @@ final class MembershipStore {
     private func clearPublishedIdentity() {
         account = nil
         card = nil
+        authSession = nil
         lastSyncedAt = nil
         requiresEmailVerification = false
         isOffline = false
@@ -602,6 +730,12 @@ final class MembershipStore {
             return "无法连接会员服务，Apple 登录未完成。"
         case .wallet:
             return "无法连接会员服务，暂时无法取得钱包凭证。"
+        case .security:
+            return "无法连接认证服务，暂时无法确认会话。"
+        case .changePassword:
+            return "密码修改结果未确认。请检查网络，必要时使用密码找回。"
+        case .revokeOtherSessions:
+            return "其他会话的退出结果未确认，请稍后重试。"
         }
     }
 
@@ -623,6 +757,12 @@ final class MembershipStore {
             return "Apple 登录失败。若已有邮箱账号，请先使用原方式登录。"
         case .wallet:
             return "钱包凭证获取失败，签发服务可能尚未配置。"
+        case .security:
+            return "无法确认当前登录会话，请刷新后重试。"
+        case .changePassword:
+            return "密码修改未确认，请检查当前密码或使用密码找回。"
+        case .revokeOtherSessions:
+            return "暂时无法退出其他登录会话。"
         }
     }
 }

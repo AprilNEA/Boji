@@ -11,7 +11,7 @@
 5. 领取成功后查看卡号、入会日期和免费权益。
 6. 点击「制作会员分享卡」，确认图片后分享。
 
-卡面昵称在本版中不可修改。同一个账号重复领卡，后端返回同一张卡。退出不删除本机训练记录，也不会注销服务器账号。
+卡面昵称在本版中不可修改。客户端展示每次请求的服务端结果。退出不删除本机训练记录，也不会注销服务器账号。
 
 ## 接口契约
 
@@ -26,11 +26,17 @@
 | `GET /api/me` | 恢复用户与会话状态 |
 | `POST /api/auth/sign-out` | 请求注销当前会话 |
 | `GET /api/membership` | 返回 membership，可为 null |
-| `POST /api/membership/enroll` | 提交 displayName 和 termsVersion，领取或返回已有卡 |
+| `POST /api/membership/enroll` | 提交 displayName 和 termsVersion，返回会员卡 |
 
 守则版本固定为 `community-v1`。后端校验登录和邮箱验证状态。`401` 表示需要重新登录，`403 EMAIL_NOT_VERIFIED` 表示需要验证邮箱。
 
 会员字段为 `id`、`userId`、`memberNumber`、`displayName`、`joinedAt`、`tier`、`status`、`entitlements` 和 `expiresAt`。时间采用 UTC ISO 8601。免费卡的 `tier` 为 `community`，`expiresAt` 为 null。
+
+`memberNumber` 是不透明字符串。客户端原样展示，并使用最新响应刷新缓存。客户端不从卡号推断权限、等级或其他身份信息。
+
+`entitlements` 是对象数组，每项包含 `id`、`code`、`name`、`description`、`grantedAt` 和 `expiresAt`。客户端使用服务端的展示信息，不依赖数组顺序。
+
+旧字符串缓存可以读取，但不会被当成已核验的授权。未知、过期或尚未生效的权益不会开启客户端能力。
 
 免费权益为 `local_tracking`、`training_library` 和 `progress_history`。这些对应已有的日常记录、基础课程和历史趋势。它们本来就是免费本地功能，不因退出或暂停会员而被锁定。
 
@@ -40,7 +46,7 @@ Debug 默认访问 `http://localhost:3000`。通过 Xcode 构建设置 `BOJI_API
 
 Release 只接受 HTTPS。缺少有效地址时，会员服务显示未配置。客户端不能为了展示效果而自动改用测试卡。
 
-本地开发邮件由后端写入文件。真实邮件服务、Apple 登录、邮箱链接处理和账号删除，由相应后端与发布流程单独配置。本版 iOS 提供邮箱登录和邮件操作入口，不宣称 Apple 登录已接入。
+本地开发邮件由后端写入文件。iOS 已提供邮箱和 Apple 登录的客户端流程。真实邮件服务、Apple 登录验证及账号删除，仍需后端和发布配置。
 
 ## 安全与隐私
 
@@ -58,4 +64,6 @@ Release 只接受 HTTPS。缺少有效地址时，会员服务显示未配置。
 
 Debug 的 `--uitesting` 使用隔离的内存测试服务。测试卡显示「测试卡 · 非真实会员」。该路径不用于真实联调，Release 不启用测试服务。
 
-17 项模型测试和 1 项真实后端集成测试通过。Debug 和 Release 编译通过，模拟器界面测试未运行。详情见 iOS 的[会员卡验证记录](../ios/docs/membership-verification.md)。编译成功不等于真机、邮件服务或生产发布已通过。
+测试覆盖卡号原样编解码、服务端响应更新，以及新旧权益格式。最新结果见 iOS 的[能力验证记录](../ios/docs/capability-verification.md)。
+
+此前的编译与联调结果见 iOS 的[会员卡验证记录](../ios/docs/membership-verification.md)。编译成功不等于真机、邮件服务或生产发布已通过。

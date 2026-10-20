@@ -21,26 +21,28 @@ final class MembershipTests: XCTestCase {
         XCTAssertEqual(store.errorMessage, "请先同意社区会员条款。")
     }
 
-    func testRepeatedEnrollmentKeepsServerCardUnchanged() async throws {
+    func testEnrollmentUsesLatestOpaqueServerResponse() async throws {
         let account = verifiedAccount()
         let joinedAt = try XCTUnwrap(MembershipDateCoding.parse("2026-10-20T08:00:00.125Z"))
-        let serverCard = member(account: account, displayName: "第一次名称", joinedAt: joinedAt)
+        let serverCard = member(account: account, displayName: "服务端名称", joinedAt: joinedAt)
+        let updatedCard = member(account: account, displayName: "服务端最新名称", joinedAt: joinedAt, memberNumber: "00sample-next")
         let transport = FakeTransport(responses: [
             signInResponse(token: "token-1"),
             meResponse(account),
             membershipResponse(nil),
             membershipResponse(serverCard),
-            membershipResponse(serverCard)
+            membershipResponse(updatedCard)
         ])
         let store = makeStore(transport: transport)
 
         await store.signIn(email: account.email, password: "password")
-        await store.enroll(displayName: "第一次名称", acceptedTerms: true)
-        let firstCard = try XCTUnwrap(store.card)
-        await store.enroll(displayName: "改名不会生效", acceptedTerms: true)
+        await store.enroll(displayName: "客户端昵称", acceptedTerms: true)
+        XCTAssertEqual(store.card, serverCard)
+        await store.enroll(displayName: "客户端请求名称", acceptedTerms: true)
 
-        XCTAssertEqual(store.card, firstCard)
-        XCTAssertEqual(store.card?.displayName, "第一次名称")
+        XCTAssertEqual(store.card, updatedCard)
+        XCTAssertEqual(store.card?.memberNumber, "00sample-next")
+        XCTAssertEqual(store.card?.displayName, "服务端最新名称")
         XCTAssertEqual(store.card?.joinedAt, joinedAt)
         XCTAssertEqual(store.card?.status, "active")
         XCTAssertEqual(transport.requestCount, 5)
@@ -123,7 +125,7 @@ final class MembershipTests: XCTestCase {
         let wrongCard = ClubMember(
             id: "membership-1",
             userId: "another-user",
-            memberNumber: "C-000001",
+            memberNumber: "sample-member",
             displayName: "错误账户",
             joinedAt: Date(),
             tier: "community",
@@ -182,7 +184,7 @@ final class MembershipTests: XCTestCase {
         {
           "id":"membership-1",
           "userId":"user-1",
-          "memberNumber":"C-000001",
+          "memberNumber":"sample-member",
           "displayName":"测试",
           "joinedAt":"2026-10-20T08:00:00.123Z",
           "tier":"community",
@@ -196,6 +198,15 @@ final class MembershipTests: XCTestCase {
 
         XCTAssertEqual(card.joinedAt.timeIntervalSince1970, 1_792_483_200.123, accuracy: 0.001)
         XCTAssertTrue(card.isActive)
+    }
+
+    func testMemberNumberRoundTripsWithoutFormatAssumptions() throws {
+        for value in ["00opaque-example", "sample/member-x", "opaque-value-with-a-different-length"] {
+            let original = member(account: verifiedAccount(), memberNumber: value)
+            let data = try MembershipDateCoding.encoder().encode(original)
+            let decoded = try MembershipDateCoding.decoder().decode(ClubMember.self, from: data)
+            XCTAssertEqual(decoded.memberNumber, value)
+        }
     }
 
     func testRegisterDoesNotCreateLoginSession() async {
@@ -266,12 +277,13 @@ final class MembershipTests: XCTestCase {
     private func member(
         account: MembershipAccount,
         displayName: String = "会员",
-        joinedAt: Date = Date()
+        joinedAt: Date = Date(),
+        memberNumber: String = "sample-member"
     ) -> ClubMember {
         ClubMember(
             id: "membership-1",
             userId: account.id,
-            memberNumber: "C-000001",
+            memberNumber: memberNumber,
             displayName: displayName,
             joinedAt: joinedAt,
             tier: "community",

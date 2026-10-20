@@ -5,6 +5,11 @@
     <key>BojiAPIBaseURL</key><string>$(BOJI_API_BASE_URL)</string>
     <key>BojiAppleSignInEnabled</key><string>$(BOJI_APPLE_SIGN_IN_ENABLED)</string>
     <key>BojiWalletPassTypeIdentifier</key><string>$(BOJI_WALLET_PASS_TYPE_IDENTIFIER)</string>
+    <key>CFBundleURLTypes</key>
+    <array><dict>
+        <key>CFBundleURLName</key><string>club.leanmuscle.boji.navigation</string>
+        <key>CFBundleURLSchemes</key><array><string>boji</string></array>
+    </dict></array>
     <key>NSHealthShareUsageDescription</key><string>读取你选择授权的睡眠、体重和腰围，在薄肌展示近期变化。数据不会上传到俱乐部，也不会覆盖手动记录。</string>
     <key>NSAppTransportSecurity</key>
     <dict>

@@ -1,149 +1,7 @@
 import Foundation
 import Security
 
-struct MembershipServiceConfiguration: Sendable, Equatable {
-    let baseURL: URL
-    let origin: String
-
-    init?(validating rawValue: String, allowLoopbackHTTP: Bool) {
-        let trimmedValue = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedValue.isEmpty,
-              let components = URLComponents(string: trimmedValue),
-              let url = components.url,
-              let scheme = components.scheme?.lowercased(),
-              let host = components.host?.lowercased(),
-              !host.isEmpty,
-              components.user == nil,
-              components.password == nil,
-              components.query == nil,
-              components.fragment == nil,
-              components.port.map({ (1...65_535).contains($0) }) ?? true
-        else {
-            return nil
-        }
-
-        switch scheme {
-        case "https":
-            break
-        case "http":
-            let loopbackHosts: Set<String> = ["localhost", "127.0.0.1", "::1", "[::1]"]
-            guard allowLoopbackHTTP, loopbackHosts.contains(host) else { return nil }
-        default:
-            return nil
-        }
-
-        self.baseURL = url
-        let bracketedHost = host.contains(":") && !host.hasPrefix("[") ? "[\(host)]" : host
-        let defaultPort = (scheme == "https" && components.port == 443)
-            || (scheme == "http" && components.port == 80)
-        let portPart = components.port == nil || defaultPort ? "" : ":\(components.port ?? 0)"
-        self.origin = "\(scheme)://\(bracketedHost)\(portPart)"
-    }
-
-    static func live() -> MembershipServiceConfiguration? {
-        let configuredValue = Bundle.main.object(forInfoDictionaryKey: "BojiAPIBaseURL") as? String
-        #if DEBUG
-        if let configuredValue,
-           !configuredValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return MembershipServiceConfiguration(validating: configuredValue, allowLoopbackHTTP: true)
-        }
-        return MembershipServiceConfiguration(
-            validating: "http://localhost:3000",
-            allowLoopbackHTTP: true
-        )
-        #else
-        guard let configuredValue,
-              !configuredValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        else {
-            return nil
-        }
-        return MembershipServiceConfiguration(validating: configuredValue, allowLoopbackHTTP: false)
-        #endif
-    }
-}
-
-struct MembershipHTTPResponse: Sendable {
-    let data: Data
-    let statusCode: Int
-    let headers: [String: String]
-
-    init(data: Data, statusCode: Int, headers: [String: String] = [:]) {
-        self.data = data
-        self.statusCode = statusCode
-        self.headers = headers
-    }
-
-    func header(named name: String) -> String? {
-        let expectedName = name.lowercased()
-        return headers.first { $0.key.lowercased() == expectedName }?.value
-    }
-}
-
-protocol MembershipTransport: Sendable {
-    func send(_ request: URLRequest) async throws -> MembershipHTTPResponse
-}
-
-private final class MembershipRedirectBlocker: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
-    func urlSession(
-        _ session: URLSession,
-        task: URLSessionTask,
-        willPerformHTTPRedirection response: HTTPURLResponse,
-        newRequest request: URLRequest,
-        completionHandler: @escaping @Sendable (URLRequest?) -> Void
-    ) {
-        completionHandler(nil)
-    }
-}
-
-struct URLSessionMembershipTransport: @unchecked Sendable, MembershipTransport {
-    private let redirectBlocker: MembershipRedirectBlocker
-    private let session: URLSession
-
-    init() {
-        let configuration = URLSessionConfiguration.ephemeral
-        configuration.httpCookieStorage = nil
-        configuration.httpShouldSetCookies = false
-        configuration.urlCache = nil
-        configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
-        configuration.httpAdditionalHeaders = ["Accept": "application/json"]
-
-        let redirectBlocker = MembershipRedirectBlocker()
-        self.redirectBlocker = redirectBlocker
-        self.session = URLSession(
-            configuration: configuration,
-            delegate: redirectBlocker,
-            delegateQueue: nil
-        )
-    }
-
-    func send(_ request: URLRequest) async throws -> MembershipHTTPResponse {
-        let (data, response) = try await session.data(for: request)
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw MembershipAPIError.invalidResponse
-        }
-
-        var headers: [String: String] = [:]
-        for (key, value) in httpResponse.allHeaderFields {
-            guard let name = key as? String, let headerValue = value as? String else { continue }
-            headers[name] = headerValue
-        }
-        return MembershipHTTPResponse(data: data, statusCode: httpResponse.statusCode, headers: headers)
-    }
-}
-
-enum MembershipAPIError: Error, Sendable, Equatable {
-    case notConfigured
-    case invalidResponse
-    case network
-    case server(statusCode: Int, code: String?)
-}
-
 struct MembershipAPI: Sendable {
-    private struct APIErrorResponse: Decodable {
-        let code: String?
-        let message: String?
-    }
-
     private struct MeResponse: Decodable {
         let user: MembershipAccount
     }
@@ -152,56 +10,41 @@ struct MembershipAPI: Sendable {
         let membership: ClubMember?
     }
 
-    private struct SignUpRequest: Encodable {
-        let name: String
-        let email: String
-        let password: String
-    }
-
-    private struct SignInRequest: Encodable {
-        let email: String
-        let password: String
-    }
-
-    private struct EmailRequest: Encodable {
-        let email: String
-    }
-
-    private struct AppleSignInRequest: Encodable {
-        let provider = "apple"
-        let idToken: AppleIdentity
-    }
-
     private struct EnrollmentRequest: Encodable {
         let displayName: String
         let termsVersion: String
     }
 
-    private let configuration: MembershipServiceConfiguration?
-    private let transport: any MembershipTransport
+    private let client: BojiHTTPClient
+    private let betterAuth: BetterAuthClient
 
     init(configuration: MembershipServiceConfiguration?, transport: any MembershipTransport) {
-        self.configuration = configuration
-        self.transport = transport
+        let client = BojiHTTPClient(configuration: configuration, transport: transport)
+        self.client = client
+        betterAuth = BetterAuthClient(httpClient: client)
     }
 
     func me(token: String) async throws -> MembershipAccount {
-        let response: MeResponse = try await request(path: "api/me", method: "GET", token: token)
+        let response: MeResponse = try await client.request(path: "api/me", method: "GET", token: token)
         return response.user
     }
 
     func membership(token: String) async throws -> ClubMember? {
-        let response: MembershipResponse = try await request(path: "api/membership", method: "GET", token: token)
+        let response: MembershipResponse = try await client.request(
+            path: "api/membership",
+            method: "GET",
+            token: token
+        )
         return response.membership
     }
 
     func enroll(displayName: String, token: String) async throws -> ClubMember {
         let body = EnrollmentRequest(displayName: displayName, termsVersion: "community-v1")
-        let response: MembershipResponse = try await request(
+        let response: MembershipResponse = try await client.request(
             path: "api/membership/enroll",
             method: "POST",
             token: token,
-            body: try encodedBody(body)
+            body: try client.encodedBody(body)
         )
         guard let membership = response.membership else {
             throw MembershipAPIError.invalidResponse
@@ -210,127 +53,73 @@ struct MembershipAPI: Sendable {
     }
 
     func signIn(email: String, password: String) async throws -> String {
-        let body = SignInRequest(email: email, password: password)
-        let response = try await perform(
-            path: "api/auth/sign-in/email",
-            method: "POST",
-            body: try encodedBody(body)
-        )
-        guard let token = response.header(named: "set-auth-token"), !token.isEmpty else {
-            throw MembershipAPIError.invalidResponse
-        }
-        return token
+        try await betterAuth.signIn(email: email, password: password)
     }
 
     func signInWithApple(_ identity: AppleIdentity) async throws -> String {
-        let response = try await perform(path: "api/auth/sign-in/social", method: "POST", body: try encodedBody(AppleSignInRequest(idToken: identity)))
-        guard let token = response.header(named: "set-auth-token"), !token.isEmpty else {
-            throw MembershipAPIError.invalidResponse
-        }
-        return token
+        try await betterAuth.signInWithApple(identity)
     }
 
     func capabilities() async throws -> MembershipCapabilities {
-        try await request(path: "api/capabilities", method: "GET")
+        try await client.request(path: "api/capabilities", method: "GET")
     }
 
     func walletPass(token: String) async throws -> Data {
-        let response = try await perform(path: "api/membership/wallet/pass", method: "GET", token: token, accept: "application/vnd.apple.pkpass")
-        let contentType = response.header(named: "Content-Type")?.split(separator: ";").first?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        guard response.statusCode == 200, contentType == "application/vnd.apple.pkpass",
-              !response.data.isEmpty, response.data.count <= 2 * 1024 * 1024 else {
+        let response = try await client.perform(
+            path: "api/membership/wallet/pass",
+            method: "GET",
+            token: token,
+            accept: "application/vnd.apple.pkpass"
+        )
+        let contentType = response.header(named: "Content-Type")?
+            .split(separator: ";")
+            .first?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+        guard response.statusCode == 200,
+              contentType == "application/vnd.apple.pkpass",
+              !response.data.isEmpty,
+              response.data.count <= 2 * 1024 * 1024
+        else {
             throw MembershipAPIError.invalidResponse
         }
         return response.data
     }
 
     func register(name: String, email: String, password: String) async throws {
-        let body = SignUpRequest(name: name, email: email, password: password)
-        _ = try await perform(
-            path: "api/auth/sign-up/email",
-            method: "POST",
-            body: try encodedBody(body)
-        )
+        try await betterAuth.register(name: name, email: email, password: password)
     }
 
     func sendVerification(email: String) async throws {
-        _ = try await perform(
-            path: "api/auth/send-verification-email",
-            method: "POST",
-            body: try encodedBody(EmailRequest(email: email))
-        )
+        try await betterAuth.sendVerification(email: email)
     }
 
     func requestPasswordReset(email: String) async throws {
-        _ = try await perform(
-            path: "api/auth/request-password-reset",
-            method: "POST",
-            body: try encodedBody(EmailRequest(email: email))
-        )
+        try await betterAuth.requestPasswordReset(email: email)
     }
 
     func signOut(token: String) async throws {
-        _ = try await perform(path: "api/auth/sign-out", method: "POST", token: token, body: Data("{}".utf8))
+        try await betterAuth.signOut(token: token)
     }
 
-    private func request<Response: Decodable>(
-        path: String,
-        method: String,
-        token: String? = nil,
-        body: Data? = nil
-    ) async throws -> Response {
-        let response = try await perform(path: path, method: method, token: token, body: body)
-        do {
-            return try MembershipDateCoding.decoder().decode(Response.self, from: response.data)
-        } catch {
-            throw MembershipAPIError.invalidResponse
-        }
+    func getSession(token: String) async throws -> BetterAuthSession? {
+        try await betterAuth.getSession(token: token)
     }
 
-    private func perform(
-        path: String,
-        method: String,
-        token: String? = nil,
-        body: Data? = nil,
-        accept: String = "application/json"
-    ) async throws -> MembershipHTTPResponse {
-        guard let configuration else { throw MembershipAPIError.notConfigured }
-        let url = configuration.baseURL.appendingPathComponent(path)
-        var request = URLRequest(url: url)
-        request.httpMethod = method
-        request.setValue(accept, forHTTPHeaderField: "Accept")
-        request.timeoutInterval = 20
-
-        if let token {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-        if let body {
-            request.httpBody = body
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        }
-
-        let response: MembershipHTTPResponse
-        do {
-            response = try await transport.send(request)
-        } catch {
-            throw MembershipAPIError.network
-        }
-
-        guard (200...299).contains(response.statusCode) else {
-            let errorCode = try? MembershipDateCoding.decoder()
-                .decode(APIErrorResponse.self, from: response.data)
-                .code
-            throw MembershipAPIError.server(statusCode: response.statusCode, code: errorCode)
-        }
-        return response
+    func changePassword(
+        currentPassword: String,
+        newPassword: String,
+        token: String
+    ) async throws -> String? {
+        try await betterAuth.changePassword(
+            currentPassword: currentPassword,
+            newPassword: newPassword,
+            token: token
+        )
     }
 
-    private func encodedBody(_ value: some Encodable) throws -> Data {
-        do {
-            return try JSONEncoder().encode(value)
-        } catch {
-            throw MembershipAPIError.invalidResponse
-        }
+    func revokeOtherSessions(token: String) async throws {
+        try await betterAuth.revokeOtherSessions(token: token)
     }
 }
 
@@ -605,6 +394,33 @@ actor UITestingMembershipTransport: MembershipTransport {
              ("POST", "/api/auth/request-password-reset"),
              ("POST", "/api/auth/sign-out"):
             return MembershipHTTPResponse(data: Data("{}".utf8), statusCode: 200)
+        case ("GET", "/api/auth/get-session"):
+            guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)" else {
+                return errorResponse(statusCode: 401, code: "UNAUTHORIZED")
+            }
+            return try encoded(UITestingSessionResponse(
+                user: account,
+                session: UITestingSessionDetails(
+                    id: "ui-test-session",
+                    userId: account.id,
+                    createdAt: Date(),
+                    expiresAt: Date().addingTimeInterval(60 * 60)
+                )
+            ))
+        case ("POST", "/api/auth/change-password"):
+            guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)" else {
+                return errorResponse(statusCode: 401, code: "UNAUTHORIZED")
+            }
+            return MembershipHTTPResponse(
+                data: Data("{}".utf8),
+                statusCode: 200,
+                headers: ["set-auth-token": token]
+            )
+        case ("POST", "/api/auth/revoke-other-sessions"):
+            guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)" else {
+                return errorResponse(statusCode: 401, code: "UNAUTHORIZED")
+            }
+            return try encoded(UITestingRevokeResponse(status: true))
         case ("GET", "/api/me"):
             guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)" else {
                 return errorResponse(statusCode: 401, code: "UNAUTHORIZED")
@@ -624,12 +440,16 @@ actor UITestingMembershipTransport: MembershipTransport {
                 card = ClubMember(
                     id: "ui-test-membership",
                     userId: account.id,
-                    memberNumber: "TEST-000001",
+                    memberNumber: "PREVIEW-MEMBER",
                     displayName: displayName,
                     joinedAt: Date(),
                     tier: "community",
                     status: "active",
-                    entitlements: ["local_tracking", "training_library", "progress_history"],
+                    grantedEntitlements: [
+                        MembershipEntitlement(id: "47ad41b2-f031-41ee-8b01-4ff2e5e6e221", code: "local_tracking", name: "日常记录", description: "训练、饮水与睡眠，按自己的节奏。", grantedAt: Date(), expiresAt: nil),
+                        MembershipEntitlement(id: "47ad41b2-f031-41ee-8b01-4ff2e5e6e222", code: "training_library", name: "基础训练库", description: "居家与健身房课程，逐组完成。", grantedAt: Date(), expiresAt: nil),
+                        MembershipEntitlement(id: "47ad41b2-f031-41ee-8b01-4ff2e5e6e223", code: "progress_history", name: "成长足迹", description: "查看训练历史与身体数据趋势。", grantedAt: Date(), expiresAt: nil)
+                    ],
                     expiresAt: nil
                 )
             }
@@ -641,6 +461,22 @@ actor UITestingMembershipTransport: MembershipTransport {
 
     private struct MembershipPayload: Encodable {
         let membership: ClubMember?
+    }
+
+    private struct UITestingSessionResponse: Encodable {
+        let user: MembershipAccount
+        let session: UITestingSessionDetails
+    }
+
+    private struct UITestingSessionDetails: Encodable {
+        let id: String
+        let userId: String
+        let createdAt: Date
+        let expiresAt: Date
+    }
+
+    private struct UITestingRevokeResponse: Encodable {
+        let status: Bool
     }
 
     private func encoded<Response: Encodable>(_ response: Response) throws -> MembershipHTTPResponse {

@@ -150,7 +150,7 @@ struct MembershipCenterView: View {
             Surface {
                 VStack(alignment: .leading, spacing: 16) {
                     Label("免费社区会员", systemImage: "person.crop.rectangle.badge.plus").font(.title3.bold())
-                    Text("固定卡号 · 入会日期 · 专属分享卡").font(.subheadline).foregroundStyle(.secondary)
+                    Text("会员身份 · 入会日期 · 专属分享卡").font(.subheadline).foregroundStyle(.secondary)
                     Text("基础记录和训练始终可以免登录使用。领卡仅需已验证的邮箱账号。")
                         .font(.footnote).foregroundStyle(.secondary)
                     if !membership.isConfigured {
@@ -186,7 +186,7 @@ struct MembershipCenterView: View {
                 if let date = membership.lastSyncedAt {
                     Text("上次同步 \(date.formatted(date: .abbreviated, time: .shortened))").font(.caption).foregroundStyle(.secondary)
                 }
-                if !card.isActive { Text("已保留你的卡号。本地记录与基础训练仍可使用。").font(.footnote).foregroundStyle(.secondary) }
+                if !card.isActive { Text("本地记录与基础训练仍可使用。").font(.footnote).foregroundStyle(.secondary) }
             }
             Spacer(minLength: 0)
             Button("刷新", systemImage: "arrow.clockwise") { Task { await membership.refresh() } }
@@ -212,13 +212,20 @@ struct MembershipCenterView: View {
     }
 
     private func entitlement(_ code: String, title: String, detail: String, symbol: String, card: ClubMember) -> some View {
-        HStack(alignment: .top, spacing: 12) {
+        let grant = card.activeEntitlement(for: code)
+        return HStack(alignment: .top, spacing: 12) {
             SymbolTile(symbol: symbol, color: BojiTheme.green)
             VStack(alignment: .leading, spacing: 4) {
-                Text(title).font(.headline)
-                Text(detail).font(.caption).foregroundStyle(.secondary)
-                Text(card.isActive && card.entitlements.contains(code) ? "已包含" : "会员权益未授予 · 本地功能不受影响")
+                Text(grant?.name.isEmpty == false ? grant!.name : title).font(.headline)
+                Text(grant?.description.isEmpty == false ? grant!.description : detail).font(.caption).foregroundStyle(.secondary)
+                Text(grant != nil ? "已包含" : card.hasLegacyEntitlements ? "权益信息待刷新 · 本地功能不受影响" : "会员权益未授予 · 本地功能不受影响")
                     .font(.caption2).foregroundStyle(.secondary)
+                if let date = grant?.grantedAt {
+                    Text("授权于 \(date.formatted(.dateTime.year().month().day()))").font(.caption2).foregroundStyle(.secondary)
+                }
+                if let date = grant?.expiresAt {
+                    Text("有效至 \(date.formatted(date: .abbreviated, time: .shortened))").font(.caption2).foregroundStyle(.secondary)
+                }
             }
         }
     }
@@ -288,7 +295,7 @@ struct MembershipEnrollmentView: View {
             Form {
                 Section {
                     Text("免费加入，按自己的节奏来。").font(.headline)
-                    Text("服务器会为你生成固定卡号和入会日期。同一个账号重复领取，不会创建新卡。")
+                    Text("填写昵称并同意守则，即可领取你的免费俱乐部身份卡。")
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
                 Section("卡面昵称") {
