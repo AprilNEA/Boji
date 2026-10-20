@@ -1,0 +1,4 @@
+node_modules/
+.renders/
+preview/data.js
+preview/lottie.min.js

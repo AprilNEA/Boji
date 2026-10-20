@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boji 动作动画预览</title>
+<style>
+  :root {
+    --bg: #F7F5F0; --card: #FFFFFF; --stage: #F7F5F0; --text: #1F1B16; --muted: #6F6A62; --line: #E6E0D6;
+    --accent: #C7401F; --green: #26664F; --chip: rgba(199, 64, 31, 0.10);
+  }
+  [data-theme="dark"] {
+    --bg: #131312; --card: #1C1C1E; --stage: #1C1C1E; --text: #F2EFEA; --muted: #A29C93; --line: #2C2C2E;
+    --accent: #FF7A4D; --green: #63E6BE; --chip: rgba(255, 122, 77, 0.14);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 18px 28px; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  h1 { margin: 0; font-size: 20px; letter-spacing: 0.2px; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; background: var(--card); }
+  .seg button { border: 0; background: transparent; color: var(--text); padding: 7px 14px; font: inherit; font-size: 13px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  main { padding: 8px 28px 48px; max-width: 1360px; margin: 0 auto; }
+  section h2 { font-size: 16px; margin: 28px 0 4px; }
+  section p { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .card { background: var(--card); border-radius: 26px; padding: 14px 14px 16px; border: 1px solid var(--line); }
+  .stage { aspect-ratio: 1; border-radius: 18px; background: var(--stage); overflow: hidden; cursor: pointer; }
+  .meta { padding: 10px 6px 0; }
+  .name { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .name strong { font-size: 16px; }
+  .name code { color: var(--muted); font-size: 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .chip { font-size: 12px; padding: 3px 9px; border-radius: 999px; background: var(--chip); color: var(--accent); }
+  .chip.time { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+  .bar { height: 3px; background: var(--line); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--green); }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Boji 动作动画</h1>
+    <div class="sub">11 个动作 · Lottie · 512×512 · 60 fps · 点击动画可暂停</div>
+  </div>
+  <div class="controls">
+    <div class="seg" id="theme">
+      <button data-v="light" aria-pressed="true">浅色</button>
+      <button data-v="dark" aria-pressed="false">深色</button>
+    </div>
+    <div class="seg" id="speed">
+      <button data-v="0.5" aria-pressed="false">0.5×</button>
+      <button data-v="1" aria-pressed="true">1×</button>
+    </div>
+    <div class="seg" id="play">
+      <button data-v="play" aria-pressed="true">播放</button>
+      <button data-v="pause" aria-pressed="false">暂停</button>
+    </div>
+  </div>
+</header>
+<main id="main"></main>
+<script src="lottie.min.js"></script>
+<script src="data.js"></script>
+<script>
+  const COURSES = [
+    { id: 'home-beginner', title: '居家基础训练', note: '无需器械的全身入门' },
+    { id: 'gym-beginner', title: '器械基础训练', note: '轻重量熟悉常用器械' },
+    { id: 'mobility', title: '舒缓拉伸', note: '训练前后都可进行' },
+  ];
+  if (!window.BOJI_ANIMATIONS || !window.lottie) {
+    document.body.textContent = '缺少预览数据。请先在 animations/ 目录运行 pnpm install 和 pnpm preview。';
+    throw new Error('Missing preview/data.js or preview/lottie.min.js');
+  }
+  const { index, data } = window.BOJI_ANIMATIONS;
+  const state = { theme: 'light', speed: 1, playing: true };
+  const players = [];
+  const main = document.getElementById('main');
+
+  for (const course of COURSES) {
+    const items = index.filter((x) => x.course === course.id);
+    const sec = document.createElement('section');
+    sec.innerHTML = `<h2>${course.title}</h2><p>${course.note} · ${items.length} 个动作</p><div class="grid"></div>`;
+    const grid = sec.querySelector('.grid');
+    for (const item of items) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="stage"></div>
+        <div class="meta">
+          <div class="name"><strong>${item.name}</strong><code>${item.id}</code></div>
+          <div class="chips">${item.muscles.map((m) => `<span class="chip">${m.name}</span>`).join('')}<span class="chip time">${item.seconds.toFixed(1)} 秒一个循环</span></div>
+          <div class="bar"><i></i></div>
+        </div>`;
+      grid.appendChild(card);
+      const p = { item, stage: card.querySelector('.stage'), bar: card.querySelector('.bar i'), anim: null, paused: false };
+      p.stage.addEventListener('click', () => { p.paused = !p.paused; p.paused ? p.anim.pause() : p.anim.play(); });
+      players.push(p);
+    }
+    main.appendChild(sec);
+  }
+
+  function load() {
+    document.documentElement.dataset.theme = state.theme;
+    for (const p of players) {
+      const frame = p.anim ? p.anim.currentFrame : 0;
+      p.anim?.destroy();
+      p.anim = lottie.loadAnimation({
+        container: p.stage, renderer: 'svg', loop: true, autoplay: false,
+        animationData: JSON.parse(JSON.stringify(data[state.theme][p.item.id])),
+        rendererSettings: { preserveAspectRatio: 'xMidYMid meet' },
+      });
+      p.anim.setSpeed(state.speed);
+      p.anim.addEventListener('enterFrame', (e) => { p.bar.style.width = `${(100 * e.currentTime) / p.anim.totalFrames}%`; });
+      p.anim.goToAndStop(frame, true);
+      if (state.playing && !p.paused) p.anim.play();
+    }
+  }
+
+  function bindSeg(id, apply) {
+    const seg = document.getElementById(id);
+    seg.addEventListener('click', (e) => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      seg.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      apply(b.dataset.v);
+    });
+  }
+  bindSeg('theme', (v) => { state.theme = v; load(); });
+  bindSeg('speed', (v) => { state.speed = Number(v); players.forEach((p) => p.anim.setSpeed(state.speed)); });
+  bindSeg('play', (v) => {
+    state.playing = v === 'play';
+    players.forEach((p) => { p.paused = false; state.playing ? p.anim.play() : p.anim.pause(); });
+  });
+  if (matchMedia('(prefers-color-scheme: dark)').matches) document.querySelector('#theme [data-v="dark"]').click();
+  else load();
+</script>
+</body>
+</html>

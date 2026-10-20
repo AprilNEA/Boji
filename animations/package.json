@@ -1,0 +1,26 @@
+{
+  "name": "boji-exercise-animations",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Generates the Boji exercise Lottie animations from a 2D rig.",
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=12"
+  },
+  "scripts": {
+    "build": "tsx src/build.ts",
+    "check": "tsx scripts/check.ts",
+    "typecheck": "tsc --noEmit",
+    "preview": "tsx scripts/preview.ts",
+    "sheets": "tsx scripts/sheet.ts",
+    "render": "tsx scripts/render.ts .renders 8 '#F7F5F0'"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "lottie-web": "^5.13.0",
+    "playwright-core": "^1.64.1",
+    "tsx": "^4.20.0",
+    "typescript": "^6.0.3"
+  }
+}

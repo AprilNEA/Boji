@@ -8,9 +8,10 @@ Boji 是本地优先的健身记录 App。本仓库包含 iOS 和 Android 两个
 | --- | --- |
 | `ios/` | iOS 客户端：SwiftUI 源码、XcodeGen 工程和 iOS 专属文档 |
 | `android/` | Android 客户端：Kotlin 和 Jetpack Compose 源码、Gradle 工程 |
+| `animations/` | 两端共用的动作 Lottie 动画：TypeScript 生成器和生成的 JSON，见 [动作动画说明](animations/README.md) |
 | `docs/` | 两端共享的文档 |
 
-平台专属的命令在对应目录中运行。用 Xcode 打开 `ios/Boji.xcodeproj`，用 Android Studio 打开 `android/` 目录。
+平台专属的命令在对应目录中运行。动作动画的工具链由根目录的 `devenv.nix` 提供。用 Xcode 打开 `ios/Boji.xcodeproj`，用 Android Studio 打开 `android/` 目录。
 
 ## 平台状态
 

@@ -1,0 +1,260 @@
+[
+  {
+    "id": "bodyweight-squat",
+    "name": "徒手深蹲",
+    "course": "home-beginner",
+    "seconds": 3.5,
+    "frames": 210,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      }
+    ],
+    "files": {
+      "light": "light/bodyweight-squat.json",
+      "dark": "dark/bodyweight-squat.json"
+    }
+  },
+  {
+    "id": "wall-push-up",
+    "name": "墙壁俯卧撑",
+    "course": "home-beginner",
+    "seconds": 3.3,
+    "frames": 198,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      }
+    ],
+    "files": {
+      "light": "light/wall-push-up.json",
+      "dark": "dark/wall-push-up.json"
+    }
+  },
+  {
+    "id": "glute-bridge",
+    "name": "臀桥",
+    "course": "home-beginner",
+    "seconds": 4.2,
+    "frames": 252,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      }
+    ],
+    "files": {
+      "light": "light/glute-bridge.json",
+      "dark": "dark/glute-bridge.json"
+    }
+  },
+  {
+    "id": "bird-dog",
+    "name": "鸟狗式",
+    "course": "home-beginner",
+    "seconds": 7.4,
+    "frames": 444,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "lowerBack",
+        "name": "竖脊肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/bird-dog.json",
+      "dark": "dark/bird-dog.json"
+    }
+  },
+  {
+    "id": "chest-press",
+    "name": "坐姿推胸",
+    "course": "gym-beginner",
+    "seconds": 3.4,
+    "frames": 204,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/chest-press.json",
+      "dark": "dark/chest-press.json"
+    }
+  },
+  {
+    "id": "seated-row",
+    "name": "坐姿划船",
+    "course": "gym-beginner",
+    "seconds": 3.5,
+    "frames": 210,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "lats",
+        "name": "背阔肌"
+      },
+      {
+        "key": "upperBack",
+        "name": "菱形肌和斜方肌中部"
+      },
+      {
+        "key": "biceps",
+        "name": "肱二头肌"
+      }
+    ],
+    "files": {
+      "light": "light/seated-row.json",
+      "dark": "dark/seated-row.json"
+    }
+  },
+  {
+    "id": "leg-press",
+    "name": "坐姿腿举",
+    "course": "gym-beginner",
+    "seconds": 3.6,
+    "frames": 216,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      }
+    ],
+    "files": {
+      "light": "light/leg-press.json",
+      "dark": "dark/leg-press.json"
+    }
+  },
+  {
+    "id": "lat-pulldown",
+    "name": "高位下拉",
+    "course": "gym-beginner",
+    "seconds": 3.5,
+    "frames": 210,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "lats",
+        "name": "背阔肌"
+      },
+      {
+        "key": "biceps",
+        "name": "肱二头肌"
+      },
+      {
+        "key": "upperBack",
+        "name": "菱形肌和斜方肌中部"
+      }
+    ],
+    "files": {
+      "light": "light/lat-pulldown.json",
+      "dark": "dark/lat-pulldown.json"
+    }
+  },
+  {
+    "id": "cat-cow",
+    "name": "猫牛式",
+    "course": "mobility",
+    "seconds": 5,
+    "frames": 300,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "lowerBack",
+        "name": "竖脊肌"
+      }
+    ],
+    "files": {
+      "light": "light/cat-cow.json",
+      "dark": "dark/cat-cow.json"
+    }
+  },
+  {
+    "id": "hip-flexor-stretch",
+    "name": "髋屈肌拉伸",
+    "course": "mobility",
+    "seconds": 5.8,
+    "frames": 348,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "hipFlexor",
+        "name": "髂腰肌"
+      },
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      }
+    ],
+    "files": {
+      "light": "light/hip-flexor-stretch.json",
+      "dark": "dark/hip-flexor-stretch.json"
+    }
+  },
+  {
+    "id": "chest-stretch",
+    "name": "开胸拉伸",
+    "course": "mobility",
+    "seconds": 5.4,
+    "frames": 324,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/chest-stretch.json",
+      "dark": "dark/chest-stretch.json"
+    }
+  }
+]

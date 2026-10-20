@@ -21,3 +21,6 @@ xcuserdata/
 local.properties
 *.jks
 *.keystore
+.devenv/
+.devenv.flake.nix
+.direnv/
