@@ -21,7 +21,10 @@ async fn test_auth() -> Arc<Auth> {
         secret: "auth-contract-secret-with-at-least-32-characters".to_string(),
         base_url: "http://localhost:3000".to_string(),
         trusted_origins: Vec::new(),
-        mail_output_directory: mail_directory.keep(),
+        mail: boji_bizserver::mail::MailTransport::Files {
+            directory: mail_directory.keep(),
+        },
+        client_ip: Default::default(),
         apple: None,
         account_linking: Default::default(),
     };

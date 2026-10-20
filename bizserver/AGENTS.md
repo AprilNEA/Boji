@@ -8,8 +8,11 @@ Do not reimplement Connect framing or password and session algorithms. Use `app:
 
 | Path | Purpose |
 | --- | --- |
-| `src/auth*`, `src/mail.rs` | Native authentication, application-owned entities, and delivery adapters |
+| `src/config.rs`, `src/config/` | Service configuration through `figment`: the only reader of service environment variables |
+| `src/auth*`, `src/mail*` | Native authentication, application-owned entities, and mail delivery: SMTP relay or local files |
 | `src/apple.rs` | Sign in with Apple provider assembly and the stored-email fallback |
+| `src/wallet.rs`, `src/wallet/` | Apple Wallet signing material checks, pass packaging, and PKCS #7 signatures |
+| `assets/wallet/` | Pass icons and the Apple Root CA that `src/wallet.rs` embeds at build time |
 | `src/domain/` | Transport-independent membership, administration, and activity rules |
 | `src/admin_auth.rs`, `src/admin_permissions.rs` | Native permission checks and application-owned business role grants |
 | `src/entities/` | SeaORM business entities |
@@ -26,9 +29,31 @@ Do not reimplement Connect framing or password and session algorithms. Use `app:
 
 The previous service at `/Users/Xuan/Developer/AprilNEA/bojifit/bizserver` never went live. It is a read-only feature reference, not a compatibility target. Do not keep its REST paths, error format, password hashes, sessions, or data for compatibility, and do not add data conversion. Never copy its environment, database files, credentials, `.data`, `.work`, or dependencies here. Do not migrate a real or shared database automatically.
 
-Production startup currently fails closed. Do not remove that guard while mail delivery, throttling, proxy trust, and launch verification remain incomplete. Never present an unimplemented capability as available.
+`APP_ENV=production` requires the production checks in `src/config.rs`: an HTTPS `BETTER_AUTH_URL`, HTTPS origins, `SMTP_HOST` with `MAIL_FROM`, and SMTP over TLS or STARTTLS. Add a check there when a new setting is unsafe in production. Never present an unimplemented capability as available.
 
-`boji.admin.v1.EntitlementService` and `boji.admin.v1.MembershipService` are registered. Their handlers require a signed Bearer, verified email, fresh authoritative session, and native Admin permissions before target lookup. Deny banned accounts and impersonation. Keep business writes and audit inserts in one transaction. `WalletService` is still contract-only; do not register it until its handlers, storage, and tests exist. Keep `ServerConfig.wallet_pass_enabled` false until Wallet signing is implemented and verified. When an implementation changes a contract rule, update the proto comments and `docs/connectrpc-api.md` in the same change.
+`boji.admin.v1.EntitlementService` and `boji.admin.v1.MembershipService` are registered. Their handlers require a signed Bearer, verified email, fresh authoritative session, and native Admin permissions before target lookup. Deny banned accounts and impersonation. Keep business writes and audit inserts in one transaction. When an implementation changes a contract rule, update the proto comments and `docs/connectrpc-api.md` in the same change.
+
+## Configuration
+
+Read every service setting in `src/config.rs` through `figment`. `src/config/source.rs` holds the only table of environment variable names. Other modules receive typed values from `Config` and never call `std::env::var`. Tests may read `TEST_DATABASE_URL`, and `build.rs` may read Cargo variables, because they are not service settings.
+
+To add a setting, add the variable to `VARIABLES` in `src/config/source.rs`, add a field to the raw settings, validate it in `src/config.rs`, and add a unit test for the invalid values. Update `.env.example` and the configuration table in `README.md` in the same change. An empty value means unset. Error messages name the variable and never contain its value.
+
+## Mail, account lifecycle, and gateway
+
+`src/mail.rs` selects the transport. Without `SMTP_HOST`, development and tests write private local files. Never log SMTP credentials or message bodies. There is no outbox: a failed send is not retried.
+
+`auth::build` installs the Better Auth user management plugin. Account deletion needs a code from an email to the account address. Email change needs a confirmation from the old address, and then verification of the new address. Every business table that references `user` must use `ON DELETE CASCADE`, except audit actor and target columns, which use `SET NULL`. A new table that references `user` needs the same choice and a case in `tests/account_contract.rs`.
+
+Keep the `auth::UserDeletion` before-delete hook. It deletes the `user` row in one statement, so the cascades are atomic. Without it, Better Auth deletes sessions and accounts in separate statements, and then fails on the `api_keys` table that this service does not create. That failure leaves a user who cannot sign in. When you upgrade better-auth-rs, run `tests/account_contract.rs` before you remove or change the hook.
+
+The service has no request rate limiter and does not trust forwarding headers by default. The CDN and the gateway in front of it limit requests and terminate connections. `CLIENT_IP_HEADER` must name a header that the gateway overwrites. Do not add an in-process limiter without a documented need.
+
+## Apple Wallet
+
+`WalletService` is always registered. `PassSigner::new` rejects a key that does not match the signer certificate, a signer subject whose UID or OU differs from the configuration, and a chain that does not end at the embedded Apple Root CA. A failed check stops startup. Expired or not-yet-valid certificates do not stop startup: `ServerConfig.wallet_pass_enabled` is false and the service returns `WALLET_NOT_CONFIGURED`. Keep both checks on the same `PassSigner::is_current`.
+
+Never commit a real Pass Type ID certificate, private key, or `.pkpass` file. `tests/wallet_contract.rs` creates a private test chain at run time. When the app icon changes, regenerate the pass icons with the commands in `assets/wallet/README.md`.
 
 ## API design
 
@@ -44,7 +69,7 @@ The protobuf API follows Google AIPs. No released client uses it yet, so a contr
 
 `buf.yaml` defines the buf workspace, and `proto/` is its only module. `buf.lock` pins googleapis from the BSR. To update googleapis, run `buf dep update` here, then set the googleapis commit in `../ios/BojiAPI/buf.gen.yaml` to the new commit. `build.rs` runs `buf build` on the workspace and maps `google.rpc` to `aip_193::proto` with an `extern_path`. Generate only Boji files and `google/type/date.proto`; do not generate `google.rpc` here.
 
-Clients generate their code from this workspace. After a change to `proto/boji/v1/`, run `buf generate` in `../ios/BojiAPI/` and include the regenerated Swift files in the same change. This is the one exception to the rule against changes in client directories: a contract change must not leave the generated client code stale.
+Clients generate their code from this workspace. After a change to `proto/boji/v1/`, run `buf generate` in `../ios/BojiAPI/` and in `../android/rpc/`, and include the regenerated Swift and Kotlin files in the same change. This is the one exception to the rule against changes in client directories: a contract change must not leave the generated client code stale.
 
 Sign in with Apple is enabled only when every `APPLE_*` variable is set. `rpc::Capabilities::apple_sign_in` must match the providers installed by `auth::build`. better-auth-rs signs and renews the Apple client secret. Do not add a static client secret or a renewal job here.
 

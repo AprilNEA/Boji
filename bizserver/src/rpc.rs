@@ -12,6 +12,7 @@ mod filter;
 mod membership;
 mod names;
 mod pagination;
+mod wallet;
 
 use crate::{
     auth::{self, Auth, AuthFailure, Principal},
@@ -19,6 +20,7 @@ use crate::{
         boji::{admin::v1 as a, v1 as p},
         google,
     },
+    wallet::PassSigner,
 };
 use connectrpc::{
     ConnectError, ErrorCode, RequestContext, Response, ServiceRequest, ServiceResult,
@@ -31,12 +33,15 @@ use std::sync::{Arc, Once};
 pub struct BusinessService {
     db: DatabaseConnection,
     auth: Arc<Auth>,
+    wallet: Option<Arc<PassSigner>>,
 }
 
 impl BusinessService {
     /// Construct a transport over the existing SeaORM pool and authentication service.
-    pub fn new(db: DatabaseConnection, auth: Arc<Auth>) -> Self {
-        Self { db, auth }
+    ///
+    /// `wallet` signs Apple Wallet passes. `None` disables `WalletService`.
+    pub fn new(db: DatabaseConnection, auth: Arc<Auth>, wallet: Option<Arc<PassSigner>>) -> Self {
+        Self { db, auth, wallet }
     }
 
     async fn principal(&self, context: &RequestContext) -> Result<Principal, ConnectError> {
@@ -64,13 +69,15 @@ pub(crate) fn session_required() -> ConnectError {
 }
 
 /// Optional integrations that this process configured at startup.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Debug, Default)]
 pub struct Capabilities {
     /// Whether `POST /api/auth/sign-in/social` accepts the `apple` provider.
     pub apple_sign_in: bool,
+    /// Apple Wallet pass signing. `None` when the `WALLET_*` variables are unset.
+    pub wallet: Option<Arc<PassSigner>>,
 }
 
-/// The `ServerConfig` singleton. Unmigrated integrations remain disabled.
+/// The `ServerConfig` singleton.
 pub struct SystemService {
     capabilities: Capabilities,
 }
@@ -93,7 +100,11 @@ impl p::SystemService for SystemService {
         Response::ok(p::ServerConfig {
             name: SERVER_CONFIG.to_owned(),
             apple_login_enabled: self.capabilities.apple_sign_in,
-            wallet_pass_enabled: false,
+            wallet_pass_enabled: self
+                .capabilities
+                .wallet
+                .as_ref()
+                .is_some_and(|signer| signer.is_current(chrono::Utc::now())),
             activity_sync_enabled: true,
             ..Default::default()
         })
@@ -120,18 +131,19 @@ fn install_type_registry() {
 
 /// Register generated service traits with the official ConnectRPC runtime.
 ///
-/// `WalletService` is a contract only. It stays unregistered, so its methods
-/// return `UNIMPLEMENTED`.
+/// `WalletService` is always registered. Without valid signing material it
+/// returns `WALLET_NOT_CONFIGURED`.
 pub fn router(
     db: DatabaseConnection,
     auth: Arc<Auth>,
     capabilities: Capabilities,
 ) -> connectrpc::Router {
     install_type_registry();
-    let service = Arc::new(BusinessService::new(db, auth));
+    let service = Arc::new(BusinessService::new(db, auth, capabilities.wallet.clone()));
     let router = connectrpc::Router::new().add_service(Arc::new(SystemService { capabilities }));
     let router = p::MembershipServiceExt::register(service.clone(), router);
     let router = p::ActivityServiceExt::register(service.clone(), router);
+    let router = p::WalletServiceExt::register(service.clone(), router);
     let router = a::EntitlementServiceExt::register(service.clone(), router);
     a::MembershipServiceExt::register(service, router)
 }

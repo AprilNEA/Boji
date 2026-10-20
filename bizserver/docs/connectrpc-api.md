@@ -15,11 +15,10 @@
 | `boji/v1/membership.proto` | 资源 `Membership`，两个包共用 | 已使用 |
 | `boji/v1/membership_service.proto` | 会员本人的 `MembershipService` | 已注册 |
 | `boji/v1/activity_service.proto` | `ActivityService`、资源 `Activity` 与 `SyncState` | 已注册 |
-| `boji/v1/wallet_service.proto` | `WalletService` 与资源 `MembershipPass` | 只有契约，未注册 |
+| `boji/v1/wallet_service.proto` | `WalletService` 与资源 `MembershipPass` | 已注册 |
 | `boji/admin/v1/entitlement_service.proto` | 运营的 `EntitlementService` 与资源 `Entitlement` | 已注册 |
 | `boji/admin/v1/membership_service.proto` | 运营的 `MembershipService` 与资源 `EntitlementGrant` | 已注册 |
 
-调用未注册的服务会返回 `unimplemented`（HTTP 404）。
 
 新服务不提供旧 REST 业务路径。iOS 和 Android 必须改用 ConnectRPC 生成的客户端。
 
@@ -45,7 +44,7 @@ Authorization: Bearer <signed-session-token>
 
 业务接口只接受已验证邮箱的有效会话。客户端必须使用登录响应的 `set-auth-token`。服务不接受原始会话 token 或仅 Cookie 的业务请求。
 
-`SystemService/GetServerConfig` 不要求登录，请求为 `{"name":"serverConfig"}`。服务设置全部 `APPLE_*` 变量后，`appleLoginEnabled` 为 `true`。`walletPassEnabled` 当前为 `false`。`activitySyncEnabled` 为 `true`。
+`SystemService/GetServerConfig` 不要求登录，请求为 `{"name":"serverConfig"}`。服务设置全部 `APPLE_*` 变量后，`appleLoginEnabled` 为 `true`。服务配置了 Wallet 签名材料，并且签名证书和 WWDR 证书都在有效期内时，`walletPassEnabled` 为 `true`。`activitySyncEnabled` 为 `true`。
 
 ## 资源名
 
@@ -80,7 +79,7 @@ Authorization: Bearer <signed-session-token>
 | `boji.v1.ActivityService` | `BatchWriteActivities` | 批量创建、替换或删除活动记录 |
 | `boji.v1.ActivityService` | `SyncActivities` | 增量拉取变更，包括删除 |
 | `boji.v1.ActivityService` | `SummarizeActivities` | 读取日期范围内的每日汇总 |
-| `boji.v1.WalletService` | `GetMembershipPass` | 下载 Apple Wallet 卡片（未注册） |
+| `boji.v1.WalletService` | `GetMembershipPass` | 下载 Apple Wallet 会员卡 |
 
 运营方法见[运营接口](#运营接口)。
 
@@ -224,7 +223,7 @@ Connect JSON 中的详情是 base64 编码的 protobuf。会员卡不存在时�
 
 认证接口 `/api/auth/*` 使用 `better-auth-rs` 的原生错误，不使用上述格式。
 
-请求体和解码后的消息上限均为 64 KiB。部署前仍需完成多实例限流与压力测试。
+请求体和解码后的消息上限均为 64 KiB。服务端不做请求限流，由 CDN 和网关负责。
 
 ## 运营接口
 
@@ -298,9 +297,9 @@ Connect JSON 中的详情是 base64 编码的 protobuf。会员卡不存在时�
 
 撤销权益时，服务端把 `revokeTime` 设为服务端时间，并保留 `grantTime` 和 `expireTime`。停用的目录项也可以撤销。
 
-## Wallet 接口契约（未实现）
+## Wallet 接口
 
-`boji.v1.WalletService/GetMembershipPass` 为会员本人的会员卡签发 Apple Wallet 身份卡。服务端尚未注册该服务，`walletPassEnabled` 保持 `false`。客户端必须先检查 `walletPassEnabled`，再显示 Wallet 入口。签名材料可能在两次请求之间失效，因此客户端仍必须处理下载错误。
+`boji.v1.WalletService/GetMembershipPass` 为会员本人的会员卡签发 Apple Wallet 会员卡。客户端必须先检查 `walletPassEnabled`，再显示 Wallet 入口。签名材料可能在两次请求之间失效，因此客户端仍必须处理下载错误。
 
 ### 请求与二进制响应
 
@@ -314,7 +313,7 @@ Connect JSON 中的详情是 base64 编码的 protobuf。会员卡不存在时�
 
 二进制 protobuf 直接携带原始字节。JSON 使用标准 base64 编码，体积增加约 33%。客户端应该对该方法使用 `application/proto`。64 KiB 上限只约束服务端解码请求，不约束响应。客户端如果设置了响应大小上限，该上限必须不小于 1 MiB。
 
-响应设置 `Cache-Control: private, no-store`。卡片使用 `generic` 样式，`serialNumber` 等于会员卡 ID。重复下载使用同一序列号，签名时间可以不同。
+响应设置 `Cache-Control: no-store`。卡片使用 `generic` 样式，`serialNumber` 等于会员卡 ID，并且禁止通过 Wallet 分享。重复下载使用同一序列号，签名时间可以不同。
 
 卡面显示卡面昵称、会员号和入会日期。卡片背面注明会员状态以 App 为准，并说明本卡不是付款或核销凭证。卡片不包含邮箱、用户 ID、会话令牌、条码或健康数据。会员卡暂停后，已保存到 Wallet 的旧卡不会自动更新或移除。
 

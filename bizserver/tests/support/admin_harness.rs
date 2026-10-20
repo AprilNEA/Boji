@@ -1,11 +1,16 @@
-//! Private real-HTTP and PostgreSQL fixture support for admin contract tests.
+//! Private real-HTTP and PostgreSQL fixture support for contract tests.
+//!
+//! `admin_contract`, `account_contract` and `wallet_contract` include this
+//! file. Each test crate uses only part of it.
+#![allow(dead_code)]
 
 use axum::Router;
 use boji_bizserver::{
     app, auth,
     auth_schema::{session, user},
-    entities::{entitlement, membership_entitlement},
+    entities::{entitlement, membership, membership_entitlement},
     migrations,
+    rpc::Capabilities,
 };
 use chrono::{DateTime, Utc};
 use reqwest::{Client, Response, StatusCode};
@@ -35,7 +40,12 @@ pub struct Identity {
     pub raw_token: String,
     pub token: String,
     pub user_id: String,
+    pub email: String,
+    pub password: String,
 }
+
+/// The subject of the email verification message.
+pub const VERIFY_EMAIL_SUBJECT: &str = "验证薄肌邮箱";
 
 pub struct Enrollment {
     /// The resource name `users/{user}/memberships/{membership}`.
@@ -46,6 +56,10 @@ pub struct Enrollment {
 
 impl Harness {
     pub async fn setup() -> Self {
+        Self::with_capabilities(Capabilities::default()).await
+    }
+
+    pub async fn with_capabilities(capabilities: Capabilities) -> Self {
         let database_url = env::var("TEST_DATABASE_URL")
             .expect("admin contract tests require an isolated TEST_DATABASE_URL");
         let control = Database::connect(&database_url)
@@ -83,7 +97,10 @@ impl Harness {
                 secret: "admin-contract-signing-key-not-for-production".into(),
                 base_url: origin.clone(),
                 trusted_origins: vec![origin.clone()],
-                mail_output_directory: mail.path().to_owned(),
+                mail: boji_bizserver::mail::MailTransport::Files {
+                    directory: mail.path().to_owned(),
+                },
+                client_ip: auth::ClientIp::default(),
                 apple: None,
                 account_linking: auth::AccountLinking::Disabled,
             },
@@ -94,7 +111,7 @@ impl Harness {
             database.clone(),
             authentication,
             std::slice::from_ref(&origin),
-            boji_bizserver::rpc::Capabilities::default(),
+            capabilities,
         )
         .expect("compose real HTTP router");
         let (stop, stopped) = oneshot::channel();
@@ -107,7 +124,9 @@ impl Harness {
                 .expect("run private HTTP server");
         });
         let client = Client::builder()
-            .timeout(Duration::from_secs(15))
+            // Debug builds hash passwords slowly. Under a heavily loaded machine,
+            // sign-up and sign-in took more than 15 seconds.
+            .timeout(Duration::from_secs(60))
             .redirect(reqwest::redirect::Policy::none())
             .build()
             .expect("build HTTP client");
@@ -149,7 +168,9 @@ impl Harness {
             .await
             .expect("send verification message");
         assert_eq!(sent.status(), StatusCode::OK);
-        let verification = self.read_mail_url(&email, "/verify-email").await;
+        let verification = self
+            .read_mail_url(&email, VERIFY_EMAIL_SUBJECT, "/verify-email")
+            .await;
         let verified = self
             .client
             .get(verification)
@@ -193,6 +214,8 @@ impl Harness {
             raw_token,
             token,
             user_id: fixture_user.id,
+            email,
+            password: password.to_owned(),
         }
     }
 
@@ -406,22 +429,53 @@ impl Harness {
             .expect("close control pool");
     }
 
-    async fn read_mail_url(&self, email: &str, path: &str) -> String {
+    /// Wait for a message to `email` with `subject` and return its link that contains `path`.
+    pub async fn read_mail_url(&self, email: &str, subject: &str, path: &str) -> String {
+        let text = self.read_mail(email, subject).await;
+        text.split_whitespace()
+            .find(|word| word.starts_with("http://") && word.contains(path))
+            .unwrap_or_else(|| panic!("expected a {path} link in the {subject} message"))
+            .to_owned()
+    }
+
+    /// Wait for a message to `email` with `subject` and return the whole file.
+    pub async fn read_mail(&self, email: &str, subject: &str) -> String {
+        let header = format!("To: {email}\nSubject: {subject}\n");
         for _ in 0..50 {
             for entry in std::fs::read_dir(self.mail.path()).expect("read private mail directory") {
                 let text = std::fs::read_to_string(entry.expect("mail entry").path())
                     .expect("read private mail message");
-                if !text.starts_with(&format!("To: {email}\n")) {
-                    continue;
-                }
-                for word in text.split_whitespace() {
-                    if word.starts_with("http://") && word.contains(path) {
-                        return word.to_owned();
-                    }
+                if text.starts_with(&header) {
+                    return text;
                 }
             }
             tokio::time::sleep(Duration::from_millis(100)).await;
         }
-        panic!("expected verification email for {email}");
+        panic!("expected a {subject} message for {email}");
+    }
+
+    /// Return every message to `email` with `subject` that exists now.
+    pub fn mails(&self, email: &str, subject: &str) -> Vec<String> {
+        let header = format!("To: {email}\nSubject: {subject}\n");
+        std::fs::read_dir(self.mail.path())
+            .expect("read private mail directory")
+            .map(|entry| {
+                std::fs::read_to_string(entry.expect("mail entry").path())
+                    .expect("read private mail message")
+            })
+            .filter(|text| text.starts_with(&header))
+            .collect()
+    }
+
+    /// Set the stored status of a membership card, for example `suspended`.
+    pub async fn set_membership_status(&self, membership_id: &str, status: &str) {
+        membership::Entity::update_many()
+            .col_expr(membership::Column::Status, Expr::value(status.to_owned()))
+            .filter(
+                membership::Column::Id.eq(Uuid::parse_str(membership_id).expect("membership UUID")),
+            )
+            .exec(&self.database)
+            .await
+            .expect("set membership status");
     }
 }

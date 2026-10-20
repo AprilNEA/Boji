@@ -10,7 +10,9 @@ use better_auth::SchemaValue;
 use better_auth::plugins::oauth::AppleClientSecretSigner;
 use boji_bizserver::apple::{self, AppleSignIn};
 use boji_bizserver::auth_schema::{account, user};
-use boji_bizserver::{app, auth, migrations, proto::boji::v1 as p, rpc::Capabilities};
+use boji_bizserver::{
+    app, auth, mail::MailTransport, migrations, proto::boji::v1 as p, rpc::Capabilities,
+};
 use p256::pkcs8::{EncodePrivateKey, LineEnding};
 use reqwest::{Client, StatusCode};
 use sea_orm::{ActiveModelTrait, ConnectOptions, Database, DatabaseConnection, Set};
@@ -59,7 +61,10 @@ async fn apple_provider_is_advertised_and_routed_over_real_http() {
             secret: "local-apple-contract-signing-key-not-for-production".into(),
             base_url: origin.clone(),
             trusted_origins: vec![origin.clone()],
-            mail_output_directory: mail.path().to_owned(),
+            mail: MailTransport::Files {
+                directory: mail.path().to_owned(),
+            },
+            client_ip: auth::ClientIp::default(),
             apple: Some(settings()),
             account_linking: auth::AccountLinking::Enabled,
         },
@@ -75,6 +80,7 @@ async fn apple_provider_is_advertised_and_routed_over_real_http() {
         std::slice::from_ref(&origin),
         Capabilities {
             apple_sign_in: true,
+            ..Capabilities::default()
         },
     )
     .unwrap();

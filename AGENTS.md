@@ -108,7 +108,7 @@ Keep the keys and argument names of `locales/meta/` stable, because both clients
 
 `LICENSE.md` holds the official text of the PolyForm Noncommercial License 1.0.0. Its first line is the `Required Notice:` line. AprilNEA LLC is the licensor and the CLA party. Do not edit the license text. Call the project source-available, not open source.
 
-The license does not cover the names Boji, 薄肌 and 薄肌俱乐部, the app icon, `websites/public/media/`, `websites/public/images/portraits/`, or third-party dependencies and fonts. The `## 许可证` section of the root `README.md` lists these exclusions. When you add brand assets or third-party material, add them to that list.
+The license does not cover the names Boji, 薄肌 and 薄肌俱乐部, the app icon and the pass icons in `bizserver/assets/wallet/`, the Apple Root CA in `bizserver/assets/wallet/apple-root-ca.crt`, `websites/public/media/`, `websites/public/images/portraits/`, or third-party dependencies and fonts. The `## 许可证` section of the root `README.md` lists these exclusions. When you add brand assets or third-party material, add them to that list.
 
 `.github/CLA.md` is the contributor license agreement. `.github/workflows/cla.yml` asks each commit author of a pull request to sign it with a pull request comment. The workflow stores the signatures in `signatures/version1/cla.json` on the `cla-signatures` branch, and creates that branch on its first run. Do not protect `cla-signatures`, and do not merge it into `master`.
 

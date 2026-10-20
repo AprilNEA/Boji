@@ -81,7 +81,7 @@ Boji 把薄肌理论变成每天可以打卡的记录：
 | 目录 | devenv 提供的工具 |
 | --- | --- |
 | `animations/`、`websites/` | Node.js 26 和 pnpm 12 |
-| `bizserver/` | Rust（版本由 `bizserver/rust-toolchain.toml` 决定）、`protoc`、`buf`、OpenSSL 和 `pkg-config` |
+| `bizserver/` | Rust（版本由 `bizserver/rust-toolchain.toml` 决定）、`buf`、OpenSSL 和 `pkg-config` |
 | `android/` | JDK 17，并设置 `JAVA_HOME` |
 | `websites/scripts/` | Python 3，带 Pillow 和 rembg |
 
@@ -125,7 +125,7 @@ iOS 的 Debug 构建默认连接 `http://localhost:3000`。这个地址就是用
 
 以下内容不在这个许可证的授权范围内：
 
-- **名称和图标**：「Boji」「薄肌」「薄肌俱乐部」名称，`ios/Boji/Resources/AppIcon.icon`，以及 `assets/public/boji-icon.png` 和 `assets/public/boji-icon-dark.png`。AprilNEA LLC 保留所有权利。
+- **名称和图标**：「Boji」「薄肌」「薄肌俱乐部」名称，`ios/Boji/Resources/AppIcon.icon`，`assets/public/boji-icon.png` 和 `assets/public/boji-icon-dark.png`，以及 `bizserver/assets/wallet/` 中的通行证图标。AprilNEA LLC 保留所有权利。
 - **网站媒体**：`websites/public/media/` 中的图片和短片。AprilNEA LLC 保留所有权利。
 - **人像照片**：`websites/public/images/portraits/` 中的照片。著作权属于原拍摄者，本仓库不授予任何权利。
-- **第三方依赖和字体**：例如 Inter 字体和各端使用的软件包。它们适用各自的许可证。
+- **第三方依赖和字体**：例如 Inter 字体、各端使用的软件包，以及 Apple 发布的 `bizserver/assets/wallet/apple-root-ca.crt`。它们适用各自的许可证或条款。

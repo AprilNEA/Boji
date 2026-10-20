@@ -1,7 +1,7 @@
 use anyhow::{Context, Result, bail};
 use boji_bizserver::{app, auth, config::Config, migrations, rpc};
 use sea_orm::{ConnectOptions, Database};
-use std::{process::ExitCode, time::Duration};
+use std::{process::ExitCode, sync::Arc, time::Duration};
 
 #[tokio::main]
 async fn main() -> ExitCode {
@@ -21,22 +21,15 @@ async fn run() -> Result<()> {
     {
         bail!("Cannot load .env file");
     }
-    let filter = tracing_subscriber::EnvFilter::try_from_default_env()
-        .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("off,boji_bizserver=info"));
-    tracing_subscriber::fmt()
-        .json()
-        .with_env_filter(filter)
-        .init();
     let command = std::env::args().nth(1).unwrap_or_else(|| "serve".into());
     if !matches!(command.as_str(), "serve" | "migrate") {
         bail!("Usage: boji-bizserver [serve|migrate]");
     }
-    let config = Config::from_env()?;
-    if command == "serve" && config.production {
-        bail!(
-            "Production startup is blocked until mail delivery, throttling, and launch verification are complete"
-        );
-    }
+    let config = Config::load()?;
+    tracing_subscriber::fmt()
+        .json()
+        .with_env_filter(tracing_subscriber::EnvFilter::new(&config.log_filter))
+        .init();
     let mut options = ConnectOptions::new(config.database_url);
     options
         .max_connections(10)
@@ -57,8 +50,16 @@ async fn run() -> Result<()> {
     migrations::ensure_current(&database)
         .await
         .context("Run explicit migrations against an isolated Rust database before serving")?;
+    let wallet = config.wallet.map(Arc::new);
+    if let Some(signer) = &wallet
+        && !signer.is_current(chrono::Utc::now())
+    {
+        // The service starts, and WalletService returns WALLET_NOT_CONFIGURED.
+        tracing::warn!(event = "wallet_certificate_not_current");
+    }
     let capabilities = rpc::Capabilities {
         apple_sign_in: config.apple.is_some(),
+        wallet,
     };
     let auth = auth::build(
         database.clone(),
@@ -66,7 +67,8 @@ async fn run() -> Result<()> {
             secret: config.auth_secret,
             base_url: config.auth_url,
             trusted_origins: config.trusted_origins,
-            mail_output_directory: config.mail_dir,
+            mail: config.mail,
+            client_ip: config.client_ip,
             apple: config.apple,
             account_linking: config.account_linking,
         },

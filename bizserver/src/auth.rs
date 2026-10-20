@@ -4,26 +4,35 @@
 //! nest at `/api/auth`. Business handlers must use [`authenticate`] instead of
 //! accepting cookies or raw session tokens directly.
 
-use std::collections::HashMap;
-use std::path::PathBuf;
-use std::sync::Arc;
-
-use anyhow::Context;
-use better_auth::config::AccountLinkingConfig;
-use better_auth::integrations::axum::AxumIntegration;
-use better_auth::plugins::{
-    EmailPasswordPlugin, EmailVerificationPlugin, OAuthPlugin, PasswordManagementPlugin,
-    SessionManagementPlugin,
-};
-use better_auth::prelude::{AuthRequest, AuthSession, AuthUser, HttpMethod};
-use better_auth::seaorm::{DatabaseConnection, SeaOrmStore};
-use better_auth::{AuthConfig, BetterAuth};
-use http::{HeaderMap, header::AUTHORIZATION};
-use thiserror::Error;
-
 use crate::apple::{self, AppleSignIn};
 use crate::auth_schema::BojiAuthSchema;
-use crate::mail::{PasswordResetEmailSender, PrivateFileEmailProvider, VerificationEmailSender};
+use crate::mail::messages::{
+    DELETE_ACCOUNT_CODE_MINUTES, PASSWORD_RESET_LINK_HOURS, VERIFICATION_LINK_HOURS,
+};
+use crate::mail::{
+    ChangeEmailConfirmationSender, DeleteAccountEmailSender, MailTransport, Mailer,
+    PasswordResetEmailSender, VerificationEmailSender,
+};
+use anyhow::Context;
+use async_trait::async_trait;
+use better_auth::config::{AccountLinkingConfig, IpAddressConfig};
+use better_auth::integrations::axum::AxumIntegration;
+use better_auth::plugins::user_management::BeforeDeleteUser;
+use better_auth::plugins::{
+    EmailPasswordPlugin, EmailVerificationPlugin, OAuthPlugin, PasswordManagementPlugin,
+    SessionManagementPlugin, UserManagementPlugin,
+};
+use better_auth::prelude::{
+    AuthError, AuthRequest, AuthResult, AuthSession, AuthUser, HttpMethod, UserView,
+};
+use better_auth::seaorm::{DatabaseConnection, SeaOrmStore};
+use better_auth::{AuthConfig, BetterAuth};
+use chrono::Duration;
+use http::{HeaderMap, header::AUTHORIZATION};
+use sea_orm::EntityTrait;
+use std::collections::HashMap;
+use std::sync::Arc;
+use thiserror::Error;
 
 /// Concrete Better Auth instance used by the Boji service.
 pub type Auth = BetterAuth<BojiAuthSchema>;
@@ -39,8 +48,10 @@ pub struct AuthOptions {
     pub base_url: String,
     /// Additional origins allowed by Better Auth's CSRF and redirect checks.
     pub trusted_origins: Vec<String>,
-    /// Absolute private directory for verification and password-reset mail files.
-    pub mail_output_directory: PathBuf,
+    /// Delivery of verification, password-reset and account mail.
+    pub mail: MailTransport,
+    /// Where the client address of a session comes from.
+    pub client_ip: ClientIp,
     /// Sign in with Apple settings. `None` leaves the Apple provider unregistered.
     pub apple: Option<AppleSignIn>,
     /// Rule for a social sign-in whose email already belongs to a user.
@@ -76,6 +87,46 @@ impl AccountLinking {
             // An unverified local user may belong to someone who registered another person's email.
             require_local_email_verified: true,
             update_user_info_on_link: Some(false),
+        }
+    }
+}
+
+/// Where Better Auth reads the client address that it stores on a session.
+///
+/// The service never reads the address of the TCP peer, because a gateway or
+/// CDN terminates every connection in front of it.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub enum ClientIp {
+    /// Store no client address.
+    #[default]
+    Untracked,
+    /// Read the address from one request header that the gateway overwrites.
+    Header {
+        /// Lowercase header name, for example `cf-connecting-ip`.
+        header: String,
+        /// Addresses or CIDR ranges removed from the right end of a forwarded chain.
+        trusted_proxies: Vec<String>,
+    },
+}
+
+impl ClientIp {
+    /// Return the Better Auth settings that implement this rule.
+    fn config(&self) -> IpAddressConfig {
+        match self {
+            Self::Untracked => IpAddressConfig {
+                headers: Some(Vec::new()),
+                disable_ip_tracking: Some(true),
+                ..IpAddressConfig::default()
+            },
+            Self::Header {
+                header,
+                trusted_proxies,
+            } => IpAddressConfig {
+                headers: Some(vec![header.clone()]),
+                disable_ip_tracking: Some(false),
+                trusted_proxies: trusted_proxies.clone(),
+                ..IpAddressConfig::default()
+            },
         }
     }
 }
@@ -126,15 +177,17 @@ pub enum AuthFailure {
 /// Builds the production authentication service from application-owned entities.
 ///
 /// This enables email/password registration, session management, email
-/// verification, and password management. When `options.apple` is set, it also
-/// registers the `apple` social provider and trusts Apple's `form_post` origin.
-/// `options.account_linking` decides whether a social sign-in may join an
-/// existing user with the same verified email. It does not install Wallet plugins.
+/// verification, password management, account deletion and email change.
+/// Deletion needs a code that the service mails to the user. An email change
+/// needs a confirmation from the current address and a verification of the new
+/// address. When `options.apple` is set, it also registers the `apple` social
+/// provider and trusts Apple's `form_post` origin. `options.account_linking`
+/// decides whether a social sign-in may join an existing user with the same
+/// verified email.
 pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Result<Arc<Auth>> {
-    let provider = PrivateFileEmailProvider::new(options.mail_output_directory)
-        .context("configure private authentication mail output")?;
-    let reset_sender = PasswordResetEmailSender::new(provider.clone());
-    let verification_sender = VerificationEmailSender::new(provider.clone());
+    let mailer = Mailer::new(options.mail).context("configure authentication mail")?;
+    let reset_sender = PasswordResetEmailSender::new(mailer.clone());
+    let verification_sender = VerificationEmailSender::new(mailer.clone());
     let apple_provider = options
         .apple
         .as_ref()
@@ -145,7 +198,7 @@ pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Resu
     }
 
     let mut config = AuthConfig::new(options.secret)
-        .app_name("Boji")
+        .app_name("薄肌")
         .base_url(format!(
             "{}/api/auth",
             options.base_url.trim_end_matches('/')
@@ -157,6 +210,7 @@ pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Resu
         require_signature: true,
     });
     config.account.account_linking = options.account_linking.config();
+    config.advanced.ip_address = options.client_ip.config();
 
     let email_verification_for_login = Arc::new(
         EmailVerificationPlugin::new()
@@ -164,12 +218,14 @@ pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Resu
             .send_on_sign_up(true)
             .send_on_sign_in(true)
             .auto_sign_in_after_verification(false)
+            .verification_token_expiry(Duration::hours(VERIFICATION_LINK_HOURS))
             .custom_send_verification_email(Arc::new(verification_sender.clone())),
     );
+    let user_deletion = Arc::new(UserDeletion { db: db.clone() });
     let store = SeaOrmStore::<BojiAuthSchema>::new(config.clone(), db);
     let mut builder = BetterAuth::<BojiAuthSchema>::new(config)
         .store(store)
-        .email_provider(provider)
+        .email_provider(mailer.clone())
         .plugin(crate::admin_permissions::plugin())
         .plugin(
             EmailPasswordPlugin::new()
@@ -185,13 +241,26 @@ pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Resu
                 .send_on_sign_up(true)
                 .send_on_sign_in(true)
                 .auto_sign_in_after_verification(false)
+                .verification_token_expiry(Duration::hours(VERIFICATION_LINK_HOURS))
                 .custom_send_verification_email(Arc::new(verification_sender)),
         )
         .plugin(
             PasswordManagementPlugin::new()
-                .reset_password_token_expires_in(3600.0)
+                .reset_password_token_expires_in((PASSWORD_RESET_LINK_HOURS * 3600) as f64)
                 .revoke_sessions_on_password_reset(true)
                 .send_reset_password(Arc::new(reset_sender)),
+        )
+        .plugin(
+            UserManagementPlugin::new()
+                .change_email_enabled(true)
+                .update_without_verification(false)
+                .send_change_email_confirmation(Arc::new(ChangeEmailConfirmationSender::new(
+                    mailer.clone(),
+                )))
+                .delete_user_enabled(true)
+                .delete_token_expires_in(Duration::minutes(DELETE_ACCOUNT_CODE_MINUTES))
+                .send_delete_account_verification(Arc::new(DeleteAccountEmailSender::new(mailer)))
+                .before_delete(user_deletion),
         );
     if let Some(apple_provider) = apple_provider {
         builder =
@@ -200,6 +269,41 @@ pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Resu
     let auth = builder.build().await.context("build Better Auth service")?;
 
     Ok(Arc::new(auth))
+}
+
+/// Deletes a user and the rows it owns in one SQL statement.
+///
+/// Better Auth deletes the sessions, the accounts and the user in separate
+/// statements. Its SeaORM store also clears an `api_keys` table that this
+/// service does not create, so the last statement fails. Without this hook,
+/// that failure leaves a user without sessions or credentials.
+///
+/// The hook runs before those statements and deletes the `user` row.
+/// PostgreSQL applies the foreign-key cascades and `SET NULL` rules inside the
+/// same statement, so the deletion is complete or absent. The later framework
+/// statements then find no rows and succeed. `tests/account_contract.rs`
+/// checks this behavior.
+struct UserDeletion {
+    db: DatabaseConnection,
+}
+
+#[async_trait]
+impl BeforeDeleteUser for UserDeletion {
+    async fn before_delete(
+        &self,
+        target: &UserView,
+        _request: Option<&AuthRequest>,
+    ) -> AuthResult<()> {
+        let id = target.id.typed()?.clone();
+        crate::auth_schema::user::Entity::delete_by_id(id)
+            .exec(&self.db)
+            .await
+            .map(|_| ())
+            .map_err(|error| {
+                tracing::error!(%error, "delete user");
+                AuthError::internal("delete user")
+            })
+    }
 }
 
 /// Returns Better Auth's native route router.

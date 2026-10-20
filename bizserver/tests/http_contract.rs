@@ -28,7 +28,10 @@ async fn native_auth_and_business_rpc_over_real_http() {
             secret: "local-http-contract-signing-key-not-for-production".into(),
             base_url: origin.clone(),
             trusted_origins: vec![origin.clone()],
-            mail_output_directory: mail.path().to_owned(),
+            mail: boji_bizserver::mail::MailTransport::Files {
+                directory: mail.path().to_owned(),
+            },
+            client_ip: auth::ClientIp::default(),
             apple: None,
             account_linking: auth::AccountLinking::Disabled,
         },

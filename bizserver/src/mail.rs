@@ -1,19 +1,42 @@
-//! Private local mail delivery for development and controlled deployments.
+//! Authentication mail delivery.
 //!
-//! This provider never writes mail content to logs. It stores each message in a
-//! user-owned directory with restrictive Unix permissions instead.
+//! Input: a [`MailTransport`] from the configuration.
+//! Output: [`Mailer`], the Better Auth [`EmailProvider`], and the senders in
+//! [`messages`].
+//! Pos: the only code that delivers mail. It never logs recipients, tokens,
+//! URLs or message bodies.
 
-use std::path::{Path, PathBuf};
+mod file;
+pub mod messages;
+mod smtp;
+
+use std::{path::PathBuf, sync::Arc};
 
 use async_trait::async_trait;
 use better_auth::email::EmailProvider;
 use better_auth::error::{AuthError, AuthResult};
-use better_auth::plugins::{SendResetPassword, SendVerificationEmail};
-use better_auth::prelude::UserView;
 use thiserror::Error;
-use uuid::Uuid;
 
-/// Errors returned while configuring or writing private mail files.
+pub use file::PrivateFileEmailProvider;
+pub use messages::{
+    ChangeEmailConfirmationSender, DeleteAccountEmailSender, PasswordResetEmailSender,
+    VerificationEmailSender,
+};
+pub use smtp::{SmtpCredentials, SmtpRelay, SmtpSecurity};
+
+/// How the service delivers authentication mail.
+#[derive(Clone, Debug)]
+pub enum MailTransport {
+    /// Write each message to a private local directory. Production rejects it.
+    Files {
+        /// Absolute directory that receives one `.eml` file per message.
+        directory: PathBuf,
+    },
+    /// Send each message through an SMTP relay.
+    Smtp(SmtpRelay),
+}
+
+/// Errors returned while configuring or delivering mail.
 #[derive(Debug, Error)]
 pub enum MailFailure {
     /// The configured directory is not an absolute local path.
@@ -22,153 +45,65 @@ pub enum MailFailure {
     /// A private mail filesystem operation failed.
     #[error("private mail output operation failed")]
     Io(#[source] std::io::Error),
-    /// A password-reset user did not include a valid email address.
-    #[error("password reset recipient is unavailable")]
+    /// The SMTP relay settings cannot build a transport.
+    #[error("SMTP relay configuration is invalid")]
+    SmtpConfig(#[source] lettre::transport::smtp::Error),
+    /// The user record has no usable email address.
+    #[error("mail recipient is unavailable")]
     MissingRecipient,
 }
 
-/// An [`EmailProvider`] that stores messages in a private local directory.
-///
-/// The resulting files contain recipient addresses and verification URLs. The
-/// provider therefore creates the directory with mode `0700` and each message
-/// with mode `0600` on Unix systems. It does not log recipients, tokens, or
-/// message bodies.
-#[derive(Clone, Debug)]
-pub struct PrivateFileEmailProvider {
-    directory: PathBuf,
+/// The [`EmailProvider`] of the service. Cloning shares the transport.
+#[derive(Clone)]
+pub struct Mailer {
+    transport: Arc<Transport>,
 }
 
-impl PrivateFileEmailProvider {
-    /// Creates a provider that writes messages below `directory`.
-    pub fn new(directory: impl Into<PathBuf>) -> Result<Self, MailFailure> {
-        let directory = directory.into();
-        if !directory.is_absolute() {
-            return Err(MailFailure::RelativeDirectory);
-        }
-        Ok(Self { directory })
+enum Transport {
+    Files(PrivateFileEmailProvider),
+    Smtp(smtp::SmtpMailer),
+}
+
+impl Mailer {
+    /// Build the transport. No connection is opened until the first message.
+    pub fn new(transport: MailTransport) -> Result<Self, MailFailure> {
+        let transport = match transport {
+            MailTransport::Files { directory } => {
+                Transport::Files(PrivateFileEmailProvider::new(directory)?)
+            }
+            MailTransport::Smtp(relay) => Transport::Smtp(smtp::SmtpMailer::new(relay)?),
+        };
+        Ok(Self {
+            transport: Arc::new(transport),
+        })
     }
+}
 
-    async fn write_message(
-        &self,
-        to: &str,
-        subject: &str,
-        html: &str,
-        text: &str,
-    ) -> Result<(), MailFailure> {
-        tokio::fs::create_dir_all(&self.directory)
-            .await
-            .map_err(MailFailure::Io)?;
-        set_private_directory_permissions(&self.directory)
-            .await
-            .map_err(MailFailure::Io)?;
-
-        let path = self.directory.join(format!("{}.eml", Uuid::new_v4()));
-        let message = format!(
-            "To: {to}\nSubject: {subject}\nContent-Type: text/plain; charset=utf-8\n\n{text}\n\n-- HTML --\n{html}\n"
-        );
-        tokio::fs::write(&path, message)
-            .await
-            .map_err(MailFailure::Io)?;
-        set_private_file_permissions(&path)
-            .await
-            .map_err(MailFailure::Io)
+impl std::fmt::Debug for Mailer {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let transport = match self.transport.as_ref() {
+            Transport::Files(_) => "files",
+            Transport::Smtp(_) => "smtp",
+        };
+        f.debug_struct("Mailer")
+            .field("transport", &transport)
+            .finish()
     }
 }
 
 #[async_trait]
-impl EmailProvider for PrivateFileEmailProvider {
+impl EmailProvider for Mailer {
     async fn send(&self, to: &str, subject: &str, html: &str, text: &str) -> AuthResult<()> {
-        self.write_message(to, subject, html, text)
-            .await
-            .map_err(|_| AuthError::internal("private email delivery failed"))
+        match self.transport.as_ref() {
+            Transport::Files(provider) => provider.send(to, subject, html, text).await,
+            Transport::Smtp(mailer) => mailer.send(to, subject, html, text).await,
+        }
     }
 }
 
-/// Email-verification sender that delegates delivery to [`PrivateFileEmailProvider`].
-#[derive(Clone, Debug)]
-pub struct VerificationEmailSender {
-    provider: PrivateFileEmailProvider,
-}
-
-impl VerificationEmailSender {
-    /// Creates an email-verification sender that uses `provider`.
-    pub fn new(provider: PrivateFileEmailProvider) -> Self {
-        Self { provider }
-    }
-}
-
-#[async_trait]
-impl SendVerificationEmail for VerificationEmailSender {
-    async fn send(&self, user: &UserView, url: &str, _token: &str) -> AuthResult<()> {
-        let email = user
-            .email
-            .as_deref()
-            .filter(|value| !value.is_empty())
-            .ok_or_else(|| AuthError::internal(MailFailure::MissingRecipient.to_string()))?;
-        let text =
-            format!("请在 24 小时内打开以下链接验证 Boji 邮箱：\n{url}\n\n验证后请返回 App 登录。");
-        let html = format!(
-            "<p>请在 24 小时内打开以下链接验证 Boji 邮箱：</p><p><a href=\"{url}\">验证邮箱</a></p><p>验证后请返回 App 登录。</p>"
-        );
-        self.provider
-            .send(email, "验证 Boji 邮箱", &html, &text)
-            .await
-    }
-}
-
-/// Password-reset sender that delegates delivery to [`PrivateFileEmailProvider`].
-#[derive(Clone, Debug)]
-pub struct PasswordResetEmailSender {
-    provider: PrivateFileEmailProvider,
-}
-
-impl PasswordResetEmailSender {
-    /// Creates a password-reset sender that uses `provider`.
-    pub fn new(provider: PrivateFileEmailProvider) -> Self {
-        Self { provider }
-    }
-}
-
-#[async_trait]
-impl SendResetPassword for PasswordResetEmailSender {
-    async fn send(&self, user: &serde_json::Value, url: &str, _token: &str) -> AuthResult<()> {
-        let email = user
-            .get("email")
-            .and_then(serde_json::Value::as_str)
-            .filter(|value| !value.is_empty())
-            .ok_or_else(|| AuthError::internal(MailFailure::MissingRecipient.to_string()))?;
-        let text = format!(
-            "请在 1 小时内打开以下链接重置 Boji 密码：\n{url}\n\n如果不是你发起的请求，请忽略此邮件。"
-        );
-        let html = format!(
-            "<p>请在 1 小时内打开以下链接重置 Boji 密码：</p><p><a href=\"{url}\">重置密码</a></p><p>如果不是你发起的请求，请忽略此邮件。</p>"
-        );
-        self.provider
-            .send(email, "重置 Boji 密码", &html, &text)
-            .await
-    }
-}
-
-#[cfg(unix)]
-async fn set_private_directory_permissions(path: &Path) -> std::io::Result<()> {
-    use std::os::unix::fs::PermissionsExt;
-
-    tokio::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700)).await
-}
-
-#[cfg(not(unix))]
-async fn set_private_directory_permissions(_path: &Path) -> std::io::Result<()> {
-    Ok(())
-}
-
-#[cfg(unix)]
-async fn set_private_file_permissions(path: &Path) -> std::io::Result<()> {
-    use std::os::unix::fs::PermissionsExt;
-
-    tokio::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600)).await
-}
-
-#[cfg(not(unix))]
-async fn set_private_file_permissions(_path: &Path) -> std::io::Result<()> {
-    Ok(())
+/// Return the error that Better Auth receives when delivery fails.
+///
+/// The message is generic, so a client never learns about the relay.
+fn delivery_failed() -> AuthError {
+    AuthError::internal("email delivery failed")
 }

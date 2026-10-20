@@ -12,6 +12,8 @@ WORKDIR /src
 COPY Cargo.toml Cargo.lock build.rs buf.yaml buf.lock ./
 COPY src ./src
 COPY proto ./proto
+# src/wallet.rs embeds the Apple Root CA and the pass icons from assets/wallet.
+COPY assets ./assets
 RUN cargo build --release --locked --bin boji-bizserver
 
 FROM debian:bookworm-slim AS runtime

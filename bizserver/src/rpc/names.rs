@@ -88,6 +88,11 @@ pub fn membership(user: &str, membership: &str) -> String {
     format!("users/{user}/memberships/{membership}")
 }
 
+/// `users/{user}/memberships/{membership}/pass`.
+pub fn membership_pass(user: &str, membership: &str) -> String {
+    format!("users/{user}/memberships/{membership}/pass")
+}
+
 /// `users/{user}/memberships/{membership}/entitlementGrants/{entitlement}`.
 pub fn entitlement_grant(user: &str, membership: &str, entitlement: &str) -> String {
     format!("users/{user}/memberships/{membership}/entitlementGrants/{entitlement}")

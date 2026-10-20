@@ -11,9 +11,9 @@ import SwiftProtobuf
 
 /// Serves the Apple Wallet pass of a membership card to its holder.
 ///
-/// Contract only. The server does not register this service yet, so every call
-/// returns `UNIMPLEMENTED`, and `ServerConfig.wallet_pass_enabled` stays false.
-/// Clients must read `wallet_pass_enabled` before they show a Wallet entry.
+/// `ServerConfig.wallet_pass_enabled` is true only when the server has signing
+/// material whose certificates are valid now. Clients must read it before they
+/// show a Wallet entry.
 ///
 /// Every method requires a signed Bearer session for a verified email address.
 /// The `{user}` segment must be `me` or the user ID of the caller.
@@ -21,7 +21,7 @@ public protocol Boji_V1_WalletServiceClientInterface: Sendable {
 
     /// Signs and returns the pass of one card.
     ///
-    /// The response sets `Cache-Control: private, no-store`. The pass uses the
+    /// The response sets `Cache-Control: no-store`. The pass uses the
     /// `generic` style. Its `serialNumber` is the `{membership}` segment of the
     /// card name, so repeated downloads keep the serial number. The signature
     /// time can differ between downloads.

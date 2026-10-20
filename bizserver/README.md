@@ -2,19 +2,51 @@
 
 新后端位于本目录。认证使用 Axum 与 `better-auth-rs`。业务接口使用 ConnectRPC。数据访问使用 SeaORM 与 PostgreSQL。
 
-旧 TypeScript 服务没有上线过。新服务不需要兼容旧服务的接口、密码、会话或数据。新服务必须使用独立数据库。`APP_ENV=production` 暂时拒绝启动。
+旧 TypeScript 服务没有上线过。新服务不需要兼容旧服务的接口、密码、会话或数据。新服务必须使用独立数据库。`APP_ENV=production` 启动时检查生产配置，缺少必需项时拒绝启动。
 
 ## 已迁入的模块
 
 - 邮箱注册、验证、登录、会话和密码重置。
+- 账号注销和更换邮箱。注销需要邮件中的确认码，更换邮箱需要旧邮箱确认和新邮箱验证。
+- 认证邮件经 SMTP 中继发送。开发环境未设置 `SMTP_HOST` 时写入本地文件。
 - Apple 登录：原生身份令牌和网页 `form_post` 流程。设置全部 `APPLE_*` 变量后启用。账号关联由 `ACCOUNT_LINKING` 控制，默认关闭。详见[认证迁移说明](docs/migration-auth.md)。
 - 免费会员卡与结构化权益。每个用户最多持有一张会员卡。
+- Apple Wallet 会员卡。设置 `WALLET_*` 变量后，服务端为有效会员卡签发通行证。
 - 主动授权的活动同步、冲突检测和每日汇总。
 - 会员运营：列表、查询、暂停、恢复和权益管理。变更与审计原子提交。
 - Axum 健康检查、CORS 和脱敏请求日志。
 - 版本化 SeaORM 迁移与 Docker 开发配置。
 
-Wallet 和 SMTP 发件箱尚未迁入。Wallet 目前只有协议定义，服务端尚未注册。账号删除和邮箱变更也未完成。能力查询不会声称未迁入的功能可用。
+以下内容不在本服务中：
+
+- 可靠发件箱。服务端不保存待发邮件，也不自动重发。
+- 通行证更新和 Google Wallet。已保存的通行证不会随会员卡状态更新。
+- 注销账号时撤销 Apple 令牌。这一步需要 iOS 客户端提供授权码，详见[迁移状态](docs/migration-status.md)。
+- 请求限流、代理信任和压力测试。这些由 CDN 和网关负责。
+
+## 配置
+
+全部服务配置由 `src/config.rs` 读取。它用 `figment` 从环境变量取值，再校验并组装。其他模块不直接读取环境变量。空值等同于未设置。`.env.example` 列出全部变量和取值规则。
+
+| 变量组 | 作用 | 生产环境要求 |
+| --- | --- | --- |
+| `APP_ENV`、`HOST`、`PORT`、`RUST_LOG` | 运行环境、监听地址和日志过滤 | `APP_ENV=production` |
+| `DATABASE_URL` | PostgreSQL 连接 | 必填 |
+| `BETTER_AUTH_SECRET`、`BETTER_AUTH_URL`、`CORS_ORIGINS`、`TRUSTED_ORIGINS` | 认证密钥和来源 | 地址必须使用 HTTPS |
+| `MAIL_FROM`、`SMTP_*`、`MAIL_OUTPUT_DIR` | 认证邮件 | 必须设置 `SMTP_HOST` 和 `MAIL_FROM`，`SMTP_TLS` 不能为 `none` |
+| `CLIENT_IP_HEADER`、`TRUSTED_PROXIES` | 会话记录的客户端 IP | 可选。留空时不记录 IP |
+| `APPLE_*`、`ACCOUNT_LINKING` | Apple 登录 | 可选。全部填写或全部留空 |
+| `WALLET_*` | Apple Wallet 签名材料 | 可选。全部填写或全部留空 |
+
+`CLIENT_IP_HEADER` 必须是网关覆盖写入的请求头，例如 `cf-connecting-ip`。客户端能自行设置的请求头会让会话记录伪造的 IP。
+
+服务启动时校验 Wallet 签名材料，任一项不符合时拒绝启动：
+
+- 私钥与 `WALLET_SIGNER_CERT` 匹配。
+- 签名证书主题的 UID 等于 `WALLET_PASS_TYPE_IDENTIFIER`，OU 等于 `WALLET_TEAM_IDENTIFIER`。
+- 签名证书由 `WALLET_WWDR_CERT` 签发，WWDR 证书由内置的 Apple Root CA 签发。
+
+证书过期或尚未生效不会阻止启动。此时 `walletPassEnabled` 为 `false`，签发请求返回 `WALLET_NOT_CONFIGURED`。
 
 ## 本地启动
 
@@ -40,7 +72,7 @@ cargo run --locked -- migrate
 cargo run --locked -- serve
 ```
 
-数据库只监听 `127.0.0.1:55439`，与 `.env.example` 中的 `DATABASE_URL` 一致。本机服务地址为 `http://localhost:3000`。`/healthz` 检查进程。`/readyz` 检查数据库。开发邮件写入 `.data/mail/`，不会实际外发。
+数据库只监听 `127.0.0.1:55439`，与 `.env.example` 中的 `DATABASE_URL` 一致。本机服务地址为 `http://localhost:3000`。`/healthz` 检查进程。`/readyz` 检查数据库。未设置 `SMTP_HOST` 时，开发邮件写入 `.data/mail/`，不会实际外发。
 
 完整 Docker 开发环境使用另一端口：
 

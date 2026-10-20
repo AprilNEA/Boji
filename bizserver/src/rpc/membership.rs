@@ -111,7 +111,7 @@ impl p::MembershipService for BusinessService {
     }
 }
 
-fn map_error(error: MembershipError) -> ConnectError {
+pub(super) fn map_error(error: MembershipError) -> ConnectError {
     match error {
         MembershipError::InvalidInput {
             field: "displayName",

@@ -134,7 +134,8 @@ public  final class ServerConfig extends
   private boolean walletPassEnabled_;
   /**
    * <pre>
-   * Output only. True when `WalletService` serves membership passes.
+   * Output only. True when `WalletService` serves membership passes: the
+   * server has Wallet signing material, and both certificates are valid now.
    * </pre>
    *
    * <code>bool wallet_pass_enabled = 3 [json_name = "walletPassEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
@@ -146,7 +147,8 @@ public  final class ServerConfig extends
   }
   /**
    * <pre>
-   * Output only. True when `WalletService` serves membership passes.
+   * Output only. True when `WalletService` serves membership passes: the
+   * server has Wallet signing material, and both certificates are valid now.
    * </pre>
    *
    * <code>bool wallet_pass_enabled = 3 [json_name = "walletPassEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
@@ -158,7 +160,8 @@ public  final class ServerConfig extends
   }
   /**
    * <pre>
-   * Output only. True when `WalletService` serves membership passes.
+   * Output only. True when `WalletService` serves membership passes: the
+   * server has Wallet signing material, and both certificates are valid now.
    * </pre>
    *
    * <code>bool wallet_pass_enabled = 3 [json_name = "walletPassEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
@@ -422,7 +425,8 @@ public  final class ServerConfig extends
 
     /**
      * <pre>
-     * Output only. True when `WalletService` serves membership passes.
+     * Output only. True when `WalletService` serves membership passes: the
+     * server has Wallet signing material, and both certificates are valid now.
      * </pre>
      *
      * <code>bool wallet_pass_enabled = 3 [json_name = "walletPassEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
@@ -434,7 +438,8 @@ public  final class ServerConfig extends
     }
     /**
      * <pre>
-     * Output only. True when `WalletService` serves membership passes.
+     * Output only. True when `WalletService` serves membership passes: the
+     * server has Wallet signing material, and both certificates are valid now.
      * </pre>
      *
      * <code>bool wallet_pass_enabled = 3 [json_name = "walletPassEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
@@ -448,7 +453,8 @@ public  final class ServerConfig extends
     }
     /**
      * <pre>
-     * Output only. True when `WalletService` serves membership passes.
+     * Output only. True when `WalletService` serves membership passes: the
+     * server has Wallet signing material, and both certificates are valid now.
      * </pre>
      *
      * <code>bool wallet_pass_enabled = 3 [json_name = "walletPassEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>

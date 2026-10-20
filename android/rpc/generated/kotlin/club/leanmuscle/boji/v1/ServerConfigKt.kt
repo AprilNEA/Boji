@@ -89,7 +89,8 @@ public object ServerConfigKt {
 
     /**
      * ```
-     * Output only. True when `WalletService` serves membership passes.
+     * Output only. True when `WalletService` serves membership passes: the
+     * server has Wallet signing material, and both certificates are valid now.
      * ```
      *
      * `bool wallet_pass_enabled = 3 [json_name = "walletPassEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];`
@@ -103,7 +104,8 @@ public object ServerConfigKt {
       }
     /**
      * ```
-     * Output only. True when `WalletService` serves membership passes.
+     * Output only. True when `WalletService` serves membership passes: the
+     * server has Wallet signing material, and both certificates are valid now.
      * ```
      *
      * `bool wallet_pass_enabled = 3 [json_name = "walletPassEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];`

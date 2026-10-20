@@ -18,8 +18,11 @@ chrono = { version = "0.4", features = ["serde"] }
 chrono-tz = "0.10"
 connectrpc = { version = "0.9", features = ["axum"] }
 dotenvy = "0.15"
+figment = "0.10.19"
 hex = "0.4"
 http = "1"
+lettre = { version = "0.11.23", default-features = false, features = ["builder", "hostname", "pool", "smtp-transport", "tokio1", "tokio1-rustls", "ring", "webpki-roots"] }
+openssl = "0.10.81"
 sea-orm = { version = "=2.0.4", default-features = false, features = ["macros", "runtime-tokio-rustls", "sqlx-postgres", "with-chrono", "with-json", "with-uuid"] }
 sea-orm-migration = { version = "=2.0.4", default-features = false, features = ["runtime-tokio-rustls", "sqlx-postgres"] }
 serde = { version = "1", features = ["derive"] }
@@ -33,6 +36,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 url = "2"
 uuid = { version = "1", features = ["v4", "serde"] }
+zip = { version = "9.0.5", default-features = false }
 
 [build-dependencies]
 connectrpc-build = "0.9"

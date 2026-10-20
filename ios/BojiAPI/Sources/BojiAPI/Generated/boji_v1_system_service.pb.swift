@@ -36,7 +36,8 @@ public nonisolated struct Boji_V1_ServerConfig: Sendable {
   /// Output only. True when Sign in with Apple is available under `/api/auth`.
   public var appleLoginEnabled: Bool = false
 
-  /// Output only. True when `WalletService` serves membership passes.
+  /// Output only. True when `WalletService` serves membership passes: the
+  /// server has Wallet signing material, and both certificates are valid now.
   public var walletPassEnabled: Bool = false
 
   /// Output only. True when `ActivityService` accepts synchronization.
