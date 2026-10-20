@@ -92,6 +92,124 @@
     }
   },
   {
+    "id": "reverse-lunge",
+    "name": "后撤步弓步蹲",
+    "course": "home-intermediate",
+    "seconds": 6.3,
+    "frames": 378,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      }
+    ],
+    "files": {
+      "light": "light/reverse-lunge.json",
+      "dark": "dark/reverse-lunge.json"
+    }
+  },
+  {
+    "id": "knee-push-up",
+    "name": "跪姿俯卧撑",
+    "course": "home-intermediate",
+    "seconds": 3.3,
+    "frames": 198,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      },
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      }
+    ],
+    "files": {
+      "light": "light/knee-push-up.json",
+      "dark": "dark/knee-push-up.json"
+    }
+  },
+  {
+    "id": "dead-bug",
+    "name": "死虫式",
+    "course": "home-intermediate",
+    "seconds": 6.6,
+    "frames": 396,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "hipFlexor",
+        "name": "髂腰肌"
+      }
+    ],
+    "files": {
+      "light": "light/dead-bug.json",
+      "dark": "dark/dead-bug.json"
+    }
+  },
+  {
+    "id": "wall-sit",
+    "name": "靠墙静蹲",
+    "course": "home-intermediate",
+    "seconds": 6.2,
+    "frames": 372,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      }
+    ],
+    "files": {
+      "light": "light/wall-sit.json",
+      "dark": "dark/wall-sit.json"
+    }
+  },
+  {
+    "id": "plank",
+    "name": "平板支撑",
+    "course": "home-intermediate",
+    "seconds": 4,
+    "frames": 240,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/plank.json",
+      "dark": "dark/plank.json"
+    }
+  },
+  {
     "id": "chest-press",
     "name": "坐姿推胸",
     "course": "gym-beginner",
@@ -255,124 +373,6 @@
     "files": {
       "light": "light/chest-stretch.json",
       "dark": "dark/chest-stretch.json"
-    }
-  },
-  {
-    "id": "plank",
-    "name": "平板支撑",
-    "course": null,
-    "seconds": 4,
-    "frames": 240,
-    "fps": 60,
-    "muscles": [
-      {
-        "key": "abs",
-        "name": "腹直肌"
-      },
-      {
-        "key": "glutes",
-        "name": "臀大肌"
-      },
-      {
-        "key": "delts",
-        "name": "三角肌"
-      }
-    ],
-    "files": {
-      "light": "light/plank.json",
-      "dark": "dark/plank.json"
-    }
-  },
-  {
-    "id": "knee-push-up",
-    "name": "跪姿俯卧撑",
-    "course": null,
-    "seconds": 3.3,
-    "frames": 198,
-    "fps": 60,
-    "muscles": [
-      {
-        "key": "pecs",
-        "name": "胸大肌"
-      },
-      {
-        "key": "triceps",
-        "name": "肱三头肌"
-      },
-      {
-        "key": "abs",
-        "name": "腹直肌"
-      }
-    ],
-    "files": {
-      "light": "light/knee-push-up.json",
-      "dark": "dark/knee-push-up.json"
-    }
-  },
-  {
-    "id": "reverse-lunge",
-    "name": "后撤步弓步蹲",
-    "course": null,
-    "seconds": 6.3,
-    "frames": 378,
-    "fps": 60,
-    "muscles": [
-      {
-        "key": "quads",
-        "name": "股四头肌"
-      },
-      {
-        "key": "glutes",
-        "name": "臀大肌"
-      }
-    ],
-    "files": {
-      "light": "light/reverse-lunge.json",
-      "dark": "dark/reverse-lunge.json"
-    }
-  },
-  {
-    "id": "wall-sit",
-    "name": "靠墙静蹲",
-    "course": null,
-    "seconds": 6.2,
-    "frames": 372,
-    "fps": 60,
-    "muscles": [
-      {
-        "key": "quads",
-        "name": "股四头肌"
-      },
-      {
-        "key": "glutes",
-        "name": "臀大肌"
-      }
-    ],
-    "files": {
-      "light": "light/wall-sit.json",
-      "dark": "dark/wall-sit.json"
-    }
-  },
-  {
-    "id": "dead-bug",
-    "name": "死虫式",
-    "course": null,
-    "seconds": 6.6,
-    "frames": 396,
-    "fps": 60,
-    "muscles": [
-      {
-        "key": "abs",
-        "name": "腹直肌"
-      },
-      {
-        "key": "hipFlexor",
-        "name": "髂腰肌"
-      }
-    ],
-    "files": {
-      "light": "light/dead-bug.json",
-      "dark": "dark/dead-bug.json"
     }
   }
 ]

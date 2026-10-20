@@ -66,6 +66,7 @@
 <script>
   const COURSES = [
     { id: 'home-beginner', title: '居家基础训练', note: '无需器械的全身入门' },
+    { id: 'home-intermediate', title: '居家进阶训练', note: '基础训练之后的下一步' },
     { id: 'gym-beginner', title: '器械基础训练', note: '轻重量熟悉常用器械' },
     { id: 'mobility', title: '舒缓拉伸', note: '训练前后都可进行' },
     { id: null, title: '动作库', note: '尚未编入课程的动作' },
@@ -81,6 +82,7 @@
 
   for (const course of COURSES) {
     const items = index.filter((x) => x.course === course.id);
+    if (items.length === 0) continue;
     const sec = document.createElement('section');
     sec.innerHTML = `<h2>${course.title}</h2><p>${course.note} · ${items.length} 个动作</p><div class="grid"></div>`;
     const grid = sec.querySelector('.grid');

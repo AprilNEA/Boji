@@ -22,20 +22,37 @@ struct TrainingView: View {
                             Label("从轻负荷开始，先熟悉动作，再逐步增加。", systemImage: "figure.mind.and.body").font(.subheadline)
                         }
                     }
+                    SectionHeading(title: "准备好了，再进一步")
+                    NavigationLink { WorkoutDetailView(workout: WorkoutLibrary.homeIntermediate) } label: {
+                        CourseRow(workout: WorkoutLibrary.homeIntermediate, symbol: "figure.strengthtraining.traditional", color: BojiTheme.accent,
+                                  detail: "\(WorkoutLibrary.homeIntermediate.minutes) 分钟 · \(WorkoutLibrary.homeIntermediate.exercises.count) 个动作")
+                    }.buttonStyle(.plain)
                     SectionHeading(title: "给身体一点余地")
                     NavigationLink { WorkoutDetailView(workout: WorkoutLibrary.mobility) } label: {
-                        Surface {
-                            HStack(spacing: 16) {
-                                SymbolTile(symbol: "figure.flexibility", color: BojiTheme.green)
-                                VStack(alignment: .leading, spacing: 6) { Text(WorkoutLibrary.mobility.title).font(.headline); Text("\(WorkoutLibrary.mobility.minutes) 分钟 · 温和活动").font(.caption).foregroundStyle(.secondary) }
-                                Spacer(); Image(systemName: "chevron.right").font(.caption.bold()).foregroundStyle(.secondary)
-                            }
-                        }
+                        CourseRow(workout: WorkoutLibrary.mobility, symbol: "figure.flexibility", color: BojiTheme.green,
+                                  detail: "\(WorkoutLibrary.mobility.minutes) 分钟 · 温和活动")
                     }.buttonStyle(.plain)
                     Text("课程是通用入门参考，不是个性化处方。有伤病或运动限制时，先咨询专业人员。出现疼痛、头晕或不适时立即停止。")
                         .font(.footnote).foregroundStyle(.secondary).padding(.bottom, 20)
                 }.padding(20).frame(maxWidth: 680).frame(maxWidth: .infinity)
             }.pageBackground().navigationTitle("训练").navigationBarTitleDisplayMode(.inline)
+        }
+    }
+}
+
+/// One-line course entry on the training page.
+private struct CourseRow: View {
+    let workout: Workout
+    let symbol: String
+    let color: Color
+    let detail: String
+    var body: some View {
+        Surface {
+            HStack(spacing: 16) {
+                SymbolTile(symbol: symbol, color: color)
+                VStack(alignment: .leading, spacing: 6) { Text(workout.title).font(.headline); Text(detail).font(.caption).foregroundStyle(.secondary) }
+                Spacer(); Image(systemName: "chevron.right").font(.caption.bold()).foregroundStyle(.secondary)
+            }
         }
     }
 }

@@ -5,6 +5,11 @@ import bodyweightSquat from './exercises/bodyweight-squat.ts';
 import wallPushUp from './exercises/wall-push-up.ts';
 import gluteBridge from './exercises/glute-bridge.ts';
 import birdDog from './exercises/bird-dog.ts';
+import reverseLunge from './exercises/reverse-lunge.ts';
+import kneePushUp from './exercises/knee-push-up.ts';
+import deadBug from './exercises/dead-bug.ts';
+import wallSit from './exercises/wall-sit.ts';
+import plank from './exercises/plank.ts';
 import chestPress from './exercises/chest-press.ts';
 import seatedRow from './exercises/seated-row.ts';
 import legPress from './exercises/leg-press.ts';
@@ -12,22 +17,18 @@ import latPulldown from './exercises/lat-pulldown.ts';
 import catCow from './exercises/cat-cow.ts';
 import hipFlexorStretch from './exercises/hip-flexor-stretch.ts';
 import chestStretch from './exercises/chest-stretch.ts';
-import plank from './exercises/plank.ts';
-import kneePushUp from './exercises/knee-push-up.ts';
-import reverseLunge from './exercises/reverse-lunge.ts';
-import wallSit from './exercises/wall-sit.ts';
-import deadBug from './exercises/dead-bug.ts';
 
-export type CourseId = 'home-beginner' | 'gym-beginner' | 'mobility';
+export type CourseId = 'home-beginner' | 'home-intermediate' | 'gym-beginner' | 'mobility';
 
 export const COURSES: { id: CourseId; exercises: Exercise[] }[] = [
   { id: 'home-beginner', exercises: [bodyweightSquat, wallPushUp, gluteBridge, birdDog] },
+  { id: 'home-intermediate', exercises: [reverseLunge, kneePushUp, deadBug, wallSit, plank] },
   { id: 'gym-beginner', exercises: [chestPress, seatedRow, legPress, latPulldown] },
   { id: 'mobility', exercises: [catCow, hipFlexorStretch, chestStretch] },
 ];
 
 /** Exercises with animations that no app course uses yet. index.json lists them with `course: null`. */
-export const LIBRARY: Exercise[] = [plank, kneePushUp, reverseLunge, wallSit, deadBug];
+export const LIBRARY: Exercise[] = [];
 
 export interface CourseExercise extends Exercise {
   course: CourseId | null;

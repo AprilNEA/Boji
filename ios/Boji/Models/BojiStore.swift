@@ -96,6 +96,56 @@ enum WorkoutLibrary {
         ]
     )
 
+    static let homeIntermediate = Workout(
+        id: "home-intermediate",
+        title: "居家进阶训练",
+        subtitle: "基础训练之后的下一步",
+        minutes: 25,
+        level: "进阶",
+        exercises: [
+            Exercise(
+                id: "reverse-lunge",
+                name: "后撤步弓步蹲",
+                sets: 3,
+                reps: "每侧 8 次",
+                tip: "后撤一步再下蹲，前膝对准脚尖。",
+                symbol: "figure.lunge"
+            ),
+            Exercise(
+                id: "knee-push-up",
+                name: "跪姿俯卧撑",
+                sets: 3,
+                reps: "8–10 次",
+                tip: "膝盖到头保持一条直线，胸口慢慢下放。",
+                symbol: "figure.strengthtraining.traditional"
+            ),
+            Exercise(
+                id: "dead-bug",
+                name: "死虫式",
+                sets: 3,
+                reps: "每侧 6 次",
+                tip: "腰背贴住地面，对侧手脚慢慢伸出。",
+                symbol: "figure.core.training"
+            ),
+            Exercise(
+                id: "wall-sit",
+                name: "靠墙静蹲",
+                sets: 3,
+                reps: "20–30 秒",
+                tip: "背部贴墙，大腿与地面平行。",
+                symbol: "figure.strengthtraining.traditional"
+            ),
+            Exercise(
+                id: "plank",
+                name: "平板支撑",
+                sets: 3,
+                reps: "20–30 秒",
+                tip: "肘在肩正下方，身体保持一条直线。",
+                symbol: "figure.core.training"
+            )
+        ]
+    )
+
     static let gym = Workout(
         id: "gym-beginner",
         title: "器械基础训练",
