@@ -10,7 +10,7 @@
 
 <h1 align="center">Boji · 薄肌俱乐部</h1>
 
-<p align="center"><strong>本地优先的健身记录 App<br/>训练、饮水、睡眠和身体数据保存在本机，基础记录无需登录</strong></p>
+<p align="center"><strong>穿衣显瘦，脱衣有肉<br/>把薄肌理论落到每天的训练、饮水和睡眠里</strong></p>
 
 <div align="center">
     <img alt="iOS 26+" src="https://img.shields.io/badge/iOS-26%2B-000000?style=flat&logo=apple&logoColor=white">
@@ -21,21 +21,32 @@
     <img alt="Hits" src="https://hits.aprilnea.com/hits?url=https://github.com/aprilnea/boji">
 </div>
 
-<p align="center">iOS 和 Android 都是原生客户端。iOS 版附带 Apple Watch App 和小组件。</p>
+<p align="center">支持 iPhone、Apple Watch 和 Android 手机。</p>
 
 ---
 
+## 薄肌理论
+
+薄肌理论全文很短，只有四条：
+
+- **薄肌**：穿衣显瘦，脱衣有肉。体脂长期保持在 13% 以下，不吃欺骗餐。
+- **黄毛**：不被外界评价左右，坚持自己判断过的方向。
+- **大水**：成年男性每天喝 1700 mL 水，成年女性每天 1500 mL 起。
+- **大睡**：每晚睡 7 小时～9 小时，不靠周末补觉。
+
+薄肌是一种审美偏好，不是医学健康标准。长期维持过低体脂，可能影响激素、骨骼和免疫健康。
+
 ## 功能
 
-两端都提供以下本地功能：
+Boji 把薄肌理论变成每天可以打卡的记录：
 
-- **训练**：4 套课程（居家基础、居家进阶、器械基础和舒缓拉伸），包含动作说明、逐组计时和休息倒计时。
-- **日常记录**：饮水、睡眠和身体数据，带输入校验。
-- **今日与足迹**：当天的打卡状态、最近 7 天活动和身体数据趋势图。
-- **俱乐部**：本地每周挑战和入门文章。
-- **设置**：昵称、外观、JSON 导出和本地数据删除。
+- **练出薄肌**：4 套课程（居家基础、居家进阶、器械基础和舒缓拉伸），带动作说明、逐组计时和休息倒计时。
+- **大水、大睡**：记录每天的饮水量和睡眠时长。今日看板显示当天的训练、饮水和睡眠是否完成。
+- **看见变化**：足迹页汇总最近 7 天的活动，并用趋势图展示体重和腰围。iOS 版还可以连接 Apple 健康，读取体重、腰围和睡眠数据。
+- **加入俱乐部**：参加每周挑战，阅读入门文章。登录并确认俱乐部守则后，可以领取免费会员卡。
+- **Apple Watch 与小组件**：开启共享后，在手表和主屏幕上查看当天的打卡状态。
 
-iOS 版另外接入了账号与免费会员卡、Apple 健康只读查询、小组件和 Apple Watch。这些功能尚未移植到 Android，详见 [Android 说明](android/README.md#尚未移植的功能)。
+免费会员卡、Apple 健康、Apple Watch 和小组件目前只在 iOS 版提供，Android 版尚未支持，详见 [Android 说明](android/README.md#尚未移植的功能)。
 
 课程是通用参考，不提供医疗诊断。
 
@@ -46,7 +57,7 @@ iOS 版另外接入了账号与免费会员卡、Apple 健康只读查询、小�
 | 目录 | 内容 | 状态 | 说明文档 |
 | --- | --- | --- | --- |
 | `ios/` | iOS App、watchOS App 和小组件：SwiftUI 和 XcodeGen 工程 | 首版功能已实现 | [iOS 说明](ios/README.md) |
-| `android/` | Android App：Kotlin、Jetpack Compose 和 Gradle 工程 | 本地功能已移植；账号、会员和设备联动尚未移植 | [Android 说明](android/README.md) |
+| `android/` | Android App：Kotlin、Jetpack Compose 和 Gradle 工程 | 训练和记录功能已移植；账号、会员和设备联动尚未移植 | [Android 说明](android/README.md) |
 | `bizserver/` | 后端：Rust、Axum、ConnectRPC、SeaORM 和 PostgreSQL | 开发中，尚未部署 | [后端说明](bizserver/README.md) |
 | `animations/` | 动作 Lottie 动画：TypeScript 生成器和生成的 JSON | 16 个课程动作已生成 | [动作动画说明](animations/README.md) |
 | `web/` | 薄肌俱乐部宣传网站：Next.js 静态导出、Tailwind CSS 和 Motion | 已从 `bojiclub` 导入 | [网站说明](web/README.md) |
