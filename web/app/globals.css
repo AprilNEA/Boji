@@ -1,0 +1,439 @@
+@import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+@theme {
+  --color-stage: #000000;
+  --color-mist: #f5f5f7;
+  --color-ink: #1d1d1f;
+  --color-ash: #86868b;
+  --color-ash-dark: #6e6e73;
+  --color-link: #0071e3;
+  --color-link-dark: #2997ff;
+  --color-new: #f56300;
+  --color-broc-light: #a8e063;
+  --color-broc: #2f7d32;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter Variable", "PingFang SC",
+    "Hiragino Sans GB", "Noto Sans SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+  --font-display: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter Variable", "PingFang SC",
+    "Noto Sans SC", "Noto Sans CJK SC", sans-serif;
+  --ease-apple: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  --nav-h: 44px;
+  --scroll-thickness: 6px;
+}
+
+html {
+  background: #000;
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.47;
+  letter-spacing: -0.01em;
+  background: #fff;
+  overflow-x: clip;
+}
+
+::selection {
+  background: rgba(168, 224, 99, 0.35);
+}
+
+/* ---------- Typography ---------- */
+
+.t-hero {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 10vw, 136px);
+  line-height: 1;
+  letter-spacing: -0.045em;
+  font-weight: 700;
+}
+
+.t-headline {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6vw, 80px);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+}
+
+.t-title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4.2vw, 56px);
+  line-height: 1.07;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+.t-subhead {
+  font-size: clamp(21px, 2.2vw, 28px);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+}
+
+.t-body-lg {
+  font-size: clamp(19px, 1.6vw, 21px);
+  line-height: 1.45;
+  letter-spacing: -0.012em;
+}
+
+/* Apple-style balanced line breaks: no orphaned single characters on the last line. */
+.t-hero,
+.t-headline,
+.t-title,
+.t-subhead,
+.t-body-lg {
+  text-wrap: balance;
+}
+
+.t-eyebrow {
+  font-size: clamp(17px, 1.5vw, 21px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.t-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.t-broc {
+  background: linear-gradient(120deg, #c4ef7a 0%, #a8e063 28%, #56ab2f 62%, #2f7d32 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.t-broc-anim {
+  background: linear-gradient(110deg, #2f7d32 0%, #a8e063 25%, #e2ffb0 40%, #a8e063 55%, #2f7d32 80%, #a8e063 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: broc-sheen 6s var(--ease-apple) infinite;
+}
+
+@keyframes broc-sheen {
+  0% {
+    background-position: 100% 0;
+  }
+  60%,
+  100% {
+    background-position: 0% 0;
+  }
+}
+
+.intelligence-text {
+  background: linear-gradient(100deg, #c4ef7a 0%, #a8e063 22%, #5ac8fa 48%, #2997ff 68%, #a8e063 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: broc-sheen 8s ease-in-out infinite alternate;
+}
+
+/* ---------- Boot loader: "正在燃脂…" (pure CSS, exits by itself) ---------- */
+.boot-loader {
+  animation: boot-out 0.7s var(--ease-apple) 1.15s forwards;
+}
+.boot-logo {
+  animation: boot-logo-in 0.8s var(--ease-apple) both;
+}
+.boot-bar {
+  width: 0%;
+  animation: boot-bar 1.05s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes boot-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+@keyframes boot-logo-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes boot-bar {
+  to {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .boot-loader {
+    display: none;
+  }
+}
+
+/* "Think Thin." — the headline works out and gets thinner. */
+.think-thin {
+  font-family: "Inter Variable", var(--font-display);
+  font-weight: 900;
+  animation: think-thin 1.6s var(--ease-apple) 1.35s forwards;
+}
+
+@keyframes think-thin {
+  from {
+    font-weight: 900;
+    letter-spacing: -0.035em;
+  }
+  to {
+    font-weight: 200;
+    letter-spacing: -0.05em;
+  }
+}
+
+/* ---------- Layout ---------- */
+
+.container-apple {
+  width: 100%;
+  max-width: 980px;
+  margin-inline: auto;
+  padding-inline: 22px;
+}
+
+.container-wide {
+  width: 100%;
+  max-width: 1260px;
+  margin-inline: auto;
+  padding-inline: 22px;
+}
+
+.section-pad {
+  padding-block: clamp(96px, 14vw, 168px);
+}
+
+.glass {
+  background: rgba(22, 22, 23, 0.72);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
+/* ---------- Global nav themes (Apple: dark glass on dark pages, light glass on light pages) ---------- */
+.nav-dark {
+  --nav-bg-top: rgba(22, 22, 23, 0.6);
+  --nav-bg: rgba(22, 22, 23, 0.8);
+  --nav-solid: #161617;
+  --nav-fg: #e8e8ed;
+  --nav-strong: #ffffff;
+  --nav-muted: #86868b;
+}
+.nav-light {
+  --nav-bg-top: rgba(250, 250, 252, 0.72);
+  --nav-bg: rgba(250, 250, 252, 0.84);
+  --nav-solid: #fafafc;
+  --nav-fg: #1d1d1f;
+  --nav-strong: #1d1d1f;
+  --nav-muted: #6e6e73;
+}
+.nav-glass {
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
+/* ---------- Thin-on-hover buttons & links ---------- */
+
+.btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 11px 22px;
+  border-radius: 980px;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transition:
+    font-weight 0.5s var(--ease-apple),
+    letter-spacing 0.5s var(--ease-apple),
+    background-color 0.3s ease,
+    box-shadow 0.5s var(--ease-apple),
+    opacity 0.3s ease;
+  font-family: "Inter Variable", var(--font-sans);
+  cursor: pointer;
+  user-select: none;
+}
+
+.btn-pill:hover {
+  font-weight: 250;
+  letter-spacing: 0.01em;
+}
+
+.btn-primary {
+  background: var(--color-link);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #0077ed;
+}
+
+.btn-outline {
+  box-shadow: inset 0 0 0 1.5px currentColor;
+}
+
+.btn-outline:hover {
+  box-shadow: inset 0 0 0 0.5px currentColor;
+}
+
+.btn-pill:disabled,
+.btn-pill[aria-disabled="true"] {
+  opacity: 0.32;
+  cursor: not-allowed;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.link-apple {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  color: var(--color-link);
+  font-family: "Inter Variable", var(--font-sans);
+  font-weight: 400;
+  transition:
+    font-weight 0.45s var(--ease-apple),
+    letter-spacing 0.45s var(--ease-apple);
+}
+
+.on-dark .link-apple,
+.link-apple.on-dark {
+  color: var(--color-link-dark);
+}
+
+.link-apple:hover {
+  font-weight: 200;
+  letter-spacing: 0.012em;
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 4px;
+}
+
+.link-apple .chev {
+  display: inline-block;
+  transition: transform 0.45s var(--ease-apple);
+}
+
+.link-apple:hover .chev {
+  transform: translateX(3px);
+}
+
+.nav-link,
+.footer-link {
+  font-family: "Inter Variable", var(--font-sans);
+  transition:
+    font-weight 0.45s var(--ease-apple),
+    letter-spacing 0.45s var(--ease-apple),
+    opacity 0.3s ease,
+    color 0.3s ease;
+}
+
+.nav-link:hover {
+  font-weight: 250;
+  letter-spacing: 0.02em;
+}
+
+.footer-link:hover {
+  font-weight: 250;
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 3px;
+}
+
+/* ---------- Badges & misc ---------- */
+
+.badge-new {
+  color: var(--color-new);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.hairline {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.on-dark .hairline {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.5'/></svg>");
+  mix-blend-mode: overlay;
+  opacity: 0.14;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Apple Card titanium */
+.titanium {
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(135deg, #fbfbfd 0%, #e8e8ed 38%, #f5f5f7 52%, #d2d2d7 78%, #ececf0 100%);
+}
+
+.titanium-brush {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.0) 0px,
+    rgba(255, 255, 255, 0.18) 1px,
+    rgba(0, 0, 0, 0.025) 2px,
+    rgba(255, 255, 255, 0) 3px
+  );
+}
+
+.laser {
+  color: rgba(60, 60, 67, 0.55);
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9),
+    0 -0.5px 0 rgba(0, 0, 0, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .think-thin {
+    font-weight: 200;
+  }
+}

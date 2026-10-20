@@ -1,0 +1,14 @@
+type LogoProps = {
+  className?: string;
+  title?: string;
+};
+
+/** Broccoli silhouette — the club's answer to the apple. */
+export function Logo({ className = "h-[18px] w-auto", title = "薄肌俱乐部" }: LogoProps) {
+  return (
+    <svg viewBox="0 0 64 72" className={className} role="img" aria-label={title} fill="currentColor">
+      <title>{title}</title>
+      <path d="M32 4c5.6 0 10.3 3.6 12 8.6 1.4-.5 2.9-.8 4.4-.8 7.3 0 13.2 5.9 13.2 13.2 0 6.1-4.1 11.2-9.7 12.7.3 1 .4 2 .4 3.1 0 6.3-5.1 11.4-11.4 11.4-1 0-2-.1-2.9-.4L38.6 66c.3 1.2-.6 2.4-1.9 2.4h-9.4c-1.3 0-2.2-1.2-1.9-2.4L27.9 51.8c-.9.3-1.9.4-2.9.4-6.3 0-11.4-5.1-11.4-11.4 0-1.1.1-2.1.4-3.1-5.6-1.5-9.7-6.6-9.7-12.7 0-7.3 5.9-13.2 13.2-13.2 1.5 0 3 .3 4.4.8C23.7 7.6 26.4 4 32 4Z" />
+    </svg>
+  );
+}
