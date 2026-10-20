@@ -12,7 +12,7 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 | `bizserver/` | Rust backend migration: Axum, better-auth-rs, ConnectRPC, SeaORM and PostgreSQL | `bizserver/AGENTS.md` |
 | `websites/` | 薄肌俱乐部 promotional website: Next.js static export, Tailwind CSS and Motion | `websites/AGENTS.md` |
 | `docs/` | Documents shared by both clients. `docs/membership.md` is the membership contract | this file |
-| `assets/` | App icon images for the root `README.md`, exported from `ios/Boji/Resources/AppIcon.icon` | this file |
+| `assets/public/` | Generic static files for `https://assets.leanmuscle.club`, such as the app icon images that the root `README.md` shows | this file |
 | `devenv.nix`, `devenv.yaml`, `.envrc` | Local Node.js and pnpm toolchain for `animations/` and `websites/` | `animations/AGENTS.md`, `websites/AGENTS.md` |
 | `.work/` | Local build outputs and scratch files. Git ignores this directory | none |
 
@@ -30,17 +30,25 @@ When you change the structure, the commands or the rules of a directory, update 
 
 ### README icon
 
-The root `README.md` shows `assets/boji-icon.png` in light mode and `assets/boji-icon-dark.png` in dark mode. Both files are exports of `ios/Boji/Resources/AppIcon.icon`. When the app icon changes, export both files again with `ictool` from Xcode. Run these commands at the repository root:
+The root `README.md` shows `assets/public/boji-icon.png` in light mode and `assets/public/boji-icon-dark.png` in dark mode. Both files are exports of `ios/Boji/Resources/AppIcon.icon`. When the app icon changes, export both files again with `ictool` from Xcode. Run these commands at the repository root:
 
 ```sh
 ICTOOL="/Applications/Xcode.app/Contents/Applications/Icon Composer.app/Contents/Executables/ictool"
-"$ICTOOL" ios/Boji/Resources/AppIcon.icon --export-image --output-file assets/boji-icon.png \
+"$ICTOOL" ios/Boji/Resources/AppIcon.icon --export-image --output-file assets/public/boji-icon.png \
   --platform iOS --rendition Default --width 256 --height 256 --scale 2
-"$ICTOOL" ios/Boji/Resources/AppIcon.icon --export-image --output-file assets/boji-icon-dark.png \
+"$ICTOOL" ios/Boji/Resources/AppIcon.icon --export-image --output-file assets/public/boji-icon-dark.png \
   --platform iOS --rendition Dark --width 256 --height 256 --scale 2
 ```
 
 ## Cross-directory rules
+
+### Asset host
+
+`assets/public/` deploys to `https://assets.leanmuscle.club`. The file `assets/public/<path>` is served at `https://assets.leanmuscle.club/<path>`. This repository does not hold the deployment configuration.
+
+Put only generic files here, such as the app icon. Keep a file that only one client or website uses in that directory, for example the website media in `websites/public/media/`.
+
+Do not reference `files.manuscdn.com`, `/manus-storage/` or other hosted storage URLs. Store the file in the repository instead.
 
 ### Membership numbers
 

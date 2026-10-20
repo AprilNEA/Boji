@@ -3,8 +3,8 @@
 
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="assets/boji-icon-dark.png">
-        <img src="assets/boji-icon.png" width="138" alt="Boji 应用图标"/>
+        <source media="(prefers-color-scheme: dark)" srcset="assets/public/boji-icon-dark.png">
+        <img src="assets/public/boji-icon.png" width="138" alt="Boji 应用图标"/>
     </picture>
 </p>
 
@@ -62,7 +62,7 @@ Boji 把薄肌理论变成每天可以打卡的记录：
 | `animations/` | 动作 Lottie 动画：TypeScript 生成器和生成的 JSON | 16 个课程动作已生成 | [动作动画说明](animations/README.md) |
 | `websites/` | 薄肌俱乐部宣传网站：Next.js 静态导出、Tailwind CSS 和 Motion | 已从 `bojiclub` 导入 | [网站说明](websites/README.md) |
 | `docs/` | 两端共享的文档 | 不适用 | [会员卡开发说明](docs/membership.md) |
-| `assets/` | README 使用的应用图标，浅色和深色各一张 | 不适用 | 不适用 |
+| `assets/public/` | 部署到 `https://assets.leanmuscle.club` 的通用静态文件，目前是浅色和深色应用图标，本 README 也使用这两张图 | 已上线 | 不适用 |
 
 每个目录还有一份 `AGENTS.md`，记录面向编码代理的目录规则。
 
