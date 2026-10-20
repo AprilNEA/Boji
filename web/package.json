@@ -2,7 +2,10 @@
   "name": "bojiclub",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=12"
+  },
   "scripts": {
     "dev": "next dev -H 0.0.0.0 -p 3000",
     "build": "next build",
