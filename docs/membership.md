@@ -15,7 +15,7 @@
 
 ## 接口契约
 
-后端位于独立项目 `bojifit/bizserver`。技术栈为 Hono 与 better-auth，不是 Rust。下表由后端任务确认，接口实现由后端任务负责。
+iOS 当前仍调用旧服务的 REST 业务接口，下表描述现有 iOS 代码的调用。旧服务没有上线过，Rust 后端不提供 `/api/me` 和 `/api/membership*` 路径。会员接口改为 `MembershipService` 的 ConnectRPC 方法，详见 [RPC 使用说明](../bizserver/docs/connectrpc-api.md)。认证仍使用 `/api/auth/*` 端点。iOS 切换后，必须同步更新本节。
 
 | 接口 | 行为 |
 | --- | --- |
