@@ -41,5 +41,4 @@
   - 三色并排：/manus-storage/async-images/ZB5PHvvqOtoDDpKH2cMAjF/image-2.webp（1920x1080，绿/白/黑）
   - 绿：/manus-storage/async-images/KxYJsbrTMdFvdk0ge6HCns/image-1.webp
   - 黑：/manus-storage/async-images/KxYJsbrTMdFvdk0ge6HCns/image-2.webp
-- 下载检查脚本：python3 scripts/fetch_preview.py <storage-key> <out.png>
 - 新路由 /store/（合并计算器 + 入会）；/calculator/、/join/ 跳转到 /store/
