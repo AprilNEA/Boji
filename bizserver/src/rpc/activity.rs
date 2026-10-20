@@ -8,8 +8,9 @@ use super::{
 };
 use crate::{
     domain::activity::{self as d, ActivityError},
-    proto::{boji::v1 as p, google::rpc::Status},
+    proto::boji::v1 as p,
 };
+use aip_193::proto::Status;
 use chrono::{Duration, NaiveDate};
 use connectrpc::{
     ConnectError, ErrorCode, RequestContext, Response, ServiceRequest, ServiceResult,

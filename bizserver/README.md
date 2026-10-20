@@ -18,7 +18,7 @@ Wallet 和 SMTP 发件箱尚未迁入。Wallet 目前只有协议定义，服务
 
 ## 本地启动
 
-在仓库根目录进入 devenv（`devenv shell`，或用 direnv 加载 `.envrc`）。devenv 按 `rust-toolchain.toml` 提供 Rust 1.99.0，并提供 `protoc`、`buf`、OpenSSL 和 `pkg-config`。PostgreSQL 由 `compose.yml` 提供。编译期间会用 `protoc` 生成 RPC 代码。首次编译需要访问依赖仓库。
+在仓库根目录进入 devenv（`devenv shell`，或用 direnv 加载 `.envrc`）。devenv 按 `rust-toolchain.toml` 提供 Rust 1.99.0，并提供 `buf`、OpenSSL 和 `pkg-config`。PostgreSQL 由 `compose.yml` 提供。编译期间，`build.rs` 对本目录的 buf workspace（`buf.yaml`）运行 `buf build`，再生成 RPC 代码。googleapis 依赖从 BSR 获取，由 `buf.lock` 固定版本。首次编译需要访问 BSR 和 crates.io。
 
 `better-auth` 精确固定到 crates.io 版本 `=1.0.0-alpha.4`。这个版本包含 Apple 签名器和原生运营权限 API。编译不需要克隆框架仓库或准备本机副本。首次构建需要访问 crates.io。
 
@@ -30,7 +30,7 @@ chmod 600 .env
 
 先替换密码和密钥占位值。数据库密码同时用于 `POSTGRES_PASSWORD` 和 `DATABASE_URL`。`BETTER_AUTH_SECRET` 至少需要 32 字节。
 
-本地数据库只用 `compose.yml` 启动，运行在 ArcBox 中。不要用 devenv 或本机安装的 PostgreSQL 搭建本地数据库。先启动 ArcBox，再确认 `docker context show` 输出 `arcbox`。如果输出其他 context，先运行 `docker context use arcbox`。
+本地数据库只用 `compose.yml` 启动，运行在 ArcBox 中。不要用 devenv 或本机安装的 PostgreSQL 搭建本地数据库。先启动 ArcBox，再确认 `docker context show` 输出 `arcbox`。如果输出其他 context，先运行 `docker context use arcbox`，或者在命令前加 `DOCKER_CONTEXT=arcbox`。如果 `~/.arcbox/bin/abctl daemon status` 显示 `stopped`，用 `~/.arcbox/bin/abctl daemon start` 启动 ArcBox。
 
 启动数据库后再运行 Rust 服务：
 
@@ -50,12 +50,15 @@ docker compose up --build
 
 Docker 服务地址为 `http://localhost:3002`。Compose 等待数据库就绪后执行迁移。迁移成功后才启动 API。镜像和 Compose 不代表已部署。
 
+镜像构建阶段从 `bufbuild/buf` 镜像复制 `buf`，镜像标签与 devenv 提供的 buf 版本一致。
+
 ## 接口入口
 
 认证保留 `/api/auth/*`。业务改用版本化 RPC 路径。协议按 Google AIP 设计，协议文件是接口的唯一来源：
 
 - [会员本人协议](proto/boji/v1/)：系统配置、会员卡、活动同步、Wallet 和错误原因
 - [运营协议](proto/boji/admin/v1/)：权益目录与会员运营
+- [iOS 客户端代码](../ios/BojiAPI/)：在该目录运行 `buf generate`，从 `proto/boji/v1/` 生成 Swift 消息和 Connect 客户端
 - [RPC 使用说明](docs/connectrpc-api.md)
 - [运营权限与审计说明](docs/admin-operations.md)
 - [认证迁移说明](docs/migration-auth.md)
@@ -70,11 +73,12 @@ cargo fmt --check
 cargo clippy --locked --all-targets -- -D warnings
 cargo test --locked
 buf lint
-buf format -d --exit-code proto
-(cd proto && api-linter --set-exit-status -I . -I ../third_party/googleapis $(find boji -name '*.proto'))
+buf format -d --exit-code
+buf export . -o ../.work/buf-export
+(cd ../.work/buf-export && api-linter --set-exit-status -I . $(find boji -name '*.proto'))
 ```
 
-`api-linter` 不由 devenv 提供，安装方法见 `AGENTS.md`。
+`api-linter` 不由 devenv 提供，安装方法见 `AGENTS.md`。`buf export` 把协议和 googleapis 依赖导出到 `.work/buf-export/`，供 `api-linter` 读取。
 
 数据库测试默认忽略。测试库也放在 Compose 启动的 PostgreSQL 中。先建一个单独的 `boji_test` 库，再运行测试：
 

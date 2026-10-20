@@ -17,9 +17,9 @@ Do not reimplement Connect framing or password and session algorithms. Use `app:
 | `src/rpc*` | ConnectRPC adapters: errors, resource names, page tokens, filters and conversions |
 | `proto/boji/v1/` | Canonical owner API: system, membership, activity and Wallet contracts, and `ErrorReason` |
 | `proto/boji/admin/v1/` | Canonical operations API: entitlement catalog and membership administration |
-| `third_party/googleapis/` | Pinned copies of the `google.api`, `google.rpc` and `google.type` protos |
 | `tests/` | Contract and database integration tests |
 | `docs/` | Chinese interface and migration documents |
+| `buf.yaml`, `buf.lock` | buf workspace of `proto/` and the pinned googleapis dependency from the BSR |
 | `Dockerfile`, `compose.yml` | Development image and isolated local services |
 
 ## Migration safety
@@ -35,12 +35,16 @@ Production startup currently fails closed. Do not remove that guard while mail d
 The protobuf API follows Google AIPs. No released client uses it yet, so a contract change needs no compatibility layer. Apply these rules:
 
 - Address every resource by its AIP-122 name. Parse and format names only in `src/rpc/names.rs`. Owner methods accept `me` or the caller ID as `{user}`. Operations methods also accept `-`.
-- Build every error in `src/rpc/error.rs`. Each error carries exactly one `google.rpc.ErrorInfo` with the domain `boji.leanmuscle.club`. `INVALID_ARGUMENT` errors also carry `BadRequest`, and `NOT_FOUND` errors also carry `ResourceInfo`.
+- Build every error in `src/rpc/error.rs` with `aip_193::proto`. Each error carries exactly one `google.rpc.ErrorInfo` with the domain `boji.leanmuscle.club`. `INVALID_ARGUMENT` errors also carry `BadRequest`, and `NOT_FOUND` errors also carry `ResourceInfo`.
 - Add a new error reason to `ErrorReason` in `proto/boji/v1/error_reason.proto`. Do not define reasons in Rust.
+- Parse AIP-160 filters with `aip_160::parse_filter` in `src/rpc/filter.rs`, then accept only the supported subset there. Do not write another filter parser.
 - Use `page_size`, `page_token` and `next_page_token` for lists. Bind each page token to its method and request parameters. Use `src/rpc/pagination.rs`.
 - Return the resource from Get, Create and state-change methods. A state change whose target state already exists returns `FAILED_PRECONDITION` and writes no audit event, except `GrantEntitlement`, which returns the existing grant.
 - Run `buf lint`, the `buf format` check and `api-linter`. `api-linter` must report zero problems. Disable a rule only for one element, with a `(-- api-linter: ... aip.dev/not-precedent: ... --)` comment that states the reason. Explain every `buf.yaml` lint exception in a comment.
-- Keep `third_party/googleapis/` at the commit in its `README.md`. Copy only the files that `proto/` imports.
+
+`buf.yaml` defines the buf workspace, and `proto/` is its only module. `buf.lock` pins googleapis from the BSR. To update googleapis, run `buf dep update` here, then set the googleapis commit in `../ios/BojiAPI/buf.gen.yaml` to the new commit. `build.rs` runs `buf build` on the workspace and maps `google.rpc` to `aip_193::proto` with an `extern_path`. Generate only Boji files and `google/type/date.proto`; do not generate `google.rpc` here.
+
+Clients generate their code from this workspace. After a change to `proto/boji/v1/`, run `buf generate` in `../ios/BojiAPI/` and include the regenerated Swift files in the same change. This is the one exception to the rule against changes in client directories: a contract change must not leave the generated client code stale.
 
 Sign in with Apple is enabled only when every `APPLE_*` variable is set. `rpc::Capabilities::apple_sign_in` must match the providers installed by `auth::build`. better-auth-rs signs and renews the Apple client secret. Do not add a static client secret or a renewal job here.
 
@@ -50,14 +54,14 @@ The `better-auth` dependency is pinned to crates.io version `=1.0.0-alpha.4`. It
 
 ## Commands
 
-Run these commands in this directory inside the devenv shell of the repository root. devenv provides Rust from `rust-toolchain.toml`, `protoc` for `build.rs`, `buf`, OpenSSL and `pkg-config`. `better-auth` links `openssl-sys` through `josekit` and `webauthn-rs-core`, so the build needs OpenSSL.
+Run these commands in this directory inside the devenv shell of the repository root. devenv provides Rust from `rust-toolchain.toml`, `buf` for `build.rs`, OpenSSL and `pkg-config`. Set `BUF` to use another `buf` binary. The first build needs network access to fetch googleapis from the BSR into the buf cache. `better-auth` links `openssl-sys` through `josekit` and `webauthn-rs-core`, so the build needs OpenSSL.
 
 - `cargo fmt --check`
 - `cargo clippy --locked --all-targets -- -D warnings`
 - `cargo test --locked`
 - `buf lint`
-- `buf format -d --exit-code proto`
-- `api-linter` from `proto/`: `api-linter --set-exit-status -I . -I ../third_party/googleapis $(find boji -name '*.proto')`
+- `buf format -d --exit-code`
+- `api-linter` on an export of the workspace and its googleapis dependency: `buf export . -o ../.work/buf-export && (cd ../.work/buf-export && api-linter --set-exit-status -I . $(find boji -name '*.proto'))`
 - `cargo run --locked -- migrate`
 - `cargo run --locked -- serve`
 
@@ -65,7 +69,9 @@ devenv does not provide `api-linter`. Install version 1.72.0 into the ignored ro
 
 To change the Rust version, update `rust-toolchain.toml`, `rust-version` in `Cargo.toml` and the base image in `Dockerfile` in the same change. devenv reads `rust-toolchain.toml`, so `devenv.nix` needs no change.
 
-Run the local database only with `docker compose up -d postgres` on ArcBox. Confirm that `docker context show` prints `arcbox` first. Do not set up local PostgreSQL with devenv, Nix binaries, Homebrew, or `initdb`. The Compose database listens on `127.0.0.1:55439`.
+The image build copies `buf` from the `bufbuild/buf` image. Keep that image tag in `Dockerfile` equal to the buf version that devenv provides.
+
+Run the local database only with `docker compose up -d postgres` on ArcBox. Confirm that `docker context show` prints `arcbox` first, or set `DOCKER_CONTEXT=arcbox` for the command. If `~/.arcbox/bin/abctl daemon status` reports `stopped`, start ArcBox with `~/.arcbox/bin/abctl daemon start`. Do not set up local PostgreSQL with devenv, Nix binaries, Homebrew, or `initdb`. The Compose database listens on `127.0.0.1:55439`.
 
 Database tests are ignored by default. Create a `boji_test` database in the Compose PostgreSQL with `docker compose exec -T postgres createdb -U boji boji_test`. Point `TEST_DATABASE_URL` at it before running `cargo test --locked -- --include-ignored --test-threads=1`. Never run those tests against `boji_rust`, production, or the shared client fixture.
 

@@ -1,10 +1,8 @@
 //! End-to-end contracts against a dedicated PostgreSQL database and real HTTP.
 
+use aip_193::proto::ErrorInfo;
 use base64::{Engine, engine::general_purpose::STANDARD_NO_PAD};
-use boji_bizserver::{
-    app, auth, migrations,
-    proto::{boji::v1 as p, google::rpc::ErrorInfo},
-};
+use boji_bizserver::{app, auth, migrations, proto::boji::v1 as p};
 use reqwest::{Client, StatusCode};
 use sea_orm::{ConnectOptions, Database};
 use serde_json::{Value, json};

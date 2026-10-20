@@ -15,8 +15,8 @@ mod policy;
 mod security;
 
 use admin_harness::{Harness, Identity};
+use aip_193::proto::{BadRequest, ErrorInfo};
 use base64::{Engine, engine::general_purpose::STANDARD_NO_PAD};
-use boji_bizserver::proto::google::rpc::{BadRequest, ErrorInfo};
 use buffa::Message;
 use chrono::{DateTime, Utc};
 use reqwest::{Response, StatusCode};

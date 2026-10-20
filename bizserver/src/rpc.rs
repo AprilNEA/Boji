@@ -110,7 +110,7 @@ fn install_type_registry() {
     INSTALL.call_once(|| {
         let mut registry = buffa::type_registry::TypeRegistry::new();
         buffa_types::register_wkt_types(&mut registry);
-        google::rpc::register_types(&mut registry);
+        aip_193::proto::register_types(&mut registry);
         google::r#type::register_types(&mut registry);
         p::register_types(&mut registry);
         a::register_types(&mut registry);

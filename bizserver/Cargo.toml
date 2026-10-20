@@ -6,6 +6,8 @@ rust-version = "1.99"
 publish = false
 
 [dependencies]
+aip-160 = "0.2"
+aip-193 = { version = "0.2.7", default-features = false, features = ["connectrpc"] }
 anyhow = "1"
 async-trait = "0.1"
 axum = { version = "0.8", features = ["http2"] }

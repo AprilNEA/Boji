@@ -1,7 +1,12 @@
+# buf workspace of the Boji API contract.
+#
+# The only module is proto/. buf.lock pins the googleapis dependency.
+# build.rs and ios/BojiAPI/buf.gen.yaml both read this workspace.
 version: v2
 modules:
   - path: proto
-  - path: third_party/googleapis
+deps:
+  - buf.build/googleapis/googleapis
 lint:
   use:
     - STANDARD
@@ -13,10 +18,6 @@ lint:
     # methods share one response type that is not named after the method.
     - RPC_REQUEST_RESPONSE_UNIQUE
     - RPC_RESPONSE_STANDARD_NAME
-  ignore:
-    - third_party/googleapis
 breaking:
   use:
     - FILE
-  ignore:
-    - third_party/googleapis

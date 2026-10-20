@@ -1,8 +1,8 @@
 # ConnectRPC 业务接口
 
-业务协议位于 `proto/boji/`，按 [Google AIP](https://google.aip.dev/) 设计。`build.rs` 使用官方 `connectrpc-build` 生成服务绑定。服务运行在 Axum 上，不自行实现 Connect 协议。协议引用的 `google.api`、`google.rpc` 和 `google.type` 定义位于 `third_party/googleapis/`，固定在 googleapis 的一个提交上。
+业务协议位于 `proto/boji/`，按 [Google AIP](https://google.aip.dev/) 设计。`build.rs` 使用官方 `connectrpc-build` 生成服务绑定。服务运行在 Axum 上，不自行实现 Connect 协议。协议引用的 `google.api`、`google.rpc` 和 `google.type` 定义从 BSR 的 `buf.build/googleapis/googleapis` 获取，由 `buf.lock` 固定在一个提交上。服务端的 `google.rpc` Rust 类型来自 [`aip-193`](https://crates.io/crates/aip-193) 的 `proto` 特性，过滤条件由 [`aip-160`](https://crates.io/crates/aip-160) 解析。
 
-修改协议后，必须运行 `buf lint`、`buf format -d --exit-code proto` 和 Google `api-linter`。三项检查的命令见 `AGENTS.md`。
+修改协议后，必须运行 `buf lint`、`buf format -d --exit-code` 和 Google `api-linter`。三项检查的命令见 `AGENTS.md`。修改 `proto/boji/v1/` 后，还要在 `ios/BojiAPI/` 中运行 `buf generate`，并在同一次改动中提交重新生成的 Swift 代码。
 
 ## 包与文件
 

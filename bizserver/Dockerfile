@@ -1,10 +1,15 @@
 # syntax=docker/dockerfile:1
+# build.rs runs `buf build` on the workspace in buf.yaml. Keep the buf image
+# tag equal to the buf version in devenv.nix.
+FROM bufbuild/buf:1.73.0 AS buf
+
 FROM rust:1.99.0-slim-bookworm AS build
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates git pkg-config libssl-dev protobuf-compiler \
+    ca-certificates git pkg-config libssl-dev \
     && rm -rf /var/lib/apt/lists/*
+COPY --from=buf /usr/local/bin/buf /usr/local/bin/buf
 WORKDIR /src
-COPY Cargo.toml Cargo.lock build.rs ./
+COPY Cargo.toml Cargo.lock build.rs buf.yaml buf.lock ./
 COPY src ./src
 COPY proto ./proto
 RUN cargo build --release --locked --bin boji-bizserver

@@ -3,22 +3,17 @@
 //! Input: an `ErrorReason`, a Connect code and optional field or resource facts.
 //! Output: `ConnectError` values for whole-request failures and
 //! `google.rpc.Status` values for per-write batch results.
-//! Pos: the only place in the transport that builds error details.
+//! Pos: the only place in the transport that builds error details. The
+//! `google.rpc` types and the `Status` to `ConnectError` conversion come from
+//! `aip_193::proto`.
 
-use crate::proto::{
-    boji::v1::ErrorReason,
-    google::rpc::{BadRequest, ErrorInfo, ResourceInfo, Status, bad_request::FieldViolation},
-};
+use crate::proto::boji::v1::ErrorReason;
+use aip_193::proto::{BadRequest, Code, ErrorInfo, FieldViolation, ResourceInfo, Status};
 use buffa::Enumeration;
-use buffa_types::google::protobuf::Any;
-use connectrpc::{ConnectError, ErrorCode, ErrorDetail};
+use connectrpc::{ConnectError, ErrorCode};
 
 /// `ErrorInfo.domain` of every error from this service.
 pub const ERROR_DOMAIN: &str = "boji.leanmuscle.club";
-
-const ERROR_INFO: &str = "google.rpc.ErrorInfo";
-const BAD_REQUEST: &str = "google.rpc.BadRequest";
-const RESOURCE_INFO: &str = "google.rpc.ResourceInfo";
 
 /// Resource type names from the `google.api.resource` annotations.
 pub mod resource_type {
@@ -34,39 +29,31 @@ pub mod resource_type {
 
 /// Build the `ErrorInfo` for one reason.
 pub fn error_info(reason: ErrorReason) -> ErrorInfo {
-    ErrorInfo {
-        reason: reason.proto_name().to_owned(),
-        domain: ERROR_DOMAIN.to_owned(),
-        ..Default::default()
-    }
+    ErrorInfo::new(reason.proto_name(), ERROR_DOMAIN)
+}
+
+/// Build a status whose first detail is the `ErrorInfo` of `reason`.
+fn reason_status(code: Code, reason: ErrorReason, message: &str) -> Status {
+    Status::new(code, message).with_detail(&error_info(reason))
 }
 
 /// Build an error with a code, a reason and a developer-facing message.
 pub fn error(code: ErrorCode, reason: ErrorReason, message: &str) -> ConnectError {
-    ConnectError::new(code, message.to_owned())
-        .with_detail(ErrorDetail::from_message(ERROR_INFO, &error_info(reason)))
+    reason_status(Code::from(code), reason, message).into()
 }
 
 /// Build an `INVALID_ARGUMENT` error that names one request field.
 ///
 /// `field` is a path in the request message, for example `writes[2].etag`.
 pub fn invalid_argument(reason: ErrorReason, field: &str, description: &str) -> ConnectError {
-    let violation = FieldViolation {
-        field: field.to_owned(),
-        description: description.to_owned(),
-        reason: reason.proto_name().to_owned(),
-        ..Default::default()
-    };
-    let bad_request = BadRequest {
-        field_violations: vec![violation],
-        ..Default::default()
-    };
-    error(
-        ErrorCode::InvalidArgument,
+    let violation = FieldViolation::new(field, description).with_reason(reason.proto_name());
+    reason_status(
+        Code::INVALID_ARGUMENT,
         reason,
         "The request contains an invalid field.",
     )
-    .with_detail(ErrorDetail::from_message(BAD_REQUEST, &bad_request))
+    .with_detail(&BadRequest::from(violation))
+    .into()
 }
 
 /// Build an `INVALID_ARGUMENT` `INVALID_INPUT` error for one request field.
@@ -76,17 +63,13 @@ pub fn invalid_input(field: &str, description: &str) -> ConnectError {
 
 /// Build a `NOT_FOUND` error that names the missing resource.
 pub fn not_found(reason: ErrorReason, resource_type: &str, resource_name: &str) -> ConnectError {
-    let info = ResourceInfo {
-        resource_type: resource_type.to_owned(),
-        resource_name: resource_name.to_owned(),
-        ..Default::default()
-    };
-    error(
-        ErrorCode::NotFound,
+    reason_status(
+        Code::NOT_FOUND,
         reason,
         "The requested resource does not exist.",
     )
-    .with_detail(ErrorDetail::from_message(RESOURCE_INFO, &info))
+    .with_detail(&ResourceInfo::new(resource_type, resource_name))
+    .into()
 }
 
 /// Build a `FAILED_PRECONDITION` error.
@@ -118,45 +101,12 @@ pub fn internal(event: &'static str) -> ConnectError {
 
 /// Build the `google.rpc.Status` of one failed batch write.
 pub fn status(code: ErrorCode, reason: ErrorReason, message: &str) -> Status {
-    Status {
-        code: grpc_code(code),
-        message: message.to_owned(),
-        details: vec![Any::pack(
-            &error_info(reason),
-            format!("type.googleapis.com/{ERROR_INFO}"),
-        )],
-        ..Default::default()
-    }
-}
-
-/// Return the numeric `google.rpc.Code` of a Connect code.
-fn grpc_code(code: ErrorCode) -> i32 {
-    match code {
-        ErrorCode::Canceled => 1,
-        ErrorCode::Unknown => 2,
-        ErrorCode::InvalidArgument => 3,
-        ErrorCode::DeadlineExceeded => 4,
-        ErrorCode::NotFound => 5,
-        ErrorCode::AlreadyExists => 6,
-        ErrorCode::PermissionDenied => 7,
-        ErrorCode::ResourceExhausted => 8,
-        ErrorCode::FailedPrecondition => 9,
-        ErrorCode::Aborted => 10,
-        ErrorCode::OutOfRange => 11,
-        ErrorCode::Unimplemented => 12,
-        ErrorCode::Internal => 13,
-        ErrorCode::Unavailable => 14,
-        ErrorCode::DataLoss => 15,
-        ErrorCode::Unauthenticated => 16,
-        // `ErrorCode` is non-exhaustive. A future code maps to `UNKNOWN`.
-        _ => 2,
-    }
+    reason_status(Code::from(code), reason, message)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use buffa::Message;
 
     #[test]
     fn status_carries_error_info_with_the_reason_name() {
@@ -170,8 +120,26 @@ mod tests {
             panic!("status must carry one detail");
         };
         assert_eq!(detail.type_url, "type.googleapis.com/google.rpc.ErrorInfo");
-        let info = ErrorInfo::decode_from_slice(&detail.value).expect("ErrorInfo");
+        let info = status.error_info().expect("ErrorInfo");
         assert_eq!(info.reason, "ACTIVITY_ETAG_MISMATCH");
         assert_eq!(info.domain, ERROR_DOMAIN);
+    }
+
+    #[test]
+    fn connect_errors_carry_error_info_first() {
+        let error = invalid_input("page_size", "must not be negative");
+        assert_eq!(error.code, ErrorCode::InvalidArgument);
+        let names: Vec<&str> = error.details.iter().map(|d| d.type_url.as_str()).collect();
+        assert_eq!(names, ["google.rpc.ErrorInfo", "google.rpc.BadRequest"]);
+
+        let status = Status::from(&error);
+        assert_eq!(status.code(), Code::INVALID_ARGUMENT);
+        assert_eq!(
+            status.error_info().map(|info| info.reason),
+            Some("INVALID_INPUT".to_owned())
+        );
+        let bad_request = status.detail::<BadRequest>().expect("BadRequest");
+        assert_eq!(bad_request.field_violations[0].field, "page_size");
+        assert_eq!(bad_request.field_violations[0].reason, "INVALID_INPUT");
     }
 }
