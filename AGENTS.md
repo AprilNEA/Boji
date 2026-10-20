@@ -13,7 +13,7 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 | `websites/` | 薄肌俱乐部 promotional website: Next.js static export, Tailwind CSS and Motion | `websites/AGENTS.md` |
 | `locales/` | Copy that more than one client shows: ICU MessageFormat in YAML, one directory per language | `locales/README.md` |
 | `crates/` | Rust tools for the repository, in their own Cargo workspace. `crates/locales/` generates the client string resources from `locales/` | `crates/AGENTS.md` |
-| `docs/` | Documents shared by both clients. `docs/membership.md` is the membership contract | this file |
+| `docs/` | Documents shared by both clients. `docs/membership.md` is the membership contract. `docs/ACCESSIBILITY.md` is the accessibility statement | this file |
 | `assets/public/` | Generic static files for `https://assets.leanmuscle.club`, such as the app icon images that the root `README.md` shows | this file |
 | `LICENSE.md` | The PolyForm Noncommercial License 1.0.0 with the `Required Notice:` line | this file |
 | `.github/` | GitHub files: `.github/CLA.md` is the contributor license agreement, and `.github/workflows/cla.yml` runs the CLA check on pull requests | this file |
@@ -106,6 +106,12 @@ The workflow uses CLA Assistant Lite (`contributor-assistant/github-action`), wh
 The check reads commit authors only. It does not read `Co-authored-by` trailers or the pull request author. The allowlist matches a commit author without a linked GitHub account by its free-text name, so an author name can bypass the check. Before you merge an external pull request, check its commit authors yourself.
 
 If you change the terms of `.github/CLA.md`, raise its version number and set `CLA_SIGNATURES` in the workflow to the next path, for example `signatures/version2/cla.json`. Contributors then sign again. Fix typos without a new version.
+
+### Accessibility statement
+
+`docs/ACCESSIBILITY.md` is the accessibility statement. GitHub shows it as the Accessibility tab of the repository. It lists the status of iOS, Android and the website for each App Store Accessibility Nutrition Label. Keep only one copy, because GitHub reads `.github/ACCESSIBILITY.md` before `docs/ACCESSIBILITY.md`.
+
+When you change accessibility behavior, update the affected status and the review date in the same change. Set a status to 已验证 only after a recorded check. Record the date, the environment and the result in the verification document of that directory, and write only the result in `docs/ACCESSIBILITY.md`. Keep development rules in the guide or design document of each directory, not in the statement.
 
 ### Documentation language
 
