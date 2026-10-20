@@ -19,6 +19,9 @@ protobuf = "4.36.2"
 # connect-kotlin is beta (0.x). Keep connectrpc/kotlin in rpc/buf.gen.yaml at the same version.
 connectKotlin = "0.9.0"
 okhttp = "5.5.0"
+# Checked against Maven Central on 2026-10-21. Gradle plugin 6.24.0 targets SDK 8.61.0; upgrade them together.
+sentry = "8.61.0"
+sentryGradlePlugin = "6.24.0"
 
 [libraries]
 protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobuf" }
@@ -49,9 +52,11 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "androidxTestExtJunit" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" }
+sentry-android-core = { module = "io.sentry:sentry-android-core", version.ref = "sentry" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+sentry = { id = "io.sentry.android.gradle", version.ref = "sentryGradlePlugin" }

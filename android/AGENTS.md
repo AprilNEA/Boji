@@ -25,6 +25,8 @@ Run these commands in `android/`.
 (cd rpc && buf generate)
 ```
 
+Crash reporting is off unless the build sets a Sentry DSN with `-Pboji.sentryDsn=https://...` or the `SENTRY_DSN` environment variable. See `../docs/sentry.md`.
+
 ## Rules
 
 ### Build
@@ -39,6 +41,14 @@ Run these commands in `android/`.
 - `buf generate` in `rpc/` writes `rpc/generated/` from `../bizserver/proto/boji/v1/`. Do not edit `rpc/generated/`. Commit it in the same change as the proto change. `buf` comes from the devenv shell, and the first run needs network access to the BSR.
 - The Gradle build compiles `rpc/generated/` as source. It does not run `protoc` or `buf`. Do not add the protobuf Gradle plugin.
 - Keep the plugin versions in `rpc/buf.gen.yaml` equal to the runtimes in `gradle/libs.versions.toml`: `protocolbuffers/java` and `protocolbuffers/kotlin` at the protoc release of `protobuf` (v36.2 for 4.36.2), and `connectrpc/kotlin` equal to `connectKotlin`. Follow "API contract" in the root `AGENTS.md`.
+
+### Crash reporting
+
+- `core/diagnostics/CrashReporting.kt` starts Sentry in `BojiApplication.onCreate()` before `super.onCreate()`. It reads `BuildConfig.SENTRY_DSN` and returns when the value is empty.
+- `AndroidManifest.xml` removes `SentryInitProvider` and `SentryPerformanceProvider`. Keep both removals, because the providers start the SDK without a DSN check.
+- Configure data collection in `CrashReporting.kt` only. Keep user info, cookies, headers, bodies, query strings, database query data, file paths, screenshots and the view hierarchy off.
+- The Sentry Gradle plugin only adds the R8 mapping UUID and uploads the mapping when `SENTRY_AUTH_TOKEN` is set. Keep auto-installation, tracing instrumentation, source context, the dependencies report and plugin telemetry off.
+- `sentry` and `sentryGradlePlugin` in `gradle/libs.versions.toml` belong together. Upgrade them in the same change.
 
 ### Strings
 

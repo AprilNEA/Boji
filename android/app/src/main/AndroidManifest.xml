@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Sentry crash reports use the network. The Sentry SDK also merges this permission. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <!--
         Body records are sensitive personal data. Backup and device transfer stay off
         until the Android data layer defines what may leave the device.
@@ -26,6 +29,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+            CrashReporting starts Sentry in BojiApplication only when the build sets a DSN.
+            These SDK providers would start it automatically, so the merged manifest drops them.
+        -->
+        <provider
+            android:name="io.sentry.android.core.SentryInitProvider"
+            android:authorities="${applicationId}.SentryInitProvider"
+            tools:node="remove" />
+        <provider
+            android:name="io.sentry.android.core.SentryPerformanceProvider"
+            android:authorities="${applicationId}.SentryPerformanceProvider"
+            tools:node="remove" />
     </application>
 
 </manifest>

@@ -1,0 +1,174 @@
+# Sentry 错误上报
+
+bizserver、iOS、Android 和 websites 都已接入 Sentry。四个项目默认都不上报：只有设置了 DSN，SDK 才会启动。上报内容只有错误诊断，不含训练、身体和 HealthKit 记录，也不含账号身份。
+
+正式启用前，必须先完成[启用前的待办事项](#启用前的待办事项)。
+
+## 启用方式
+
+每个项目应该使用独立的 Sentry 项目和 DSN。DSN 不是密钥，客户端安装包里可以看到它，但仓库中禁止提交真实 DSN。
+
+| 项目 | SDK | 配置项 | 读取时机 |
+| --- | --- | --- | --- |
+| bizserver | `sentry` 0.49.3（Rust） | 环境变量 `SENTRY_DSN`、`SENTRY_ENVIRONMENT`、`SENTRY_RELEASE` | 进程启动时 |
+| iOS | `sentry-cocoa` 9.30.2（SPM 产品 `Sentry`） | 构建设置 `BOJI_SENTRY_DSN` | 构建时 |
+| Android | `sentry-android-core` 8.61.0，Gradle 插件 6.24.0 | Gradle 属性 `boji.sentryDsn`，或环境变量 `SENTRY_DSN` | 构建时 |
+| websites | `@sentry/browser` 11.8.0 | 环境变量 `NEXT_PUBLIC_SENTRY_DSN`、`NEXT_PUBLIC_SENTRY_ENVIRONMENT`、`NEXT_PUBLIC_SENTRY_RELEASE` | 构建时 |
+
+Android 同时设置 Gradle 属性和环境变量时，Gradle 属性优先。四个项目都只接受 `https://` 开头的 DSN。bizserver 在 `APP_ENV=production` 时遇到 `http://` DSN 会拒绝启动；开发环境允许 `http://`，便于连接本机的 Sentry。
+
+示例命令：
+
+```sh
+# bizserver：写入 bizserver/.env，或在部署环境中设置
+SENTRY_DSN=https://<公钥>@<主机>/<项目编号>
+
+# iOS
+xcodebuild -project Boji.xcodeproj -scheme Boji BOJI_SENTRY_DSN='https://<公钥>@<主机>/<项目编号>' ...
+
+# Android
+./gradlew :app:assembleRelease -Pboji.sentryDsn='https://<公钥>@<主机>/<项目编号>'
+
+# websites
+NEXT_PUBLIC_SENTRY_DSN='https://<公钥>@<主机>/<项目编号>' pnpm build
+```
+
+### Sentry 端配置
+
+以下配置于 2026-10-21 02:09 至 02:34（UTC+08:00）完成。
+
+| 配置 | 值 |
+| --- | --- |
+| 组织 | `aprilnea-llc`。DSN 的主机是 `*.ingest.de.sentry.io`，即 Sentry 的德国数据区域 |
+| Team | `boji`。四个 Sentry 项目都只归属这个 Team |
+| Sentry 项目 | `boji-bizserver`（Rust）、`boji-ios`（iOS）、`boji-android`（Android）、`boji-websites`（Browser JavaScript） |
+| 告警 | 每个项目使用创建时的默认规则「High priority issues」 |
+| 安全和隐私 | 每个项目都开启了「避免存储 IP 地址」，并保留默认开启的「数据清洗」和「使用默认数据清洗器」。刷新页面后确认已保存 |
+| CI 令牌 | 组织令牌 `boji-github-actions`，作用域为 `org:ci` |
+
+「避免存储 IP 地址」是项目级设置。组织 `aprilnea-llc` 下还有其他产品的项目，所以没有修改组织级设置。
+
+`org:ci` 作用域在 Sentry 页面上的说明是 source map 上传、版本创建和代码映射。它能否上传 Android mapping 和 iOS dSYM 尚未验证，第一次运行上传步骤时需要确认。
+
+### 在 GitHub Actions 中配置
+
+正式构建的 DSN 应该来自 GitHub Actions 的 Variables（`vars`）。上传符号文件用的 `SENTRY_AUTH_TOKEN` 是密钥，必须放在 Secrets（`secrets`），禁止放在 Variables：Variables 以明文保存，日志也不会遮盖它们。仓库目前只有 `.github/workflows/cla.yml`，构建和部署工作流尚未编写。
+
+四个项目共用一个仓库，所以每个项目使用一个带后缀的变量名。仓库 `AprilNEA/Boji` 已在仓库级别设置了下表中的全部配置，没有使用 GitHub Environments。工作流把变量映射到各项目读取的名字：
+
+| GitHub 配置 | 类型 | 映射到 |
+| --- | --- | --- |
+| `SENTRY_DSN_BIZSERVER` | Variable | 部署环境的运行时变量 `SENTRY_DSN` |
+| `SENTRY_DSN_IOS` | Variable | `xcodebuild` 参数 `BOJI_SENTRY_DSN=...` |
+| `SENTRY_DSN_ANDROID` | Variable | Gradle 步骤的环境变量 `SENTRY_DSN` |
+| `SENTRY_DSN_WEBSITES` | Variable | `pnpm build` 步骤的环境变量 `NEXT_PUBLIC_SENTRY_DSN` |
+| `SENTRY_ORG` | Variable | 上传步骤的环境变量 `SENTRY_ORG`，值为 `aprilnea-llc` |
+| `SENTRY_PROJECT_ANDROID` | Variable | Gradle 步骤的环境变量 `SENTRY_PROJECT`，值为 `boji-android` |
+| `SENTRY_PROJECT_IOS`、`SENTRY_PROJECT_WEBSITES`、`SENTRY_PROJECT_BIZSERVER` | Variable | 以后上传 dSYM、source map 或创建版本时的 `sentry-cli --project` 参数，值为对应的 Sentry 项目名 |
+| `SENTRY_AUTH_TOKEN` | Secret | 上传 mapping、dSYM 或 source map 的步骤 |
+
+变量不存在时，`${{ vars.名称 }}` 的值是空字符串，Sentry 保持关闭。所以 fork 仓库和没有配置变量的分支照常构建，只是不上报。
+
+三个客户端在构建时读取 DSN，bizserver 在进程启动时读取。各项目的差异如下：
+
+- **bizserver**：禁止在 Docker 镜像中写入 DSN。部署步骤应该把 `SENTRY_DSN` 设为运行环境的变量，这样同一个镜像可以用于不同环境。
+- **iOS**：必须把 DSN 作为 `xcodebuild` 参数传入。只设置环境变量 `BOJI_SENTRY_DSN` 不会生效，因为 `project.yml` 中定义的空值优先于环境变量。2026-10-21 01:49（UTC+08:00）用 `xcodebuild -showBuildSettings` 验证了这一点。
+- **Android**：`app/build.gradle.kts` 直接读取环境变量 `SENTRY_DSN`、`SENTRY_ORG`、`SENTRY_PROJECT` 和 `SENTRY_AUTH_TOKEN`，不需要额外参数。
+- **websites**：Next.js 只在构建时内联 `NEXT_PUBLIC_*` 变量。修改 DSN 后必须重新构建。
+
+示例步骤：
+
+```yaml
+# Android
+- working-directory: android
+  run: ./gradlew :app:assembleRelease
+  env:
+    SENTRY_DSN: ${{ vars.SENTRY_DSN_ANDROID }}
+    SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+    SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT_ANDROID }}
+    SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+# iOS：DSN 必须作为构建设置参数传入
+- working-directory: ios
+  run: xcodebuild -project Boji.xcodeproj -scheme Boji BOJI_SENTRY_DSN="$SENTRY_DSN" archive
+  env:
+    SENTRY_DSN: ${{ vars.SENTRY_DSN_IOS }}
+
+# websites
+- working-directory: websites
+  run: pnpm build
+  env:
+    NEXT_PUBLIC_SENTRY_DSN: ${{ vars.SENTRY_DSN_WEBSITES }}
+    NEXT_PUBLIC_SENTRY_RELEASE: bojiclub@${{ github.sha }}
+```
+
+### 环境与版本
+
+| 项目 | `environment` | `release` |
+| --- | --- | --- |
+| bizserver | `SENTRY_ENVIRONMENT`，未设置时取 `APP_ENV` | `SENTRY_RELEASE`，未设置时为 `boji-bizserver@<Cargo 版本号>` |
+| iOS | Debug 为 `development`，Release 为 `production` | SDK 默认值：`<Bundle ID>@<版本号>+<构建号>` |
+| Android | Debug 为 `development`，Release 为 `production` | SDK 默认值：`<包名>@<versionName>+<versionCode>` |
+| websites | `NEXT_PUBLIC_SENTRY_ENVIRONMENT`，未设置时取 `NODE_ENV` | `NEXT_PUBLIC_SENTRY_RELEASE`，未设置时不填写 |
+
+## 上报内容
+
+四个项目都关闭了性能追踪（tracing）和 Session Replay，也不附带截图。
+
+### bizserver
+
+上报以下事件：
+
+- `ERROR` 级别的日志。服务端日志只有 `event` 字段，没有消息文本，所以 `src/telemetry.rs` 把 `event` 的值设为事件标题，例如 `rpc_internal_error`。
+- panic。
+- 导致进程退出的启动错误。只上报最外层的错误消息，与标准错误输出相同，不上报含数据库细节的错误链。
+
+每个请求使用独立的 Sentry Hub，事件带有以下标签：`request_id`、`http.method`、`http.path`，事务名为 `方法 路径`。`/reset-password/` 之后的路径段是重置令牌，上报前替换为 `[Filtered]`。同一请求内 `INFO` 和 `WARN` 级别的日志成为面包屑（breadcrumb）。
+
+事件不含请求头、请求体、查询串、Cookie、用户 ID 和 IP 地址。代码设置了 `send_default_pii(false)`，也没有使用 `sentry-tower` 的 `http` 特性。
+
+服务端没有开启性能追踪。外层路由看不到路由模板，事务名会包含原始路径，例如重置令牌。
+
+### iOS
+
+上报崩溃、卡顿（app hang）、看门狗终止和 release health 会话。事件带有设备与系统信息、应用生命周期和触摸面包屑，以及 SDK 生成的随机安装 ID。
+
+以下功能已关闭：截图、视图层级、网络请求面包屑、失败请求事件和自动性能插桩。网络请求面包屑和失败请求事件会带上完整的 URL 查询串，所以关闭。单元测试和带 `--uitesting` 参数的 UI 测试不会启动 SDK。
+
+`sentry-cocoa` 自带隐私清单，声明了崩溃数据、性能数据和其他诊断数据，均为「不关联身份、不用于追踪」。Xcode 生成隐私报告时会合并 SDK 的清单，所以 `Boji/Resources/PrivacyInfo.xcprivacy` 没有改动。
+
+小组件和手表应用尚未接入。
+
+### Android
+
+上报崩溃、ANR 和 release health 会话。事件带有设备与系统信息、应用生命周期和系统事件面包屑。SDK 会生成随机安装 ID，写入 `user.id` 和 `device.id`。重新安装应用后，安装 ID 会变化。
+
+`CrashReporting.kt` 通过 `DataCollection` 关闭了用户信息、Cookie、请求头、请求体、查询串、数据库查询和文件路径的采集，也关闭了截图和视图层级。
+
+`AndroidManifest.xml` 移除了 SDK 的 `SentryInitProvider` 和 `SentryPerformanceProvider`，所以 DSN 为空时 SDK 不运行任何代码。SDK 会通过清单合并加入 `INTERNET` 权限，`AndroidManifest.xml` 也显式声明了这个权限。在接入 Sentry 之前，Android 应用没有申请网络权限。
+
+Release 构建开启了 R8 混淆。设置 `SENTRY_AUTH_TOKEN`、`SENTRY_ORG` 和 `SENTRY_PROJECT` 后，Gradle 插件会上传 mapping 文件，Sentry 才能还原堆栈。没有设置令牌时，构建仍会写入 mapping UUID，但不上传。Gradle 插件的自动安装、字节码插桩、依赖报告、源码上下文和构建遥测都已关闭。
+
+### websites
+
+构建时设置了 `NEXT_PUBLIC_SENTRY_DSN`，网站才会加载 Sentry。没有设置时，浏览器不会加载 Sentry 的代码块，也不会向 Sentry 发出请求。
+
+启用后，网站上报未捕获的错误和未处理的 Promise 拒绝，面包屑包括控制台输出、点击和页面导航。`src/instrumentation-client.ts` 移除了 `BrowserSession` 集成，因为它在每次页面加载时都发送一个会话，作用相当于页面浏览统计。代码通过 `dataCollection` 关闭了用户信息、Cookie、请求头、请求体和查询串的采集。
+
+## 启用前的待办事项
+
+以下事项需要产品或发布负责人决定，代码改动没有处理。
+
+- **应用内隐私文案**：Android 的 `settings_privacy_note` 写着「记录不会上传」，`locales/zh-Hans/progress.yaml` 的 `progress_empty_text` 写着「数据仅在本机保存」。启用 Sentry 后，这些文案对训练和身体记录仍然成立，但没有告知用户会上传崩溃诊断。应该决定是否补充说明。
+- **App Store Connect 的「App 隐私」**：启用 iOS 上报前，应该在问卷中增加崩溃数据、性能数据和其他诊断数据，选择「不关联身份」「不用于追踪」。
+- **Google Play 的「数据安全」**：启用 Android 上报前，应该在「应用信息和性能」类别下申报崩溃日志和诊断信息。安装 ID 是否需要申报为「设备或其他 ID」，需要对照 Play 的最新定义确认。
+- **符号文件**：iOS 尚未配置 dSYM 上传，Release 崩溃的堆栈只有地址。websites 的生产构建默认不生成浏览器 source map，堆栈是压缩后的代码。两者都需要在发布流水线中用 `sentry-cli` 上传。
+- **构建工作流**：仓库还没有构建和部署工作流，所以 GitHub 中的 Variables 和 Secret 目前没有被任何步骤读取。编写工作流时，按[在 GitHub Actions 中配置](#在-github-actions-中配置)映射变量。
+- **Android 网络权限**：`android/README.md` 原有「暂不申请网络权限」的设计决定。接入 Sentry 后应用申请了 `INTERNET` 权限，这条决定已经更新。
+
+## 升级 SDK
+
+- bizserver：`sentry` 只启用 `backtrace`、`contexts`、`panic`、`tracing`、`tower`、`ureq` 和 `rustls` 特性。`ureq` 的 `rustls` 特性使用 `ring`，与 bizserver 其他依赖相同。`sentry` 的 `rustls` 特性带有 `reqwest?/rustls` 这类弱依赖特性，所以 Cargo 会把未启用的 `reqwest` 0.13 及其依赖（例如 `aws-lc-rs`）记入 `Cargo.lock`。`cargo tree --target all -i aws-lc-rs` 没有输出，说明这些包不参与编译。
+- Android：Gradle 插件版本对应一个 SDK 版本。两者在 `gradle/libs.versions.toml` 中一起升级。
+- iOS：`project.yml` 用 `exactVersion` 固定版本。修改后运行 `xcodegen generate`，并提交 `Package.resolved`。
+- websites：JS SDK v11 删除了 `sendDefaultPii`，改用 `dataCollection`。升级大版本时，应该重新检查 `dataCollection` 的字段。

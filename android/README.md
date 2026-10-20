@@ -119,11 +119,17 @@ iOS 版采用 Liquid Glass 和 Apple 人机界面指南。Android 版遵循 Mate
 
 系统备份和设备迁移都排除了这些记录。配置位于 `AndroidManifest.xml` 和 `res/xml/data_extraction_rules.xml`。因此卸载应用会删除记录，设置页的隐私说明写明了这一点。
 
+构建时设置了 Sentry DSN，应用才会上报崩溃和 ANR。默认构建不设置 DSN，不上报任何内容。上报内容不含训练和身体记录。启用方式和上报字段见 [Sentry 错误上报](../docs/sentry.md)。
+
+```sh
+./gradlew :app:assembleRelease -Pboji.sentryDsn='https://<公钥>@<主机>/<项目编号>'
+```
+
 ## 设计决定
 
 - **固定品牌色**：未启用 Android 12 的动态取色，以保持与 iOS 版一致。
 - **不锁定竖屏**：iOS 版在 iPhone 上只支持竖屏。Android 16 起，target 36 及以上的应用在最小宽度不小于 600dp 的屏幕上，方向和尺寸限制不再生效。target 37 时无法再退出该行为，因此界面适配横屏和大屏。内容区最大宽度为 680dp，在宽屏上居中。
-- **暂不申请网络权限**：当前没有联网功能。接入会员服务时，再添加 `INTERNET` 权限。
+- **申请网络权限**：Sentry 崩溃上报需要 `INTERNET` 权限。没有 DSN 时，Sentry 不发出网络请求。
 - **界面文字只有中文**：应用字符串只放在 `res/values/`。Material 组件自带的无障碍文字（例如底部弹层的「Close sheet」）跟随系统语言。
 
 ## 尚未移植的功能

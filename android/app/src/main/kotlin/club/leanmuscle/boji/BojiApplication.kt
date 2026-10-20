@@ -6,6 +6,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import club.leanmuscle.boji.core.data.AppearanceSettings
 import club.leanmuscle.boji.core.data.BojiStore
 import club.leanmuscle.boji.core.data.DataStoreAppearanceSettings
+import club.leanmuscle.boji.core.diagnostics.CrashReporting
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -26,6 +27,8 @@ class BojiApplication : Application() {
         private set
 
     override fun onCreate() {
+        // Before super.onCreate(), so that Sentry also reports failures during app startup.
+        CrashReporting.start(this)
         super.onCreate()
         container = AppContainer(this)
     }
