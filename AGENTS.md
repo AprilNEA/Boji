@@ -1,6 +1,6 @@
 # Boji
 
-Boji is a local-first fitness tracking app. This repository holds two native clients, iOS and Android, the exercise animations that both clients use, and the 薄肌俱乐部 promotional website. Each directory builds on its own.
+Boji is a local-first fitness tracking app. This repository holds two native clients, iOS and Android, a Rust backend, the exercise animations that both clients use, and the 薄肌俱乐部 promotional website. Each directory builds on its own.
 
 ## Directory map
 
@@ -12,6 +12,7 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 | `bizserver/` | Rust backend migration: Axum, better-auth-rs, ConnectRPC, SeaORM and PostgreSQL | `bizserver/AGENTS.md` |
 | `web/` | 薄肌俱乐部 promotional website: Next.js static export, Tailwind CSS and Motion | `web/AGENTS.md` |
 | `docs/` | Documents shared by both clients. `docs/membership.md` is the membership contract | this file |
+| `assets/` | App icon images for the root `README.md`, exported from `ios/Boji/Resources/AppIcon.icon` | this file |
 | `devenv.nix`, `devenv.yaml`, `.envrc` | Local Node.js and pnpm toolchain for `animations/` and `web/` | `animations/AGENTS.md`, `web/AGENTS.md` |
 | `.work/` | Local build outputs and scratch files. Git ignores this directory | none |
 
@@ -26,6 +27,18 @@ When you change the structure, the commands or the rules of a directory, update 
 - `devenv test` at the repository root runs the type check of `animations/`, verifies that `animations/lottie/` matches its source, and runs the type check of `web/`.
 - The iOS and Android build and test commands are in `ios/AGENTS.md` and `android/AGENTS.md`.
 - The website commands are in `web/AGENTS.md`.
+
+### README icon
+
+The root `README.md` shows `assets/boji-icon.png` in light mode and `assets/boji-icon-dark.png` in dark mode. Both files are exports of `ios/Boji/Resources/AppIcon.icon`. When the app icon changes, export both files again with `ictool` from Xcode. Run these commands at the repository root:
+
+```sh
+ICTOOL="/Applications/Xcode.app/Contents/Applications/Icon Composer.app/Contents/Executables/ictool"
+"$ICTOOL" ios/Boji/Resources/AppIcon.icon --export-image --output-file assets/boji-icon.png \
+  --platform iOS --rendition Default --width 256 --height 256 --scale 2
+"$ICTOOL" ios/Boji/Resources/AppIcon.icon --export-image --output-file assets/boji-icon-dark.png \
+  --platform iOS --rendition Dark --width 256 --height 256 --scale 2
+```
 
 ## Cross-directory rules
 
