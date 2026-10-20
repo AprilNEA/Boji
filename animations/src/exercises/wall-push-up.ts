@@ -1,8 +1,8 @@
 // 墙壁俯卧撑 (wall-push-up). pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import type { Palette } from '../palettes.ts';
-import { add, dir, lerp, mul, timeline } from '../math.ts';
-import { solve } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import type { Palette } from '@/palettes.ts';
+import { add, dir, lerp, mul, timeline } from '@/math.ts';
+import { solve } from '@/rig.ts';
 import { A, G, standLegs } from './common.ts';
 
 const wallTL = timeline([

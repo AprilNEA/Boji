@@ -1,6 +1,6 @@
 // 开胸拉伸 (chest-stretch). pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { lerp, timeline } from '../math.ts';
+import type { Exercise } from '@/exercise.ts';
+import { lerp, timeline } from '@/math.ts';
 import { A, G, standLegs } from './common.ts';
 
 const chestTL = timeline([

@@ -2,9 +2,9 @@
 // onto the heels. The hands stay planted, so the arms lengthen and the back rounds over the thighs.
 // The pose is held for two slow breaths: the upper back rises a little on each inhale.
 // pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { add, dir, IK_WARNINGS, len, lerp, mul, sub, timeline, type Segment, type Vec2 } from '../math.ts';
-import { BODY, solve, type Pose } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import { add, breath, dir, IK_WARNINGS, len, lerp, mul, sub, timeline, type Segment, type Vec2 } from '@/math.ts';
+import { BODY, solve, type Pose } from '@/rig.ts';
 import { FLOOR, QUAD, kneelLeg, plantedArm } from './common.ts';
 
 const HOLD: Segment = { d: 3.6, from: 1, to: 1, e: [0.75, 0.9] };
@@ -75,9 +75,10 @@ const childsPose = {
   muscles: [{ m: 'lowerBack', scale: 0.55 }, { m: 'lats', scale: 0.55 }],
   pose(t) {
     const ph = childTL.at(t);
-    const breath = ph.seg === HOLD ? 2.2 * (1 - Math.cos(4 * Math.PI * ph.u)) / 2 : 0;
+    // Two breaths during the hold.
+    const breathing = ph.seg === HOLD ? 2.2 * breath((2 * ph.u) % 1) : 0;
     return {
-      ...body(ph.p, solveTh(ph.p), breath),
+      ...body(ph.p, solveTh(ph.p), breathing),
       arms: { near: plantedArm(WRIST), far: plantedArm(add(WRIST, [-3, 0])) },
     };
   },

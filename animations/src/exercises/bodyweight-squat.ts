@@ -1,6 +1,6 @@
 // 徒手深蹲 (bodyweight-squat). pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { lerp, smooth, timeline, type Vec2 } from '../math.ts';
+import type { Exercise } from '@/exercise.ts';
+import { easeSinIn, easeSinOut, lerp, smooth, timeline, type Vec2 } from '@/math.ts';
 import { A, G, standLegs } from './common.ts';
 
 const squatTL = timeline([
@@ -15,8 +15,8 @@ const bodyweightSquat = {
   pose(t) {
     const { p } = squatTL.at(t);
     const x0 = 280;
-    const px = Math.sin((p * Math.PI) / 2); // hips travel back first
-    const py = 1 - Math.cos((p * Math.PI) / 2);
+    const px = easeSinOut(p); // hips travel back first
+    const py = easeSinIn(p);
     const hip: Vec2 = [lerp(x0 - 8, x0 - 80, px), lerp(G - A - 180, G - A - 104, py)];
     const pa = smooth(Math.min(1, p * 1.25));
     return {

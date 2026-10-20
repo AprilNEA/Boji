@@ -1,7 +1,7 @@
 // 平板支撑 (plank). Forearm plank held still; the loop shows one slow breath. pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { add, dir, mul, type Vec2 } from '../math.ts';
-import { BODY, solve, type Pose } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import { add, breath, dir, mul, type Vec2 } from '@/math.ts';
+import { BODY, solve, type Pose } from '@/rig.ts';
 import { FLOOR } from './common.ts';
 
 const TOTAL = 4.0;
@@ -28,17 +28,16 @@ const PLANK = (() => {
   return { body, arms, th };
 })();
 
-const breathAt = (t: number) => 0.5 - 0.5 * Math.cos(2 * Math.PI * t);
 
 const plank = {
   id: 'plank', name: '平板支撑', tl: { total: TOTAL }, mat: true,
   muscles: [
-    { m: 'abs', e: (t: number) => 0.75 + 0.2 * breathAt(t) },
+    { m: 'abs', e: (t: number) => 0.75 + 0.2 * breath(t) },
     { m: 'glutes', e: () => 0.5 },
     { m: 'delts', side: 'near', e: () => 0.4 },
   ],
   pose(t) {
-    return { ...PLANK.body(PLANK.th, breathAt(t)), arms: PLANK.arms };
+    return { ...PLANK.body(PLANK.th, breath(t)), arms: PLANK.arms };
   },
 } satisfies Exercise;
 

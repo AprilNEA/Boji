@@ -1,9 +1,9 @@
 // 登山者 (mountain-climber). High plank; the near knee drives toward the chest, then the far knee.
 // The thigh is longer than the hip is high, so the hips rise a little while the knee passes under them.
 // pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { add, ang, easeIO, len, lerp, mul, smooth, sub, timeline, type Vec2 } from '../math.ts';
-import { solve, type LimbSpec, type Pose } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import { add, ang, D2R, easeIO, len, lerp, mul, norm, polar, smooth, sub, timeline, type Vec2 } from '@/math.ts';
+import { solve, type LimbSpec, type Pose } from '@/rig.ts';
 import { plantedArm } from './common.ts';
 import { HIGH_PLANK } from './push-up.ts';
 
@@ -48,8 +48,8 @@ const liftedHip = (rep: number, lift: number): Vec2 => {
   const spec = rep === 0 ? MC.base.legs.far : MC.base.legs.near;
   const ankle = spec.target as Vec2;
   const r = sub(MC.base.hip, ankle), L = len(r);
-  const s = Math.max(-1, Math.sin((ang(r) * Math.PI) / 180) - lift / L);
-  return add(ankle, [L * Math.cos(Math.asin(s)), L * s]);
+  const s = Math.max(-1, norm(r)[1] - lift / L);
+  return polar(ankle, Math.asin(s) / D2R, L);
 };
 
 /** Intersection of circle (c0, r0) and circle (c1, r1) nearest to `near`. Falls back to the closest point. */

@@ -1,8 +1,8 @@
 // 靠墙静蹲 (wall-sit). The back slides down the wall, holds with thighs level, then slides up. pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import type { Palette } from '../palettes.ts';
-import { add, dir, lerp, lerpV, mul, timeline, type Segment, type Vec2 } from '../math.ts';
-import { BODY, type Joints } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import type { Palette } from '@/palettes.ts';
+import { add, breath, dir, lerp, lerpV, mul, timeline, type Segment, type Vec2 } from '@/math.ts';
+import { BODY, type Joints } from '@/rig.ts';
 import { A, G } from './common.ts';
 
 const HOLD: Segment = { d: 3.0, from: 1, to: 1, ease: 'linear', e: [0.6, 1] };
@@ -39,14 +39,14 @@ const wallSit = {
     const ph = sitTL.at(t);
     const p = ph.p;
     // A slow breath during the hold.
-    const breath = ph.seg === HOLD ? 0.5 - 0.5 * Math.cos(2 * Math.PI * ph.u) : 0;
+    const breathing = ph.seg === HOLD ? breath(ph.u) : 0;
     const arm = (sfx: 'n' | 'f', dx: number) => ({
       target: (J: Joints) => lerpV(hangWrist(sfx === 'n' ? J.S : J.Sf), thighPoint(J, dx), p),
       hand: (J: Joints) => lerp(86, J.thigh_n.a, p),
     });
     return {
       hip: [HIP_X, lerp(HIP_TOP, HIP_BOTTOM, p)],
-      spine: { lumbar: -90, thoracic: -90.5 + 0.8 * breath },
+      spine: { lumbar: -90, thoracic: -90.5 + 0.8 * breathing },
       neck: -88, head: -89,
       legs: {
         near: { target: ANKLE, foot: 0, side: [1, 0] },

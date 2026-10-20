@@ -1,18 +1,18 @@
-// Compose one exercise and palette into a Lottie animation.
-// Layers: floor, back props, moving equipment, body parts back to front, front props.
+// Compose one exercise and palette into a Lottie animation. Front-view exercises go to front-compose.ts.
+// Side-view layers: floor, back props, moving equipment, body parts back to front, front props.
 import { IK_WARNINGS, add, dir, mul, type Vec2 } from './math.ts';
-import { animProp, ellipse, fill, group, rect, shapeLayer, smoothClosed, stroke, tr, transformKS, unwrap, type BezierPath, type LottieObject } from './lottie.ts';
-import { GROUND, MUSCLES, highlightGroup, partShapes, solve, torsoShapes, type Joints, type Limb, type Part, type Side, type TorsoFrame } from './rig.ts';
+import { animProp, smoothClosed, transformKS, unwrap, type LottieObject } from './lottie.ts';
+import { MUSCLES, collarShapes, highlightGroup, partShapes, solve, torsoShapes, type Joints, type Limb, type MuscleRegion, type Part, type Side, type TorsoFrame } from './rig.ts';
 import { PALETTES, type PaletteName } from './palettes.ts';
-import type { Exercise, MovingPart, MuscleSpec, PropShape, Props } from './exercise.ts';
+import type { Exercise, SideExercise } from './exercise.ts';
+import { EMPTY_BOX, FPS, TOL, dynamicLayer, effortOpacity, finish, floorLayer, frameOffset, propsLayer, union, type Box, type Composition, type LayerDraft } from './compose-shared.ts';
+import { composeFront } from './front-compose.ts';
 
-const W = 512, H = 512;
-export const FPS = 60;
-const TOL = { pos: 0.2, rot: 0.2, opacity: 0.6, path: 0.25 };
+export { FPS, muscleEffort, type Composition } from './compose-shared.ts';
 
 type LimbKey = `${Limb}_${Side}`;
 type MuscleFrame = Exclude<TorsoFrame, 'pelvis'>;
-type LayerKey = LimbKey | 'neck' | 'pelvis' | 'torso' | MuscleFrame | 'head';
+type LayerKey = LimbKey | 'neck' | 'pelvis' | 'torso' | MuscleFrame | 'collar' | 'head';
 type FrameKey = Exclude<LayerKey, 'torso'>;
 
 const LIMBS: Record<LimbKey, Limb> = {
@@ -21,30 +21,14 @@ const LIMBS: Record<LimbKey, Limb> = {
 };
 const isLimb = (part: string): part is Limb => `${part}_n` in LIMBS;
 // Back to front.
-const Z: LayerKey[] = ['upper_f', 'fore_f', 'hand_f', 'thigh_f', 'shin_f', 'foot_f', 'neck', 'pelvis', 'torso', 'tPec', 'tAbs', 'tLats', 'tLow', 'head', 'thigh_n', 'shin_n', 'foot_n', 'upper_n', 'fore_n', 'hand_n'];
+const Z: LayerKey[] = ['upper_f', 'fore_f', 'hand_f', 'thigh_f', 'shin_f', 'foot_f', 'neck', 'pelvis', 'torso', 'tPec', 'tAbs', 'tLats', 'tLow', 'collar', 'head', 'thigh_n', 'shin_n', 'foot_n', 'upper_n', 'fore_n', 'hand_n'];
 const MUSCLE_FRAMES: readonly LayerKey[] = ['tPec', 'tAbs', 'tLats', 'tLow'];
 const isMuscleFrame = (key: LayerKey): key is MuscleFrame => MUSCLE_FRAMES.includes(key);
 const LAYER_NAMES: Record<LayerKey, string> = {
   upper_f: 'Far Upper Arm', fore_f: 'Far Forearm', hand_f: 'Far Hand', thigh_f: 'Far Thigh', shin_f: 'Far Shin', foot_f: 'Far Foot',
-  neck: 'Neck', pelvis: 'Pelvis', torso: 'Torso', tPec: 'Chest Muscles', tAbs: 'Core Muscles', tLats: 'Back Muscles', tLow: 'Lower Back Muscles', head: 'Head',
+  neck: 'Neck', pelvis: 'Pelvis', torso: 'Torso', tPec: 'Chest Muscles', tAbs: 'Core Muscles', tLats: 'Back Muscles', tLow: 'Lower Back Muscles', collar: 'Collar', head: 'Head',
   thigh_n: 'Near Thigh', shin_n: 'Near Shin', foot_n: 'Near Foot', upper_n: 'Near Upper Arm', fore_n: 'Near Forearm', hand_n: 'Near Hand',
 };
-
-type Box = [number, number, number, number];
-
-interface LayerDraft {
-  nm: string;
-  shapes: LottieObject[];
-  ks: LottieObject;
-}
-
-export interface Composition {
-  anim: LottieObject;
-  warnings: string[];
-  frames: number;
-  /** Bounds of figure and props on the canvas: x0, y0, x1, y1. */
-  bbox: number[];
-}
 
 function bbox(J: Joints): Box {
   const pts: Vec2[] = [J.H, J.M, J.N, J.S, J.Sf];
@@ -61,24 +45,11 @@ function bbox(J: Joints): Box {
   return [x0, y0, x1, y1];
 }
 
-function propGroup(p: PropShape): LottieObject {
-  if (p.kind === 'box') return group(p.nm, [rect([0, 0], p.s, p.r ?? 0), fill(p.color)], tr({ p: p.c, r: p.rot ?? 0 }));
-  return group(p.nm, [ellipse([0, 0], p.s), fill(p.color)], tr({ p: p.c, r: p.rot ?? 0 }));
-}
-
-/** Effort 0 to 1 of one highlighted muscle at loop time t. Drives the highlight opacity and the poster frame. */
-export function muscleEffort(ex: Exercise, m: MuscleSpec, t: number): number {
-  let e: number;
-  if (m.e) {
-    e = m.e(t);
-  } else {
-    if (!ex.tl.at) throw new Error(`${ex.id}: muscles without e() need a timeline with at()`);
-    e = ex.tl.at(t).e;
-  }
-  return Math.max(0, Math.min(1, e * (m.scale ?? 1)));
-}
-
 export function compose(ex: Exercise, palName: PaletteName): Composition {
+  return ex.view === 'front' ? composeFront(ex, palName) : composeSide(ex, palName);
+}
+
+function composeSide(ex: SideExercise, palName: PaletteName): Composition {
   const pal = PALETTES[palName];
   const N = Math.round(ex.tl.total * FPS);
   IK_WARNINGS.length = 0;
@@ -90,28 +61,26 @@ export function compose(ex: Exercise, palName: PaletteName): Composition {
   const warnings = [...new Set(IK_WARNINGS)];
 
   // Framing: center horizontally, keep the floor fixed.
-  let bb: Box = [Infinity, Infinity, -Infinity, -Infinity];
-  for (const { J } of frames) {
-    const b = bbox(J);
-    bb = [Math.min(bb[0], b[0]), Math.min(bb[1], b[1]), Math.max(bb[2], b[2]), Math.max(bb[3], b[3])];
-  }
-  const figure: Box = [...bb];
-  if (ex.propsBox) { bb[0] = Math.min(bb[0], ex.propsBox[0]); bb[2] = Math.max(bb[2], ex.propsBox[1]); }
-  const ox = Math.round(W / 2 - (bb[0] + bb[2]) / 2);
-  if (bb[1] < 6) warnings.push(`top edge ${bb[1].toFixed(0)} is above the canvas`);
-  if (bb[2] - bb[0] > W - 8) warnings.push(`width ${(bb[2] - bb[0]).toFixed(0)} exceeds the canvas`);
+  let figure: Box = EMPTY_BOX;
+  for (const { J } of frames) figure = union(figure, bbox(J));
+  const { ox, bb, zoom } = frameOffset(ex, figure, warnings);
 
   const shift = (p: Vec2): Vec2 => [p[0] + ox, p[1]];
-  const opacityProp = (m: MuscleSpec) => animProp(frames.map(({ t }) => 14 + 66 * muscleEffort(ex, m, t)), 'scalar', TOL.opacity);
+  const ts = frames.map(({ t }) => t);
 
   // Muscle highlights grouped by layer key.
   const highlights: Partial<Record<LayerKey, LottieObject[]>> = {};
   for (const m of ex.muscles ?? []) {
-    const part = MUSCLES[m.m].part;
+    if (m.region && 'view' in m.region) throw new Error(`${ex.id}: muscle ${m.m} has a front-view region`);
+    const custom = m.region as MuscleRegion | undefined;
+    const region = custom ?? MUSCLES[m.m];
+    const part = region.part;
+    const side = m.side ?? region.defaultSide ?? 'both';
+    if (side === 'l' || side === 'r') throw new Error(`${ex.id}: muscle ${m.m}: side '${side}' is for front view`);
     const keys: LayerKey[] = isLimb(part)
-      ? (m.side === 'far' ? [`${part}_f`] : m.side === 'near' ? [`${part}_n`] : [`${part}_n`, `${part}_f`])
+      ? (side === 'far' ? [`${part}_f`] : side === 'near' ? [`${part}_n`] : [`${part}_n`, `${part}_f`])
       : [part];
-    for (const k of keys) (highlights[k] ??= []).push(highlightGroup(m.m, pal, opacityProp(m)));
+    for (const k of keys) (highlights[k] ??= []).push(highlightGroup(m.m, pal, effortOpacity(ex, m, ts), custom));
   }
 
   const layers: LayerDraft[] = [];
@@ -121,39 +90,16 @@ export function compose(ex: Exercise, palName: PaletteName): Composition {
     layers.push({ nm, shapes, ks: transformKS({ p, r }) });
   };
 
-  // Floor shadow and mat.
-  const floorItems: LottieObject[] = [];
-  const sx0 = (ex.propsBox ? Math.min(figure[0], ex.propsBox[0]) : figure[0]) + 14;
-  const sx1 = (ex.propsBox ? Math.max(figure[2], ex.propsBox[1]) : figure[2]) - 14;
-  floorItems.push(group('shadow', [ellipse([0, 0], [sx1 - sx0 + 30, 14]), { ...fill(pal.shadow), o: { a: 0, k: pal.shadowOpacity } }], tr({ p: [(sx0 + sx1) / 2, GROUND + 2] })));
-  if (ex.mat) {
-    const mx0 = figure[0] - 6, mx1 = figure[2] + 6;
-    floorItems.push(group('mat-edge', [rect([0, 0], [mx1 - mx0, 8], 4), fill(pal.matEdge)], tr({ p: [(mx0 + mx1) / 2, GROUND - 3] })));
-    floorItems.push(group('mat', [rect([0, 0], [mx1 - mx0, 6], 3), fill(pal.mat)], tr({ p: [(mx0 + mx1) / 2, GROUND - 4] })));
-  }
-  layers.push({ nm: 'Floor', shapes: floorItems.reverse(), ks: transformKS({ p: { a: 0, k: [ox, 0] } }) });
+  layers.push(floorLayer(ex, pal, figure, ox));
+  const props = ex.props ? ex.props(pal) : {};
+  const back = propsLayer('Props Back', props.back, ox);
+  if (back) layers.push(back);
 
-  const props: Props = ex.props ? ex.props(pal) : {};
-  if (props.back?.length) layers.push({ nm: 'Props Back', shapes: props.back.map(propGroup).reverse(), ks: transformKS({ p: { a: 0, k: [ox, 0] } }) });
-
-  // Moving equipment: rigid parts follow at(J, t) -> { p, a }, cables follow at(J, t) -> [p0, p1].
-  const dynamicLayer = (d: MovingPart): LayerDraft => {
-    if (d.kind === 'line') {
-      const paths = frames.map(({ J, t }): BezierPath => {
-        const [a, b] = d.at(J, t).map(shift);
-        return { c: false, v: [a!, b!], i: [[0, 0], [0, 0]], o: [[0, 0], [0, 0]] };
-      });
-      return { nm: d.nm, shapes: [group(d.nm, [{ ty: 'sh', nm: 'Path', ks: animProp(paths, 'path', TOL.path) }, stroke(d.color(pal), d.width ?? 3)])], ks: transformKS({}) };
-    }
-    const p = animProp(frames.map(({ J, t }) => shift(d.at(J, t).p)), 'pos', TOL.pos);
-    const r = animProp(unwrap(frames.map(({ J, t }) => d.at(J, t).a ?? 0)), 'scalar', TOL.rot);
-    return { nm: d.nm, shapes: d.shapes(pal).map(propGroup).reverse(), ks: transformKS({ p, r }) };
-  };
-  for (const d of (ex.dynamic ?? []).filter((x) => x.z === 'back')) layers.push(dynamicLayer(d));
-
+  const dyn = (z: string): void => { for (const d of (ex.dynamic ?? []).filter((x) => x.z === z)) layers.push(dynamicLayer(d, frames, pal, ox)); };
+  dyn('back');
   for (const key of Z) {
     // Held equipment between body layers: under the near arm, or over the far arm.
-    if (key === 'upper_n') for (const d of (ex.dynamic ?? []).filter((x) => x.z === 'underNearArm')) layers.push(dynamicLayer(d));
+    if (key === 'upper_n') dyn('underNearArm');
     const hl = highlights[key] ?? [];
     if (key === 'torso') {
       const paths = frames.map(({ J }) => smoothClosed(J.torsoPts.map(shift), [0, J.torsoPts.length - 1]));
@@ -161,20 +107,15 @@ export function compose(ex: Exercise, palName: PaletteName): Composition {
       continue;
     }
     if (isMuscleFrame(key)) { if (hl.length) rigid(key, LAYER_NAMES[key], hl.reverse()); continue; }
+    if (key === 'collar') { rigid('collar', LAYER_NAMES.collar, [...collarShapes(pal), ...hl].reverse()); continue; }
     const part: Part = key === 'neck' || key === 'pelvis' || key === 'head' ? key : LIMBS[key];
     const far = key.endsWith('_f');
     const shapes = [...partShapes(part, pal, far), ...hl];
     rigid(key, LAYER_NAMES[key], shapes.reverse());
-    if (key === 'hand_f') for (const d of (ex.dynamic ?? []).filter((x) => x.z === 'overFarArm')) layers.push(dynamicLayer(d));
+    if (key === 'hand_f') dyn('overFarArm');
   }
-  for (const d of (ex.dynamic ?? []).filter((x) => x.z === 'front')) layers.push(dynamicLayer(d));
-  if (props.front?.length) layers.push({ nm: 'Props Front', shapes: props.front.map(propGroup).reverse(), ks: transformKS({ p: { a: 0, k: [ox, 0] } }) });
-
-  // Lottie draws the first layer on top.
-  const out = layers.reverse().map((l, i) => shapeLayer(i + 1, l.nm, l.shapes, l.ks, N));
-  const anim = {
-    v: '5.7.4', fr: FPS, ip: 0, op: N, w: W, h: H, nm: ex.id, ddd: 0, assets: [], layers: out, markers: [],
-    meta: { g: 'Boji exercise-animation generator', a: 'Boji', d: `${ex.name} (${palName})` },
-  };
-  return { anim, warnings, frames: N, bbox: bb.map((x) => Math.round(x + (x === bb[1] || x === bb[3] ? 0 : ox))) };
+  dyn('front');
+  const front = propsLayer('Props Front', props.front, ox);
+  if (front) layers.push(front);
+  return finish(ex, palName, layers, N, warnings, bb, ox, zoom);
 }

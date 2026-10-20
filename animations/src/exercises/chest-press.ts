@@ -1,10 +1,10 @@
 // 坐姿推胸 (chest-press). pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import type { Palette } from '../palettes.ts';
-import { add, ang, dir, len, lerp, mul, sub, type Vec2 } from '../math.ts';
-import { solve, type LimbPair, type Joints } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import type { Palette } from '@/palettes.ts';
+import { add, ang, dir, len, lerp, mul, sub, type Vec2 } from '@/math.ts';
+import { solve, type LimbPair, type Joints } from '@/rig.ts';
 import { A, G } from './common.ts';
-import { backrestAt, weightStack, workTL } from './equipment.ts';
+import { backrestAt, weightStack, workTL } from '@/exercises/equipment/index.ts';
 
 const chestTL = workTL(0.35);
 const CP = (() => {

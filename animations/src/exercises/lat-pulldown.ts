@@ -1,10 +1,10 @@
 // 高位下拉 (lat-pulldown). pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import type { Palette } from '../palettes.ts';
-import { add, dir, lerp, lerpV, mul, smooth, type Vec2 } from '../math.ts';
-import { solve, type LimbPair, type Joints } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import type { Palette } from '@/palettes.ts';
+import { add, dir, lerp, lerpV, mul, smooth, type Vec2 } from '@/math.ts';
+import { solve, type LimbPair, type Joints } from '@/rig.ts';
 import { A, G } from './common.ts';
-import { backrestAt, weightStack, workTL } from './equipment.ts';
+import { backrestAt, weightStack, workTL } from '@/exercises/equipment/index.ts';
 
 const pullTL = workTL(0.45);
 const LPD = (() => {

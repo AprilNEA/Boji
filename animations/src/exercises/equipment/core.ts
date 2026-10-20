@@ -1,9 +1,11 @@
 // Gym machine parts and free weights shared by the exercise scripts.
-import { add, ang, dir, mul, timeline, type Timeline, type Vec2 } from '../math.ts';
-import type { PropShape, RigidPart } from '../exercise.ts';
-import type { Palette } from '../palettes.ts';
-import type { Joints, Side } from '../rig.ts';
-import { G } from './common.ts';
+import { add, ang, dir, mul, timeline, type Timeline, type Vec2 } from '@/math.ts';
+import type { PropShape, RigidPart } from '@/exercise.ts';
+import type { Palette } from '@/palettes.ts';
+import type { Joints, Side } from '@/rig.ts';
+import { add3, mul3, norm3, sub3 } from '@/math3.ts';
+import { project, type FSide, type FrontJoints } from '@/front-rig.ts';
+import { G } from '@/exercises/common.ts';
 
 /** Concentric 1.0 s, short squeeze, 1.6 s controlled return, short rest. */
 export const workTL = (hold = 0.35): Timeline => timeline([
@@ -122,3 +124,25 @@ export const gobletDumbbell = (): RigidPart => ({
   // The hands cup the top plate; the dumbbell hangs below them.
   at: (J: Joints) => ({ p: add(gripAt(J, 'n'), [0, DUMBBELL_HALF - DB.plateW / 2 - 2]), a: 90 }),
 });
+
+/** Middle of the closed hand in front view, projected to the screen. */
+export const frontGripAt = (J: FrontJoints, side: FSide): Vec2 => {
+  const w = J[`wrist_${side}`];
+  return project(add3(w, mul3(norm3(sub3(J[`tip_${side}`], w)), 9)));
+};
+
+/**
+ * Dumbbell held in one hand, front view.
+ * 'end': the handle points at the viewer (neutral grip at the sides, lateral raise). It covers the fist.
+ * 'profile': the handle runs across the body (front raise, overhead press). It lies under the arms, so the
+ * fist covers the middle of the handle. `angle` sets the handle direction on screen; default: horizontal.
+ */
+export function frontDumbbell(side: FSide, view: 'end' | 'profile', angle?: (J: FrontJoints) => number): RigidPart<FrontJoints> {
+  return {
+    nm: `${side === 'l' ? 'Left' : 'Right'} Dumbbell`,
+    z: view === 'end' ? 'front' : 'underNearArm',
+    kind: 'rigid',
+    shapes: view === 'end' ? endShapes : profileShapes,
+    at: (J) => ({ p: frontGripAt(J, side), a: view === 'end' ? 0 : angle?.(J) ?? 0 }),
+  };
+}

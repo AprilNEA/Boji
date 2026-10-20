@@ -1,7 +1,7 @@
 // 髋屈肌拉伸 (hip-flexor-stretch). pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { add, ang, dir, lerp, mul, sub, timeline, type Vec2 } from '../math.ts';
-import { BODY, type Joints } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import { add, ang, dir, lerp, mul, sub, timeline, type Vec2 } from '@/math.ts';
+import { BODY, type Joints } from '@/rig.ts';
 import { A, FLOOR } from './common.ts';
 
 const hipTL = timeline([

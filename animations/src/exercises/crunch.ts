@@ -1,6 +1,6 @@
 // 卷腹 (crunch). Lying on the back with bent knees: the upper back curls up while the lower back stays on the mat. pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { add, ang, dir, lerp, mul, sub, timeline, type Vec2 } from '../math.ts';
+import type { Exercise } from '@/exercise.ts';
+import { add, ang, dir, lerp, mul, sub, timeline, type Vec2 } from '@/math.ts';
 import { A, FLOOR } from './common.ts';
 
 const crunchTL = timeline([

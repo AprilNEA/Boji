@@ -1,10 +1,11 @@
-// Verify that lottie/ and lottie-library/ match a fresh generator run. Fails when files differ, are missing
-// or are extra, or when the generator reports warnings. Run before committing; `devenv test` runs it too.
+// Verify that lottie/ matches a fresh generator run. Fails when files differ, are missing or are extra,
+// or when the generator reports warnings for any exercise, course or library. Run before committing;
+// `devenv test` runs it too. Git ignores lottie-library/, so this script does not compare it.
 // Usage: tsx scripts/check.ts
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { generate, SET_DIRS } from '../src/generate.ts';
+import { generate } from '@/generate.ts';
 
 const root = path.resolve(import.meta.dirname, '..');
 const fresh = fs.mkdtempSync(path.join(os.tmpdir(), 'boji-lottie-'));
@@ -14,14 +15,13 @@ const list = (dir: string): string[] => fs.readdirSync(dir, { recursive: true, e
   .map((f) => f.split(path.sep).join('/'))
   .sort();
 
-let failed = false;
+let outOfDate = false;
+let warnedCount = 0;
 try {
   const { warned } = generate(fresh);
-  if (warned) {
-    console.error(`${warned} animation(s) have IK warnings.`);
-    failed = true;
-  }
-  for (const set of SET_DIRS) {
+  warnedCount = warned;
+  if (warned) console.error(`${warned} animation(s) have IK warnings.`);
+  for (const set of ['lottie'] as const) {
     const committed = path.join(root, set);
     const a = new Set(fs.existsSync(committed) ? list(committed) : []);
     const b = new Set(list(path.join(fresh, set)));
@@ -34,13 +34,12 @@ try {
         setFailed = true;
       }
     }
-    if (setFailed) failed = true;
+    if (setFailed) outOfDate = true;
     else console.log(`${set}/ is up to date (${a.size} files).`);
   }
 } finally {
   fs.rmSync(fresh, { recursive: true, force: true });
 }
-if (failed) {
-  console.error('Generated animations are out of date. Run `pnpm build` and commit the result.');
-  process.exitCode = 1;
-}
+if (outOfDate) console.error('Generated animations are out of date. Run `pnpm build` and commit the result.');
+if (warnedCount) console.error('Fix the poses with IK warnings: run `pnpm build` and read the WARN lines.');
+if (outOfDate || warnedCount) process.exitCode = 1;

@@ -1,6 +1,6 @@
 // 提踵 (calf-raise). Standing, hands on the hips: the heels lift and the body rises over the balls of the feet. pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { D2R, timeline } from '../math.ts';
+import type { Exercise } from '@/exercise.ts';
+import { D2R, rotate, timeline } from '@/math.ts';
 import { A, G, handOnHip } from './common.ts';
 
 const raiseTL = timeline([
@@ -19,8 +19,8 @@ const FOOT_MAX = 34;
  * The contact point sits 40 px along the foot and 13 px below it: see toesDown in common.ts.
  */
 const overBall = (a: number): { dx: number; h: number } => {
-  const r = a * D2R;
-  return { dx: 40 - (40 * Math.cos(r) - 13 * Math.sin(r)), h: 40 * Math.sin(r) + 13 * Math.cos(r) };
+  const [x, y] = rotate([40, 13], a);
+  return { dx: 40 - x, h: y };
 };
 
 const calfRaise = {

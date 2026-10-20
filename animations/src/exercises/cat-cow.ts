@@ -1,7 +1,7 @@
 // 猫牛式 (cat-cow). pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { IK_WARNINGS, add, dir, len, lerp, mul, sub, timeline } from '../math.ts';
-import { BODY, solve, type Joints, type Pose } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import { IK_WARNINGS, add, dir, len, lerp, mul, sub, timeline } from '@/math.ts';
+import { BODY, solve, type Joints, type Pose } from '@/rig.ts';
 import { QUAD, kneelLeg, plantedArm } from './common.ts';
 
 const catCowTL = timeline([

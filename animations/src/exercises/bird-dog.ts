@@ -1,7 +1,7 @@
 // 鸟狗式 (bird-dog). pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { lerp, smooth, timeline } from '../math.ts';
-import { solve, type Side } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import { lerp, smooth, timeline } from '@/math.ts';
+import { solve, type Side } from '@/rig.ts';
 import { QUAD, kneelLeg, plantedArm } from './common.ts';
 
 const repTL = timeline([

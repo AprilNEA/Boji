@@ -1,7 +1,7 @@
 // 标准俯卧撑 (push-up). High plank on the toes: the straight body pivots on the feet and the wrists stay planted. pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { add, dir, lerp, mul, timeline, type Vec2 } from '../math.ts';
-import { BODY, solve, type Pose } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import { add, dir, lerp, mul, timeline, type Vec2 } from '@/math.ts';
+import { BODY, solve, type Pose } from '@/rig.ts';
 import { FLOOR, plantedArm } from './common.ts';
 
 const pushTL = timeline([

@@ -8,14 +8,40 @@ This directory generates the exercise Lottie animations for the iOS and Android 
 - Use pnpm only. Do not add `package-lock.json`, `yarn.lock` or `bun.lock`.
 - Run TypeScript with tsx. Do not add a build step that emits JavaScript.
 - Keep `tsconfig.json` strict. Write imports with the `.ts` extension. Use erasable syntax only: no `enum`, `namespace` or parameter properties.
+- Import a file in another directory with the `@/` alias, which `tsconfig.json` maps to `src/`, for example `import { solve } from '@/rig.ts'`. Use `./` only for a file in the same directory. Do not write `../`. tsx resolves the alias at run time.
+- The tsx CLI (`pnpm <script>`) opens an IPC socket. Where the environment does not allow that (`listen EPERM`), run the same script with `node --import tsx <file>`.
+
+## Math and geometry
+
+Use the libraries through the helpers in `src/`. Do not hand-write vector math, rotations, curves, easing or interpolation in rigs, exercises or equipment.
+
+| Need | Helpers | Library |
+| --- | --- | --- |
+| 2D vectors and angles in degrees | `add`, `sub`, `mul`, `addScaled`, `dot`, `len`, `dist`, `norm`, `rotate`, `dir`, `polar`, `mirrorX`, `ang`, `angleBetween` in `src/math.ts` | gl-matrix |
+| 3D vectors and rotations | `add3`, `addScaled3`, `cross3`, `norm3`, `lerp3`, `rotAxis`, `turn` and the other helpers in `src/math3.ts` | gl-matrix |
+| Interpolation and keyframed values | `lerp`, `lerpV`, `keyframes`, `pingPong`, `bump`, `breath` | d3-interpolate, d3-scale |
+| Easing | `easeSinIn`, `easeSinOut`, `easeSinInOut`, `easeCubicInOut`, `easeLinear` | d3-ease |
+| Clamping and rounding | `clamp`; `round` from es-toolkit | es-toolkit |
+| Paths | `PathBuilder`, `capsule`, `smoothClosed`, `smoothOpen`, `fromSvgPath` in `src/lottie.ts` | d3-path, d3-shape, svgpath |
+| Colors | `hexColor` | d3-color |
+| Spine curve | `solve` in `src/rig.ts`, `solveFront` in `src/front-rig.ts` | bezier-js |
+
+- These stay hand-written, because no suitable library exists: two-bone IK (`ik2`, `ik3`), keyframe reduction and angle unwrapping in `src/lottie.ts`, `smooth` (smoothstep) and `ang` (`Math.atan2`).
+- `bump` and `breath` clamp t to [0, 1] and give one cycle. For a wave with more than one cycle, pass the phase of each cycle, for example `breath((2 * u) % 1)`.
+- Do not build an SVG string for a path that changes every frame. d3-shape curves draw into a recording context in `src/lottie.ts`. A string round trip on every frame made a full build three times slower.
+- Add a library with pnpm, and only with a permissive license: MIT, ISC, BSD or Apache-2.0. Do not add a package whose license is missing or `UNLICENSED`.
+- After a change to `src/math.ts`, `src/math3.ts`, `src/lottie.ts` or a rig, compare a full build before and after the change with every frame evaluated, not only the keyframes. Two builds can choose different keyframes for the same motion.
 
 ## Rules
 
-- Do not edit files in `lottie/` or `lottie-library/` by hand. Change `src/`, run `pnpm build`, and commit both directories in the same commit as the source change.
+- Do not edit files in `lottie/` or `lottie-library/` by hand. Change `src/`, run `pnpm build`, and commit `lottie/` in the same commit as the source change.
+- Git ignores `lottie-library/` and the asset host output `../assets/public/animations/`. Commit only the library source. Do not commit generated library files, and do not use Git LFS for them.
 - Keep the generator deterministic. Do not use `Date`, `Math.random` or environment-dependent values in `src/`.
 - Use shape layers only: paths, ellipses, rectangles, fills and strokes. Do not add images, expressions, masks, layer parenting or text, because the native players must render the files.
 - `COURSES` in `src/courses.ts` must match the app courses. Use the IDs of `Exercise.id` in `ios/Boji/Models/BojiStore.swift` and Android `Workout.kt`, in the app order.
-- Put exercises that no app course uses yet in `LIBRARY`. Their files go to `lottie-library/`, and its `index.json` lists them with `course: null`. When an app course adopts one, move it to `COURSES` and run `pnpm build`. The build moves its files to `lottie/`.
+- Put exercises that no app course uses yet in a family directory of `src/exercises/library/`. The generator discovers them, and `LIBRARY` includes them. Their files go to `lottie-library/`, and its `index.json` lists them with `course: null`.
+- When an app course adopts a library exercise, import its script in `src/courses.ts`, add it to `COURSES` and run `pnpm build`. `LIBRARY` leaves out course exercises, so the build moves its files to `lottie/`. Exercise IDs must be unique; `courses.ts` throws on a duplicate.
+- `pnpm sheets` reads `lottie/` only. `pnpm preview` reads `lottie/` and the library exercises whose IDs you pass. The full library is too large for one image or page. Review library exercises with `scripts/family.ts`.
 - Do not make the apps bundle `lottie-library/`.
 - Treat the paths `lottie/<palette>/<id>.json` and the `IndexEntry` fields in `src/generate.ts` as a contract with both apps. If you change them, update the iOS and Android consumers in the same change.
 - Each exercise script in `src/exercises/` default-exports an object that ends with `satisfies Exercise`.

@@ -1,7 +1,7 @@
 // 后撤步弓步蹲 (reverse-lunge). One rep per leg: the far leg steps back first, then the near leg. pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { clamp, lerp, lerpV, smooth, timeline, type Vec2 } from '../math.ts';
-import type { LimbSpec } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import { bump, clamp, lerp, lerpV, smooth, timeline, type Vec2 } from '@/math.ts';
+import type { LimbSpec } from '@/rig.ts';
 import { A, G, handOnHip, toesDown } from './common.ts';
 
 const repTL = timeline([
@@ -36,7 +36,7 @@ const reverseLunge = {
     // The back foot swings back in the first 65% of the descent and lands on its toes.
     const u = smooth(clamp(p / 0.65, 0, 1));
     const h = lerp(A, HEEL_UP, smooth(clamp((p - 0.35) / 0.45, 0, 1)));
-    const backAnkle: Vec2 = [lerp(backStart, frontX - STRIDE, u), G - h - 16 * Math.sin(Math.PI * u)];
+    const backAnkle: Vec2 = [lerp(backStart, frontX - STRIDE, u), G - h - 16 * bump(u)];
     const front: LimbSpec = { target: [frontX, G - A], foot: 0, side: [1, 0] };
     const back: LimbSpec = { target: backAnkle, foot: toesDown(h), side: [1, 0] };
     return {

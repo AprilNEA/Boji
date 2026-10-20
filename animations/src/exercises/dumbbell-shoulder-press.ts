@@ -1,12 +1,12 @@
 // 坐姿哑铃推举 (dumbbell-shoulder-press). Seated on an upright bench, neutral grip.
 // The dumbbells start at shoulder height with the elbows forward and the forearms vertical,
 // then press up until the arms are straight over the shoulders. pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import type { Palette } from '../palettes.ts';
-import { add, lerpV, type Vec2 } from '../math.ts';
-import { solve, type LimbPair } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import type { Palette } from '@/palettes.ts';
+import { add, lerpV, type Vec2 } from '@/math.ts';
+import { solve, type LimbPair } from '@/rig.ts';
 import { A, G } from './common.ts';
-import { backrestAt, dumbbell, workTL } from './equipment.ts';
+import { backrestAt, dumbbell, workTL } from '@/exercises/equipment/index.ts';
 
 const pressTL = workTL(0.3);
 

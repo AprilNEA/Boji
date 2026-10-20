@@ -1,11 +1,11 @@
 // 高脚杯深蹲 (goblet-squat). One dumbbell held upright against the chest, cupped under the top plate.
 // The front load lets the torso stay more upright and the hips sink lower than in the bodyweight squat.
 // pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { add, ang, lerp, mul, timeline, type Vec2 } from '../math.ts';
-import type { Joints, LimbSpec } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import { add, ang, easeSinIn, easeSinOut, lerp, mul, timeline, type Vec2 } from '@/math.ts';
+import type { Joints, LimbSpec } from '@/rig.ts';
 import { A, G, standLegs } from './common.ts';
-import { gobletDumbbell } from './equipment.ts';
+import { gobletDumbbell } from '@/exercises/equipment/index.ts';
 
 const gobletTL = timeline([
   { d: 1.6, from: 0, to: 1, e: [0.15, 0.55] },
@@ -29,8 +29,8 @@ const gobletSquat = {
   dynamic: [gobletDumbbell()],
   pose(t) {
     const { p } = gobletTL.at(t);
-    const px = Math.sin((p * Math.PI) / 2); // hips travel back first
-    const py = 1 - Math.cos((p * Math.PI) / 2);
+    const px = easeSinOut(p); // hips travel back first
+    const py = easeSinIn(p);
     return {
       hip: [lerp(X0 - 8, X0 - 70, px), lerp(G - A - 180, G - A - 96, py)],
       spine: { lumbar: lerp(-88, -56, p), thoracic: lerp(-91, -62, p) },

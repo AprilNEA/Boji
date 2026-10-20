@@ -1,10 +1,10 @@
 // 坐姿腿举 (leg-press). pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import type { Palette } from '../palettes.ts';
-import { add, dir, len, lerp, lerpV, mul, sub, timeline, type Vec2 } from '../math.ts';
-import { solve, type Joints } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import type { Palette } from '@/palettes.ts';
+import { add, dir, len, lerp, lerpV, mul, sub, timeline, type Vec2 } from '@/math.ts';
+import { solve, type Joints } from '@/rig.ts';
 import { G } from './common.ts';
-import { backrestAt, weightStack } from './equipment.ts';
+import { backrestAt, weightStack } from '@/exercises/equipment/index.ts';
 
 const legTL = timeline([
   { d: 1.1, from: 0, to: 1, e: [0.4, 1] },

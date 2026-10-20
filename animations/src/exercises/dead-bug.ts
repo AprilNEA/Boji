@@ -1,7 +1,7 @@
 // 死虫式 (dead-bug). Lying on the back in tabletop; the opposite arm and leg reach out, one side after the other. pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { add, dir, lerp, mul, smooth, timeline, type Vec2 } from '../math.ts';
-import type { LimbSpec } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import { add, dir, lerp, mul, smooth, timeline, type Vec2 } from '@/math.ts';
+import type { LimbSpec } from '@/rig.ts';
 import { FLOOR } from './common.ts';
 
 const repTL = timeline([

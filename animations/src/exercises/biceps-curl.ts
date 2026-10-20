@@ -1,9 +1,9 @@
 // 哑铃弯举 (biceps-curl). Standing, underhand grip. The upper arms stay at the sides;
 // only the forearms rise until the dumbbells reach the shoulders. pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { lerp, smooth } from '../math.ts';
+import type { Exercise } from '@/exercise.ts';
+import { lerp, smooth } from '@/math.ts';
 import { A, G, standLegs } from './common.ts';
-import { dumbbell, workTL } from './equipment.ts';
+import { dumbbell, workTL } from '@/exercises/equipment/index.ts';
 
 const curlTL = workTL(0.3);
 

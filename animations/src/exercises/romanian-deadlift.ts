@@ -1,10 +1,10 @@
 // 罗马尼亚硬拉 (romanian-deadlift). Dumbbells in front of the thighs, overhand grip.
 // The knees stay softly bent, the hips travel back and the flat back hinges forward.
 // The dumbbells stay close to the legs, over the middle of the feet. pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { lerp, lerpV, timeline } from '../math.ts';
+import type { Exercise } from '@/exercise.ts';
+import { easeSinOut, lerp, lerpV, timeline } from '@/math.ts';
 import { A, G, standLegs } from './common.ts';
-import { dumbbell } from './equipment.ts';
+import { dumbbell } from '@/exercises/equipment/index.ts';
 
 const rdlTL = timeline([
   { d: 1.8, from: 0, to: 1, e: [0.3, 0.85] },
@@ -25,7 +25,7 @@ const romanianDeadlift = {
   pose(t) {
     const { p } = rdlTL.at(t);
     // The hips lead: they move back before the torso finishes hinging.
-    const hp = Math.sin((p * Math.PI) / 2);
+    const hp = easeSinOut(p);
     // Straight arms hang from the shoulders and angle back a little to keep the weights on the legs.
     const arm = lerp(84, 98, p);
     return {

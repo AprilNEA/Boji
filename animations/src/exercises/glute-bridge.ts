@@ -1,6 +1,6 @@
 // 臀桥 (glute-bridge). pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import { add, dir, lerp, mul, timeline, type Vec2 } from '../math.ts';
+import type { Exercise } from '@/exercise.ts';
+import { add, dir, lerp, mul, timeline, type Vec2 } from '@/math.ts';
 import { A, FLOOR } from './common.ts';
 
 const bridgeTL = timeline([

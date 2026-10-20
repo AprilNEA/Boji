@@ -1,10 +1,10 @@
 // 坐姿划船 (seated-row). pose(t) returns a rig pose for t in [0, 1).
-import type { Exercise } from '../exercise.ts';
-import type { Palette } from '../palettes.ts';
-import { add, dir, lerp, lerpV, mul, smooth, type Vec2 } from '../math.ts';
-import { solve, type LimbPair, type Joints } from '../rig.ts';
+import type { Exercise } from '@/exercise.ts';
+import type { Palette } from '@/palettes.ts';
+import { add, bump, dir, lerp, lerpV, mul, smooth, type Vec2 } from '@/math.ts';
+import { solve, type LimbPair, type Joints } from '@/rig.ts';
 import { G } from './common.ts';
-import { weightStack, workTL } from './equipment.ts';
+import { weightStack, workTL } from '@/exercises/equipment/index.ts';
 
 const rowTL = workTL(0.45);
 const ROW = (() => {
@@ -28,7 +28,7 @@ const ROW = (() => {
 const rowGrip = (p: number) => {
   const q = smooth(p);
   const g = lerpV(ROW.start, ROW.end, q);
-  return add(g, [0, -10 * Math.sin(Math.PI * q)]); // slight arc toward the ribs
+  return add(g, [0, -10 * bump(q)]); // slight arc toward the ribs
 };
 const seatedRow = {
   id: 'seated-row', name: '坐姿划船', tl: rowTL,
