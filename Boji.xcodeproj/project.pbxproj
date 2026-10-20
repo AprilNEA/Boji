@@ -1,0 +1,667 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0429AE9B0601F71CE17E404F /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B593CBD0DE4FCBB630D2DFFB /* TodayView.swift */; };
+		1371FC0C802284889307E644 /* AppleIntegrationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81140111BAB62BAEC3D44093 /* AppleIntegrationModels.swift */; };
+		160AB7711E92162E5A7181F9 /* MembershipModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19368F1E87C44FF35C2129F7 /* MembershipModels.swift */; };
+		17F48BD0B26E52C0DE53CD8D /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 583F71FA07F4AFB0262B3D19 /* ProgressView.swift */; };
+		20413095BB3990CBB995A2E2 /* HealthModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AAF1AB2D0AE96C9E8BFC6AB /* HealthModels.swift */; };
+		27FE2609C62109FE7A50DE17 /* HealthDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21905AB8E7B0CE32504579D7 /* HealthDataStore.swift */; };
+		2A270EB8EBE2CB77EDF2F525 /* TrainingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5C69E187FD17A2705F3713 /* TrainingView.swift */; };
+		2D3C6DD55721463172DA1E0D /* HealthConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458A3077F92019074E88F6CF /* HealthConnectionView.swift */; };
+		3B0A9512235FB99171894270 /* BojiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F4EEA7892D89748155D924 /* BojiUITests.swift */; };
+		4DEC67005C3A8A3D36037E37 /* BojiStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8245B383B494406D2112F93C /* BojiStoreTests.swift */; };
+		4E8E4E2A2768C3C01478A6CB /* ClubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493DBDB4130FFDE702147DBF /* ClubView.swift */; };
+		54672DA0B79BD336B41FFC31 /* MembershipAuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA90D104250EADC353989B5 /* MembershipAuthenticationView.swift */; };
+		5F4B361E84F5BB9CBCD33F13 /* MembershipStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544A88E9634042791CE6BBA0 /* MembershipStore.swift */; };
+		5FC81180AEFC4FCC39C6E146 /* .manus-4aa03226a0a3096687f38778042a743d.tmp in Resources */ = {isa = PBXBuildFile; fileRef = 089EFF1C3B9AA6A84C771F68 /* .manus-4aa03226a0a3096687f38778042a743d.tmp */; };
+		7055CB37DA9468F8256E9218 /* MembershipWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22C5C88414598B9A653BD08 /* MembershipWalletView.swift */; };
+		70DFD9ED3418E6CA8812A330 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 211607BD7F6AC18DAEDF5277 /* PrivacyInfo.xcprivacy */; };
+		81DE6F25DCF9F167418BF64E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCFE5FC6932EA2AA0EDEF99 /* SettingsView.swift */; };
+		8C96FA440A2C94FC7CC0FE09 /* AppleIntegrationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11FA04E52232AEB2F3737E0F /* AppleIntegrationUITests.swift */; };
+		9600C25DB4B4BE52DE6D8B9F /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BA1903CA55018029EC3DB9 /* DesignSystem.swift */; };
+		A9D5A072E50915E5CEA7CD43 /* MembershipUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40F9A36CC425B538B13A453D /* MembershipUITests.swift */; };
+		AADC71F00D5FDCF324AE65C6 /* MembershipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A54E43AA718586768EB78014 /* MembershipTests.swift */; };
+		AF6E50853D7572EECBDDC79E /* BojiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AECB5A96CC8814C5CE035628 /* BojiApp.swift */; };
+		B5E73CBB3085B0690818FEA9 /* AppleSignInSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DA81187EA829BFF5FF639A /* AppleSignInSection.swift */; };
+		BC9FCC9D20F279F305021487 /* HealthDataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E2BDA8BA4453BF2D000EFF /* HealthDataStoreTests.swift */; };
+		C4DAE2AD6AE64A6575BB8A40 /* MembershipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D0E927BAEA70844A0A902F8 /* MembershipView.swift */; };
+		CB10FCBE961A16770B5CF502 /* BojiStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4840C3365DFE332E18C11C /* BojiStore.swift */; };
+		CDE9CB1C2BD58BCD11ED7F57 /* EntrySheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8402B1E44C2D1E89E8CF0193 /* EntrySheets.swift */; };
+		DBACBC5D7825A76CB714220F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 308DE53EA0E71F98D79532CA /* Assets.xcassets */; };
+		EA839609A4BF2A3352AFBC3A /* MembershipBoundaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED9E884634733D489F5BD6 /* MembershipBoundaryTests.swift */; };
+		ECC0752898E65CD0B3F38B60 /* HealthModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B15C9B68AF3F3BA6693740F2 /* HealthModelsTests.swift */; };
+		F6B7625E452F04C099BB12D7 /* MembershipAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491E8393498E63062E9C40F4 /* MembershipAPI.swift */; };
+		F763E48B2B4EC7471BB1DB5E /* AppleIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFDF41C9C885E6DDE1070C1 /* AppleIntegrationTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4EBB719DED5172C44D212030 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A7ABBEE5E78DDDD4770B609 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3D2DCF7183D694AA8AD0C3F6;
+			remoteInfo = Boji;
+		};
+		7E8E027CE730062034BB3616 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9A7ABBEE5E78DDDD4770B609 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3D2DCF7183D694AA8AD0C3F6;
+			remoteInfo = Boji;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		089EFF1C3B9AA6A84C771F68 /* .manus-4aa03226a0a3096687f38778042a743d.tmp */ = {isa = PBXFileReference; path = ".manus-4aa03226a0a3096687f38778042a743d.tmp"; sourceTree = "<group>"; };
+		11FA04E52232AEB2F3737E0F /* AppleIntegrationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntegrationUITests.swift; sourceTree = "<group>"; };
+		173E777AF2BC99681E5CA429 /* BojiTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BojiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		19368F1E87C44FF35C2129F7 /* MembershipModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipModels.swift; sourceTree = "<group>"; };
+		1AAF1AB2D0AE96C9E8BFC6AB /* HealthModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthModels.swift; sourceTree = "<group>"; };
+		211607BD7F6AC18DAEDF5277 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		21905AB8E7B0CE32504579D7 /* HealthDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthDataStore.swift; sourceTree = "<group>"; };
+		26ED9E884634733D489F5BD6 /* MembershipBoundaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipBoundaryTests.swift; sourceTree = "<group>"; };
+		289FEADA3B5814EB470D4F4B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		2AFDF41C9C885E6DDE1070C1 /* AppleIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntegrationTests.swift; sourceTree = "<group>"; };
+		308DE53EA0E71F98D79532CA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		37AD3A872C22D2EEEB321535 /* BojiUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BojiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		40F9A36CC425B538B13A453D /* MembershipUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipUITests.swift; sourceTree = "<group>"; };
+		458A3077F92019074E88F6CF /* HealthConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthConnectionView.swift; sourceTree = "<group>"; };
+		491E8393498E63062E9C40F4 /* MembershipAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipAPI.swift; sourceTree = "<group>"; };
+		493DBDB4130FFDE702147DBF /* ClubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClubView.swift; sourceTree = "<group>"; };
+		4BCFE5FC6932EA2AA0EDEF99 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		4D4840C3365DFE332E18C11C /* BojiStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojiStore.swift; sourceTree = "<group>"; };
+		544A88E9634042791CE6BBA0 /* MembershipStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipStore.swift; sourceTree = "<group>"; };
+		583F71FA07F4AFB0262B3D19 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
+		64E2BDA8BA4453BF2D000EFF /* HealthDataStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthDataStoreTests.swift; sourceTree = "<group>"; };
+		741CEA2B76902756BAC5F5F0 /* Boji.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Boji.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		76F4EEA7892D89748155D924 /* BojiUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojiUITests.swift; sourceTree = "<group>"; };
+		81140111BAB62BAEC3D44093 /* AppleIntegrationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntegrationModels.swift; sourceTree = "<group>"; };
+		8245B383B494406D2112F93C /* BojiStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojiStoreTests.swift; sourceTree = "<group>"; };
+		8402B1E44C2D1E89E8CF0193 /* EntrySheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntrySheets.swift; sourceTree = "<group>"; };
+		9D0E927BAEA70844A0A902F8 /* MembershipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipView.swift; sourceTree = "<group>"; };
+		A22C5C88414598B9A653BD08 /* MembershipWalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipWalletView.swift; sourceTree = "<group>"; };
+		A54E43AA718586768EB78014 /* MembershipTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipTests.swift; sourceTree = "<group>"; };
+		AC5C69E187FD17A2705F3713 /* TrainingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingView.swift; sourceTree = "<group>"; };
+		AECB5A96CC8814C5CE035628 /* BojiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojiApp.swift; sourceTree = "<group>"; };
+		B15C9B68AF3F3BA6693740F2 /* HealthModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthModelsTests.swift; sourceTree = "<group>"; };
+		B593CBD0DE4FCBB630D2DFFB /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
+		B8BA1903CA55018029EC3DB9 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		C5DA81187EA829BFF5FF639A /* AppleSignInSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleSignInSection.swift; sourceTree = "<group>"; };
+		D6C0F9DD2994DC068057E65C /* Boji.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Boji.entitlements; sourceTree = "<group>"; };
+		FFA90D104250EADC353989B5 /* MembershipAuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipAuthenticationView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		37812E47C860068B7936EC16 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				741CEA2B76902756BAC5F5F0 /* Boji.app */,
+				173E777AF2BC99681E5CA429 /* BojiTests.xctest */,
+				37AD3A872C22D2EEEB321535 /* BojiUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4E14746218D25A51072291D9 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				089EFF1C3B9AA6A84C771F68 /* .manus-4aa03226a0a3096687f38778042a743d.tmp */,
+				81140111BAB62BAEC3D44093 /* AppleIntegrationModels.swift */,
+				4D4840C3365DFE332E18C11C /* BojiStore.swift */,
+				21905AB8E7B0CE32504579D7 /* HealthDataStore.swift */,
+				1AAF1AB2D0AE96C9E8BFC6AB /* HealthModels.swift */,
+				491E8393498E63062E9C40F4 /* MembershipAPI.swift */,
+				19368F1E87C44FF35C2129F7 /* MembershipModels.swift */,
+				544A88E9634042791CE6BBA0 /* MembershipStore.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		604EC6EBB79CE5E793506212 /* BojiUITests */ = {
+			isa = PBXGroup;
+			children = (
+				11FA04E52232AEB2F3737E0F /* AppleIntegrationUITests.swift */,
+				76F4EEA7892D89748155D924 /* BojiUITests.swift */,
+				40F9A36CC425B538B13A453D /* MembershipUITests.swift */,
+			);
+			path = BojiUITests;
+			sourceTree = "<group>";
+		};
+		BCFE9A0010A6EC2CCEBAB192 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				308DE53EA0E71F98D79532CA /* Assets.xcassets */,
+				211607BD7F6AC18DAEDF5277 /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		C48DC8841BD83DFEFC66DAD0 = {
+			isa = PBXGroup;
+			children = (
+				E7F463335AC171703DC563CC /* Boji */,
+				FAD8E236744E5F48F7332648 /* BojiTests */,
+				604EC6EBB79CE5E793506212 /* BojiUITests */,
+				37812E47C860068B7936EC16 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E7F463335AC171703DC563CC /* Boji */ = {
+			isa = PBXGroup;
+			children = (
+				D6C0F9DD2994DC068057E65C /* Boji.entitlements */,
+				AECB5A96CC8814C5CE035628 /* BojiApp.swift */,
+				289FEADA3B5814EB470D4F4B /* Info.plist */,
+				4E14746218D25A51072291D9 /* Models */,
+				BCFE9A0010A6EC2CCEBAB192 /* Resources */,
+				F2638C0D70364512F0C50994 /* Views */,
+			);
+			path = Boji;
+			sourceTree = "<group>";
+		};
+		F2638C0D70364512F0C50994 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				C5DA81187EA829BFF5FF639A /* AppleSignInSection.swift */,
+				493DBDB4130FFDE702147DBF /* ClubView.swift */,
+				B8BA1903CA55018029EC3DB9 /* DesignSystem.swift */,
+				8402B1E44C2D1E89E8CF0193 /* EntrySheets.swift */,
+				458A3077F92019074E88F6CF /* HealthConnectionView.swift */,
+				FFA90D104250EADC353989B5 /* MembershipAuthenticationView.swift */,
+				9D0E927BAEA70844A0A902F8 /* MembershipView.swift */,
+				A22C5C88414598B9A653BD08 /* MembershipWalletView.swift */,
+				583F71FA07F4AFB0262B3D19 /* ProgressView.swift */,
+				4BCFE5FC6932EA2AA0EDEF99 /* SettingsView.swift */,
+				B593CBD0DE4FCBB630D2DFFB /* TodayView.swift */,
+				AC5C69E187FD17A2705F3713 /* TrainingView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		FAD8E236744E5F48F7332648 /* BojiTests */ = {
+			isa = PBXGroup;
+			children = (
+				2AFDF41C9C885E6DDE1070C1 /* AppleIntegrationTests.swift */,
+				8245B383B494406D2112F93C /* BojiStoreTests.swift */,
+				64E2BDA8BA4453BF2D000EFF /* HealthDataStoreTests.swift */,
+				B15C9B68AF3F3BA6693740F2 /* HealthModelsTests.swift */,
+				26ED9E884634733D489F5BD6 /* MembershipBoundaryTests.swift */,
+				A54E43AA718586768EB78014 /* MembershipTests.swift */,
+			);
+			path = BojiTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		014BD9C98DB0DAA86133E850 /* BojiTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1C1456DC52C352C5D7D82C0A /* Build configuration list for PBXNativeTarget "BojiTests" */;
+			buildPhases = (
+				36FF5A29AF92AF56CA343A6A /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				66F49B69D6393D46BE364A32 /* PBXTargetDependency */,
+			);
+			name = BojiTests;
+			packageProductDependencies = (
+			);
+			productName = BojiTests;
+			productReference = 173E777AF2BC99681E5CA429 /* BojiTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		03EBD7D114FCCF1AE1542753 /* BojiUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 72797A2F4C3A2403B7690CB0 /* Build configuration list for PBXNativeTarget "BojiUITests" */;
+			buildPhases = (
+				8BA564CDDD503F56D7088C12 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7A5270F21BF84847FE7707C3 /* PBXTargetDependency */,
+			);
+			name = BojiUITests;
+			packageProductDependencies = (
+			);
+			productName = BojiUITests;
+			productReference = 37AD3A872C22D2EEEB321535 /* BojiUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		3D2DCF7183D694AA8AD0C3F6 /* Boji */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F8DAE79657260C0BEA1EB53A /* Build configuration list for PBXNativeTarget "Boji" */;
+			buildPhases = (
+				619071933C088784E9551E07 /* Sources */,
+				709EF0C4F2A87CC5062E904F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Boji;
+			packageProductDependencies = (
+			);
+			productName = Boji;
+			productReference = 741CEA2B76902756BAC5F5F0 /* Boji.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9A7ABBEE5E78DDDD4770B609 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2710;
+				TargetAttributes = {
+					014BD9C98DB0DAA86133E850 = {
+						DevelopmentTeam = "";
+					};
+					03EBD7D114FCCF1AE1542753 = {
+						DevelopmentTeam = "";
+						TestTargetID = 3D2DCF7183D694AA8AD0C3F6;
+					};
+					3D2DCF7183D694AA8AD0C3F6 = {
+						DevelopmentTeam = "";
+					};
+				};
+			};
+			buildConfigurationList = BBEDCE5F863BE2218F537F7B /* Build configuration list for PBXProject "Boji" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = C48DC8841BD83DFEFC66DAD0;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 37812E47C860068B7936EC16 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3D2DCF7183D694AA8AD0C3F6 /* Boji */,
+				014BD9C98DB0DAA86133E850 /* BojiTests */,
+				03EBD7D114FCCF1AE1542753 /* BojiUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		709EF0C4F2A87CC5062E904F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5FC81180AEFC4FCC39C6E146 /* .manus-4aa03226a0a3096687f38778042a743d.tmp in Resources */,
+				DBACBC5D7825A76CB714220F /* Assets.xcassets in Resources */,
+				70DFD9ED3418E6CA8812A330 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		36FF5A29AF92AF56CA343A6A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F763E48B2B4EC7471BB1DB5E /* AppleIntegrationTests.swift in Sources */,
+				4DEC67005C3A8A3D36037E37 /* BojiStoreTests.swift in Sources */,
+				BC9FCC9D20F279F305021487 /* HealthDataStoreTests.swift in Sources */,
+				ECC0752898E65CD0B3F38B60 /* HealthModelsTests.swift in Sources */,
+				EA839609A4BF2A3352AFBC3A /* MembershipBoundaryTests.swift in Sources */,
+				AADC71F00D5FDCF324AE65C6 /* MembershipTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		619071933C088784E9551E07 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1371FC0C802284889307E644 /* AppleIntegrationModels.swift in Sources */,
+				B5E73CBB3085B0690818FEA9 /* AppleSignInSection.swift in Sources */,
+				AF6E50853D7572EECBDDC79E /* BojiApp.swift in Sources */,
+				CB10FCBE961A16770B5CF502 /* BojiStore.swift in Sources */,
+				4E8E4E2A2768C3C01478A6CB /* ClubView.swift in Sources */,
+				9600C25DB4B4BE52DE6D8B9F /* DesignSystem.swift in Sources */,
+				CDE9CB1C2BD58BCD11ED7F57 /* EntrySheets.swift in Sources */,
+				2D3C6DD55721463172DA1E0D /* HealthConnectionView.swift in Sources */,
+				27FE2609C62109FE7A50DE17 /* HealthDataStore.swift in Sources */,
+				20413095BB3990CBB995A2E2 /* HealthModels.swift in Sources */,
+				F6B7625E452F04C099BB12D7 /* MembershipAPI.swift in Sources */,
+				54672DA0B79BD336B41FFC31 /* MembershipAuthenticationView.swift in Sources */,
+				160AB7711E92162E5A7181F9 /* MembershipModels.swift in Sources */,
+				5F4B361E84F5BB9CBCD33F13 /* MembershipStore.swift in Sources */,
+				C4DAE2AD6AE64A6575BB8A40 /* MembershipView.swift in Sources */,
+				7055CB37DA9468F8256E9218 /* MembershipWalletView.swift in Sources */,
+				17F48BD0B26E52C0DE53CD8D /* ProgressView.swift in Sources */,
+				81DE6F25DCF9F167418BF64E /* SettingsView.swift in Sources */,
+				0429AE9B0601F71CE17E404F /* TodayView.swift in Sources */,
+				2A270EB8EBE2CB77EDF2F525 /* TrainingView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8BA564CDDD503F56D7088C12 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8C96FA440A2C94FC7CC0FE09 /* AppleIntegrationUITests.swift in Sources */,
+				3B0A9512235FB99171894270 /* BojiUITests.swift in Sources */,
+				A9D5A072E50915E5CEA7CD43 /* MembershipUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		66F49B69D6393D46BE364A32 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3D2DCF7183D694AA8AD0C3F6 /* Boji */;
+			targetProxy = 7E8E027CE730062034BB3616 /* PBXContainerItemProxy */;
+		};
+		7A5270F21BF84847FE7707C3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3D2DCF7183D694AA8AD0C3F6 /* Boji */;
+			targetProxy = 4EBB719DED5172C44D212030 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		4350C5E6D3DC12965B0A9BC6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Boji/Boji.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Boji/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "薄肌";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.aprilnea.boji;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4821ADA0307D85214A0C15AD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BOJI_API_BASE_URL = "";
+				BOJI_APPLE_SIGN_IN_ENABLED = NO;
+				BOJI_WALLET_PASS_TYPE_IDENTIFIER = "";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 3;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.3.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		4B2925F924EF808AC424B857 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = club.leanmuscle.BojiUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Boji;
+			};
+			name = Release;
+		};
+		542C40B5D42BAA43CAC526A3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = club.leanmuscle.BojiUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Boji;
+			};
+			name = Debug;
+		};
+		7D5ED991D83E41EBE2023762 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Boji/Boji.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Boji/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "薄肌";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.aprilnea.boji;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		833C9BD580EFBCDA91347E4B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = club.leanmuscle.BojiTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Boji.app/Boji";
+			};
+			name = Debug;
+		};
+		8E700BEC049D55378FD6FB2C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BOJI_API_BASE_URL = "";
+				BOJI_APPLE_SIGN_IN_ENABLED = NO;
+				BOJI_WALLET_PASS_TYPE_IDENTIFIER = "";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 3;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.3.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		B4FF7848554ABB7B6A19FCD3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = club.leanmuscle.BojiTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Boji.app/Boji";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1C1456DC52C352C5D7D82C0A /* Build configuration list for PBXNativeTarget "BojiTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				833C9BD580EFBCDA91347E4B /* Debug */,
+				B4FF7848554ABB7B6A19FCD3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		72797A2F4C3A2403B7690CB0 /* Build configuration list for PBXNativeTarget "BojiUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				542C40B5D42BAA43CAC526A3 /* Debug */,
+				4B2925F924EF808AC424B857 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BBEDCE5F863BE2218F537F7B /* Build configuration list for PBXProject "Boji" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4821ADA0307D85214A0C15AD /* Debug */,
+				8E700BEC049D55378FD6FB2C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F8DAE79657260C0BEA1EB53A /* Build configuration list for PBXNativeTarget "Boji" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4350C5E6D3DC12965B0A9BC6 /* Debug */,
+				7D5ED991D83E41EBE2023762 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9A7ABBEE5E78DDDD4770B609 /* Project object */;
+}

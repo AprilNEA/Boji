@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>BojiAPIBaseURL</key><string>$(BOJI_API_BASE_URL)</string>
+    <key>BojiAppleSignInEnabled</key><string>$(BOJI_APPLE_SIGN_IN_ENABLED)</string>
+    <key>BojiWalletPassTypeIdentifier</key><string>$(BOJI_WALLET_PASS_TYPE_IDENTIFIER)</string>
+    <key>NSHealthShareUsageDescription</key><string>读取你选择授权的睡眠、体重和腰围，在薄肌展示近期变化。数据不会上传到俱乐部，也不会覆盖手动记录。</string>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsLocalNetworking</key><true/>
+    </dict>
+</dict>
+</plist>
