@@ -14,24 +14,25 @@ This directory holds the 薄肌俱乐部 promotional website and the Boji docs s
 | Path | Content |
 | --- | --- |
 | `src/app/(site)/` | Website routes and the website root layout. Each `page.tsx` only sets metadata and renders a page component |
-| `src/app/(docs)/` | Docs root layout and the `/docs` routes |
-| `src/app/api/search/route.ts` | Static search index for the docs. The build writes it to `out/api/search` |
+| `src/app/(docs)/` | Docs root layout, the `/docs` routes in `docs/`, and the standalone pages `/support/` and `/privacy/` in `(pages)/` |
+| `src/app/api/search/route.ts` | Static search index for all pages of `../docs/sites/`. The build writes it to `out/api/search` |
 | `src/app/global-not-found.tsx` | 404 page for the whole site |
 | `src/app/globals.css`, `src/app/docs.css` | Website styles and docs styles |
 | `src/components/` | Page components, grouped by page, plus `layout/` and `ui/` |
 | `src/components/docs/mdx.tsx` | Components that docs MDX can use |
+| `src/components/docs/StandalonePage.tsx` | Renders a top-level page of `../docs/sites/` without a sidebar |
 | `src/lib/content.ts` | Copy, data tables and asset paths (`IMG`, `LAUNCH_FILM`) |
 | `src/lib/colors.ts` | Color values that JavaScript needs (Motion animations, SVG attributes) |
-| `src/lib/source.ts` | Fumadocs content source for `content/docs/` |
-| `src/lib/docs.tsx` | Docs navigation options and the Chinese UI strings of Fumadocs |
-| `content/docs/` | Docs pages: MDX files and `meta.json` |
+| `src/lib/source.ts` | Fumadocs content source for `../docs/sites/`, and the page tree and params of the docs section |
+| `src/lib/docs.tsx` | Navigation options of the docs section and the standalone pages, `PageLinks`, and the Chinese UI strings of Fumadocs |
+| `../docs/sites/` | MDX pages and `meta.json` of the docs section and the standalone pages. It is outside this package, at the repository root. See `../docs/sites/AGENTS.md` |
 | `public/media/` | Generated images and the launch film, downloaded from the former Manus storage |
 | `public/images/portraits/` | Processed public portraits |
 | `scripts/` | Python helpers: `copy_sweep.py` checks the copy, `portraits.py` processes portraits |
-| `docs/` | Chinese planning documents from the original project |
+| `docs/` | Internal Chinese documents: the planning documents from the original project, and `privacy-support.md` for the support and privacy pages. The docs site does not publish them |
 | `app.config.ts`, `public/manus-routes.json` | Manus hosting metadata. The site does not read them. `logoUrl` points to the Boji app icon on the asset host |
 
-Keep source code in `src/`. Keep configuration files (`next.config.ts`, `tsconfig.json`, `postcss.config.mjs`, `package.json`), `content/` and `public/` at the package root.
+Keep source code in `src/`. Keep configuration files (`next.config.ts`, `tsconfig.json`, `postcss.config.mjs`, `package.json`) and `public/` at the package root. Keep the docs content in `../docs/sites/`. Do not add a second content directory in this package.
 
 ## Commands
 
@@ -39,7 +40,7 @@ Run these commands in this directory:
 
 - `pnpm dev` starts the dev server on port 3000.
 - `pnpm typecheck` runs `tsc --noEmit`. `devenv test` at the repository root also runs it.
-- `pnpm build` writes the static site to `out/`.
+- `pnpm build` writes the static site to `out/`. It uses Turbopack. `next build --webpack` is a fallback for an environment that does not allow Turbopack to start its loader processes, because Turbopack binds a local port for them.
 - `python3 -m http.server 4173 --bind 127.0.0.1 --directory out` serves the build for a local check. It does not serve `404.html`.
 
 ## Rules
@@ -63,14 +64,18 @@ The layout follows Apple keynote pages. The colors follow the Boji app: `ios/Boj
 
 ## Docs
 
-The website and the docs have separate root layouts: `src/app/(site)/layout.tsx` and `src/app/(docs)/layout.tsx`. A link between them makes a full page load.
+The website and the docs have separate root layouts: `src/app/(site)/layout.tsx` and `src/app/(docs)/layout.tsx`. A link between them makes a full page load. The standalone pages `/support/` and `/privacy/` use the docs root layout, so a link between them and `/docs/` does not.
 
 - Import `globals.css` only in the website layout and in `global-not-found.tsx`. Import `docs.css` only in the docs layout. Fumadocs sets base styles on `body` and on all borders, so the two style sheets must not load on the same page.
 - Do not wrap docs pages in the website `Nav`, `Footer`, `SmoothScroll` or `Loader`.
 - `global-not-found.tsx` needs `experimental.globalNotFound` in `next.config.ts`, because no layout covers both root layouts. It renders its own `<html>` and imports its own styles.
-- `content/docs/` has two sections. `guide/` is for app users. `developers/` is for developers. Each section is a root folder (`"root": true` in its `meta.json`), so the sidebar shows a section switcher. Set the page order in `meta.json`.
+- The content source is `../docs/sites/` at the repository root. `src/lib/source.ts` sets `dir: "../docs/sites"` relative to this package, and collects only `**/*.mdx` and `**/meta.json`. Run Next.js commands in this directory, because fumadocs-mdx resolves `dir` from the working directory.
+- The loader uses `baseUrl: "/"`, so the file path under `../docs/sites/` is the URL path. `../docs/sites/docs/` is the docs section. `getDocsPage`, `getDocsParams` and `getDocsTree` in `src/lib/source.ts` limit the `/docs` routes and the sidebar to it. A top-level `.mdx` file is a standalone page. Add a route file for it in `src/app/(docs)/(pages)/`, or the build does not publish it.
+- Turbopack does not resolve files outside its root. `next.config.ts` sets `turbopack.root` to the repository root, so Turbopack can compile `../docs/sites/`. Keep this setting while the content is outside this package. Next.js uses the same value for `outputFileTracingRoot`.
+- The docs section has two sections. `docs/guide/` is for app users. `docs/developers/` is for developers. Each section is a root folder (`"root": true` in its `meta.json`), so the sidebar shows a section switcher. Set the page order in `meta.json`.
+- `support.mdx` and `privacy.mdx` are the standalone pages `/support/` and `/privacy/`. App Store Connect uses `https://leanmuscle.club/support/` and `https://leanmuscle.club/privacy/`. Do not change these routes. `src/app/(docs)/(pages)/layout.tsx` renders them in the Fumadocs `HomeLayout`: a top bar and no sidebar. `PageLinks` in `src/lib/docs.tsx` links to them at the bottom of the docs sidebar, below the Discord and theme buttons. The search index includes them.
 - Each MDX page needs `title` and `description` in its front matter. Write docs pages in Chinese.
-- Do not publish internal documents, such as `docs/membership.md` or `ios/docs/`. The membership number rule in the root `AGENTS.md` also applies to docs pages.
+- Do not publish internal documents, such as `../docs/membership.md`, `../docs/sentry.md` or `../ios/docs/`. Only `../docs/sites/` is public. The membership number rule in the root `AGENTS.md` also applies to docs pages.
 - `docs.css` maps the Fumadocs color tokens (`--color-fd-*`) to the Boji colors for light and dark mode. Keep these values equal to `globals.css` and `DesignSystem.swift`.
 - `DOCS_TRANSLATIONS` in `src/lib/docs.tsx` holds the Chinese UI strings. When you upgrade `fumadocs-ui`, check its `Translations` type for new keys.
 - Keep `fumadocs-core` and `fumadocs-ui` at the same version. `fumadocs-ui` requires the exact `fumadocs-core` version as a peer dependency.

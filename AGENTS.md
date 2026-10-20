@@ -13,7 +13,7 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 | `websites/` | 薄肌俱乐部 promotional website and the Fumadocs docs site under `/docs`: Next.js static export, Tailwind CSS and Motion | `websites/AGENTS.md` |
 | `locales/` | Copy that more than one client shows: ICU MessageFormat in YAML, one directory per language | `locales/README.md` |
 | `crates/` | Rust tools for the repository, in their own Cargo workspace. `crates/locales/` generates the client string resources from `locales/` | `crates/AGENTS.md` |
-| `docs/` | Documents shared by both clients. `docs/membership.md` is the membership contract. `docs/ACCESSIBILITY.md` is the accessibility statement | this file |
+| `docs/` | Documents shared by both clients. `docs/membership.md` is the membership contract. `docs/ACCESSIBILITY.md` is the accessibility statement. `docs/sites/` is the public MDX content source that `websites/` builds: the docs under `/docs/`, the support page `/support/` and the privacy policy `/privacy/`. The rest of `docs/` is internal and is not published | this file, `docs/sites/AGENTS.md` |
 | `assets/public/` | Generic static files for `https://assets.leanmuscle.club`, such as the app icon images that the root `README.md` shows | this file |
 | `LICENSE.md` | The PolyForm Noncommercial License 1.0.0 with the `Required Notice:` line | this file |
 | `.github/` | GitHub files: `.github/CLA.md` is the contributor license agreement, and `.github/workflows/cla.yml` runs the CLA check on pull requests | this file |

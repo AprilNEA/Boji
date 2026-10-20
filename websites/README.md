@@ -44,30 +44,49 @@ Python 自带的服务器不会返回 `404.html`，所以用它预览时看不�
 | `/founders/` | 创始人 |
 | `/join/` | 入会：宣誓并领取会员卡 |
 | `/calculator/` | 旧链接，在客户端跳转到 `/store/` |
+| `/support/` | 支持：Boji iOS App 的求助方式和常见问题 |
+| `/privacy/` | 隐私政策：Boji iOS App 的数据处理说明（发布前草案） |
 | `/docs/` | 文档首页 |
 | `/docs/guide/` | 用户指南（占位） |
 | `/docs/developers/` | 开发者文档（占位） |
 
 ## 文档站
 
-文档页面是 `content/docs/` 中的 MDX 文件，分为两个栏目：
+文档站和支持、隐私政策两个页面的内容源在仓库根目录的 `docs/sites/`，不在本目录中。`docs/sites/` 是公开边界：其中的 `.mdx` 页面和 `meta.json` 都会发布，`docs/` 下的其他文档不会发布。`src/lib/source.ts` 读取 `../docs/sites`，只收录 `**/*.mdx` 和 `**/meta.json`。
+
+`docs/sites/` 下的文件路径就是网址路径。`docs/sites/docs/` 是文档区，页面在 `/docs/` 下，显示文档侧边栏。顶层的 `.mdx` 是独立页面，没有侧边栏：
+
+| 文件 | 地址 | 用途 |
+| --- | --- | --- |
+| `docs/sites/support.mdx` | `https://leanmuscle.club/support/` | App Store 的支持网址 |
+| `docs/sites/privacy.mdx` | `https://leanmuscle.club/privacy/` | App Store 的隐私政策网址 |
+
+这两个地址用于 App Store Connect，不要改名或移动。两个页面只有顶栏，顶栏链接到文档、支持和隐私政策。文档侧边栏的最下面也有这两个页面的链接。每个独立页面在 `src/app/(docs)/(pages)/` 下有自己的路由文件；只在 `docs/sites/` 顶层新建 `.mdx`，不会生成页面。
+
+隐私政策目前是发布前草案。页面状态、每条陈述的源码依据、待确认项和上线条件见 [隐私政策与支持页维护记录](docs/privacy-support.md)。
+
+文档区分为两个栏目：
 
 | 目录 | 栏目 | 读者 |
 | --- | --- | --- |
-| `content/docs/guide/` | 用户指南 | Boji App 的用户 |
-| `content/docs/developers/` | 开发者文档 | 开发者 |
+| `docs/sites/docs/guide/` | 用户指南 | Boji App 的用户 |
+| `docs/sites/docs/developers/` | 开发者文档 | 开发者 |
 
 新增页面的步骤：
 
-1. 在栏目目录中新建 `.mdx` 文件，例如 `content/docs/guide/install.mdx`。页面地址是 `/docs/guide/install/`。
+1. 在栏目目录中新建 `.mdx` 文件，例如 `docs/sites/docs/guide/install.mdx`。页面地址是 `/docs/guide/install/`。
 2. 在文件开头的 front matter 中写 `title` 和 `description`。
 3. 把文件名（不含扩展名）加到同一目录 `meta.json` 的 `pages` 中，用来确定侧边栏的顺序。
 
 MDX 中可以直接使用 Fumadocs 的 `Callout`、`Card` 和 `Cards` 组件。站内链接可以写相对文件路径，例如 `[安装](./install.mdx)`。
 
-文档站的界面文字是中文，搜索在浏览器中完成，不需要服务器。构建时会生成搜索索引 `out/api/search`。文档的配色在 `src/app/docs.css` 中定义，和官网一样取自 Boji App，并支持深色模式。
+文档站的界面文字是中文，搜索在浏览器中完成，不需要服务器。构建时会生成搜索索引 `out/api/search`，其中包含文档区页面、支持页和隐私政策。文档的配色在 `src/app/docs.css` 中定义，和官网一样取自 Boji App，并支持深色模式。
 
-不要把内部文档放到文档站，例如 `docs/membership.md` 和 `ios/docs/`。
+不要把内部文档放到 `docs/sites/`，例如 `docs/membership.md`、`docs/sentry.md` 和 `ios/docs/`。
+
+内容源在本目录以外，所以 `next.config.ts` 把 Turbopack 的根目录 `turbopack.root` 设为仓库根目录。Turbopack 不解析根目录以外的文件。Next.js 命令要在本目录运行，因为 fumadocs-mdx 按当前工作目录解析 `../docs/sites`。
+
+`pnpm build` 默认使用 Turbopack。Turbopack 要绑定本机端口来启动 MDX 加载器进程。如果执行环境禁止绑定端口，构建会报错 `binding to a port: Operation not permitted`。这时可以用 `pnpm exec next build --webpack` 验证页面，但发布前仍要在正常环境中运行 `pnpm build`。
 
 ## 视觉风格
 

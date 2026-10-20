@@ -1,10 +1,30 @@
-import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
+import Link from "next/link";
+import type { BaseLayoutProps, LinkItemType } from "fumadocs-ui/layouts/shared";
 import type { Translations } from "fumadocs-ui/i18n";
 import { DiscordIcon } from "@/components/ui/DiscordIcon";
 import { Logo } from "@/components/ui/Logo";
 import { DISCORD_URL } from "@/lib/content";
 
-/** 文档站各布局共用的导航选项。 */
+/**
+ * 支持页和隐私政策。这两个地址用作 App Store Connect 的支持网址和隐私政策网址，
+ * 修改前先更新商店资料。
+ */
+export const PAGE_LINKS = [
+  { text: "支持", url: "/support/" },
+  { text: "隐私政策", url: "/privacy/" },
+] as const;
+
+/** 图标链接在侧边栏中显示在底部、深浅色切换按钮的左边，在顶栏中显示在右侧。 */
+const DISCORD_LINK: LinkItemType = {
+  type: "icon",
+  text: "Discord",
+  label: "加入 Discord 社区",
+  icon: <DiscordIcon className="size-4" />,
+  url: DISCORD_URL,
+  external: true,
+};
+
+/** 文档区（/docs/）的导航选项。支持和隐私政策由侧边栏底部的 PageLinks 显示。 */
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
@@ -16,19 +36,37 @@ export function baseOptions(): BaseLayoutProps {
       ),
       url: "/docs/",
     },
-    links: [
-      { text: "返回官网", url: "/" },
-      // 图标链接显示在侧边栏底部，深浅色切换按钮的左边。
-      {
-        type: "icon",
-        text: "Discord",
-        label: "加入 Discord 社区",
-        icon: <DiscordIcon className="size-4" />,
-        url: DISCORD_URL,
-        external: true,
-      },
-    ],
+    links: [{ text: "返回官网", url: "/" }, DISCORD_LINK],
   };
+}
+
+/** 独立页面（/support/、/privacy/）的导航选项。这些页面没有侧边栏，链接显示在顶栏。 */
+export function pageOptions(): BaseLayoutProps {
+  return {
+    nav: {
+      title: (
+        <>
+          <Logo className="h-[18px] w-auto" />
+          <span className="font-semibold">薄肌俱乐部</span>
+        </>
+      ),
+      url: "/",
+    },
+    links: [{ text: "文档", url: "/docs/" }, ...PAGE_LINKS, DISCORD_LINK],
+  };
+}
+
+/** 支持和隐私政策的文字链接，显示在文档侧边栏的最下面。 */
+export function PageLinks({ className = "" }: { className?: string }) {
+  return (
+    <nav aria-label="支持与隐私" className={`flex gap-4 text-sm text-fd-muted-foreground ${className}`}>
+      {PAGE_LINKS.map((link) => (
+        <Link key={link.url} href={link.url} className="transition-colors hover:text-fd-accent-foreground">
+          {link.text}
+        </Link>
+      ))}
+    </nav>
+  );
 }
 
 /** Fumadocs 界面文案的中文翻译。键由 fumadocs-ui 定义，升级 fumadocs-ui 后检查有没有新增的键。 */
