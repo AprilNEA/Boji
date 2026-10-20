@@ -41,9 +41,9 @@
   env.NUMBA_CACHE_DIR = "${config.devenv.state}/numba";
 
   packages = [
-    # bizserver/build.rs compiles the protobuf files with protoc through connectrpc-build.
-    pkgs.protobuf
-    # bizserver/: `buf lint`.
+    # The buf workspace in bizserver/: bizserver/build.rs runs `buf build`,
+    # `buf lint` runs in bizserver/, and `buf generate` runs in ios/BojiAPI/.
+    # Keep the bufbuild/buf image tag in bizserver/Dockerfile equal to this version.
     pkgs.buf
     # bizserver/: better-auth links openssl-sys through josekit and webauthn-rs-core.
     pkgs.openssl

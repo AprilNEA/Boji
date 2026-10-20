@@ -17,7 +17,7 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 | `assets/public/` | Generic static files for `https://assets.leanmuscle.club`, such as the app icon images that the root `README.md` shows | this file |
 | `LICENSE.md` | The PolyForm Noncommercial License 1.0.0 with the `Required Notice:` line | this file |
 | `.github/` | GitHub files: `.github/CLA.md` is the contributor license agreement, and `.github/workflows/cla.yml` runs the CLA check on pull requests | this file |
-| `devenv.nix`, `devenv.yaml`, `.envrc` | Local toolchains: Node.js and pnpm for `animations/` and `websites/`, Rust, `protoc`, `buf` and OpenSSL for `bizserver/`, JDK 17 for `android/`, and Python with Pillow and rembg for `websites/scripts/` | this file |
+| `devenv.nix`, `devenv.yaml`, `.envrc` | Local toolchains: Node.js and pnpm for `animations/` and `websites/`, Rust, `buf` and OpenSSL for `bizserver/`, JDK 17 for `android/`, and Python with Pillow and rembg for `websites/scripts/` | this file |
 | `.work/` | Local build outputs and scratch files. Git ignores this directory | none |
 
 ## Guides
@@ -35,7 +35,7 @@ Enter the devenv shell at the repository root with `devenv shell`, or with diren
 | Directory | Tools from devenv |
 | --- | --- |
 | `animations/`, `websites/` | Node.js 26 and pnpm. devenv runs `pnpm install` in both directories |
-| `bizserver/` | Rust from `bizserver/rust-toolchain.toml` through the `rust-overlay` input, `protoc`, `buf`, OpenSSL and `pkg-config` |
+| `bizserver/` | Rust from `bizserver/rust-toolchain.toml` through the `rust-overlay` input, `buf`, OpenSSL and `pkg-config` |
 | `crates/` | The same Rust version as `bizserver/`. `crates/rust-toolchain.toml` repeats it for rustup users |
 | `android/` | JDK 17 and `JAVA_HOME`. The Gradle wrapper provides Gradle |
 | `websites/scripts/` | Python 3 with Pillow and rembg. `portraits.py` downloads the rembg model to `~/.u2net` on first use |
@@ -48,6 +48,7 @@ devenv does not provide Xcode, `ictool`, XcodeGen, the Android SDK, Chromium for
 - The iOS and Android build and test commands are in `ios/AGENTS.md` and `android/AGENTS.md`.
 - The website commands are in `websites/AGENTS.md`.
 - `cargo locales check` in `crates/` validates `locales/` and verifies that the generated string resources are current. `cargo locales generate` writes them. See `crates/AGENTS.md`.
+- `buf generate` in `ios/BojiAPI/` regenerates the Swift client code from `bizserver/proto/boji/v1/`. See "API contract" below.
 
 ### README icon
 
@@ -62,6 +63,12 @@ ICTOOL="/Applications/Xcode.app/Contents/Applications/Icon Composer.app/Contents
 ```
 
 ## Cross-directory rules
+
+### API contract
+
+`bizserver/proto/` is the only source of the API contract. Its buf workspace is `bizserver/buf.yaml`, and `bizserver/buf.lock` pins googleapis. Clients use code that `buf generate` produces from that workspace. Do not copy proto files into a client, and do not hand-write request or response types.
+
+The iOS code is the local Swift package `ios/BojiAPI/`. Its `buf.gen.yaml` pins the plugin versions, and its `Package.swift` pins the runtime versions. Keep each plugin version equal to its runtime: `apple/swift` to `swift-protobuf`, and `connectrpc/swift` to `connect-swift`. Keep the googleapis commit in `buf.gen.yaml` equal to `bizserver/buf.lock`. After a change to `bizserver/proto/boji/v1/`, run `buf generate` in `ios/BojiAPI/` and commit the regenerated files in the same change.
 
 ### Asset host
 

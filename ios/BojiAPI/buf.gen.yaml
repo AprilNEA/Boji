@@ -1,0 +1,35 @@
+# Swift code generation for the Boji member API (boji.v1). Run `buf generate`
+# in this directory and commit the output. The input is the buf workspace in
+# bizserver/, the owner of the API contract.
+version: v2
+clean: true
+plugins:
+  # SwiftProtobuf messages. Keep the version equal to swift-protobuf in
+  # Package.swift.
+  - remote: buf.build/apple/swift:v1.38.0
+    out: Sources/BojiAPI/Generated
+    opt:
+      - Visibility=Public
+      - FileNaming=PathToUnderscores
+  # Connect clients. Keep the version equal to connect-swift in Package.swift.
+  - remote: buf.build/connectrpc/swift:v1.2.3
+    out: Sources/BojiAPI/Generated
+    opt:
+      - Visibility=Public
+      - FileNaming=PathToUnderscores
+      - GenerateAsyncMethods=true
+      - GenerateCallbackMethods=false
+inputs:
+  # The member API. The apps do not call boji.admin.v1.
+  # buf resolves `paths` of a directory input against this directory.
+  - directory: ../../bizserver
+    paths:
+      - ../../bizserver/proto/boji/v1
+  # The googleapis types that boji.v1 messages and error details use. Keep
+  # the commit equal to the googleapis commit in bizserver/buf.lock.
+  - module: buf.build/googleapis/googleapis:8ac61b9e502343289c8c42b17aa5b245
+    paths:
+      - google/rpc/code.proto
+      - google/rpc/error_details.proto
+      - google/rpc/status.proto
+      - google/type/date.proto

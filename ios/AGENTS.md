@@ -16,6 +16,7 @@ This directory holds the native iOS app, its watchOS app and its widgets. The pr
 | `Shared/Shared.xcstrings` | Generated String Catalog of the copy that Android also shows. All three targets bundle it |
 | `BojiTests/` | Unit tests |
 | `BojiUITests/` | UI tests |
+| `BojiAPI/` | Local Swift package with the generated messages and Connect clients of the `boji.v1` API |
 | `docs/` | Design notes, integration notes and verification records |
 | `app-store/` | Public App Store copy, pinned asc tooling and offline checks |
 
@@ -39,6 +40,10 @@ xcodebuild -project Boji.xcodeproj -scheme Boji \
   -derivedDataPath ../.work/boji-ios/DerivedData \
   -parallel-testing-enabled NO \
   CODE_SIGNING_ALLOWED=NO test
+
+# Regenerate the API client code, then compile the package.
+(cd BojiAPI && buf generate)
+(cd BojiAPI && swift build --scratch-path ../../.work/boji-ios/BojiAPI-build)
 ```
 
 ## Rules
@@ -64,6 +69,7 @@ xcodebuild -project Boji.xcodeproj -scheme Boji \
 - Load course animations by exercise ID through `ExerciseAnimationCatalog`. Use `posterFrame` for Reduce Motion; missing resources need a static fallback.
 - Keep only the current exercise player active. Pause for hidden views, inactive scenes, rests, and user pauses.
 - Exclude `*.tmp` files from generated build resources.
+- Do not edit `BojiAPI/Sources/BojiAPI/Generated/`. `buf generate` in `BojiAPI/` writes it from `../bizserver/proto/boji/v1/`. Follow "API contract" in the root `AGENTS.md` for the version rules. The app targets do not link `BojiAPI` yet. When a target adopts it, add it as a local package in `project.yml`.
 
 ### Shared copy
 
