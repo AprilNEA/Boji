@@ -8,8 +8,8 @@
 | 类型 | 作用 |
 | --- | --- |
 | `BatchInput` | 请求体。`operations` 必须有 1 到 50 条。 |
-| `Operation` | `upsert` 或 `delete` 变更。它保留旧版的 `op`、`kind`、`source` 和 `payload` JSON 形状。 |
-| `MutationResult` | 单条操作的回执。它保留旧字段 `mutationId`、`id`、`status`、`revision`、`sequence`、`code` 和 `currentRevision`。 |
+| `Operation` | `upsert` 或 `delete` 变更。 |
+| `MutationResult` | 单条操作的回执，包含修订号、序列号和冲突原因。 |
 | `SyncState` | 同步开关、同意版本和同意时间。 |
 | `Changes` | 游标拉取结果。包含 `records`、`nextCursor` 和 `hasMore`。 |
 | `Days` | 日期范围内的每日汇总。 |
@@ -17,6 +17,8 @@
 
 `source` 只接受 `manual`、`app` 和 `import`。模块拒绝 `healthkit`。
 `kind` 只接受 `hydration`、`sleep` 和 `workout`。
+
+这些类型的 serde 形状是内部格式，不是对外协议。对外协议见 [activity_service.proto](../proto/boji/v1/activity_service.proto)，字段对应关系见[传输层映射](#传输层映射)。`Operation` 的 JSON 序列化结果用于计算幂等哈希。`MutationResult` 以 JSON 形式存入回执表。上线后修改这两个类型的 serde 属性，会导致已存回执无法匹配重试请求或无法读取。
 
 ## 公开函数
 
@@ -45,6 +47,12 @@ pub async fn get_changes(
     cursor: &str,
     limit: u64,
 ) -> Result<Changes, ActivityError>;
+
+pub async fn get_activity(
+    db: &DatabaseConnection,
+    user_id: &str,
+    id: Uuid,
+) -> Result<Option<ActivityRecord>, ActivityError>;
 
 pub async fn get_days(
     db: &DatabaseConnection,
@@ -83,6 +91,21 @@ pub async fn get_days(
 
 每日汇总包含饮水总量、睡眠分钟数、完成训练数量和完成训练秒数。
 睡眠按用户本地日期唯一。训练与饮水按用户本地日期聚合。
+
+## 传输层映射
+
+`src/rpc/activity.rs` 和 `src/rpc/conversion.rs` 把领域类型转换为 `boji.v1.ActivityService` 的消息。领域层不知道资源名、etag 和页令牌。
+
+| 领域层 | RPC |
+| --- | --- |
+| 记录 `id` | `Activity.name` 的最后一段 |
+| `mutationId` | `ActivityWrite.requestId` |
+| `expectedRevision` | `etag`。etag 是带引号的修订号，例如 `"3"`。缺少 etag 表示修订号 0，只能创建新记录 |
+| `deletedAt` | `Activity.deleteTime` |
+| `get_changes` 的 `nextCursor` | `ListActivities` 和 `SyncActivities` 的令牌 |
+| 冲突原因 | `ActivityWriteResult.status` 中 `ErrorInfo` 的 `reason`，例如 `MUTATION_REUSED` 对应 `REQUEST_ID_REUSED` |
+
+RPC 层不直接暴露游标。令牌是编码后的结构，记录令牌用途、用户 ID 和游标。用途和用户不匹配的令牌返回 `INVALID_PAGE_TOKEN` 或 `INVALID_SYNC_TOKEN`。RPC 响应不包含 `serverCursor`。
 
 ## 接线状态
 

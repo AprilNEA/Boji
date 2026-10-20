@@ -13,4 +13,6 @@ pub use input::{
     MutationStatus, Operation, SYNC_CONSENT_VERSION, SleepPayload, Source, SyncState,
     WorkoutPayload, WorkoutStatus,
 };
-pub use service::{ActivityError, apply_batch, get_changes, get_days, get_sync, set_sync};
+pub use service::{
+    ActivityError, apply_batch, get_activity, get_changes, get_days, get_sync, set_sync,
+};

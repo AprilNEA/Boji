@@ -16,7 +16,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
         .create_table(
             Table::create()
                 .table("user")
-                .if_not_exists()
                 .col(text("id").primary_key())
                 .col(text_null("name"))
                 .col(text_null("email").unique_key())
@@ -33,7 +32,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
         .create_table(
             Table::create()
                 .table("session")
-                .if_not_exists()
                 .col(text("id").primary_key())
                 .col(timestamp_with_time_zone("expires_at"))
                 .col(text("token").unique_key())
@@ -58,7 +56,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
         .create_table(
             Table::create()
                 .table("account")
-                .if_not_exists()
                 .col(text("id").primary_key())
                 .col(text("account_id"))
                 .col(text("provider_id"))
@@ -87,7 +84,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
         .create_table(
             Table::create()
                 .table("verification")
-                .if_not_exists()
                 .col(text("id").primary_key())
                 .col(text("identifier"))
                 .col(text("value"))
@@ -104,7 +100,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
                 .name("session_user_id_idx")
                 .table("session")
                 .col("user_id")
-                .if_not_exists()
                 .to_owned(),
         )
         .await?;
@@ -116,7 +111,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
                 .col("provider_id")
                 .col("account_id")
                 .unique()
-                .if_not_exists()
                 .to_owned(),
         )
         .await?;
@@ -126,7 +120,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
                 .name("verification_identifier_idx")
                 .table("verification")
                 .col("identifier")
-                .if_not_exists()
                 .to_owned(),
         )
         .await

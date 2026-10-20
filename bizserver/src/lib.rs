@@ -1,6 +1,9 @@
 //! Boji's Rust business service and transport-independent domain modules.
 
+pub mod admin_auth;
+pub mod admin_permissions;
 pub mod app;
+pub mod apple;
 pub mod auth;
 mod auth_policy;
 pub mod auth_schema;

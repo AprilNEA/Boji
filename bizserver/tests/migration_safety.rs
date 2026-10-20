@@ -7,7 +7,7 @@ use uuid::Uuid;
 
 #[tokio::test]
 #[ignore = "requires an isolated PostgreSQL TEST_DATABASE_URL"]
-async fn rejects_unregistered_legacy_and_future_database_versions() {
+async fn ensure_current_rejects_uninitialized_and_future_versions() {
     let url = std::env::var("TEST_DATABASE_URL").expect("isolated TEST_DATABASE_URL is required");
     let admin = Database::connect(&url).await.unwrap();
     let schema = format!("migration_test_{}", Uuid::new_v4().simple());
@@ -24,20 +24,6 @@ async fn rejects_unregistered_legacy_and_future_database_versions() {
     let manager = SchemaManager::new(&db);
     assert!(migrations::ensure_current(&db).await.is_err());
     assert!(!manager.has_table("seaql_migrations").await.unwrap());
-    db.execute_raw(Statement::from_string(
-        DbBackend::Postgres,
-        "CREATE TABLE \"user\" (id text PRIMARY KEY)",
-    ))
-    .await
-    .unwrap();
-    assert!(migrations::migrate(&db).await.is_err());
-    assert!(!manager.has_table("seaql_migrations").await.unwrap());
-    db.execute_raw(Statement::from_string(
-        DbBackend::Postgres,
-        "DROP TABLE \"user\"",
-    ))
-    .await
-    .unwrap();
     migrations::migrate(&db).await.unwrap();
     migrations::ensure_current(&db).await.unwrap();
     migrations::migrate(&db).await.unwrap();

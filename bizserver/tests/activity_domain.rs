@@ -38,6 +38,9 @@ async fn activity_domain_syncs_idempotently_and_rebuilds_summaries() {
         email_verified: Set(true),
         image: Set(None),
         role: Set(Some("user".to_owned())),
+        banned: Set(false),
+        ban_reason: Set(None),
+        ban_expires: Set(None),
         created_at: Set(now),
         updated_at: Set(now),
     }

@@ -12,7 +12,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
         .create_table(
             Table::create()
                 .table(MembershipNumberCounter::Table)
-                .if_not_exists()
                 .col(
                     ColumnDef::new(MembershipNumberCounter::Id)
                         .integer()
@@ -41,7 +40,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
         .create_table(
             Table::create()
                 .table(Membership::Table)
-                .if_not_exists()
                 .col(
                     ColumnDef::new(Membership::Id)
                         .uuid()
@@ -105,7 +103,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
         .create_table(
             Table::create()
                 .table(Entitlement::Table)
-                .if_not_exists()
                 .col(
                     ColumnDef::new(Entitlement::Id)
                         .uuid()
@@ -146,7 +143,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
         .create_table(
             Table::create()
                 .table(MembershipEntitlement::Table)
-                .if_not_exists()
                 .col(
                     ColumnDef::new(MembershipEntitlement::MembershipId)
                         .uuid()
@@ -200,7 +196,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
                 .name("membership_entitlement_entitlement_id_idx")
                 .table(MembershipEntitlement::Table)
                 .col(MembershipEntitlement::EntitlementId)
-                .if_not_exists()
                 .to_owned(),
         )
         .await?;

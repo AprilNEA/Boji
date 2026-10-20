@@ -1,5 +1,5 @@
 use anyhow::{Context, Result, bail};
-use boji_bizserver::{app, auth, config::Config, migrations};
+use boji_bizserver::{app, auth, config::Config, migrations, rpc};
 use sea_orm::{ConnectOptions, Database};
 use std::{process::ExitCode, time::Duration};
 
@@ -34,7 +34,7 @@ async fn run() -> Result<()> {
     let config = Config::from_env()?;
     if command == "serve" && config.production {
         bail!(
-            "Production rollout is blocked until authentication and mail migration parity is verified"
+            "Production startup is blocked until mail delivery, throttling, and launch verification are complete"
         );
     }
     let mut options = ConnectOptions::new(config.database_url);
@@ -57,6 +57,9 @@ async fn run() -> Result<()> {
     migrations::ensure_current(&database)
         .await
         .context("Run explicit migrations against an isolated Rust database before serving")?;
+    let capabilities = rpc::Capabilities {
+        apple_sign_in: config.apple.is_some(),
+    };
     let auth = auth::build(
         database.clone(),
         auth::AuthOptions {
@@ -64,11 +67,13 @@ async fn run() -> Result<()> {
             base_url: config.auth_url,
             trusted_origins: config.trusted_origins,
             mail_output_directory: config.mail_dir,
+            apple: config.apple,
+            account_linking: config.account_linking,
         },
     )
     .await
     .context("Authentication initialization failed")?;
-    let router = app::router(database.clone(), auth, &config.cors_origins)
+    let router = app::router(database.clone(), auth, &config.cors_origins, capabilities)
         .context("HTTP configuration failed")?;
     let listener = tokio::net::TcpListener::bind(config.bind)
         .await

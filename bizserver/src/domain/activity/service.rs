@@ -9,7 +9,7 @@ use sea_orm::{DbErr, TransactionError};
 use thiserror::Error;
 
 pub use batch::apply_batch;
-pub use read::{get_changes, get_days};
+pub use read::{get_activity, get_changes, get_days};
 pub use state::{get_sync, set_sync};
 
 use super::input::InputError;

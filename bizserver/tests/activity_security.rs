@@ -26,6 +26,9 @@ async fn setup() -> (DatabaseConnection, String, String) {
             email_verified: Set(true),
             image: Set(None),
             role: Set(None),
+            banned: Set(false),
+            ban_reason: Set(None),
+            ban_expires: Set(None),
             created_at: Set(Utc::now()),
             updated_at: Set(Utc::now()),
         }

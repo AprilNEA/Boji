@@ -5,6 +5,7 @@ use sea_orm::{
     AccessMode, ColumnTrait, ConnectionTrait, DatabaseConnection, EntityTrait, IsolationLevel,
     QueryFilter, QueryOrder, QuerySelect, TransactionTrait,
 };
+use uuid::Uuid;
 
 use crate::entities::activity::{daily_summary, event, hydration, sleep, sync_state, workout};
 
@@ -67,6 +68,31 @@ pub async fn get_changes(
     };
     transaction.commit().await?;
     Ok(result)
+}
+
+/// Returns one live or deleted activity of a user, or `None` if the ID is unknown.
+pub async fn get_activity(
+    db: &DatabaseConnection,
+    user_id: &str,
+    id: Uuid,
+) -> Result<Option<ActivityRecord>, ActivityError> {
+    let transaction = db
+        .begin_with_config(
+            Some(IsolationLevel::RepeatableRead),
+            Some(AccessMode::ReadOnly),
+        )
+        .await?;
+    let db = &transaction;
+    require_sync(db, user_id).await?;
+    let record = match event::Entity::find_by_id((user_id.to_owned(), id))
+        .one(db)
+        .await?
+    {
+        Some(row) => Some(to_record(db, user_id, &row).await?),
+        None => None,
+    };
+    transaction.commit().await?;
+    Ok(record)
 }
 
 /// Returns inclusive daily summaries for a user-local date range.

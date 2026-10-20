@@ -1,16 +1,31 @@
 //! ConnectRPC transport over the versioned business protocol.
+//!
+//! Input: Connect requests for `boji.v1` and `boji.admin.v1`.
+//! Output: generated service implementations over the domain modules.
+//! Pos: the only transport adapter. Domain modules know nothing about protobuf.
 
 mod activity;
+mod admin;
 mod conversion;
+pub(crate) mod error;
+mod filter;
 mod membership;
+mod names;
+mod pagination;
 
 use crate::{
     auth::{self, Auth, AuthFailure, Principal},
-    proto::boji::v1 as p,
+    proto::{
+        boji::{admin::v1 as a, v1 as p},
+        google,
+    },
 };
-use connectrpc::{ConnectError, RequestContext, Response, ServiceRequest, ServiceResult};
+use connectrpc::{
+    ConnectError, ErrorCode, RequestContext, Response, ServiceRequest, ServiceResult,
+};
+use p::ErrorReason;
 use sea_orm::DatabaseConnection;
-use std::sync::Arc;
+use std::sync::{Arc, Once};
 
 /// Shared service state; account identity always comes from Better Auth.
 pub struct BusinessService {
@@ -23,46 +38,100 @@ impl BusinessService {
     pub fn new(db: DatabaseConnection, auth: Arc<Auth>) -> Self {
         Self { db, auth }
     }
+
     async fn principal(&self, context: &RequestContext) -> Result<Principal, ConnectError> {
         auth::authenticate(&self.auth, context.headers())
             .await
-            .map_err(|error| match error {
-                AuthFailure::EmailUnverified => {
-                    ConnectError::permission_denied("EMAIL_NOT_VERIFIED")
-                }
-                AuthFailure::Storage(_) => {
-                    ConnectError::unavailable("Authentication storage is unavailable")
-                }
-                _ => ConnectError::unauthenticated("A valid signed Bearer session is required"),
+            .map_err(|failure| match failure {
+                AuthFailure::EmailUnverified => error::error(
+                    ErrorCode::PermissionDenied,
+                    ErrorReason::EMAIL_NOT_VERIFIED,
+                    "Verify the email address of the account first.",
+                ),
+                AuthFailure::Storage(_) => error::backend_unavailable(),
+                _ => session_required(),
             })
     }
 }
 
-/// Public service capabilities. Unmigrated integrations remain disabled.
-pub struct SystemService;
+/// Return the `UNAUTHENTICATED` `SESSION_REQUIRED` error.
+pub(crate) fn session_required() -> ConnectError {
+    error::error(
+        ErrorCode::Unauthenticated,
+        ErrorReason::SESSION_REQUIRED,
+        "A valid signed Bearer session is required.",
+    )
+}
+
+/// Optional integrations that this process configured at startup.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct Capabilities {
+    /// Whether `POST /api/auth/sign-in/social` accepts the `apple` provider.
+    pub apple_sign_in: bool,
+}
+
+/// The `ServerConfig` singleton. Unmigrated integrations remain disabled.
+pub struct SystemService {
+    capabilities: Capabilities,
+}
+
+/// The resource name of the `ServerConfig` singleton.
+const SERVER_CONFIG: &str = "serverConfig";
+
 impl p::SystemService for SystemService {
-    async fn get_capabilities<'a>(
+    async fn get_server_config<'a>(
         &'a self,
         _: RequestContext,
-        _: ServiceRequest<'_, p::GetCapabilitiesRequest>,
-    ) -> ServiceResult<impl connectrpc::Encodable<p::GetCapabilitiesResponse> + Send + use<'a>>
-    {
-        Response::ok(p::GetCapabilitiesResponse {
-            apple_sign_in: false,
-            wallet_pass: false,
-            activity_sync: true,
-            api_version: "boji.v1".into(),
+        request: ServiceRequest<'_, p::GetServerConfigRequest>,
+    ) -> ServiceResult<impl connectrpc::Encodable<p::ServerConfig> + Send + use<'a>> {
+        if request.name != SERVER_CONFIG {
+            return Err(error::invalid_input(
+                "name",
+                "The value must be `serverConfig`.",
+            ));
+        }
+        Response::ok(p::ServerConfig {
+            name: SERVER_CONFIG.to_owned(),
+            apple_login_enabled: self.capabilities.apple_sign_in,
+            wallet_pass_enabled: false,
+            activity_sync_enabled: true,
             ..Default::default()
         })
     }
 }
 
+/// Install the protobuf type registry once per process.
+///
+/// Connect JSON renders `google.protobuf.Any` with the fields of the packed
+/// message only when the registry knows its type, for example the
+/// `google.rpc.ErrorInfo` inside `ActivityWriteResult.status.details`.
+fn install_type_registry() {
+    static INSTALL: Once = Once::new();
+    INSTALL.call_once(|| {
+        let mut registry = buffa::type_registry::TypeRegistry::new();
+        buffa_types::register_wkt_types(&mut registry);
+        google::rpc::register_types(&mut registry);
+        google::r#type::register_types(&mut registry);
+        p::register_types(&mut registry);
+        a::register_types(&mut registry);
+        buffa::type_registry::set_type_registry(registry);
+    });
+}
+
 /// Register generated service traits with the official ConnectRPC runtime.
-pub fn router(db: DatabaseConnection, auth: Arc<Auth>) -> connectrpc::Router {
+///
+/// `WalletService` is a contract only. It stays unregistered, so its methods
+/// return `UNIMPLEMENTED`.
+pub fn router(
+    db: DatabaseConnection,
+    auth: Arc<Auth>,
+    capabilities: Capabilities,
+) -> connectrpc::Router {
+    install_type_registry();
     let service = Arc::new(BusinessService::new(db, auth));
-    // One implementation owns two service traits; registration is explicit.
-    use p::{ActivityServiceExt, MembershipServiceExt};
-    let router = connectrpc::Router::new().add_service(Arc::new(SystemService));
-    let router = MembershipServiceExt::register(service.clone(), router);
-    ActivityServiceExt::register(service, router)
+    let router = connectrpc::Router::new().add_service(Arc::new(SystemService { capabilities }));
+    let router = p::MembershipServiceExt::register(service.clone(), router);
+    let router = p::ActivityServiceExt::register(service.clone(), router);
+    let router = a::EntitlementServiceExt::register(service.clone(), router);
+    a::MembershipServiceExt::register(service, router)
 }

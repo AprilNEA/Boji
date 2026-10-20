@@ -2,6 +2,8 @@
 
 /// Activity synchronization entities owned by the activity domain.
 pub mod activity;
+/// Transactional audit records for membership operations.
+pub mod admin_audit_event;
 /// Free-membership entitlement catalog entries.
 pub mod entitlement;
 /// Free-membership card records.

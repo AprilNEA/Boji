@@ -600,11 +600,11 @@ mod tests {
     use super::*;
 
     #[test]
-    fn batch_deserializes_old_flat_protocol_shape() {
+    fn batch_deserializes_flat_json_shape() {
         let input: BatchInput = serde_json::from_str(
             r#"{"operations":[{"mutationId":"c0a80101-0000-4000-8000-000000000001","id":"c0a80101-0000-4000-8000-000000000002","expectedRevision":0,"op":"upsert","occurredAt":"2024-01-02T03:04:05+08:00","timeZone":"Asia/Shanghai","source":"app","kind":"hydration","payload":{"amountMl":250}}]}"#,
         )
-        .expect("the legacy protocol shape must deserialize");
+        .expect("the flat JSON shape must deserialize");
         input.validate().expect("the input must validate");
         let encoded = serde_json::to_value(input).expect("the input must serialize");
         assert_eq!(encoded["operations"][0]["kind"], "hydration");

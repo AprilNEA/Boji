@@ -18,11 +18,11 @@ pub struct Model {
     pub provider_id: String,
     /// Owning `user.id` value.
     pub user_id: String,
-    /// Optional OAuth access token. OAuth is not enabled in this migration.
+    /// Optional OAuth access token. Apple accounts from the web flow store one.
     pub access_token: Option<String>,
-    /// Optional OAuth refresh token. OAuth is not enabled in this migration.
+    /// Optional OAuth refresh token. Apple accounts from the web flow store one.
     pub refresh_token: Option<String>,
-    /// Optional OAuth ID token. OAuth is not enabled in this migration.
+    /// Optional OAuth ID token. Apple accounts store the last identity token.
     pub id_token: Option<String>,
     /// Optional OAuth access-token expiry time.
     pub access_token_expires_at: Option<DateTimeUtc>,

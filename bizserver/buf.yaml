@@ -1,12 +1,22 @@
 version: v2
 modules:
   - path: proto
+  - path: third_party/googleapis
 lint:
   use:
     - STANDARD
   except:
+    # ErrorReason follows google.api.ErrorReason: its value names are the
+    # wire values of google.rpc.ErrorInfo.reason, so they carry no prefix.
+    - ENUM_VALUE_PREFIX
+    # AIP-131, AIP-133 and AIP-216 return the resource itself, so several
+    # methods share one response type that is not named after the method.
     - RPC_REQUEST_RESPONSE_UNIQUE
     - RPC_RESPONSE_STANDARD_NAME
+  ignore:
+    - third_party/googleapis
 breaking:
   use:
     - FILE
+  ignore:
+    - third_party/googleapis

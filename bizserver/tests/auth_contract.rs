@@ -22,6 +22,8 @@ async fn test_auth() -> Arc<Auth> {
         base_url: "http://localhost:3000".to_string(),
         trusted_origins: Vec::new(),
         mail_output_directory: mail_directory.keep(),
+        apple: None,
+        account_linking: Default::default(),
     };
     build(database, options)
         .await

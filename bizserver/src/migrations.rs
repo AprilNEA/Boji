@@ -1,6 +1,8 @@
 //! Explicit versioned migrations for the new Rust service.
 
 pub mod activity;
+pub mod admin;
+pub mod admin_auth;
 pub mod auth;
 pub mod business;
 
@@ -16,19 +18,17 @@ impl MigratorTrait for Migrator {
             Box::new(AuthMigration),
             Box::new(BusinessMigration),
             Box::new(ActivityMigration),
+            Box::new(AdminMigration),
         ]
     }
 }
 
-/// Refuse automatic adoption of a legacy auth database before any schema change.
+/// Apply every pending migration.
+///
+/// PostgreSQL runs each migration in its own transaction. The migrations
+/// create tables and indexes without `IF NOT EXISTS`, so an existing object
+/// with the same name fails that migration and rolls back its changes.
 pub async fn migrate(database: &DatabaseConnection) -> Result<(), DbErr> {
-    let manager = SchemaManager::new(database);
-    if manager.has_table("user").await? && !manager.has_table("seaql_migrations").await? {
-        return Err(DbErr::Custom(
-            "Legacy database detected; use a fresh database until data conversion is approved"
-                .into(),
-        ));
-    }
     Migrator::up(database, None).await
 }
 
@@ -71,11 +71,6 @@ impl MigrationName for AuthMigration {
 #[async_trait::async_trait]
 impl MigrationTrait for AuthMigration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        if manager.has_table("user").await? {
-            return Err(DbErr::Custom(
-                "Auth tables already exist without this migration; refusing adoption".into(),
-            ));
-        }
         auth::up(manager).await
     }
     async fn down(&self, _: &SchemaManager) -> Result<(), DbErr> {
@@ -102,6 +97,25 @@ impl MigrationTrait for BusinessMigration {
     }
 }
 struct ActivityMigration;
+struct AdminMigration;
+impl MigrationName for AdminMigration {
+    fn name(&self) -> &str {
+        "m20261020_000004_admin"
+    }
+}
+#[async_trait::async_trait]
+impl MigrationTrait for AdminMigration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        admin_auth::up(manager).await?;
+        admin::up(manager).await
+    }
+    async fn down(&self, _: &SchemaManager) -> Result<(), DbErr> {
+        Err(DbErr::Custom(
+            "Destructive rollback is deliberately disabled".into(),
+        ))
+    }
+}
+
 impl MigrationName for ActivityMigration {
     fn name(&self) -> &str {
         "m20261020_000003_activity"

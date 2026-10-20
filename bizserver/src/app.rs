@@ -2,7 +2,7 @@
 
 use crate::{
     auth::{self, Auth},
-    rpc,
+    rpc::{self, Capabilities},
 };
 use anyhow::Result;
 use axum::{
@@ -20,7 +20,14 @@ use tower_http::cors::CorsLayer;
 use uuid::Uuid;
 
 /// Build the HTTP router without opening a port or mutating the database.
-pub fn router(db: DatabaseConnection, auth: Arc<Auth>, cors_origins: &[String]) -> Result<Router> {
+///
+/// `capabilities` must describe the integrations installed in `auth`.
+pub fn router(
+    db: DatabaseConnection,
+    auth: Arc<Auth>,
+    cors_origins: &[String],
+    capabilities: Capabilities,
+) -> Result<Router> {
     let origins = cors_origins
         .iter()
         .map(|value| HeaderValue::from_str(value))
@@ -50,7 +57,7 @@ pub fn router(db: DatabaseConnection, auth: Arc<Auth>, cors_origins: &[String]) 
             ]
             .map(axum::http::HeaderName::from_static),
         );
-    let connect = rpc::router(db.clone(), auth.clone())
+    let connect = rpc::router(db.clone(), auth.clone(), capabilities)
         .into_axum_service()
         .with_limits(
             connectrpc::Limits::default()

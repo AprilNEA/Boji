@@ -11,7 +11,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
         .create_table(
             Table::create()
                 .table(ActivitySyncState::Table)
-                .if_not_exists()
                 .col(
                     ColumnDef::new(ActivitySyncState::UserId)
                         .text()
@@ -48,7 +47,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
         .create_table(
             Table::create()
                 .table(ActivityEvent::Table)
-                .if_not_exists()
                 .col(ColumnDef::new(ActivityEvent::UserId).string().not_null())
                 .col(ColumnDef::new(ActivityEvent::Id).uuid().not_null())
                 .col(ColumnDef::new(ActivityEvent::Kind).string().not_null())
@@ -128,7 +126,7 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
     manager
         .get_connection()
         .execute_unprepared(
-            "CREATE UNIQUE INDEX IF NOT EXISTS activity_event_sleep_day_unique \
+            "CREATE UNIQUE INDEX activity_event_sleep_day_unique \
              ON activity_event (user_id, local_date) \
              WHERE kind = 'sleep' AND deleted_at IS NULL",
         )
@@ -138,7 +136,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
         .create_table(
             Table::create()
                 .table(HydrationEntry::Table)
-                .if_not_exists()
                 .col(ColumnDef::new(HydrationEntry::UserId).string().not_null())
                 .col(ColumnDef::new(HydrationEntry::EventId).uuid().not_null())
                 .col(
@@ -175,7 +172,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
         .create_table(
             Table::create()
                 .table(SleepEntry::Table)
-                .if_not_exists()
                 .col(ColumnDef::new(SleepEntry::UserId).string().not_null())
                 .col(ColumnDef::new(SleepEntry::EventId).uuid().not_null())
                 .col(
@@ -209,7 +205,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
         .create_table(
             Table::create()
                 .table(WorkoutSession::Table)
-                .if_not_exists()
                 .col(ColumnDef::new(WorkoutSession::UserId).string().not_null())
                 .col(ColumnDef::new(WorkoutSession::EventId).uuid().not_null())
                 .col(
@@ -271,7 +266,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
         .create_table(
             Table::create()
                 .table(ActivityMutation::Table)
-                .if_not_exists()
                 .col(ColumnDef::new(ActivityMutation::UserId).string().not_null())
                 .col(
                     ColumnDef::new(ActivityMutation::MutationId)
@@ -312,7 +306,6 @@ pub async fn up(manager: &SchemaManager<'_>) -> Result<(), DbErr> {
         .create_table(
             Table::create()
                 .table(DailyActivitySummary::Table)
-                .if_not_exists()
                 .col(
                     ColumnDef::new(DailyActivitySummary::UserId)
                         .string()

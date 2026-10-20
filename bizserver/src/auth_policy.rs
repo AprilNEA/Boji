@@ -50,7 +50,7 @@ async fn revoke_issued_session(auth: &Auth, signed_token: &str) -> Result<(), ()
         "/api/auth/get-session".into(),
         HashMap::from([("authorization".into(), format!("Bearer {signed_token}"))]),
         None,
-        HashMap::new(),
+        None,
     );
     let token = auth
         .session_manager()

@@ -9,9 +9,11 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use anyhow::Context;
+use better_auth::config::AccountLinkingConfig;
 use better_auth::integrations::axum::AxumIntegration;
 use better_auth::plugins::{
-    EmailPasswordPlugin, EmailVerificationPlugin, PasswordManagementPlugin, SessionManagementPlugin,
+    EmailPasswordPlugin, EmailVerificationPlugin, OAuthPlugin, PasswordManagementPlugin,
+    SessionManagementPlugin,
 };
 use better_auth::prelude::{AuthRequest, AuthSession, AuthUser, HttpMethod};
 use better_auth::seaorm::{DatabaseConnection, SeaOrmStore};
@@ -19,6 +21,7 @@ use better_auth::{AuthConfig, BetterAuth};
 use http::{HeaderMap, header::AUTHORIZATION};
 use thiserror::Error;
 
+use crate::apple::{self, AppleSignIn};
 use crate::auth_schema::BojiAuthSchema;
 use crate::mail::{PasswordResetEmailSender, PrivateFileEmailProvider, VerificationEmailSender};
 
@@ -27,8 +30,8 @@ pub type Auth = BetterAuth<BojiAuthSchema>;
 
 /// Immutable inputs used to build [`Auth`].
 ///
-/// Keep `secret` outside logs, diagnostics, and error messages. The caller must
-/// supply a secret of at least 32 characters.
+/// Keep `secret` and the Apple private key outside logs, diagnostics, and error
+/// messages. The caller must supply a secret of at least 32 characters.
 pub struct AuthOptions {
     /// Secret used to validate signed Bearer credentials and Better Auth cookies.
     pub secret: String,
@@ -38,6 +41,43 @@ pub struct AuthOptions {
     pub trusted_origins: Vec<String>,
     /// Absolute private directory for verification and password-reset mail files.
     pub mail_output_directory: PathBuf,
+    /// Sign in with Apple settings. `None` leaves the Apple provider unregistered.
+    pub apple: Option<AppleSignIn>,
+    /// Rule for a social sign-in whose email already belongs to a user.
+    pub account_linking: AccountLinking,
+}
+
+/// Rule for a social sign-in whose email already belongs to a user.
+///
+/// Neither rule joins users whose emails differ, and neither rule overwrites
+/// the profile of the existing user.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum AccountLinking {
+    /// Reject the sign-in. The existing user keeps only its current accounts.
+    #[default]
+    Disabled,
+    /// Add the social account to the existing user and sign in as that user.
+    ///
+    /// The provider must report the email as verified, and the existing user
+    /// must have verified the same email.
+    Enabled,
+}
+
+impl AccountLinking {
+    /// Return the Better Auth settings that implement this rule.
+    fn config(self) -> AccountLinkingConfig {
+        AccountLinkingConfig {
+            enabled: Some(self == Self::Enabled),
+            // No provider is trusted, so a link also needs the provider's verified-email claim.
+            trusted_providers: None,
+            allow_different_emails: false,
+            allow_unlinking_all: Some(false),
+            disable_implicit_linking: false,
+            // An unverified local user may belong to someone who registered another person's email.
+            require_local_email_verified: true,
+            update_user_info_on_link: Some(false),
+        }
+    }
 }
 
 /// Identity returned after a signed Bearer session passes server-side checks.
@@ -86,13 +126,23 @@ pub enum AuthFailure {
 /// Builds the production authentication service from application-owned entities.
 ///
 /// This enables email/password registration, session management, email
-/// verification, and password management. It deliberately does not install Apple
-/// OAuth or Wallet plugins.
+/// verification, and password management. When `options.apple` is set, it also
+/// registers the `apple` social provider and trusts Apple's `form_post` origin.
+/// `options.account_linking` decides whether a social sign-in may join an
+/// existing user with the same verified email. It does not install Wallet plugins.
 pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Result<Arc<Auth>> {
     let provider = PrivateFileEmailProvider::new(options.mail_output_directory)
         .context("configure private authentication mail output")?;
     let reset_sender = PasswordResetEmailSender::new(provider.clone());
     let verification_sender = VerificationEmailSender::new(provider.clone());
+    let apple_provider = options
+        .apple
+        .as_ref()
+        .map(|settings| apple::provider(settings, db.clone()));
+    let mut trusted_origins = options.trusted_origins;
+    if apple_provider.is_some() {
+        trusted_origins.push(apple::ORIGIN.to_owned());
+    }
 
     let mut config = AuthConfig::new(options.secret)
         .app_name("Boji")
@@ -101,12 +151,12 @@ pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Resu
             options.base_url.trim_end_matches('/')
         ))
         .base_path("/api/auth")
-        .trusted_origins(options.trusted_origins)
+        .trusted_origins(trusted_origins)
         .password_min_length(8);
     config.session.bearer = Some(better_auth::__private_core::BearerConfig {
         require_signature: true,
     });
-    config.account.account_linking.enabled = false;
+    config.account.account_linking = options.account_linking.config();
 
     let email_verification_for_login = Arc::new(
         EmailVerificationPlugin::new()
@@ -117,9 +167,10 @@ pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Resu
             .custom_send_verification_email(Arc::new(verification_sender.clone())),
     );
     let store = SeaOrmStore::<BojiAuthSchema>::new(config.clone(), db);
-    let auth = BetterAuth::<BojiAuthSchema>::new(config)
+    let mut builder = BetterAuth::<BojiAuthSchema>::new(config)
         .store(store)
         .email_provider(provider)
+        .plugin(crate::admin_permissions::plugin())
         .plugin(
             EmailPasswordPlugin::new()
                 .enable_signup(true)
@@ -138,13 +189,15 @@ pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Resu
         )
         .plugin(
             PasswordManagementPlugin::new()
-                .reset_token_expiry_hours(1)
+                .reset_password_token_expires_in(3600.0)
                 .revoke_sessions_on_password_reset(true)
                 .send_reset_password(Arc::new(reset_sender)),
-        )
-        .build()
-        .await
-        .context("build Better Auth service")?;
+        );
+    if let Some(apple_provider) = apple_provider {
+        builder =
+            builder.plugin(OAuthPlugin::new().add_provider(apple::PROVIDER_ID, apple_provider));
+    }
+    let auth = builder.build().await.context("build Better Auth service")?;
 
     Ok(Arc::new(auth))
 }
@@ -171,7 +224,7 @@ pub async fn authenticate(auth: &Auth, headers: &HeaderMap) -> Result<Principal,
         "/api/auth/get-session".to_string(),
         request_headers,
         None,
-        HashMap::new(),
+        None,
     );
 
     let token = auth
@@ -184,9 +237,11 @@ pub async fn authenticate(auth: &Auth, headers: &HeaderMap) -> Result<Principal,
         .await
         .map_err(AuthFailure::Storage)?
         .ok_or(AuthFailure::SessionNotFound)?;
+    let session_user_id = session.user_id();
+    let session_user_id = session_user_id.typed().map_err(AuthFailure::Storage)?;
     let user = auth
         .store()
-        .get_user_by_id(&session.user_id())
+        .get_user_by_id(session_user_id)
         .await
         .map_err(AuthFailure::Storage)?
         .ok_or(AuthFailure::UserNotFound)?;
@@ -194,15 +249,17 @@ pub async fn authenticate(auth: &Auth, headers: &HeaderMap) -> Result<Principal,
     if !user.email_verified() {
         return Err(AuthFailure::EmailUnverified);
     }
+    let user_id = user.id();
+    let user_id = user_id.typed().map_err(AuthFailure::Storage)?;
 
     Ok(Principal {
-        user_id: user.id().into_owned(),
+        user_id: user_id.to_string(),
         email_verified: user.email_verified(),
         role: user.role().map(ToOwned::to_owned),
     })
 }
 
-fn signed_bearer(headers: &HeaderMap) -> Result<&str, AuthFailure> {
+pub(crate) fn signed_bearer(headers: &HeaderMap) -> Result<&str, AuthFailure> {
     let mut values = headers.get_all(AUTHORIZATION).iter();
     let value = values.next().ok_or(AuthFailure::MissingBearer)?;
     if values.next().is_some() {
@@ -229,6 +286,21 @@ fn signed_bearer(headers: &HeaderMap) -> Result<&str, AuthFailure> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn account_linking_is_off_by_default_and_requires_verified_equal_emails() {
+        assert_eq!(AccountLinking::default(), AccountLinking::Disabled);
+        assert!(!AccountLinking::Disabled.config().enabled());
+
+        let linking = AccountLinking::Enabled.config();
+        assert!(linking.enabled());
+        assert!(!linking.disable_implicit_linking);
+        assert!(linking.trusted_providers.is_none());
+        assert!(linking.require_local_email_verified);
+        assert!(!linking.allow_different_emails);
+        assert_eq!(linking.allow_unlinking_all, Some(false));
+        assert_eq!(linking.update_user_info_on_link, Some(false));
+    }
 
     #[test]
     fn raw_bearer_token_is_rejected_before_storage_access() {

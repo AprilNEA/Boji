@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package boji.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "SystemServiceProto";
+option java_package = "club.leanmuscle.boji.v1";
+
+// Reads the optional features of this server.
+//
+// This service needs no authentication. Authentication itself stays under
+// `/api/auth` and uses better-auth-rs. It is not part of this API.
+service SystemService {
+  option (google.api.default_host) = "boji.leanmuscle.club";
+
+  // Returns the server configuration singleton.
+  rpc GetServerConfig(GetServerConfigRequest) returns (ServerConfig) {
+    option (google.api.http) = {get: "/v1/{name=serverConfig}"};
+    option (google.api.method_signature) = "name";
+  }
+}
+
+// The optional features of this server.
+//
+// Clients read this singleton before they show an entry for an optional
+// feature. A feature can still fail after a positive value, so clients must
+// handle every documented error of the feature.
+message ServerConfig {
+  option (google.api.resource) = {
+    type: "boji.leanmuscle.club/ServerConfig"
+    pattern: "serverConfig"
+    singular: "serverConfig"
+    plural: "serverConfigs"
+  };
+
+  // Identifier. The resource name. The value is always `serverConfig`.
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // Output only. True when Sign in with Apple is available under `/api/auth`.
+  bool apple_login_enabled = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. True when `WalletService` serves membership passes.
+  bool wallet_pass_enabled = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. True when `ActivityService` accepts synchronization.
+  bool activity_sync_enabled = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// Request message for `SystemService.GetServerConfig`.
+message GetServerConfigRequest {
+  // Required. The resource name. The value must be `serverConfig`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "boji.leanmuscle.club/ServerConfig"
+  ];
+}

@@ -1,0 +1,483 @@
+syntax = "proto3";
+
+package boji.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/field_info.proto";
+import "google/api/resource.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/rpc/status.proto";
+import "google/type/date.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "ActivityServiceProto";
+option java_package = "club.leanmuscle.boji.v1";
+
+// Synchronizes the hydration, sleep and workout activities of a user.
+//
+// The apps are local-first. Synchronization is optional, and the user enables
+// it with an explicit consent. Every method requires a signed Bearer session
+// for a verified email address. The `{user}` segment must be `me` or the user
+// ID of the caller. Responses always use the canonical user ID.
+//
+// Every method except `GetSyncState` and `UpdateSyncState` returns
+// `FAILED_PRECONDITION` with the reason `SYNC_DISABLED` while synchronization
+// is disabled.
+service ActivityService {
+  option (google.api.default_host) = "boji.leanmuscle.club";
+
+  // Returns the synchronization settings of the user.
+  rpc GetSyncState(GetSyncStateRequest) returns (SyncState) {
+    option (google.api.http) = {get: "/v1/{name=users/*/syncState}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // Enables or disables synchronization.
+  //
+  // To enable synchronization, set `enabled` to true and `consent_version` to
+  // `required_consent_version`. Otherwise the method returns
+  // `FAILED_PRECONDITION` `CONSENT_REQUIRED`. To disable synchronization, set
+  // `update_mask` to `enabled`, because a false value is not a populated
+  // field. Disabling keeps the synchronized activities.
+  rpc UpdateSyncState(UpdateSyncStateRequest) returns (SyncState) {
+    option (google.api.http) = {
+      patch: "/v1/{sync_state.name=users/*/syncState}"
+      body: "sync_state"
+    };
+    option (google.api.method_signature) = "sync_state,update_mask";
+  }
+
+  // Returns one activity, including a deleted activity.
+  //
+  // Errors: `NOT_FOUND` `ACTIVITY_NOT_FOUND` when the user has no activity
+  // with this ID.
+  rpc GetActivity(GetActivityRequest) returns (Activity) {
+    option (google.api.http) = {get: "/v1/{name=users/*/activities/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // Lists the live activities of the user, ordered by the time of their last
+  // change ascending. Deleted activities are excluded. A page can hold fewer
+  // activities than `page_size`, and it can be empty while
+  // `next_page_token` is present. Use `SyncActivities` for incremental
+  // synchronization.
+  rpc ListActivities(ListActivitiesRequest) returns (ListActivitiesResponse) {
+    option (google.api.http) = {get: "/v1/{parent=users/*}/activities"};
+    option (google.api.method_signature) = "parent";
+  }
+
+  // Creates, updates and deletes up to 50 activities.
+  //
+  // The server validates the whole request first. An invalid write fails the
+  // request with `INVALID_ARGUMENT` and applies nothing. After validation,
+  // each write succeeds or fails on its own, and the response reports one
+  // result per write in request order. A write that succeeds commits before
+  // the response. A write that fails changes nothing.
+  //
+  // Each write is idempotent by `request_id`. A retry with the same
+  // `request_id` and the same content returns the first result again and
+  // changes nothing.
+  rpc BatchWriteActivities(BatchWriteActivitiesRequest) returns (BatchWriteActivitiesResponse) {
+    option (google.api.http) = {
+      post: "/v1/{parent=users/*}/activities:batchWrite"
+      body: "*"
+    };
+  }
+
+  // Returns the activities that changed after a synchronization token, in
+  // the order of the changes. Deleted activities appear with `delete_time`.
+  //
+  // A full synchronization omits `sync_token`. The client reads every page
+  // with `page_token`. The last page has an empty `next_page_token` and
+  // carries `next_sync_token`. The client stores that token and sends it as
+  // `sync_token` in the next synchronization. An activity can appear more
+  // than once across pages when it changes during the synchronization.
+  rpc SyncActivities(SyncActivitiesRequest) returns (SyncActivitiesResponse) {
+    option (google.api.http) = {get: "/v1/{parent=users/*}/activities:sync"};
+  }
+
+  // Returns one summary for each local date in a range of at most 93 dates.
+  // Deleted activities do not count.
+  rpc SummarizeActivities(SummarizeActivitiesRequest) returns (SummarizeActivitiesResponse) {
+    option (google.api.http) = {get: "/v1/{parent=users/*}/activities:summarize"};
+  }
+}
+
+// The synchronization settings of one user. It is a singleton child of the
+// user.
+message SyncState {
+  option (google.api.resource) = {
+    type: "boji.leanmuscle.club/SyncState"
+    pattern: "users/{user}/syncState"
+    singular: "syncState"
+    plural: "syncStates"
+  };
+
+  // Identifier. The resource name, for example `users/u1/syncState`.
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // Optional. True when the server accepts and serves synchronized
+  // activities.
+  bool enabled = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The consent version that the user accepted. Enabling requires
+  // `required_consent_version`. Absent before the first consent.
+  string consent_version = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Output only. The consent version that enabling requires now. The current
+  // value is `activity-sync-v1`.
+  string required_consent_version = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The time of the consent that is in force. Absent before the
+  // first consent. Enabling again after a disable sets a new time.
+  google.protobuf.Timestamp consent_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// One hydration, sleep or workout record of a user.
+message Activity {
+  option (google.api.resource) = {
+    type: "boji.leanmuscle.club/Activity"
+    pattern: "users/{user}/activities/{activity}"
+    singular: "activity"
+    plural: "activities"
+  };
+
+  // The origin of an activity. This enum is extensible.
+  enum Source {
+    // Never sent. Writes with this value return `INVALID_ARGUMENT`.
+    SOURCE_UNSPECIFIED = 0;
+
+    // The user entered the activity by hand.
+    MANUAL = 1;
+
+    // The app recorded the activity, for example a guided workout.
+    APP = 2;
+
+    // The app imported the activity from another source.
+    IMPORT = 3;
+  }
+
+  // A water intake.
+  message Hydration {
+    // Required. The amount of water, from 1 to 10000 milliliters.
+    int32 amount_ml = 1 [(google.api.field_behavior) = REQUIRED];
+  }
+
+  // A night of sleep. A user has at most one live sleep activity per local
+  // date.
+  message Sleep {
+    // Required. The sleep duration in whole minutes, from 0 to 960 minutes.
+    google.protobuf.Duration duration = 1 [(google.api.field_behavior) = REQUIRED];
+  }
+
+  // A workout of one course exercise.
+  message Workout {
+    // How the app determined the duration. This enum is extensible.
+    enum DurationSource {
+      // Never sent. Writes with this value return `INVALID_ARGUMENT`.
+      DURATION_SOURCE_UNSPECIFIED = 0;
+
+      // The app measured the duration.
+      MEASURED = 1;
+
+      // The app estimated the duration.
+      ESTIMATED = 2;
+    }
+
+    // How the workout ended. This enum is extensible.
+    enum Outcome {
+      // Never sent. Writes with this value return `INVALID_ARGUMENT`.
+      OUTCOME_UNSPECIFIED = 0;
+
+      // The user finished the workout.
+      COMPLETED = 1;
+
+      // The user stopped the workout early.
+      ABANDONED = 2;
+    }
+
+    // Required. The exercise ID that the apps and the animation library
+    // share, for example `push-up`. It is not a resource of this API.
+    string workout_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+    // Required. The version of the exercise definition.
+    string workout_version = 2 [(google.api.field_behavior) = REQUIRED];
+
+    // Required. The workout duration in whole seconds, from 0 to 86400
+    // seconds.
+    google.protobuf.Duration duration = 3 [(google.api.field_behavior) = REQUIRED];
+
+    // Required. How the app determined `duration`.
+    DurationSource duration_source = 4 [(google.api.field_behavior) = REQUIRED];
+
+    // Required. How the workout ended.
+    Outcome outcome = 5 [(google.api.field_behavior) = REQUIRED];
+  }
+
+  // Identifier. The resource name, for example `users/u1/activities/a1`.
+  // The client assigns the `{activity}` segment as a UUID before the first
+  // write, so the app can record activities offline.
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // The kind and the data of the activity. A write must set exactly one
+  // field. The kind of an activity cannot change. A deleted activity sets no
+  // field.
+  oneof payload {
+    // A water intake.
+    Hydration hydration = 2;
+
+    // A night of sleep.
+    Sleep sleep = 3;
+
+    // A workout.
+    Workout workout = 4;
+  }
+
+  // Required. The origin of the activity.
+  Source source = 5 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The time when the activity happened.
+  google.protobuf.Timestamp occur_time = 6 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The IANA time zone of the user at `occur_time`, for example
+  // `Asia/Shanghai`. The server computes `local_date` from it.
+  string time_zone = 7 [(google.api.field_behavior) = REQUIRED];
+
+  // Output only. The calendar date of `occur_time` in `time_zone`.
+  google.type.Date local_date = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The time of the last change, including the deletion.
+  google.protobuf.Timestamp update_time = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The time when the activity was deleted. Absent while the
+  // activity is live. A deletion is permanent.
+  google.protobuf.Timestamp delete_time = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. A strong entity tag of the current version (AIP-154). Each
+  // change sets a new value. Send it in `ActivityWrite.etag` to update or
+  // delete the activity.
+  string etag = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// Request message for `ActivityService.GetSyncState`.
+message GetSyncStateRequest {
+  // Required. The name of the settings, for example `users/me/syncState`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "boji.leanmuscle.club/SyncState"
+  ];
+}
+
+// Request message for `ActivityService.UpdateSyncState`.
+message UpdateSyncStateRequest {
+  // Required. The new settings. `name` selects the user.
+  SyncState sync_state = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The fields to update: `enabled`, `consent_version` or `*`.
+  // When absent, the server updates the populated fields of `sync_state`.
+  // Other paths return `INVALID_ARGUMENT`.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Request message for `ActivityService.GetActivity`.
+message GetActivityRequest {
+  // Required. The name of the activity, for example
+  // `users/me/activities/a1`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "boji.leanmuscle.club/Activity"
+  ];
+}
+
+// Request message for `ActivityService.ListActivities`.
+message ListActivitiesRequest {
+  // Required. The user who owns the activities, for example `users/me`.
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).child_type = "boji.leanmuscle.club/Activity"
+  ];
+
+  // Optional. The maximum number of activities to return. Zero means the
+  // default of 100. Values above 200 are treated as 200. Negative values
+  // return `INVALID_ARGUMENT`.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The `next_page_token` of a previous call with the same
+  // `parent`. Empty for the first page.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for `ActivityService.ListActivities`.
+message ListActivitiesResponse {
+  // The live activities on this page.
+  repeated Activity activities = 1;
+
+  // A token for the next page. Empty when no further page exists.
+  string next_page_token = 2;
+}
+
+// Request message for `ActivityService.BatchWriteActivities`.
+message BatchWriteActivitiesRequest {
+  // Required. The user who owns the activities, for example `users/me`.
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).child_type = "boji.leanmuscle.club/Activity"
+  ];
+
+  // Required. From 1 to 50 writes. The server applies them in order.
+  repeated ActivityWrite writes = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// One write of `BatchWriteActivities`.
+message ActivityWrite {
+  // Required. A UUID that the client generates once for this write and
+  // reuses on every retry. Reusing it for a write with different content
+  // returns the per-write error `REQUEST_ID_REUSED`.
+  //
+  // The field is required, unlike the optional `request_id` of AIP-155,
+  // because offline replay depends on it.
+  string request_id = 1 [
+    (google.api.field_info).format = UUID4,
+    (google.api.field_behavior) = REQUIRED
+  ];
+
+  // The operation. Exactly one field is required.
+  oneof operation {
+    // Creates or replaces an activity. `name` must be a child of `parent`.
+    // The server ignores the output-only fields.
+    Activity upsert = 2;
+
+    // Deletes the activity with this name. `name` must be a child of
+    // `parent`.
+    string deletion = 3 [(google.api.resource_reference).type = "boji.leanmuscle.club/Activity"];
+  }
+
+  // Optional. The etag of the version that the client last read.
+  //
+  // An upsert without `etag` creates a new activity. It fails with
+  // `ACTIVITY_ALREADY_EXISTS` when the activity exists. An upsert with
+  // `etag` replaces an existing activity. A deletion requires `etag`. A write
+  // whose `etag` does not match fails with `ACTIVITY_ETAG_MISMATCH`.
+  string etag = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for `ActivityService.BatchWriteActivities`.
+message BatchWriteActivitiesResponse {
+  // One result per write, in request order.
+  repeated ActivityWriteResult write_results = 1;
+}
+
+// The result of one write.
+message ActivityWriteResult {
+  // The activity of the write.
+  string activity = 1 [(google.api.resource_reference).type = "boji.leanmuscle.club/Activity"];
+
+  // The result. The code `OK` means that the write was applied. Any other
+  // code means that the write changed nothing, and `details` carries a
+  // `google.rpc.ErrorInfo` with the reason. The reasons are
+  // `ACTIVITY_ALREADY_EXISTS`, `ACTIVITY_ETAG_MISMATCH`,
+  // `ACTIVITY_NOT_FOUND`, `ACTIVITY_DELETED`, `ACTIVITY_KIND_MISMATCH`,
+  // `SLEEP_DATE_CONFLICT` and `REQUEST_ID_REUSED`.
+  google.rpc.Status status = 2;
+
+  // The current etag of the activity after the write. Present when the write
+  // was applied, and when the write failed on an existing activity. Empty
+  // when the activity does not exist.
+  string etag = 3;
+}
+
+// Request message for `ActivityService.SyncActivities`.
+message SyncActivitiesRequest {
+  // Required. The user who owns the activities, for example `users/me`.
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).child_type = "boji.leanmuscle.club/Activity"
+  ];
+
+  // Optional. The maximum number of activities to return. Zero means the
+  // default of 100. Values above 200 are treated as 200. Negative values
+  // return `INVALID_ARGUMENT`.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The `next_page_token` of the previous page. When present, the
+  // server ignores `sync_token`.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The `next_sync_token` of the last completed synchronization.
+  // Empty for a full synchronization.
+  string sync_token = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for `ActivityService.SyncActivities`.
+message SyncActivitiesResponse {
+  // The changed activities, in the order of the changes.
+  repeated Activity activities = 1;
+
+  // A token for the next page. Empty on the last page.
+  string next_page_token = 2;
+
+  // The token for the next synchronization. Present only on the last page.
+  string next_sync_token = 3;
+}
+
+// Request message for `ActivityService.SummarizeActivities`.
+message SummarizeActivitiesRequest {
+  // Required. The user who owns the activities, for example `users/me`.
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).child_type = "boji.leanmuscle.club/Activity"
+  ];
+
+  // Required. The first local date of the range.
+  google.type.Date start_date = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The last local date of the range. The range includes it and
+  // contains at most 93 dates.
+  google.type.Date end_date = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The maximum number of summaries to return. Zero means the
+  // default of 93. Values above 93 are treated as 93. Negative values return
+  // `INVALID_ARGUMENT`.
+  int32 page_size = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The `next_page_token` of a previous call with the same range.
+  string page_token = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for `ActivityService.SummarizeActivities`.
+message SummarizeActivitiesResponse {
+  // One summary per local date, in ascending date order, including dates
+  // without activities.
+  repeated DailySummary daily_summaries = 1;
+
+  // A token for the next page. Empty when no further page exists.
+  string next_page_token = 2;
+}
+
+// The totals of the live activities of one local date.
+message DailySummary {
+  // The local date.
+  google.type.Date date = 1;
+
+  // The total water intake in milliliters.
+  int32 water_ml = 2;
+
+  // The sleep duration. Absent when the date has no sleep activity.
+  google.protobuf.Duration sleep_duration = 3;
+
+  // The number of workouts.
+  int32 workout_count = 4;
+
+  // The total workout duration.
+  google.protobuf.Duration workout_duration = 5;
+
+  // The number of daily tasks that the activities complete.
+  int32 task_count = 6;
+
+  // True when the date has at least one live activity.
+  bool has_record = 7;
+}

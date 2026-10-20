@@ -1,6 +1,10 @@
 //! End-to-end contracts against a dedicated PostgreSQL database and real HTTP.
 
-use boji_bizserver::{app, auth, migrations, proto::boji::v1 as p};
+use base64::{Engine, engine::general_purpose::STANDARD_NO_PAD};
+use boji_bizserver::{
+    app, auth, migrations,
+    proto::{boji::v1 as p, google::rpc::ErrorInfo},
+};
 use reqwest::{Client, StatusCode};
 use sea_orm::{ConnectOptions, Database};
 use serde_json::{Value, json};
@@ -27,6 +31,8 @@ async fn native_auth_and_business_rpc_over_real_http() {
             base_url: origin.clone(),
             trusted_origins: vec![origin.clone()],
             mail_output_directory: mail.path().to_owned(),
+            apple: None,
+            account_linking: auth::AccountLinking::Disabled,
         },
     )
     .await
@@ -35,6 +41,7 @@ async fn native_auth_and_business_rpc_over_real_http() {
         database.clone(),
         authentication,
         std::slice::from_ref(&origin),
+        boji_bizserver::rpc::Capabilities::default(),
     )
     .unwrap();
     let (stop, stopped) = tokio::sync::oneshot::channel();
@@ -75,21 +82,24 @@ async fn native_auth_and_business_rpc_over_real_http() {
     let response = rpc(
         &client,
         &origin,
-        "SystemService/GetCapabilities",
+        "SystemService/GetServerConfig",
         None,
-        json!({}),
+        json!({"name":"serverConfig"}),
     )
     .await;
     assert_eq!(response.status(), StatusCode::OK);
-    let capabilities: p::GetCapabilitiesResponse = response.json().await.unwrap();
-    assert!(!capabilities.apple_sign_in && !capabilities.wallet_pass && capabilities.activity_sync);
+    let config: p::ServerConfig = response.json().await.unwrap();
+    assert_eq!(config.name, "serverConfig");
+    assert!(
+        !config.apple_login_enabled && !config.wallet_pass_enabled && config.activity_sync_enabled
+    );
     assert_eq!(
         rpc(
             &client,
             &origin,
-            "MembershipService/GetMembership",
+            "MembershipService/ListMemberships",
             None,
-            json!({})
+            json!({"parent":"users/me"})
         )
         .await
         .status(),
@@ -158,9 +168,9 @@ async fn native_auth_and_business_rpc_over_real_http() {
         rpc(
             &client,
             &origin,
-            "MembershipService/GetMembership",
+            "MembershipService/ListMemberships",
             Some(raw_token),
-            json!({})
+            json!({"parent":"users/me"})
         )
         .await
         .status(),
@@ -177,42 +187,56 @@ async fn native_auth_and_business_rpc_over_real_http() {
             .is_success()
     );
 
-    let enrollment = json!({"displayName":"RPC Test", "termsVersion":"community-v1"});
+    let enrollment = json!({"parent":"users/me","membership":{"nickname":"RPC Test","termsVersion":"community-v1"}});
     let response = rpc(
         &client,
         &origin,
-        "MembershipService/EnrollMembership",
+        "MembershipService/CreateMembership",
         Some(&token),
         enrollment.clone(),
     )
     .await;
     assert_eq!(response.status(), StatusCode::OK);
     let first: Value = response.json().await.unwrap();
-    let response = rpc(
+    let membership_name = first["name"].as_str().unwrap().to_owned();
+    assert!(membership_name.starts_with("users/") && membership_name.contains("/memberships/"));
+    assert!(first["memberNumber"].is_string());
+    assert_eq!(first["state"], "ACTIVE");
+    assert_eq!(first["entitlements"].as_array().unwrap().len(), 3);
+    let second = rpc(
         &client,
         &origin,
-        "MembershipService/EnrollMembership",
+        "MembershipService/CreateMembership",
         Some(&token),
         enrollment,
     )
     .await;
-    let second: Value = response.json().await.unwrap();
-    assert_eq!(first["membership"]["id"], second["membership"]["id"]);
-    assert!(first["membership"]["memberNumber"].is_string());
-    assert_eq!(
-        first["membership"]["entitlements"]
-            .as_array()
-            .unwrap()
-            .len(),
-        3
-    );
+    assert_eq!(second.status(), StatusCode::CONFLICT);
+    let second: Value = second.json().await.unwrap();
+    assert_eq!(second["code"], "already_exists");
+    let listed: Value = rpc(
+        &client,
+        &origin,
+        "MembershipService/ListMemberships",
+        Some(&token),
+        json!({"parent":"users/me"}),
+    )
+    .await
+    .json()
+    .await
+    .unwrap();
+    assert_eq!(listed["memberships"][0], first);
     // The same generated route also accepts binary protobuf.
+    let request = p::GetMembershipRequest {
+        name: membership_name.clone(),
+        ..Default::default()
+    };
     let binary = client
         .post(format!("{origin}/boji.v1.MembershipService/GetMembership"))
         .bearer_auth(&token)
         .header("content-type", "application/proto")
         .header("connect-protocol-version", "1")
-        .body(Vec::new())
+        .body(buffa::Message::encode_to_vec(&request))
         .send()
         .await
         .unwrap();
@@ -226,27 +250,17 @@ async fn native_auth_and_business_rpc_over_real_http() {
             .unwrap()
             .starts_with("application/proto")
     );
-    assert!(!binary.bytes().await.unwrap().is_empty());
+    let card = <p::Membership as buffa::Message>::decode_from_slice(&binary.bytes().await.unwrap())
+        .unwrap();
+    assert_eq!(card.name, membership_name);
 
     assert_eq!(
         rpc(
             &client,
             &origin,
-            "ActivityService/ListChanges",
+            "ActivityService/SyncActivities",
             Some(&token),
-            json!({})
-        )
-        .await
-        .status(),
-        StatusCode::FORBIDDEN
-    );
-    assert_eq!(
-        rpc(
-            &client,
-            &origin,
-            "ActivityService/SetSyncState",
-            Some(&token),
-            json!({"enabled":true})
+            json!({"parent":"users/me"})
         )
         .await
         .status(),
@@ -256,94 +270,202 @@ async fn native_auth_and_business_rpc_over_real_http() {
         rpc(
             &client,
             &origin,
-            "ActivityService/SetSyncState",
+            "ActivityService/UpdateSyncState",
             Some(&token),
-            json!({"enabled":true,"consentVersion":"activity-sync-v1"})
+            json!({"syncState":{"name":"users/me/syncState","enabled":true}})
+        )
+        .await
+        .status(),
+        StatusCode::BAD_REQUEST
+    );
+    assert_eq!(
+        rpc(
+            &client,
+            &origin,
+            "ActivityService/UpdateSyncState",
+            Some(&token),
+            json!({"syncState":{"name":"users/me/syncState","enabled":true,"consentVersion":"activity-sync-v1"}})
         )
         .await
         .status(),
         StatusCode::OK
     );
     let now = chrono::Utc::now();
-    let mutation_id = Uuid::new_v4().to_string();
-    let record_id = Uuid::new_v4().to_string();
-    let operation = json!({"mutationId":mutation_id,"id":record_id,"expectedRevision":0,"upsert":{"occurredAt":now.to_rfc3339(),"timeZone":"UTC","source":"manual","hydration":{"amountMl":250}}});
+    let request_id = Uuid::new_v4().to_string();
+    let activity_name = format!("users/me/activities/{}", Uuid::new_v4());
+    let write = json!({"requestId":request_id,"upsert":{"name":activity_name,"occurTime":now.to_rfc3339(),"timeZone":"UTC","source":"MANUAL","hydration":{"amountMl":250}}});
     let response = rpc(
         &client,
         &origin,
-        "ActivityService/ApplyBatch",
+        "ActivityService/BatchWriteActivities",
         Some(&token),
-        json!({"operations":[operation.clone()]}),
+        json!({"parent":"users/me","writes":[write.clone()]}),
     )
     .await;
     assert_eq!(response.status(), StatusCode::OK);
     let first_mutation: Value = response.json().await.unwrap();
-    assert_eq!(first_mutation["results"][0]["status"], "applied");
+    let result = &first_mutation["writeResults"][0];
+    assert!(result["status"].get("code").is_none(), "{first_mutation}");
+    let etag = result["etag"].as_str().unwrap().to_owned();
+    let stored_name = result["activity"].as_str().unwrap().to_owned();
     let retry: Value = rpc(
         &client,
         &origin,
-        "ActivityService/ApplyBatch",
+        "ActivityService/BatchWriteActivities",
         Some(&token),
-        json!({"operations":[operation.clone()]}),
+        json!({"parent":"users/me","writes":[write.clone()]}),
     )
     .await
     .json()
     .await
     .unwrap();
     assert_eq!(first_mutation, retry);
-    let changes: Value = rpc(
+    // A stale etag fails only its own write, and the result carries the
+    // current etag.
+    let mut stale = write.clone();
+    stale["requestId"] = json!(Uuid::new_v4().to_string());
+    stale["etag"] = json!("\"99\"");
+    let stale: Value = rpc(
         &client,
         &origin,
-        "ActivityService/ListChanges",
+        "ActivityService/BatchWriteActivities",
         Some(&token),
-        json!({}),
+        json!({"parent":"users/me","writes":[stale]}),
     )
     .await
     .json()
     .await
     .unwrap();
-    assert_eq!(changes["records"].as_array().unwrap().len(), 1);
-    let date = now.format("%Y-%m-%d").to_string();
+    let stale = &stale["writeResults"][0];
+    assert_eq!(stale["status"]["code"], 10, "ABORTED: {stale}");
+    assert!(
+        stale["status"]
+            .to_string()
+            .contains("ACTIVITY_ETAG_MISMATCH"),
+        "{stale}"
+    );
+    assert_eq!(stale["etag"], etag);
+    // A resource name of another user fails before the lookup.
+    let foreign = rpc(
+        &client,
+        &origin,
+        "ActivityService/GetActivity",
+        Some(&token),
+        json!({"name":format!("users/{}/activities/{}", Uuid::new_v4(), Uuid::new_v4())}),
+    )
+    .await;
+    assert_eq!(foreign.status(), StatusCode::FORBIDDEN);
+    let foreign: Value = foreign.json().await.unwrap();
+    assert_eq!(foreign["code"], "permission_denied");
+    assert_eq!(foreign["details"][0]["type"], "google.rpc.ErrorInfo");
+    let bytes = STANDARD_NO_PAD
+        .decode(
+            foreign["details"][0]["value"]
+                .as_str()
+                .unwrap()
+                .trim_end_matches('='),
+        )
+        .unwrap();
+    let info = <ErrorInfo as buffa::Message>::decode_from_slice(&bytes).unwrap();
+    assert_eq!(info.reason, "RESOURCE_ACCESS_DENIED");
+    assert_eq!(info.domain, "boji.leanmuscle.club");
+    let changes: Value = rpc(
+        &client,
+        &origin,
+        "ActivityService/SyncActivities",
+        Some(&token),
+        json!({"parent":"users/me"}),
+    )
+    .await
+    .json()
+    .await
+    .unwrap();
+    assert_eq!(changes["activities"].as_array().unwrap().len(), 1);
+    assert_eq!(changes["activities"][0]["name"], stored_name);
+    assert_eq!(changes["activities"][0]["etag"], etag);
+    let fetched: Value = rpc(
+        &client,
+        &origin,
+        "ActivityService/GetActivity",
+        Some(&token),
+        json!({"name":activity_name}),
+    )
+    .await
+    .json()
+    .await
+    .unwrap();
+    assert_eq!(fetched, changes["activities"][0]);
+    let day = json!({"year":chrono::Datelike::year(&now),"month":chrono::Datelike::month(&now),"day":chrono::Datelike::day(&now)});
     let days: Value = rpc(
         &client,
         &origin,
-        "ActivityService/GetDays",
+        "ActivityService/SummarizeActivities",
         Some(&token),
-        json!({"from":date,"to":date}),
+        json!({"parent":"users/me","startDate":day,"endDate":day}),
     )
     .await
     .json()
     .await
     .unwrap();
-    assert_eq!(days["days"][0]["waterMl"], 250);
-    let mut invalid = operation;
-    invalid["upsert"]["source"] = json!("healthkit");
-    assert_eq!(
-        rpc(
-            &client,
-            &origin,
-            "ActivityService/ApplyBatch",
-            Some(&token),
-            json!({"operations":[invalid]})
-        )
-        .await
-        .status(),
-        StatusCode::BAD_REQUEST
+    assert_eq!(days["dailySummaries"][0]["waterMl"], 250);
+    let mut invalid = write;
+    invalid["upsert"]["source"] = json!("HEALTHKIT");
+    let rejected = rpc(
+        &client,
+        &origin,
+        "ActivityService/BatchWriteActivities",
+        Some(&token),
+        json!({"parent":"users/me","writes":[invalid]}),
+    )
+    .await;
+    assert_eq!(rejected.status(), StatusCode::BAD_REQUEST);
+    // The framework rejects an undecodable request before the service runs,
+    // so the error carries no `ErrorInfo`.
+    let rejected: Value = rejected.json().await.unwrap();
+    assert_eq!(rejected["code"], "invalid_argument");
+    assert!(rejected.get("details").is_none(), "{rejected}");
+    let deleted: Value = rpc(
+        &client,
+        &origin,
+        "ActivityService/BatchWriteActivities",
+        Some(&token),
+        json!({"parent":"users/me","writes":[{"requestId":Uuid::new_v4().to_string(),"deletion":activity_name,"etag":etag}]}),
+    )
+    .await
+    .json()
+    .await
+    .unwrap();
+    assert!(
+        deleted["writeResults"][0]["status"].get("code").is_none(),
+        "{deleted}"
     );
-    let deleted: Value = rpc(&client, &origin, "ActivityService/ApplyBatch", Some(&token), json!({"operations":[{"mutationId":Uuid::new_v4().to_string(),"id":record_id,"expectedRevision":1,"delete":{}}]})).await.json().await.unwrap();
-    assert_eq!(deleted["results"][0]["status"], "applied");
     let changes: Value = rpc(
         &client,
         &origin,
-        "ActivityService/ListChanges",
+        "ActivityService/SyncActivities",
         Some(&token),
-        json!({"cursor":changes["nextCursor"]}),
+        json!({"parent":"users/me","syncToken":changes["nextSyncToken"]}),
     )
     .await
     .json()
     .await
     .unwrap();
-    assert!(changes["records"][0]["deletedAt"].is_string());
+    assert!(changes["activities"][0]["deleteTime"].is_string());
+    let listed: Value = rpc(
+        &client,
+        &origin,
+        "ActivityService/ListActivities",
+        Some(&token),
+        json!({"parent":"users/me"}),
+    )
+    .await
+    .json()
+    .await
+    .unwrap();
+    assert!(
+        listed.get("activities").is_none(),
+        "ListActivities omits deleted activities"
+    );
 
     let preflight = client
         .request(
@@ -389,9 +511,9 @@ async fn native_auth_and_business_rpc_over_real_http() {
         rpc(
             &client,
             &origin,
-            "MembershipService/GetMembership",
+            "MembershipService/ListMemberships",
             Some(&token),
-            json!({})
+            json!({"parent":"users/me"})
         )
         .await
         .status(),
@@ -433,9 +555,9 @@ async fn native_auth_and_business_rpc_over_real_http() {
         rpc(
             &client,
             &origin,
-            "MembershipService/GetMembership",
+            "MembershipService/ListMemberships",
             Some(&token),
-            json!({})
+            json!({"parent":"users/me"})
         )
         .await
         .status(),

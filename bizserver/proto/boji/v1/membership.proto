@@ -1,0 +1,115 @@
+syntax = "proto3";
+
+package boji.v1;
+
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "MembershipProto";
+option java_package = "club.leanmuscle.boji.v1";
+
+// The 薄肌俱乐部 membership card of one user. A user holds at most one card.
+//
+// `boji.v1.MembershipService` serves the card to its holder.
+// `boji.admin.v1.MembershipService` serves every card to operators.
+message Membership {
+  option (google.api.resource) = {
+    type: "boji.leanmuscle.club/Membership"
+    pattern: "users/{user}/memberships/{membership}"
+    singular: "membership"
+    plural: "memberships"
+  };
+
+  // The membership tier. This enum is extensible.
+  enum Tier {
+    // Never sent.
+    TIER_UNSPECIFIED = 0;
+
+    // The free community tier.
+    COMMUNITY = 1;
+  }
+
+  // The lifecycle state of a card. New states can be added. A client that
+  // receives an unknown state must treat the card as suspended.
+  enum State {
+    // Never sent.
+    STATE_UNSPECIFIED = 0;
+
+    // The card exposes its effective entitlements.
+    ACTIVE = 1;
+
+    // An operator suspended the card. The card stays visible to its holder
+    // and exposes no effective entitlements. Suspension keeps the stored
+    // grants, the sessions, the synchronized activities and the local data of
+    // the client.
+    SUSPENDED = 2;
+  }
+
+  // One entitlement that the card exposes now.
+  message EffectiveEntitlement {
+    // Output only. The stable machine-readable code of the catalog entry, for
+    // example `local_tracking`.
+    string code = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+    // Output only. The human-readable name of the catalog entry.
+    string display_name = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+    // Output only. The description of the catalog entry.
+    string description = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+    // Output only. The time when the grant started.
+    google.protobuf.Timestamp grant_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+    // Output only. The time when the grant expires. Absent when the grant has
+    // no expiry.
+    google.protobuf.Timestamp expire_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  }
+
+  // Identifier. The resource name, for example `users/u1/memberships/m1`.
+  // The `{membership}` segment is a server-assigned UUID.
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // Output only. The member number. It is an opaque string that the server
+  // issues. Clients must render it without numeric conversion, and they must
+  // not parse it, sort by it or infer anything from its format.
+  string member_number = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Required. Immutable. The nickname that the card shows.
+  //
+  // The server removes leading and trailing white space. The result must
+  // contain 1 to 40 Unicode scalar values and no control or invisible format
+  // characters.
+  string nickname = 3 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_behavior) = IMMUTABLE
+  ];
+
+  // Required. Input only. The version of the membership terms that the user
+  // accepted. The current version is `community-v1`.
+  string terms_version = 4 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_behavior) = INPUT_ONLY
+  ];
+
+  // Output only. The tier of the card.
+  Tier tier = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The state of the card. Operators change it through
+  // `boji.admin.v1.MembershipService`.
+  State state = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The entitlements that the card exposes now, ordered by the
+  // creation time of their catalog entries. The list is empty while the card
+  // is suspended. The basic view of
+  // `boji.admin.v1.MembershipView` leaves it empty.
+  repeated EffectiveEntitlement entitlements = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The time when the user enrolled.
+  google.protobuf.Timestamp create_time = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The time when the card expires. Absent when the card has no
+  // expiry. Community cards have no expiry.
+  google.protobuf.Timestamp expire_time = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+}

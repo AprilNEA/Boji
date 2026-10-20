@@ -1,0 +1,150 @@
+syntax = "proto3";
+
+package boji.v1;
+
+option java_multiple_files = true;
+option java_outer_classname = "ErrorReasonProto";
+option java_package = "club.leanmuscle.boji.v1";
+
+// The reason of an error returned by a `boji.v1` or `boji.admin.v1` method.
+//
+// Every error carries exactly one `google.rpc.ErrorInfo` detail. Its `domain`
+// is `boji.leanmuscle.club`, and its `reason` is the name of one value of this
+// enum, for example `MEMBERSHIP_NOT_FOUND`. Clients must branch on `reason`,
+// not on the error message. The message is English text for developers, and
+// it can change.
+//
+// The value names follow `google.api.ErrorReason`: they carry no enum prefix,
+// because the name is the wire value of `ErrorInfo.reason`.
+//
+// This enum is extensible. A client that receives an unknown reason must act
+// on the status code alone.
+//
+// Errors with the code `INVALID_ARGUMENT` also carry a `google.rpc.BadRequest`
+// detail that names the invalid request fields. Errors with the code
+// `NOT_FOUND` also carry a `google.rpc.ResourceInfo` detail.
+enum ErrorReason {
+  // Never sent.
+  ERROR_REASON_UNSPECIFIED = 0;
+
+  // `UNAUTHENTICATED`: the request has no valid signed Bearer session. The
+  // session is missing, malformed, expired or revoked. Sign in again.
+  SESSION_REQUIRED = 1;
+
+  // `PERMISSION_DENIED`: the email address of the caller is not verified.
+  EMAIL_NOT_VERIFIED = 2;
+
+  // `PERMISSION_DENIED`: the request names a resource of another user. The
+  // server returns this error before it checks whether the resource exists.
+  RESOURCE_ACCESS_DENIED = 3;
+
+  // `PERMISSION_DENIED`: an operations method requires a session that was
+  // created within the last 15 minutes. Sign in again.
+  FRESH_SESSION_REQUIRED = 4;
+
+  // `PERMISSION_DENIED`: the role of the caller does not grant the permission
+  // of an operations method, the account is banned, or the session is an
+  // impersonation session.
+  ADMIN_FORBIDDEN = 5;
+
+  // `INVALID_ARGUMENT`: a request field is missing or invalid. The
+  // `google.rpc.BadRequest` detail names the field.
+  INVALID_INPUT = 6;
+
+  // `INVALID_ARGUMENT`: `page_token` was not issued by this method for the
+  // same request, or it has expired. Restart from the first page.
+  INVALID_PAGE_TOKEN = 7;
+
+  // `INVALID_ARGUMENT`: `sync_token` was not issued for this user. Start a
+  // full synchronization without a token.
+  INVALID_SYNC_TOKEN = 8;
+
+  // `INVALID_ARGUMENT`: `filter` does not follow the documented subset of
+  // AIP-160 for the method.
+  INVALID_FILTER = 9;
+
+  // `NOT_FOUND`: the membership does not exist.
+  MEMBERSHIP_NOT_FOUND = 10;
+
+  // `ALREADY_EXISTS`: the user already has a membership. A user can hold at
+  // most one membership. List the memberships of the user to read it.
+  MEMBERSHIP_ALREADY_EXISTS = 11;
+
+  // `FAILED_PRECONDITION`: `terms_version` does not equal the current version
+  // of the membership terms.
+  TERMS_NOT_ACCEPTED = 12;
+
+  // `FAILED_PRECONDITION`: the membership is suspended, so the method cannot
+  // run. Refresh the membership. Do not retry.
+  MEMBERSHIP_SUSPENDED = 13;
+
+  // `FAILED_PRECONDITION`: the membership is already suspended.
+  MEMBERSHIP_ALREADY_SUSPENDED = 14;
+
+  // `FAILED_PRECONDITION`: the membership is already active.
+  MEMBERSHIP_ALREADY_ACTIVE = 15;
+
+  // `NOT_FOUND`: the entitlement catalog has no such entry.
+  ENTITLEMENT_NOT_FOUND = 16;
+
+  // `FAILED_PRECONDITION`: the catalog entry is inactive and accepts no new
+  // grant.
+  ENTITLEMENT_INACTIVE = 17;
+
+  // `NOT_FOUND`: the membership never received the entitlement.
+  ENTITLEMENT_GRANT_NOT_FOUND = 18;
+
+  // `FAILED_PRECONDITION`: the entitlement grant is already revoked.
+  ENTITLEMENT_GRANT_ALREADY_REVOKED = 19;
+
+  // `FAILED_PRECONDITION`: activity synchronization is disabled for the user.
+  // Enable it through `UpdateSyncState` first.
+  SYNC_DISABLED = 20;
+
+  // `FAILED_PRECONDITION`: synchronization can be enabled only together with
+  // the current consent version.
+  CONSENT_REQUIRED = 21;
+
+  // `NOT_FOUND`: the activity does not exist.
+  ACTIVITY_NOT_FOUND = 22;
+
+  // `ALREADY_EXISTS`: a write without `etag` targeted an activity that already
+  // exists. The write result carries the current etag.
+  ACTIVITY_ALREADY_EXISTS = 23;
+
+  // `ABORTED`: the `etag` of a write does not match the current etag of the
+  // activity. The write result carries the current etag. Read the activity,
+  // merge the change and write again.
+  ACTIVITY_ETAG_MISMATCH = 24;
+
+  // `FAILED_PRECONDITION`: the activity is deleted. A deleted activity is
+  // permanent and accepts no write.
+  ACTIVITY_DELETED = 25;
+
+  // `FAILED_PRECONDITION`: the write changes the kind of an existing activity,
+  // for example from sleep to hydration.
+  ACTIVITY_KIND_MISMATCH = 26;
+
+  // `FAILED_PRECONDITION`: another live sleep activity already owns the local
+  // date of the write.
+  SLEEP_DATE_CONFLICT = 27;
+
+  // `INVALID_ARGUMENT`: the `request_id` of a write was already used for a
+  // write with different content.
+  REQUEST_ID_REUSED = 28;
+
+  // `FAILED_PRECONDITION`: the server has no valid Apple Wallet signing
+  // material. Hide the Wallet entry and read `ServerConfig` again later. Do
+  // not retry automatically.
+  WALLET_NOT_CONFIGURED = 29;
+
+  // `UNAVAILABLE`: signing the pass failed for this request. Retry later.
+  WALLET_SIGNING_FAILED = 30;
+
+  // `UNAVAILABLE`: a storage dependency of the server is unavailable. Retry
+  // later with exponential backoff.
+  BACKEND_UNAVAILABLE = 31;
+
+  // `INTERNAL`: the server failed. The message contains no storage details.
+  INTERNAL_ERROR = 32;
+}

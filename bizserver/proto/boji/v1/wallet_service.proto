@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package boji.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "WalletServiceProto";
+option java_package = "club.leanmuscle.boji.v1";
+
+// Serves the Apple Wallet pass of a membership card to its holder.
+//
+// Contract only. The server does not register this service yet, so every call
+// returns `UNIMPLEMENTED`, and `ServerConfig.wallet_pass_enabled` stays false.
+// Clients must read `wallet_pass_enabled` before they show a Wallet entry.
+//
+// Every method requires a signed Bearer session for a verified email address.
+// The `{user}` segment must be `me` or the user ID of the caller.
+service WalletService {
+  option (google.api.default_host) = "boji.leanmuscle.club";
+
+  // Signs and returns the pass of one card.
+  //
+  // The response sets `Cache-Control: private, no-store`. The pass uses the
+  // `generic` style. Its `serialNumber` is the `{membership}` segment of the
+  // card name, so repeated downloads keep the serial number. The signature
+  // time can differ between downloads.
+  //
+  // The pass face shows the holder name, the member number and the
+  // enrollment date. The back states that the app shows the current state of
+  // the card, and that the pass is not a payment or redemption credential.
+  // The pass contains no email address, user ID, session token, barcode or
+  // health data. A saved pass does not update or disappear after suspension.
+  //
+  // The server checks these conditions in this order after authentication:
+  // - `NOT_FOUND` `MEMBERSHIP_NOT_FOUND`: the user has no card with this ID.
+  //   Offer enrollment.
+  // - `FAILED_PRECONDITION` `MEMBERSHIP_SUSPENDED`: the card is not active.
+  //   Refresh the card. Do not retry.
+  // - `FAILED_PRECONDITION` `WALLET_NOT_CONFIGURED`: the server has no valid
+  //   signing material. Hide the entry, and read `ServerConfig` again later.
+  //   Do not retry automatically.
+  // - `UNAVAILABLE` `WALLET_SIGNING_FAILED`: signing failed for this request.
+  //   Retry later.
+  rpc GetMembershipPass(GetMembershipPassRequest) returns (MembershipPass) {
+    option (google.api.http) = {get: "/v1/{name=users/*/memberships/*/pass}"};
+    option (google.api.method_signature) = "name";
+  }
+}
+
+// The signed Apple Wallet pass of one membership card. It is a singleton
+// child of `Membership`.
+message MembershipPass {
+  option (google.api.resource) = {
+    type: "boji.leanmuscle.club/MembershipPass"
+    pattern: "users/{user}/memberships/{membership}/pass"
+    singular: "membershipPass"
+    plural: "membershipPasses"
+  };
+
+  // Identifier. The resource name, for example
+  // `users/u1/memberships/m1/pass`.
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // Output only. The signed `.pkpass` archive, a ZIP file of at most 1 MiB.
+  // The binary protobuf encoding carries raw bytes. The JSON encoding carries
+  // standard base64, so prefer `application/proto` for this method.
+  bytes content = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The media type of `content`. The current value is
+  // `application/vnd.apple.pkpass`.
+  string mime_type = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// Request message for `WalletService.GetMembershipPass`.
+message GetMembershipPassRequest {
+  // Required. The name of the pass, for example
+  // `users/me/memberships/m1/pass`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "boji.leanmuscle.club/MembershipPass"
+  ];
+}

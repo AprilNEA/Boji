@@ -9,9 +9,9 @@ publish = false
 anyhow = "1"
 async-trait = "0.1"
 axum = { version = "0.8", features = ["http2"] }
-better-auth = { git = "https://github.com/better-auth-rs/better-auth-rs", rev = "9f91cd7fdb8a5f73a9c69d5c56d363468a7dc281", default-features = false, features = ["axum", "seaorm2", "rustls"] }
+better-auth = { version = "=1.0.0-alpha.4", default-features = false, features = ["axum", "seaorm2", "rustls"] }
 buffa = { version = "0.9", features = ["json"] }
-buffa-types = { version = "0.9", features = ["json"] }
+buffa-types = { version = "0.9", features = ["chrono", "json"] }
 chrono = { version = "0.4", features = ["serde"] }
 chrono-tz = "0.10"
 connectrpc = { version = "0.9", features = ["axum"] }
@@ -36,6 +36,8 @@ uuid = { version = "1", features = ["v4", "serde"] }
 connectrpc-build = "0.9"
 
 [dev-dependencies]
+base64 = "0.22"
+p256 = { version = "0.13", default-features = false, features = ["arithmetic", "pem", "pkcs8"] }
 reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
 tempfile = "3"
 

@@ -22,6 +22,12 @@ pub struct Model {
     pub image: Option<String>,
     /// Optional application role.
     pub role: Option<String>,
+    /// Whether Better Auth denies authentication for this account.
+    pub banned: bool,
+    /// Private reason for an account ban, managed by Better Auth.
+    pub ban_reason: Option<String>,
+    /// Optional expiry for a Better Auth account ban.
+    pub ban_expires: Option<DateTimeUtc>,
     /// Creation time in UTC.
     pub created_at: DateTimeUtc,
     /// Last update time in UTC.

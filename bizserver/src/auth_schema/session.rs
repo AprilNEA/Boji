@@ -28,6 +28,8 @@ pub struct Model {
     pub user_id: String,
     /// Whether this session can authenticate requests.
     pub active: bool,
+    /// Original actor for a Better Auth impersonation session.
+    pub impersonated_by: Option<String>,
 }
 
 /// Relations for the `session` entity.
