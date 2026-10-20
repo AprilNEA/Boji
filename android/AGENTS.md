@@ -33,7 +33,7 @@ Run these commands in `android/`.
 
 - Follow Material 3. Do not imitate the iOS Liquid Glass material.
 - Keep the fixed brand color. Do not enable dynamic color.
-- The color scheme in `app/src/main/kotlin/com/aprilnea/boji/ui/theme/Color.kt` is generated from the seed `#C7401F` with `@material/material-color-utilities`. To change the brand color, regenerate the full scheme. Do not edit single color roles.
+- The color scheme in `app/src/main/kotlin/club/leanmuscle/boji/ui/theme/Color.kt` is generated from the seed `#C7401F` with `@material/material-color-utilities`. To change the brand color, regenerate the full scheme. Do not edit single color roles.
 - Do not lock the screen orientation. With target SDK 37, layouts must support landscape and large screens.
 
 ### Parity with iOS

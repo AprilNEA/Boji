@@ -2,12 +2,218 @@
 <resources>
     <!-- Working name, same as iOS. Trademark clearance is pending. -->
     <string name="app_name">薄肌</string>
+    <string name="app_title">薄肌俱乐部</string>
 
     <string name="tab_today">今天</string>
     <string name="tab_training">训练</string>
     <string name="tab_progress">足迹</string>
     <string name="tab_club">俱乐部</string>
 
-    <string name="placeholder_title">此页面尚未实现</string>
-    <string name="placeholder_body">Android 版正在初始化。功能将参照 iOS 版逐步移植。</string>
+    <!-- Common -->
+    <string name="action_settings">设置</string>
+    <string name="action_back">返回</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_save">保存</string>
+    <string name="action_done">完成</string>
+    <string name="action_ok">好</string>
+    <string name="stepper_decrease">减少</string>
+    <string name="stepper_increase">增加</string>
+    <string name="storage_error_a11y">存储错误：%1$s</string>
+    <string name="storage_read_failed">无法读取本地数据，原文件未被覆盖：%1$s</string>
+    <string name="storage_write_failed">无法保存本地数据：%1$s</string>
+    <string name="storage_delete_failed">无法删除本地数据：%1$s</string>
+    <string name="storage_unknown_error">未知错误</string>
+
+    <!-- Plans -->
+    <string name="plan_home_title">居家训练</string>
+    <string name="plan_home_subtitle">徒手开始，循序渐进</string>
+    <string name="plan_gym_title">健身房训练</string>
+    <string name="plan_gym_subtitle">器械入门，专注动作</string>
+
+    <!-- Welcome -->
+    <string name="welcome_brand" translatable="false">boji</string>
+    <string name="welcome_eyebrow">LESS PRESSURE. MORE YOU.</string>
+    <string name="welcome_title">练一点。\n好好生活。</string>
+    <string name="welcome_subtitle">不追赶别人的身材，只找到自己的节奏。</string>
+    <string name="welcome_question">你想在哪里开始？</string>
+    <string name="welcome_privacy">无需账号，记录默认留在你的设备。</string>
+    <string name="welcome_start">开始我的计划</string>
+    <string name="welcome_disclaimer">适合成年人的日常运动记录，不替代专业医疗建议。</string>
+
+    <!-- Today -->
+    <string name="today_title">今天，轻一点。</string>
+    <string name="today_subtitle">不必一步到位，每一步都算数。</string>
+    <string name="today_rhythm">我的日常节奏</string>
+    <string name="today_rhythm_total">/ 3</string>
+    <string name="today_rhythm_none">从一件小事开始</string>
+    <string name="today_rhythm_some">已经在好好照顾自己</string>
+    <string name="today_rhythm_all">今天的自己，照顾到了</string>
+    <string name="today_rhythm_a11y">我的日常节奏，已记录 %1$d / 3</string>
+    <string name="habit_move">动</string>
+    <string name="habit_water">水</string>
+    <string name="habit_sleep">眠</string>
+    <string name="habit_status">%1$s：%2$s</string>
+    <string name="habit_recorded">已记录</string>
+    <string name="habit_not_recorded">未记录</string>
+    <string name="today_habits_title">照顾自己的小事</string>
+    <string name="today_habits_detail">记录，不比较</string>
+    <string name="habit_water_title">好好喝水</string>
+    <string name="habit_sleep_title">好好睡觉</string>
+    <string name="habit_log">记录一下</string>
+    <string name="habit_card_a11y">%1$s，%2$s%3$s，记录一下</string>
+    <string name="today_recommend_title">今日推荐</string>
+    <string name="today_recommend_detail">跟自己的节奏走</string>
+    <string name="today_rest_note">休息也是计划的一部分。累的时候，给自己留一点空间。</string>
+    <string name="workout_card_eyebrow">MOVE AT YOUR PACE</string>
+    <string name="workout_card_meta">%1$d 分钟 · %2$s</string>
+    <string name="workout_card_action">查看训练</string>
+
+    <!-- Units -->
+    <string name="unit_ml">mL</string>
+    <string name="unit_hours">小时</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_cm">cm</string>
+    <string name="unit_times">次</string>
+    <string name="unit_days">天</string>
+
+    <!-- Entry sheets -->
+    <string name="sheet_water_title">记录饮水</string>
+    <string name="water_amount_label">本次饮水量</string>
+    <string name="water_amount">%1$d mL</string>
+    <string name="water_footer">按实际饮水量记录，少量多次。没有必须完成的饮水指标。</string>
+    <string name="water_undo">撤回 250 mL</string>
+    <string name="sheet_sleep_title">记录睡眠</string>
+    <string name="sleep_label">昨晚睡了</string>
+    <string name="sleep_value">%1$s 小时</string>
+    <string name="sleep_slider_a11y">睡眠小时数</string>
+    <string name="sleep_adjust">调整时长</string>
+    <string name="sleep_footer">这是你的主观记录，不是设备测量。记录真实的自己，不为数字焦虑。</string>
+    <string name="sheet_body_title">记录身体数据</string>
+    <string name="body_section">今天的记录</string>
+    <string name="body_weight">体重</string>
+    <string name="body_waist">腰围</string>
+    <string name="body_weight_hint">30–300</string>
+    <string name="body_waist_hint">30–250</string>
+    <string name="body_weight_invalid">请输入 30–300 之间的数值</string>
+    <string name="body_waist_invalid">请输入 30–250 之间的数值</string>
+    <string name="body_note">数据仅保存在此设备。建议在相近时间和条件下测量，关注长期变化。这里不设理想体重，也不评判身材。</string>
+
+    <!-- Training -->
+    <string name="training_eyebrow">BUILD YOUR OWN RHYTHM</string>
+    <string name="training_title">慢慢练，刚刚好。</string>
+    <string name="training_subtitle">把开始变简单，把坚持交给时间。</string>
+    <string name="training_plan_label">训练场景</string>
+    <string name="training_rhythm_title">先建立节奏</string>
+    <string name="training_rhythm_detail">新手起步</string>
+    <string name="training_tip_schedule">每周安排 2–3 次，训练日之间留出休息。</string>
+    <string name="training_tip_load">从轻负荷开始，先熟悉动作，再逐步增加。</string>
+    <string name="training_progression_section">准备好了，再进一步</string>
+    <string name="training_progression_meta">%1$d 分钟 · %2$d 个动作</string>
+    <string name="training_mobility_section">给身体一点余地</string>
+    <string name="training_mobility_meta">%1$d 分钟 · 温和活动</string>
+    <string name="training_disclaimer">课程是通用入门参考，不是个性化处方。有伤病或运动限制时，先咨询专业人员。出现疼痛、头晕或不适时立即停止。</string>
+    <string name="detail_minutes">计划分钟</string>
+    <string name="detail_exercises">个动作</string>
+    <string name="detail_level">训练强度</string>
+    <string name="detail_plan_title">今天这样练</string>
+    <string name="detail_plan_detail">组间休息 30 秒</string>
+    <string name="detail_exercise_sets">%1$d 组 × %2$s</string>
+    <string name="detail_warmup">先热身，再开始。动作以舒适、可控为准。</string>
+    <string name="detail_start">开始训练</string>
+    <string name="detail_again">再次练习</string>
+
+    <!-- Training session -->
+    <string name="session_title">专注当下</string>
+    <string name="session_finished_title">训练完成</string>
+    <string name="session_progress">动作 %1$d / %2$d</string>
+    <string name="session_progress_a11y">已完成 %1$d / %2$d 组</string>
+    <string name="session_rest">休息一下</string>
+    <string name="session_rest_hint">调整呼吸，准备下一组。</string>
+    <string name="session_rest_a11y">休息剩余 %1$d 秒</string>
+    <string name="session_set">第 %1$d / %2$d 组 · %3$s</string>
+    <string name="session_paused">已暂停</string>
+    <string name="session_skip_rest">跳过休息</string>
+    <string name="session_complete_set">完成这一组</string>
+    <string name="session_pause">暂停训练</string>
+    <string name="session_resume">继续训练</string>
+    <string name="session_footnote">按自己的速度完成动作，准备好再继续。\n如有疼痛或不适，请停止训练。</string>
+    <string name="session_end">结束</string>
+    <string name="session_end_confirm_title">结束本次训练？</string>
+    <string name="session_end_confirm_text">未完成的训练不会记录。</string>
+    <string name="session_end_confirm">结束训练</string>
+    <string name="session_finished_headline">又向自己靠近了一步。</string>
+    <string name="session_finished_summary">%1$s已记录\n用时 %2$d 分 %3$d 秒</string>
+    <string name="session_finished_rest">好好休息，比多练一组更重要。</string>
+
+    <!-- Progress -->
+    <string name="progress_eyebrow">EVERY LITTLE STEP COUNTS</string>
+    <string name="progress_title">看见自己的变化。</string>
+    <string name="progress_subtitle">不和别人比，只记录来时的路。</string>
+    <string name="progress_total_workouts">累计训练</string>
+    <string name="progress_active_days">日常打卡</string>
+    <string name="progress_week_title">最近一周</string>
+    <string name="progress_week_detail">运动 / 饮水 / 睡眠</string>
+    <string name="progress_week_day_active">%1$s，有记录</string>
+    <string name="progress_week_day_empty">%1$s，暂无记录</string>
+    <string name="progress_week_note">空白不是退步，随时都可以重新开始。</string>
+    <string name="progress_body_title">身体记录</string>
+    <string name="progress_body_add">添加</string>
+    <string name="progress_metric_weight">体重 · kg</string>
+    <string name="progress_metric_waist">腰围 · cm</string>
+    <string name="progress_empty_title">变化，从第一次记录开始</string>
+    <string name="progress_empty_text">数据仅在本机保存。\n每周记录一次就好，不必每天称量。</string>
+    <string name="progress_latest">最近一次</string>
+    <string name="progress_chart_a11y">身体记录趋势，共 %1$d 条。下方列出具体数值。</string>
+    <string name="progress_entry_value">%1$s %2$s</string>
+    <string name="progress_entry_manage">管理%1$s的记录</string>
+    <string name="progress_entry_delete">删除此记录</string>
+    <string name="progress_share_title">分享我的小小坚持</string>
+    <string name="progress_share_subtitle">只分享训练次数，不带身体数据。</string>
+    <string name="progress_share_a11y">分享训练进度</string>
+    <string name="progress_share_text">在 Boji，我已完成 %1$d 次训练，留下 %2$d 天生活足迹。不必完美，每一步都算数。</string>
+
+    <!-- Club -->
+    <string name="club_eyebrow">A CLUB FOR EVERY BODY</string>
+    <string name="club_title">不必完美，也能入会。</string>
+    <string name="club_subtitle">在这里，照顾自己就是入场券。</string>
+    <string name="club_membership_title">会员卡</string>
+    <string name="club_membership_text">Android 版暂未接入俱乐部账号和会员卡。日常记录不需要账号。</string>
+    <string name="club_challenge_title">这周，为自己留一点时间</string>
+    <string name="club_challenge_text">选择两天动一动，其余时间好好恢复。\n这是你的本地挑战，不排名，也不催促。</string>
+    <string name="club_challenge_day">第 %1$d 天：%2$s</string>
+    <string name="club_challenge_day_done">已完成</string>
+    <string name="club_challenge_day_pending">未完成</string>
+    <string name="club_challenge_progress">%1$d / 2 天</string>
+    <string name="club_challenge_done">本周的小目标完成了，给自己一点掌声。</string>
+    <string name="club_challenge_pending">训练记录会自动点亮这个小目标。</string>
+    <string name="club_challenge_leave">退出本地挑战</string>
+    <string name="club_challenge_join">加入本地挑战</string>
+    <string name="club_guide_title">薄肌入门手册</string>
+    <string name="club_guide_detail">少一点焦虑，多一点行动</string>
+    <string name="club_footnote">日常记录留在本机。会员卡、多人小队和线上社区尚未在 Android 版开放。</string>
+    <string name="article_screen_title">入门手册</string>
+    <string name="article_footer">Boji 编辑内容 · 一般生活提示，不替代医疗建议。</string>
+
+    <!-- Settings -->
+    <string name="settings_profile">我的信息</string>
+    <string name="settings_nickname">昵称</string>
+    <string name="settings_appearance">外观</string>
+    <string name="settings_display_mode">显示模式</string>
+    <string name="appearance_system">跟随系统</string>
+    <string name="appearance_light">浅色</string>
+    <string name="appearance_dark">深色</string>
+    <string name="settings_privacy">隐私与数据</string>
+    <string name="settings_privacy_local">训练和身体记录只保存在此设备</string>
+    <string name="settings_privacy_note">记录不会上传。系统备份和设备迁移不包含这些记录，卸载应用会删除它们。导出文件含身体数据，请妥善保管。</string>
+    <string name="settings_export">导出我的数据</string>
+    <string name="settings_export_failed">导出失败</string>
+    <string name="settings_export_done">已导出到所选位置</string>
+    <string name="settings_export_filename" translatable="false">boji-records.json</string>
+    <string name="settings_delete">删除全部本地数据</string>
+    <string name="settings_delete_confirm_title">删除全部本地数据？</string>
+    <string name="settings_delete_confirm_text">此操作无法撤销。将删除本机的训练、饮水、睡眠和身体记录，以及昵称和训练场景。显示模式保持不变。</string>
+    <string name="settings_delete_confirm">删除全部数据</string>
+    <string name="settings_about">关于</string>
+    <string name="settings_version">%1$s (%2$d)</string>
+    <string name="settings_about_note">薄肌俱乐部 · 开发预览版\n不提供医疗诊断、AI 识餐或付费服务。名称为开发暂用，未完成商标审查。</string>
 </resources>

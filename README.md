@@ -18,7 +18,7 @@ Boji 是本地优先的健身记录 App。本仓库包含 iOS 和 Android 两个
 | 平台 | 状态 | 说明文档 |
 | --- | --- | --- |
 | iOS | 首版功能已实现 | [iOS 说明](ios/README.md) |
-| Android | 工程已初始化，功能尚未移植 | [Android 说明](android/README.md) |
+| Android | 本地功能已移植；账号、会员和设备联动尚未移植 | [Android 说明](android/README.md) |
 
 ## 共享文档
 
