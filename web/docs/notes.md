@@ -16,6 +16,9 @@
 - 孙宇晨：/home/ubuntu/upload/search_images/pohUC3RkS01d.jpg（Forbes，416x416，黑背景深蓝西装）；备选 /home/ubuntu/upload/search_images/WkdxR1VimPa5.webp（TRON 官网 1200x1132 白底托腮）、/home/ubuntu/upload/search_images/Or3YLMLqrSTP.jpg（1200x1800 黑白西装全身）
 
 ## 生成素材（Managed Storage URL）
+
+> 迁入 Boji 仓库后，下列素材和发布会短片已下载到 `public/media/`，代码不再引用 `/manus-storage/` 路径。文件名与 `lib/content.ts` 中 `IMG`、`LAUNCH_FILM` 的路径一致。蛋白粉罐图片没有被代码引用，所以没有下载。
+
 - 鸡胸肉（透明）：/manus-storage/async-images/fcTniVtI5sDNGeVmorPCsM/image-1.webp
 - 西兰花（透明）：/manus-storage/async-images/fcTniVtI5sDNGeVmorPCsM/image-2.webp
 - 蛋白粉罐（透明）：/manus-storage/async-images/fcTniVtI5sDNGeVmorPCsM/image-3.webp

@@ -1,23 +1,23 @@
 export const IMG = {
   alan: "/images/portraits/alan.webp",
   sun: "/images/portraits/sun.webp",
-  chicken: "/manus-storage/async-images/fcTniVtI5sDNGeVmorPCsM/image-1.webp",
-  broccoli: "/manus-storage/async-images/fcTniVtI5sDNGeVmorPCsM/image-2.webp",
-  waterBottle: "/manus-storage/async-images/fcTniVtI5sDNGeVmorPCsM/image-4.webp",
-  ring: "/manus-storage/async-images/fcTniVtI5sDNGeVmorPCsM/image-5.webp",
-  chip: "/manus-storage/async-images/gYnnK3slwmG78FXDh3iHSv/image-1.webp",
-  stage: "/manus-storage/async-images/gYnnK3slwmG78FXDh3iHSv/image-2.webp",
-  theoryGym: "/manus-storage/async-images/gYnnK3slwmG78FXDh3iHSv/image-3.webp",
-  lifestyle: "/manus-storage/async-images/gYnnK3slwmG78FXDh3iHSv/image-4.webp",
-  teeWhite: "/manus-storage/async-images/ZB5PHvvqOtoDDpKH2cMAjF/image-1.webp",
-  teeLineup: "/manus-storage/async-images/ZB5PHvvqOtoDDpKH2cMAjF/image-2.webp",
-  teeGreen: "/manus-storage/async-images/KxYJsbrTMdFvdk0ge6HCns/image-1.webp",
-  teeBlack: "/manus-storage/async-images/KxYJsbrTMdFvdk0ge6HCns/image-2.webp",
+  chicken: "/media/chicken.webp",
+  broccoli: "/media/broccoli.webp",
+  waterBottle: "/media/water-bottle.webp",
+  ring: "/media/ring.webp",
+  chip: "/media/chip.webp",
+  stage: "/media/stage.webp",
+  theoryGym: "/media/theory-gym.webp",
+  lifestyle: "/media/lifestyle.webp",
+  teeWhite: "/media/tee-white.webp",
+  teeLineup: "/media/tee-lineup.webp",
+  teeGreen: "/media/tee-green.webp",
+  teeBlack: "/media/tee-black.webp",
 } as const;
 
 export const LAUNCH_FILM = {
-  src: "/manus-storage/launch-film-v2_4b3aeb24.mp4",
-  poster: "/manus-storage/launch-film-poster_3edc197f.webp",
+  src: "/media/launch-film.mp4",
+  poster: "/media/launch-film-poster.webp",
   duration: "0:21",
 } as const;
 
