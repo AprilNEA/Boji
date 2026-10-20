@@ -27,7 +27,7 @@ struct BojiApp: App {
                 .environment(membership)
                 .environment(health)
                 .environment(companion)
-                .environment(\.locale, Locale(identifier: "zh_Hans_CN"))
+                .environment(\.locale, .bojiDisplay)
                 .tint(BojiTheme.accent)
                 .preferredColorScheme(appearance == "dark" ? .dark : appearance == "light" ? .light : nil)
                 .task { await membership.restore() }
@@ -54,11 +54,13 @@ struct RootView: View {
 
     var body: some View {
         TabView(selection: $tab) {
-            Tab("今天", systemImage: "sun.max", value: 0) { TodayView() }
-            Tab("训练", systemImage: "figure.strengthtraining.traditional", value: 1) { TrainingView() }
-            Tab("足迹", systemImage: "chart.xyaxis.line", value: 2) { ProgressViewScreen() }
-            Tab("俱乐部", systemImage: "person.2", value: 3) { ClubView() }
+            Tab(.Shared.tabToday, systemImage: "sun.max", value: 0) { TodayView() }
+            Tab(.Shared.tabTraining, systemImage: "figure.strengthtraining.traditional", value: 1) { TrainingView() }
+            Tab(.Shared.tabProgress, systemImage: "chart.xyaxis.line", value: 2) { ProgressViewScreen() }
+            Tab(.Shared.tabClub, systemImage: "person.2", value: 3) { ClubView() }
         }
+        .tabViewStyle(.sidebarAdaptable)
+        .tabBarMinimizeBehavior(.onScrollDown)
         .onAppear { onboarding = !store.hasOnboarded; companion.update(companionProgress) }
         .onChange(of: companionProgress) { _, value in companion.update(value) }
         .onOpenURL { url in if let route = CompanionRoute(url: url) { tab = route.tabIndex } }
@@ -79,9 +81,45 @@ struct RootView: View {
         .fullScreenCover(isPresented: $onboarding) { WelcomeView() }
         .safeAreaInset(edge: .top, spacing: 0) {
             if let error = store.storageError {
-                Text(error).font(.caption).padding(10).frame(maxWidth: .infinity)
-                    .background(.red.opacity(0.15)).accessibilityLabel("存储错误：\(error)")
+                Label(error, systemImage: "exclamationmark.triangle.fill")
+                    .font(.footnote).foregroundStyle(.primary)
+                    .padding(.horizontal, 16).padding(.vertical, 10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color(uiColor: .systemRed).opacity(0.15))
+                    .accessibilityLabel(.Shared.storageErrorA11Y(message: error))
             }
         }
     }
+}
+
+extension Locale {
+    /// The locale of the localization that the app bundle shows, for example `zh-Hans`.
+    /// SwiftUI looks up strings and formats values with the environment locale. A fixed locale
+    /// would keep every `Text` in one language, so the app uses the language that the bundle selects.
+    static let bojiDisplay = Locale(identifier: Bundle.main.preferredLocalizations.first ?? "zh-Hans")
+}
+
+/// Every tab reaches settings through the same account button at the trailing edge.
+/// Page actions sit in their own glass group before it.
+private struct ProfileToolbar<Actions: View>: ViewModifier {
+    let actions: Actions
+    @State private var showSettings = false
+    func body(content: Content) -> some View {
+        content
+            .toolbar {
+                if Actions.self != EmptyView.self {
+                    ToolbarItemGroup(placement: .topBarTrailing) { actions }
+                    ToolbarSpacer(.fixed, placement: .topBarTrailing)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(.Shared.actionSettings, systemImage: "person.crop.circle") { showSettings = true }
+                }
+            }
+            .sheet(isPresented: $showSettings) { SettingsView() }
+    }
+}
+
+extension View {
+    func profileToolbar() -> some View { modifier(ProfileToolbar(actions: EmptyView())) }
+    func profileToolbar(@ViewBuilder actions: () -> some View) -> some View { modifier(ProfileToolbar(actions: actions())) }
 }

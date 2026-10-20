@@ -1,0 +1,21 @@
+[package]
+name = "boji-locales"
+version = "0.1.0"
+description = "Generates the Android and Apple string resources of Boji from locales/."
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+anyhow = "1.0.104"
+clap = { version = "4.6.7", features = ["derive"] }
+icu_locale_core = "2.3.0"
+icu_plurals = "2.3.0"
+indexmap = { version = "2.14.2", features = ["serde"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+thiserror = "2.0.21"
+yaml_serde = "0.10.7"

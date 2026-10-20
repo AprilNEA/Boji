@@ -1,0 +1,21 @@
+session_finished_title:
+session_progress:
+  args:
+    current: int
+    total: int
+session_rest:
+session_rest_hint:
+session_set:
+  args:
+    current: int
+    total: int
+    reps: string
+session_paused:
+session_skip_rest:
+session_complete_set:
+session_pause:
+session_resume:
+session_end:
+session_end_confirm:
+session_finished_headline:
+session_finished_rest:

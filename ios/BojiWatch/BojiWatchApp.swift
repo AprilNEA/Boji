@@ -18,36 +18,32 @@ private struct WatchCompanionView: View {
     @ObservedObject var store: WatchCompanionStore
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 60)) { timeline in
-            ScrollView {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("今日进度")
-                        .font(.title3.weight(.bold))
+        NavigationStack {
+            TimelineView(.periodic(from: .now, by: 60)) { timeline in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 12) {
+                        connectionNotice
 
-                    connectionNotice
-
-                    switch store.presentation(at: timeline.date) {
-                    case .current(let snapshot):
-                        currentProgress(snapshot)
-                    case .sharingDisabled:
-                        sharingDisabled
-                    case .noData:
-                        noData
-                    case .stale:
-                        staleData
+                        switch store.presentation(at: timeline.date) {
+                        case .current(let snapshot):
+                            currentProgress(snapshot)
+                        case .sharingDisabled:
+                            sharingDisabled
+                        case .noData:
+                            noData
+                        case .stale:
+                            staleData
+                        }
                     }
-
-                    Button {
-                        store.requestSnapshot()
-                    } label: {
-                        Label("刷新", systemImage: "arrow.clockwise")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(!store.canRequestSnapshot)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 2)
+            }
+            .navigationTitle("今日进度")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("刷新", systemImage: "arrow.clockwise") { store.requestSnapshot() }
+                        .disabled(!store.canRequestSnapshot)
+                }
             }
         }
     }
@@ -146,12 +142,14 @@ private struct ProgressRow: View {
 
     var body: some View {
         HStack {
+            Image(systemName: isRecorded ? "checkmark.circle.fill" : "circle")
+                .foregroundStyle(isRecorded ? .green : .secondary)
             Text(title)
                 .font(.headline)
             Spacer()
-            Text(isRecorded ? "已记录" : "未记录")
-                .font(.title3.weight(.bold))
-                .foregroundStyle(isRecorded ? .green : .secondary)
+            Text(isRecorded ? LocalizedStringResource.Shared.habitRecorded : .Shared.habitNotRecorded)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .combine)
     }

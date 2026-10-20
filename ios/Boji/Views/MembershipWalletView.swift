@@ -19,7 +19,7 @@ struct MembershipWalletView: View {
                 Text("在系统窗口确认添加。钱包卡仅展示身份，不是支付或核销凭证。")
                     .font(.caption).foregroundStyle(.secondary)
             } else {
-                Label("Apple 钱包暂不可用", systemImage: "wallet.pass").font(.subheadline)
+                Label("Apple 钱包暂不可用", systemImage: "wallet.pass").font(.subheadline).foregroundStyle(.secondary)
                 Text(membership.capabilitiesError ?? (passType.isEmpty ? "此版本尚未配置钱包凭证类型。" : membership.capabilities?.walletPass != true ? "服务尚未启用正式凭证签发。" : "此设备暂不支持添加钱包凭证。"))
                     .font(.caption).foregroundStyle(.secondary)
             }

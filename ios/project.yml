@@ -5,33 +5,47 @@ options:
     iOS: '26.0'
     watchOS: '26.0'
   xcodeVersion: '27.1'
+  developmentLanguage: zh-Hans
 settings:
   base:
     SWIFT_VERSION: '5.0'
-    MARKETING_VERSION: '0.5.0'
-    CURRENT_PROJECT_VERSION: '5'
+    MARKETING_VERSION: '0.7.0'
+    CURRENT_PROJECT_VERSION: '7'
     DEVELOPMENT_TEAM: 8U3ZJ258K9
     CODE_SIGN_STYLE: Automatic
     GENERATE_INFOPLIST_FILE: YES
     SWIFT_STRICT_CONCURRENCY: complete
+    STRING_CATALOG_GENERATE_SYMBOLS: YES
     BOJI_API_BASE_URL: ''
     BOJI_APPLE_SIGN_IN_ENABLED: 'YES'
     BOJI_WALLET_PASS_TYPE_IDENTIFIER: pass.club.leanmuscle.boji.membership
+packages:
+  Lottie:
+    url: https://github.com/airbnb/lottie-spm
+    exactVersion: 4.6.1
 targets:
   Boji:
     type: application
     platform: iOS
     sources:
       - path: Boji
+        excludes:
+          - '**/*.tmp'
+          - '**/.manus-*.tmp'
       - path: Shared
+      - path: ../animations/lottie
+        type: folder
+        buildPhase: resources
     dependencies:
       - target: BojiWidgets
         embed: true
       - target: BojiWatch
         embed: true
+      - package: Lottie
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: club.leanmuscle.boji
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         INFOPLIST_FILE: Boji/Info.plist
         CODE_SIGN_ENTITLEMENTS: Boji/Boji.entitlements
         INFOPLIST_KEY_CFBundleDisplayName: 薄肌

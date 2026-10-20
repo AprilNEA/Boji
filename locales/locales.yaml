@@ -1,0 +1,15 @@
+# 源语言。每个键都先在源语言目录中定义。
+source: zh-Hans
+
+# 回退语言。系统语言不受支持时显示这种语言。
+# Android 把它写入 values/，iOS 用它作开发语言。
+fallback: zh-Hans
+
+# 随 App 发布的语言。其他语言目录只做检查，不输出到 App。
+release:
+  - zh-Hans
+
+# 已接入的使用方。生成器只为这里列出的使用方写文件。
+targets:
+  - android
+  - ios

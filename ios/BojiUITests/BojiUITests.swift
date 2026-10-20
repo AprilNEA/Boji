@@ -68,10 +68,16 @@ final class BojiUITests: XCTestCase {
     func testCompleteWorkout() {
         onboard()
         app.tabBars.buttons["训练"].tap()
+        capture("training-tab")
         tapVisible(button(containing: "舒缓拉伸"))
+        XCTAssertTrue(app.buttons["开始训练"].waitForExistence(timeout: 5))
+        capture("workout-detail")
         tapVisible(app.buttons["开始训练"])
+        XCTAssertTrue(app.buttons["完成这一组"].waitForExistence(timeout: 5))
+        capture("workout-session")
         for set in 0..<6 {
             tapVisible(app.buttons["完成这一组"])
+            if set == 0 { capture("workout-rest") }
             if set < 5 { tapVisible(app.buttons["跳过休息"]) }
         }
         XCTAssertTrue(app.staticTexts["又向自己靠近了一步。"].waitForExistence(timeout: 5))
@@ -82,13 +88,17 @@ final class BojiUITests: XCTestCase {
     func testDarkAppearance() {
         onboard()
         tapVisible(app.buttons["设置"])
+        capture("settings")
         tapVisible(button(containing: "显示模式"))
         tapVisible(app.buttons["深色"])
-        tapVisible(app.buttons["完成"])
+        tapVisible(app.buttons["关闭"])
         capture("today-dark")
+        app.tabBars.buttons["训练"].tap()
+        capture("training-dark")
+        app.tabBars.buttons["今天"].tap()
         tapVisible(app.buttons["设置"])
         tapVisible(button(containing: "显示模式"))
         tapVisible(app.buttons["跟随系统"])
-        tapVisible(app.buttons["完成"])
+        tapVisible(app.buttons["关闭"])
     }
 }

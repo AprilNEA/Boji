@@ -1,0 +1,2 @@
+[alias]
+locales = "run --quiet -p boji-locales --"

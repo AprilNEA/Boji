@@ -167,7 +167,6 @@ private struct BojiDailyWidgetView: View {
             }
             Spacer(minLength: 0)
         }
-        .padding()
     }
 
     private var mediumView: some View {
@@ -199,7 +198,6 @@ private struct BojiDailyWidgetView: View {
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
-        .padding()
     }
 
     private var rectangularAccessoryView: some View {
@@ -279,6 +277,7 @@ private struct BojiRecordRow: View {
             Spacer(minLength: 4)
             Text(isLogged ? "已记" : "待记")
                 .foregroundStyle(isLogged ? BojiWidgetPalette.green : .secondary)
+                .widgetAccentable(isLogged)
         }
         .font(.caption)
         .accessibilityElement(children: .ignore)
@@ -296,6 +295,7 @@ private struct BojiRecordTile: View {
             Image(systemName: symbol)
                 .font(.body.weight(.semibold))
                 .foregroundStyle(isLogged ? BojiWidgetPalette.green : .secondary)
+                .widgetAccentable(isLogged)
             Text(title)
                 .font(.caption2)
             Text(isLogged ? "已记" : "待记")

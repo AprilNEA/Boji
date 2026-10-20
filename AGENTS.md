@@ -11,6 +11,8 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 | `animations/` | Exercise Lottie animations: a TypeScript generator and the generated JSON | `animations/AGENTS.md` |
 | `bizserver/` | Rust backend migration: Axum, better-auth-rs, ConnectRPC, SeaORM and PostgreSQL | `bizserver/AGENTS.md` |
 | `websites/` | 薄肌俱乐部 promotional website: Next.js static export, Tailwind CSS and Motion | `websites/AGENTS.md` |
+| `locales/` | Copy that more than one client shows: ICU MessageFormat in YAML, one directory per language | `locales/README.md` |
+| `crates/` | Rust tools for the repository, in their own Cargo workspace. `crates/locales/` generates the client string resources from `locales/` | `crates/AGENTS.md` |
 | `docs/` | Documents shared by both clients. `docs/membership.md` is the membership contract | this file |
 | `assets/public/` | Generic static files for `https://assets.leanmuscle.club`, such as the app icon images that the root `README.md` shows | this file |
 | `LICENSE.md` | The PolyForm Noncommercial License 1.0.0 with the `Required Notice:` line | this file |
@@ -34,6 +36,7 @@ Enter the devenv shell at the repository root with `devenv shell`, or with diren
 | --- | --- |
 | `animations/`, `websites/` | Node.js 24 and pnpm. devenv runs `pnpm install` in both directories |
 | `bizserver/` | Rust from `bizserver/rust-toolchain.toml` through the `rust-overlay` input, `protoc`, `buf`, OpenSSL and `pkg-config` |
+| `crates/` | The same Rust version as `bizserver/`. `crates/rust-toolchain.toml` repeats it for rustup users |
 | `android/` | JDK 17 and `JAVA_HOME`. The Gradle wrapper provides Gradle |
 | `websites/scripts/` | Python 3 with Pillow and rembg. `portraits.py` downloads the rembg model to `~/.u2net` on first use |
 
@@ -44,6 +47,7 @@ devenv does not provide Xcode, `ictool`, XcodeGen, the Android SDK, Chromium for
 - `devenv test` at the repository root runs the type check of `animations/`, verifies that `animations/lottie/` and `animations/lottie-library/` match their source, and runs the type check of `websites/`.
 - The iOS and Android build and test commands are in `ios/AGENTS.md` and `android/AGENTS.md`.
 - The website commands are in `websites/AGENTS.md`.
+- `cargo locales check` in `crates/` validates `locales/` and verifies that the generated string resources are current. `cargo locales generate` writes them. See `crates/AGENTS.md`.
 
 ### README icon
 
@@ -80,6 +84,14 @@ This rule applies to both clients and to all documentation in this repository.
 Three places use the same exercise IDs: `Exercise.id` in `ios/Boji/Models/BojiStore.swift`, the Android course model (`Workout.kt`), and `COURSES` in `animations/src/courses.ts`. Keep the IDs equal. If you rename or add a course exercise, update all three places and regenerate `animations/lottie/`.
 
 `LIBRARY` in `animations/src/courses.ts` holds animated exercises that no app course uses yet. Their files are in `animations/lottie-library/`, which no app bundles. When an app course adopts one, move it from `LIBRARY` to `COURSES` and regenerate.
+
+### Shared copy
+
+Copy that both clients show lives in `locales/`. `crates/locales/` generates `strings_shared.xml` in the `values*` directories of `android/app/src/main/res/` and `ios/Shared/Shared.xcstrings`. Do not edit the generated files. Edit `locales/`, run `cargo locales generate` in `crates/` and commit the source and the generated files together.
+
+Keep the keys and argument names of `locales/meta/` stable, because both clients reference them in code. Copy that only one client shows stays in that client: `android/app/src/main/res/values/strings.xml` or the Swift code of `ios/`. When a client starts to show the same copy, move it into `locales/`.
+
+`locales/locales.yaml` lists the targets that read generated files: `android` and `ios`. Xcode generates Swift symbols for `ios/Shared/Shared.xcstrings`, such as `.Shared.tabToday`. `cargo locales check` also compiles the iOS catalog with `xcstringstool`. See `ios/AGENTS.md` for the Swift usage.
 
 ### License and CLA
 

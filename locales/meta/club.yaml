@@ -1,0 +1,15 @@
+club_eyebrow:
+club_title:
+club_challenge_title:
+club_challenge_text:
+club_challenge_progress:
+  args:
+    days: int
+club_challenge_done:
+club_challenge_pending:
+club_challenge_leave:
+club_challenge_join:
+club_guide_title:
+club_guide_detail:
+article_screen_title:
+article_footer:

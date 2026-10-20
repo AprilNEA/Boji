@@ -383,12 +383,26 @@ actor UITestingMembershipTransport: MembershipTransport {
         emailVerified: true
     )
     private var card: ClubMember?
+    private let scenario: String
+    private var membershipReads = 0
+
+    init(scenario: String = "standard") {
+        self.scenario = scenario
+        if ["long-number", "suspended", "offline"].contains(scenario) {
+            card = ClubMember(id: "ui-test-membership", userId: "ui-test-user",
+                              memberNumber: scenario == "long-number" ? "00-PREVIEW-ALPHA-BETA-GAMMA-DELTA-EPSILON-1234567890-EXAMPLE" : "PREVIEW-MEMBER",
+                              displayName: "一起慢慢开始的薄肌同学", joinedAt: Date(), tier: "community",
+                              status: scenario == "suspended" ? "suspended" : "active", entitlements: [], expiresAt: nil)
+        }
+    }
 
     func send(_ request: URLRequest) async throws -> MembershipHTTPResponse {
         let path = request.url?.path ?? ""
         switch (request.httpMethod ?? "GET", path) {
         case ("POST", "/api/auth/sign-in/email"):
             return MembershipHTTPResponse(data: Data("{}".utf8), statusCode: 200, headers: ["set-auth-token": token])
+        case ("GET", "/api/capabilities"):
+            return MembershipHTTPResponse(data: Data("{\"appleSignIn\":false,\"walletPass\":false}".utf8), statusCode: 200)
         case ("POST", "/api/auth/sign-up/email"),
              ("POST", "/api/auth/send-verification-email"),
              ("POST", "/api/auth/request-password-reset"),
@@ -430,6 +444,8 @@ actor UITestingMembershipTransport: MembershipTransport {
             guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)" else {
                 return errorResponse(statusCode: 401, code: "UNAUTHORIZED")
             }
+            membershipReads += 1
+            if scenario == "offline", membershipReads > 1 { throw URLError(.notConnectedToInternet) }
             return try encoded(MembershipPayload(membership: card))
         case ("POST", "/api/membership/enroll"):
             guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)" else {

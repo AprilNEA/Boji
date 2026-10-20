@@ -20,7 +20,7 @@ struct MembershipAuthenticationView: View {
         NavigationStack {
             Form {
                 Section {
-                    Picker("账号操作", selection: $registering) {
+                    Picker("账号操作", selection: $registering.animation(.snappy)) {
                         Text("登录").tag(false)
                         Text("注册").tag(true)
                     }.pickerStyle(.segmented)
@@ -30,7 +30,7 @@ struct MembershipAuthenticationView: View {
                 AppleSignInSection { password = ""; dismiss() }
                 Section(registering ? "创建俱乐部账号" : "欢迎回来") {
                     if registering {
-                        TextField("昵称", text: $name).textContentType(.nickname)
+                        TextField(.Shared.settingsNickname, text: $name).textContentType(.nickname)
                             .accessibilityIdentifier("auth-name")
                     }
                     TextField("邮箱", text: $email).textContentType(.emailAddress).keyboardType(.emailAddress)
@@ -65,13 +65,16 @@ struct MembershipAuthenticationView: View {
                             }
                         }
                     } label: {
-                        HStack {
-                            Text(membership.isBusy ? "请稍候…" : registering ? "注册并验证邮箱" : "登录")
-                            Spacer()
-                            if membership.isBusy { ProgressView() } else { Image(systemName: "arrow.right") }
+                        HStack(spacing: 8) {
+                            if membership.isBusy { ProgressView() }
+                            Text(membership.isBusy ? "请稍候……" : registering ? "注册并验证邮箱" : "登录")
                         }
-                    }.disabled(!validForm || membership.isBusy || !membership.isConfigured)
-                        .accessibilityIdentifier("auth-submit")
+                        .font(.headline).frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent).controlSize(.large).tint(BojiTheme.accentFill)
+                    .listRowInsets(EdgeInsets()).listRowBackground(Color.clear)
+                    .disabled(!validForm || membership.isBusy || !membership.isConfigured)
+                    .accessibilityIdentifier("auth-submit")
                     if registering, membership.notice != nil {
                         Button("已验证邮箱，返回登录") { registering = false; password = "" }
                     }
@@ -93,8 +96,13 @@ struct MembershipAuthenticationView: View {
                     #endif
                 }
             }
+            .pageBackground()
             .navigationTitle(registering ? "加入俱乐部" : "登录俱乐部").navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("取消") { password = ""; dismiss() }.disabled(membership.isBusy) } }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(.Shared.actionCancel, systemImage: "xmark", role: .cancel) { password = ""; dismiss() }.disabled(membership.isBusy)
+                }
+            }
             .sheet(isPresented: $showRules) { ClubRulesView() }
             .interactiveDismissDisabled(membership.isBusy)
             .onAppear { membership.errorMessage = nil; membership.notice = nil }

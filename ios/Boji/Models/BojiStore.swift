@@ -10,18 +10,18 @@ enum PlanKind: String, Codable, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .home:
-            return "居家训练"
+            return String(localized: .Shared.planHomeTitle)
         case .gym:
-            return "健身房训练"
+            return String(localized: .Shared.planGymTitle)
         }
     }
 
     var subtitle: String {
         switch self {
         case .home:
-            return "徒手开始，循序渐进"
+            return String(localized: .Shared.planHomeSubtitle)
         case .gym:
-            return "器械入门，专注动作"
+            return String(localized: .Shared.planGymSubtitle)
         }
     }
 
@@ -35,7 +35,7 @@ enum PlanKind: String, Codable, CaseIterable, Identifiable {
     }
 }
 
-struct Exercise: Identifiable, Codable, Equatable {
+struct Exercise: Identifiable, Codable, Hashable {
     let id: String
     let name: String
     let sets: Int
@@ -44,7 +44,7 @@ struct Exercise: Identifiable, Codable, Equatable {
     let symbol: String
 }
 
-struct Workout: Identifiable, Codable, Equatable {
+struct Workout: Identifiable, Codable, Hashable {
     let id: String
     let title: String
     let subtitle: String
@@ -436,7 +436,7 @@ final class BojiStore {
             do {
                 try FileManager.default.removeItem(at: storageURL)
             } catch {
-                storageError = "无法删除本地数据：\(error.localizedDescription)"
+                storageError = String(localized: .Shared.storageDeleteFailed(detail: error.localizedDescription))
                 return
             }
         }
@@ -496,7 +496,7 @@ final class BojiStore {
             storageError = nil
         } catch {
             writesBlockedByCorruptFile = true
-            storageError = "无法读取本地数据，原文件未被覆盖：\(error.localizedDescription)"
+            storageError = String(localized: .Shared.storageReadFailed(detail: error.localizedDescription))
         }
     }
 
@@ -523,7 +523,7 @@ final class BojiStore {
             try data.write(to: storageURL, options: .atomic)
             storageError = nil
         } catch {
-            storageError = "无法保存本地数据：\(error.localizedDescription)"
+            storageError = String(localized: .Shared.storageWriteFailed(detail: error.localizedDescription))
         }
     }
 

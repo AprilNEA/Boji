@@ -71,13 +71,15 @@ final class MembershipStore {
     #if DEBUG
     /// UI 测试专用 Store。它不使用真实 Keychain、文件或网络。
     static func uiTesting() -> MembershipStore {
+        let scenario = ProcessInfo.processInfo.arguments.first { $0.hasPrefix("--membership-fixture=") }?
+            .replacingOccurrences(of: "--membership-fixture=", with: "") ?? "standard"
         let configuration = MembershipServiceConfiguration(
             validating: "http://localhost:3000",
             allowLoopbackHTTP: true
         )
         return MembershipStore(
             configuration: configuration,
-            transport: UITestingMembershipTransport(),
+            transport: UITestingMembershipTransport(scenario: scenario),
             tokenStore: InMemoryMembershipTokenStore(),
             cacheStore: InMemoryMembershipCacheStore(),
             isTestEnvironment: true
@@ -407,8 +409,10 @@ final class MembershipStore {
             errorMessage = "请先同意社区会员条款。"
             return
         }
-        guard !displayName.isEmpty else {
-            errorMessage = "请输入会员卡显示名称。"
+        var draft = MembershipEnrollmentDraft()
+        draft.name = displayName
+        if let error = draft.nameError {
+            errorMessage = error
             return
         }
         guard isConfigured else {
@@ -555,6 +559,7 @@ final class MembershipStore {
             card = cached.card
             lastSyncedAt = cached.lastSyncedAt
             requiresEmailVerification = false
+            isOffline = true
         } catch {
             try? cacheStore.delete()
         }
@@ -662,7 +667,6 @@ final class MembershipStore {
         let operation = UUID()
         activeOperation = operation
         isBusy = true
-        isOffline = false
         errorMessage = nil
         notice = nil
         return operation

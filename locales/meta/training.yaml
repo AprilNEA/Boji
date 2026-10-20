@@ -1,0 +1,21 @@
+training_title:
+training_plan_label:
+training_rhythm_title:
+training_rhythm_detail:
+training_tip_schedule:
+training_tip_load:
+training_progression_meta:
+  args:
+    minutes: int
+    exercises: int
+detail_minutes:
+detail_exercises:
+detail_level:
+detail_plan_title:
+detail_plan_detail:
+detail_exercise_sets:
+  args:
+    sets: int
+    reps: string
+detail_start:
+detail_again:

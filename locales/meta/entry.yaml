@@ -1,0 +1,14 @@
+sheet_water_title:
+water_amount:
+  args:
+    milliliters: int
+water_footer:
+sheet_sleep_title:
+sleep_footer:
+sheet_body_title:
+body_section:
+body_weight:
+body_waist:
+body_weight_hint:
+body_waist_hint:
+body_note:

@@ -4,75 +4,25 @@ import UIKit
 struct MembershipEntryView: View {
     @Environment(MembershipStore.self) private var membership
     @State private var showingCard = false
+    @Namespace private var transition
 
     var body: some View {
         Button { showingCard = true } label: {
             if let card = membership.card {
-                MembershipCardFace(card: card, isTest: membership.isTestEnvironment)
+                MembershipCardFace(card: card, isTest: membership.isTestEnvironment, isOffline: membership.isOffline)
             } else {
-                VStack(alignment: .leading, spacing: 24) {
-                    HStack {
-                        Text("boji").font(.system(size: 40, weight: .heavy, design: .rounded))
-                        Spacer()
-                        Image(systemName: "person.crop.rectangle").font(.title)
-                    }
-                    Text("给自己，一个位置。").font(.title2.bold())
-                    HStack {
-                        Text("免费俱乐部身份卡").font(.subheadline)
-                        Spacer()
-                        Label("领取会员卡", systemImage: "arrow.up.right").font(.subheadline.bold())
-                    }
-                }
-                .padding(26).foregroundStyle(.white)
-                .background(Color(red: 0.17, green: 0.27, blue: 0.22), in: .rect(cornerRadius: 28))
+                MembershipCardSurface(name: "给自己，一个位置。", number: nil, joinedAt: nil, badge: "免费领取",
+                                      annotation: "没有身材门槛，按自己的节奏来。",
+                                      numberPlaceholder: "领取后显示会员卡号")
             }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PressableCardStyle())
+        .matchedTransitionSource(id: "membership", in: transition)
         .accessibilityLabel(membership.card == nil ? "领取免费会员卡" : "查看我的会员卡")
         .accessibilityIdentifier("membership-entry")
-        .sheet(isPresented: $showingCard) { MembershipCenterView() }
-    }
-}
-
-struct MembershipCardFace: View {
-    let card: ClubMember
-    var isTest = false
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("boji").font(.system(size: 42, weight: .heavy, design: .rounded))
-                    Text("A CLUB FOR EVERY BODY").font(.system(size: 9, weight: .semibold)).tracking(1.6)
-                }
-                Spacer(minLength: 12)
-                Image(systemName: "figure.mind.and.body").font(.system(size: 42, weight: .ultraLight))
-                    .accessibilityHidden(true)
-            }
-            VStack(alignment: .leading, spacing: 8) {
-                Text(card.displayName).font(.title2.bold()).lineLimit(2)
-                Text(card.memberNumber).font(.system(.subheadline, design: .monospaced)).textSelection(.enabled)
-                    .accessibilityLabel("会员卡号，\(card.memberNumber)")
-            }
-            HStack(alignment: .bottom) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("加入于 \(card.joinedAt.formatted(.dateTime.year().month().day()))").font(.caption)
-                    Text("MY BODY. MY PACE.").font(.system(size: 9, weight: .medium)).tracking(1.5)
-                }
-                Spacer(minLength: 6)
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text(card.tier == "community" ? "社区会员" : "会员身份").font(.caption.bold())
-                    Text(isTest ? "测试卡 · 非真实会员" : card.isActive ? "免费身份卡" : "当前不可用")
-                        .font(.caption2)
-                }
-            }
+        .sheet(isPresented: $showingCard) {
+            MembershipCenterView().navigationTransition(.zoom(sourceID: "membership", in: transition))
         }
-        .padding(26).foregroundStyle(Color(red: 0.98, green: 0.96, blue: 0.87))
-        .background {
-            LinearGradient(colors: [Color(red: 0.19, green: 0.30, blue: 0.24), Color(red: 0.10, green: 0.18, blue: 0.15)], startPoint: .topLeading, endPoint: .bottomTrailing)
-        }
-        .clipShape(.rect(cornerRadius: 28))
-        .overlay(RoundedRectangle(cornerRadius: 28).strokeBorder(.white.opacity(0.15), lineWidth: 1))
     }
 }
 
@@ -82,169 +32,228 @@ struct MembershipCenterView: View {
     @State private var showAuthentication = false
     @State private var showEnrollment = false
     @State private var showRules = false
+    @State private var showSecurity = false
     @State private var confirmSignOut = false
-    @State private var shareImage: UIImage?
     @State private var showShare = false
-    @State private var shareError: String?
+    @State private var copiedNumber = false
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 22) {
-                    if membership.isTestEnvironment {
-                        Label("界面测试环境 · 不连接真实账号", systemImage: "testtube.2")
-                            .font(.caption).foregroundStyle(.secondary)
+            PageScroll {
+                if membership.isTestEnvironment {
+                    Label("界面测试环境 · 不连接真实账号", systemImage: "testtube.2")
+                        .font(.footnote).foregroundStyle(.secondary)
+                }
+                if let card = membership.card {
+                    TimelineView(.periodic(from: .now, by: 30)) { context in
+                        cardContent(card, at: context.date)
                     }
-                    if let card = membership.card {
-                        cardContent(card)
-                    } else {
-                        unissuedContent
-                    }
-                    MembershipMessages()
-                    if membership.isBusy { ProgressView("正在连接俱乐部…").frame(maxWidth: .infinity) }
-                    if let account = membership.account {
-                        Surface {
-                            VStack(alignment: .leading, spacing: 10) {
-                                Label("当前账号", systemImage: "person.crop.circle").font(.headline)
-                                Text(account.email).font(.subheadline).textSelection(.enabled)
-                                Text("会员卡绑定此账号。退出不会删除本机训练记录，也不会注销账号。")
-                                    .font(.footnote).foregroundStyle(.secondary)
-                                Button("退出账号", role: .destructive) { confirmSignOut = true }
-                                    .frame(minHeight: 44).disabled(membership.isBusy)
-                            }
-                        }
-                    }
+                } else {
+                    unissuedContent
+                }
+                MembershipMessages()
+                if membership.isBusy { ProgressView("正在连接俱乐部…").frame(maxWidth: .infinity) }
+                if let account = membership.account { accountSection(account) }
+                VStack(alignment: .leading, spacing: 8) {
                     Button("俱乐部守则与数据说明", systemImage: "text.book.closed") { showRules = true }
-                        .font(.subheadline).frame(minHeight: 44)
+                        .font(.subheadline).buttonStyle(.borderless).frame(minHeight: 44)
                     Text("这是免费身份卡，不是付费订阅、支付卡或场馆核销凭证。不自动续费。")
                         .font(.footnote).foregroundStyle(.secondary)
-                }.padding(20).frame(maxWidth: 600).frame(maxWidth: .infinity)
+                }
             }
-            .pageBackground().navigationTitle("我的会员卡").navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { dismiss() } } }
+            .navigationTitle("我的会员卡").navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("关闭", systemImage: "xmark", role: .close) { dismiss() } }
+            }
             .task {
                 if membership.account != nil { await membership.refresh() }
                 else { await membership.restore() }
                 await membership.loadCapabilities()
             }
-            .refreshable { await membership.refresh() }
+            .refreshable {
+                if membership.account != nil { await membership.refresh() }
+                else { await membership.restore() }
+                await membership.loadCapabilities()
+            }
             .sheet(isPresented: $showAuthentication) { MembershipAuthenticationView() }
             .sheet(isPresented: $showEnrollment) { MembershipEnrollmentView() }
             .sheet(isPresented: $showRules) { ClubRulesView() }
+            .sheet(isPresented: $showSecurity) { AccountSecurityView() }
             .sheet(isPresented: $showShare) {
-                if let shareImage { MembershipShareSheet(image: shareImage) }
+                if let card = membership.card { MembershipSharingView(cardID: card.id) }
             }
+            .onChange(of: membership.account?.id) { _, _ in copiedNumber = false; showShare = false }
+            .onChange(of: membership.card?.memberNumber) { _, _ in copiedNumber = false }
             .confirmationDialog("退出此账号？", isPresented: $confirmSignOut, titleVisibility: .visible) {
                 Button("退出账号", role: .destructive) { Task { await membership.signOut() } }
-                Button("取消", role: .cancel) {}
-            } message: { Text("本机会员卡缓存会清除。重新登录可恢复服务器上的会员卡，本机训练记录不受影响。") }
-            .alert("分享卡生成失败", isPresented: Binding(get: { shareError != nil }, set: { if !$0 { shareError = nil } })) {
-                Button("好") { shareError = nil }
-            } message: { Text(shareError ?? "") }
+                Button(.Shared.actionCancel, role: .cancel) {}
+            } message: { Text("本机登录信息和会员卡缓存会清除。本机训练记录不受影响，此操作不会注销账号。") }
         }
     }
 
     private var unissuedContent: some View {
-        VStack(alignment: .leading, spacing: 22) {
+        VStack(alignment: .leading, spacing: 24) {
             PageHeading(eyebrow: "YOUR PLACE IN THE CLUB", title: "不必达标，\n也能加入。", subtitle: "一张属于你的身份卡，记录一起开始的这一天。")
             Surface {
                 VStack(alignment: .leading, spacing: 16) {
-                    Label("免费社区会员", systemImage: "person.crop.rectangle.badge.plus").font(.title3.bold())
-                    Text("会员身份 · 入会日期 · 专属分享卡").font(.subheadline).foregroundStyle(.secondary)
-                    Text("基础记录和训练始终可以免登录使用。领卡仅需已验证的邮箱账号。")
+                    HStack(spacing: 12) {
+                        SymbolTile(symbol: "person.crop.rectangle.badge.plus", color: BojiTheme.green)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("免费社区会员").font(.headline)
+                            Text("写下昵称 · 确认共识 · 领取身份卡").font(.subheadline).foregroundStyle(.secondary)
+                        }
+                    }
+                    Text("基础记录和训练始终可以免登录使用。领卡需要已验证的邮箱账号。")
                         .font(.footnote).foregroundStyle(.secondary)
                     if !membership.isConfigured {
-                        Label("会员服务尚未配置", systemImage: "network.slash").foregroundStyle(.secondary)
+                        Label("暂时无法在线领卡", systemImage: "network.slash").font(.headline)
+                        Text("当前版本尚未连接会员服务。基础训练和记录仍可使用。")
+                            .font(.footnote).foregroundStyle(.secondary)
                     } else if let account = membership.account {
                         if account.emailVerified {
-                            PrimaryButton(title: "领取免费身份卡", symbol: "person.crop.rectangle.badge.plus") { showEnrollment = true }
-                                .accessibilityIdentifier("membership-enroll-start").disabled(membership.isBusy || membership.isOffline)
+                            Label("邮箱已验证，可以领取", systemImage: "checkmark.circle.fill")
+                                .font(.subheadline).foregroundStyle(BojiTheme.green)
+                            CardButton(title: "领取免费身份卡", symbol: "person.crop.rectangle.badge.plus") { showEnrollment = true }
+                                .accessibilityIdentifier("membership-enroll-start")
+                                .disabled(membership.isBusy || membership.isOffline)
                         } else {
-                            Text("先验证邮箱，再领取会员卡。").font(.subheadline)
+                            Text("先验证邮箱，再领取会员卡。").font(.headline)
                             Button("重发验证邮件") { Task { await membership.sendVerification(email: account.email) } }
-                                .disabled(membership.isBusy)
+                                .buttonStyle(.bordered).disabled(membership.isBusy)
                         }
-                        Button("刷新账号与会员卡", systemImage: "arrow.clockwise") { Task { await membership.refresh() } }
-                            .frame(minHeight: 44).disabled(membership.isBusy)
+                        Button(membership.isOffline ? "重新连接并确认会员信息" : "刷新账号与会员卡", systemImage: "arrow.clockwise") {
+                            Task { await membership.refresh() }
+                        }
+                        .font(.subheadline).buttonStyle(.borderless).frame(minHeight: 44).disabled(membership.isBusy)
                     } else {
-                        PrimaryButton(title: "登录或注册领取", symbol: "person.crop.circle") { showAuthentication = true }
+                        CardButton(title: "登录或注册领取", symbol: "person.crop.circle") { showAuthentication = true }
                             .accessibilityIdentifier("membership-auth-start").disabled(membership.isBusy)
                     }
                 }
             }
+            GroupedRows {
+                InfoRow(text: "不需要提供身体照片或体脂数据", symbol: "hand.raised")
+                InfoRow(text: "分享前可以隐藏会员卡号", symbol: "eye.slash")
+                InfoRow(text: "训练和身体记录不会随领卡上传", symbol: "iphone")
+            }
         }
     }
 
-    @ViewBuilder private func cardContent(_ card: ClubMember) -> some View {
-        MembershipCardFace(card: card, isTest: membership.isTestEnvironment)
-            .accessibilityIdentifier("issued-membership-card")
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: membership.isOffline ? "wifi.slash" : card.isActive ? "checkmark.seal.fill" : "pause.circle")
-                .foregroundStyle(card.isActive ? BojiTheme.green : .secondary)
-            VStack(alignment: .leading, spacing: 5) {
-                Text(membership.isOffline ? "离线副本 · 状态待同步" : card.isActive ? "已加入俱乐部" : "会员卡当前不可用").font(.headline)
-                if let date = membership.lastSyncedAt {
-                    Text("上次同步 \(date.formatted(date: .abbreviated, time: .shortened))").font(.caption).foregroundStyle(.secondary)
+    @ViewBuilder private func cardContent(_ card: ClubMember, at date: Date) -> some View {
+        let condition = MembershipCardCondition.resolve(card: card, isOffline: membership.isOffline, at: date)
+        VStack(alignment: .leading, spacing: 24) {
+            MembershipCardFace(card: card, isTest: membership.isTestEnvironment, isOffline: membership.isOffline)
+                .accessibilityIdentifier("issued-membership-card")
+            Surface(padding: 16) {
+                AdaptiveStack {
+                    Image(systemName: membership.isBusy ? "arrow.triangle.2.circlepath" : condition.symbol)
+                        .font(.title2).foregroundStyle(condition == .active ? BojiTheme.green : .secondary)
+                        .symbolEffect(.rotate, isActive: membership.isBusy)
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(membership.isBusy ? "正在核对会员状态" : condition.title).font(.headline)
+                            .accessibilityIdentifier("membership-status")
+                        Text(condition.detail).font(.footnote).foregroundStyle(.secondary)
+                        if let date = membership.lastSyncedAt {
+                            Text("上次同步 \(date.formatted(date: .abbreviated, time: .shortened))")
+                                .font(.footnote).foregroundStyle(.secondary)
+                        }
+                    }
+                    Spacer(minLength: 0)
+                    Button("刷新", systemImage: "arrow.clockwise") { Task { await membership.refresh() } }
+                        .labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.circle)
+                        .disabled(membership.isBusy)
+                        .accessibilityIdentifier("membership-refresh")
                 }
-                if !card.isActive { Text("本地记录与基础训练仍可使用。").font(.footnote).foregroundStyle(.secondary) }
             }
-            Spacer(minLength: 0)
-            Button("刷新", systemImage: "arrow.clockwise") { Task { await membership.refresh() } }
-                .labelStyle(.iconOnly).frame(minWidth: 44, minHeight: 44).disabled(membership.isBusy)
-        }
-        if card.isActive {
-            Button { renderShare(card) } label: { Label("制作会员分享卡", systemImage: "square.and.arrow.up").frame(maxWidth: .infinity, minHeight: 44) }
-                .buttonStyle(.glass).accessibilityIdentifier("membership-share")
-            MembershipWalletView()
-        }
-        SectionHeading(title: "你的社区权益", detail: "没有订阅费用")
-        Surface {
-            VStack(alignment: .leading, spacing: 18) {
-                entitlement("local_tracking", title: "日常记录", detail: "训练、饮水与睡眠，按自己的节奏。", symbol: "checkmark.circle", card: card)
-                Divider()
-                entitlement("training_library", title: "基础训练库", detail: "居家与健身房课程，逐组完成。", symbol: "figure.strengthtraining.traditional", card: card)
-                Divider()
-                entitlement("progress_history", title: "成长足迹", detail: "查看训练历史与身体数据趋势。", symbol: "chart.xyaxis.line", card: card)
+            if condition == .active || condition == .offline {
+                VStack(alignment: .leading, spacing: 12) {
+                    CardButton(title: "制作会员分享卡", symbol: "square.and.arrow.up") { showShare = true }
+                        .accessibilityIdentifier("membership-share").disabled(membership.isBusy)
+                    MembershipWalletView()
+                }
+            }
+            Surface(padding: 16) {
+                DisclosureGroup("身份详情") {
+                    VStack(alignment: .leading, spacing: 14) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("完整会员卡号").font(.footnote).foregroundStyle(.secondary)
+                            Text(verbatim: card.memberNumber).font(.system(.body, design: .monospaced))
+                                .textSelection(.enabled).fixedSize(horizontal: false, vertical: true)
+                        }
+                        Button(copiedNumber ? "卡号已复制" : "复制完整卡号", systemImage: copiedNumber ? "checkmark" : "doc.on.doc") {
+                            UIPasteboard.general.string = card.memberNumber
+                            copiedNumber = true
+                        }
+                        .buttonStyle(.bordered).contentTransition(.symbolEffect(.replace))
+                        .accessibilityIdentifier("membership-copy-number")
+                        LabeledContent("加入于", value: card.joinedAt.formatted(date: .abbreviated, time: .omitted))
+                        if let expiresAt = card.expiresAt {
+                            LabeledContent("有效至", value: expiresAt.formatted(date: .abbreviated, time: .shortened))
+                        }
+                        Text("卡片信息由会员服务确认，分享图片仅作纪念。")
+                            .font(.footnote).foregroundStyle(.secondary)
+                    }
+                    .font(.body)
+                    .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 12)
+                }
+                .font(.headline).tint(.primary).accessibilityIdentifier("membership-details")
+            }
+            VStack(alignment: .leading, spacing: 12) {
+                SectionHeading(title: "你的社区权益", detail: "没有订阅费用")
+                GroupedRows {
+                    entitlement("local_tracking", title: "日常记录", detail: "训练、饮水与睡眠，按自己的节奏。", symbol: "checkmark.circle", card: card, date: date)
+                    entitlement("training_library", title: "基础训练库", detail: "居家与健身房课程，逐组完成。", symbol: "figure.strengthtraining.traditional", card: card, date: date)
+                    entitlement("progress_history", title: "成长足迹", detail: "查看训练历史与身体数据趋势。", symbol: "chart.xyaxis.line", card: card, date: date)
+                }
+                Text("以上基础功能也可免登录使用。付费会员尚未开放，本版不会收取费用。")
+                    .font(.footnote).foregroundStyle(.secondary)
             }
         }
-        Text("以上基础功能也可免登录使用。付费会员尚未开放，本版不会收取费用。")
-            .font(.footnote).foregroundStyle(.secondary)
     }
 
-    private func entitlement(_ code: String, title: String, detail: String, symbol: String, card: ClubMember) -> some View {
-        let grant = card.activeEntitlement(for: code)
+    private func accountSection(_ account: MembershipAccount) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeading(title: "当前账号")
+            GroupedRows {
+                Label { Text(verbatim: account.email).textSelection(.enabled) } icon: {
+                    Image(systemName: "person.crop.circle").foregroundStyle(BojiTheme.accent)
+                }
+                .padding(.horizontal, 16).padding(.vertical, 14)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                Button { showSecurity = true } label: {
+                    NavigationRowLabel(title: "账号安全", symbol: "lock.shield")
+                }
+                .buttonStyle(RowButtonStyle())
+                Button("退出账号", role: .destructive) { confirmSignOut = true }
+                    .buttonStyle(RowButtonStyle()).foregroundStyle(.red)
+                    .disabled(membership.isBusy)
+            }
+            Text("会员卡绑定此账号。退出不会删除本机训练记录，也不会注销账号。")
+                .font(.footnote).foregroundStyle(.secondary)
+        }
+    }
+
+    private func entitlement(_ code: String, title: String, detail: String, symbol: String, card: ClubMember, date: Date) -> some View {
+        let grant = card.activeEntitlement(for: code, at: date)
         return HStack(alignment: .top, spacing: 12) {
             SymbolTile(symbol: symbol, color: BojiTheme.green)
-            VStack(alignment: .leading, spacing: 4) {
-                Text(grant?.name.isEmpty == false ? grant!.name : title).font(.headline)
-                Text(grant?.description.isEmpty == false ? grant!.description : detail).font(.caption).foregroundStyle(.secondary)
-                Text(grant != nil ? "已包含" : card.hasLegacyEntitlements ? "权益信息待刷新 · 本地功能不受影响" : "会员权益未授予 · 本地功能不受影响")
-                    .font(.caption2).foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(grant?.name.isEmpty == false ? grant!.name : title).font(.body.weight(.medium))
+                Text(grant?.description.isEmpty == false ? grant!.description : detail).font(.subheadline).foregroundStyle(.secondary)
+                Text(membership.isOffline || membership.isBusy ? "权益状态待同步 · 本地功能不受影响" : grant != nil ? "已包含" : card.hasLegacyEntitlements ? "权益信息待刷新 · 本地功能不受影响" : "会员权益未授予 · 本地功能不受影响")
+                    .font(.footnote).foregroundStyle(grant != nil && !membership.isOffline && !membership.isBusy ? BojiTheme.green : .secondary)
                 if let date = grant?.grantedAt {
-                    Text("授权于 \(date.formatted(.dateTime.year().month().day()))").font(.caption2).foregroundStyle(.secondary)
+                    Text("授权于 \(date.formatted(.dateTime.year().month().day()))").font(.footnote).foregroundStyle(.secondary)
                 }
                 if let date = grant?.expiresAt {
-                    Text("有效至 \(date.formatted(date: .abbreviated, time: .shortened))").font(.caption2).foregroundStyle(.secondary)
+                    Text("有效至 \(date.formatted(date: .abbreviated, time: .shortened))").font(.footnote).foregroundStyle(.secondary)
                 }
             }
         }
-    }
-
-    @MainActor private func renderShare(_ card: ClubMember) {
-        let content = VStack(spacing: 22) {
-            MembershipCardFace(card: card, isTest: membership.isTestEnvironment)
-            Text("不必完美，也能入会。").font(.title3.bold()).foregroundStyle(Color.black)
-            Text("\(membership.isOffline ? "离线副本" : "会员纪念卡") · \(Date().formatted(.dateTime.year().month().day()))\n会员状态以俱乐部服务为准 · 非支付或核销凭证")
-                .font(.caption2).multilineTextAlignment(.center).foregroundStyle(Color.gray)
-        }
-        .padding(24).frame(width: 380).background(Color(red: 0.97, green: 0.96, blue: 0.94))
-        .environment(\.locale, Locale(identifier: "zh_Hans_CN"))
-        .environment(\.colorScheme, .light).environment(\.dynamicTypeSize, .medium)
-        let renderer = ImageRenderer(content: content)
-        renderer.scale = 3
-        guard let image = renderer.uiImage else { shareError = "无法生成图片，请稍后重试。"; return }
-        shareImage = image
-        showShare = true
+        .padding(.horizontal, 16).padding(.vertical, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -252,80 +261,12 @@ struct MembershipMessages: View {
     @Environment(MembershipStore.self) private var membership
     var body: some View {
         if let message = membership.errorMessage {
-            Label(message, systemImage: "exclamationmark.circle").font(.footnote).foregroundStyle(.red)
+            Label(message, systemImage: "exclamationmark.circle.fill").font(.footnote).foregroundStyle(.red)
                 .accessibilityIdentifier("membership-error")
         }
         if let message = membership.notice {
             Label(message, systemImage: "info.circle").font(.footnote).foregroundStyle(.secondary)
                 .accessibilityIdentifier("membership-notice")
-        }
-    }
-}
-
-private struct MembershipShareSheet: View {
-    let image: UIImage
-    @Environment(\.dismiss) private var dismiss
-    var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 22) {
-                    Image(uiImage: image).resizable().scaledToFit().clipShape(.rect(cornerRadius: 20))
-                    Text("分享内容包含昵称、卡号和入会日期。不会包含邮箱、登录信息或身体记录。")
-                        .font(.footnote).foregroundStyle(.secondary)
-                    ShareLink(item: Image(uiImage: image), preview: SharePreview("我的 Boji 会员卡", image: Image(uiImage: image))) {
-                        Label("分享图片", systemImage: "square.and.arrow.up").frame(maxWidth: .infinity, minHeight: 44)
-                    }.buttonStyle(.glassProminent)
-                }.padding(24).frame(maxWidth: 520).frame(maxWidth: .infinity)
-            }.pageBackground().navigationTitle("分享预览").navigationBarTitleDisplayMode(.inline)
-                .toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { dismiss() } } }
-        }
-    }
-}
-
-struct MembershipEnrollmentView: View {
-    @Environment(MembershipStore.self) private var membership
-    @Environment(\.dismiss) private var dismiss
-    @State private var name = ""
-    @State private var accepted = false
-    @State private var showRules = false
-    private var cleanName: String { name.trimmingCharacters(in: .whitespacesAndNewlines) }
-
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    Text("免费加入，按自己的节奏来。").font(.headline)
-                    Text("填写昵称并同意守则，即可领取你的免费俱乐部身份卡。")
-                        .font(.subheadline).foregroundStyle(.secondary)
-                }
-                Section("卡面昵称") {
-                    TextField("1 至 24 个字符", text: $name).textContentType(.nickname).submitLabel(.done)
-                        .accessibilityIdentifier("membership-card-name")
-                    Text("昵称会出现在分享卡上。领卡后本版暂不支持改名。")
-                        .font(.caption).foregroundStyle(.secondary)
-                }
-                Section {
-                    Toggle("我已阅读并同意俱乐部守则与数据说明", isOn: $accepted)
-                        .accessibilityIdentifier("membership-terms")
-                    Button("阅读守则与数据说明") { showRules = true }
-                }
-                Section {
-                    MembershipMessages()
-                    Button {
-                        Task {
-                            await membership.enroll(displayName: cleanName, acceptedTerms: accepted)
-                            if membership.card != nil { dismiss() }
-                        }
-                    } label: {
-                        HStack { Text(membership.isBusy ? "正在领取…" : "确认免费领卡"); Spacer(); Image(systemName: "person.crop.rectangle.badge.plus") }
-                    }.disabled(!accepted || cleanName.isEmpty || cleanName.count > 24 || membership.isBusy || membership.isOffline)
-                        .accessibilityIdentifier("membership-enroll-confirm")
-                } footer: { Text("免费身份卡，无支付步骤，不会自动续费。") }
-            }.navigationTitle("领取身份卡").navigationBarTitleDisplayMode(.inline)
-                .toolbar { ToolbarItem(placement: .cancellationAction) { Button("取消") { dismiss() } } }
-                .onAppear { name = membership.account?.name ?? ""; membership.errorMessage = nil; membership.notice = nil }
-                .sheet(isPresented: $showRules) { ClubRulesView() }
-                .interactiveDismissDisabled(membership.isBusy)
         }
     }
 }
@@ -336,26 +277,36 @@ struct ClubRulesView: View {
         NavigationStack {
             List {
                 Section("俱乐部守则") {
-                    rule("人人都有位置", "不以身材、体重或体脂决定是否可以加入。")
-                    rule("尊重自己的节奏", "不排名，不鼓励极端减脂；不舒服时停止训练。")
-                    rule("尊重他人与隐私", "不冒用他人身份，不在昵称中包含他人隐私。")
+                    ForEach(MembershipPledge.all) { pledge in
+                        Label {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(pledge.title).font(.headline)
+                                Text(pledge.detail).font(.subheadline).foregroundStyle(.secondary)
+                            }
+                        } icon: { Image(systemName: pledge.symbol).foregroundStyle(BojiTheme.accent) }
+                        .padding(.vertical, 4)
+                    }
                 }
                 Section("账号与会员数据") {
                     Text("登录会将邮箱和认证信息发送到俱乐部服务。领卡会提交昵称和守则版本，由服务器保存卡号、入会日期和会员状态。")
                     Text("训练、饮水、睡眠和身体记录仍只保存在此设备，不随领卡上传。")
                     Text("登录令牌存入本机 Keychain。退出会清除本机登录信息和会员缓存，但不注销账号或删除服务器会员。")
-                    Text("制作分享卡会包含昵称、卡号和入会日期。确认分享前，你可以查看图片。")
+                    Text("分享图片包含昵称和入会日期。卡号默认隐藏，可以在预览中主动开启。确认前，图片不会自动上传或分享。")
                 }
-                Section("卡片的边界") {
+                Section {
                     Text("免费会员卡是俱乐部身份记录，不代表付费权益，也不能用于支付或场馆核销。图片只是纪念副本，会员状态以服务器为准。")
                     Text("当前尚无 App 内账号注销入口。公开发布前需补齐账号删除与正式隐私政策。")
+                } header: {
+                    Text("卡片的边界")
+                } footer: {
+                    Text("守则版本：community-v1")
                 }
-                Section { Text("守则版本：community-v1").font(.caption).foregroundStyle(.secondary) }
-            }.navigationTitle("守则与数据说明").navigationBarTitleDisplayMode(.inline)
-                .toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { dismiss() } } }
+            }
+            .pageBackground()
+            .navigationTitle("守则与数据说明").navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("关闭", systemImage: "xmark", role: .close) { dismiss() } }
+            }
         }
-    }
-    private func rule(_ title: String, _ text: String) -> some View {
-        VStack(alignment: .leading, spacing: 6) { Text(title).font(.headline); Text(text).font(.subheadline).foregroundStyle(.secondary) }.padding(.vertical, 5)
     }
 }

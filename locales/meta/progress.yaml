@@ -1,0 +1,18 @@
+progress_subtitle:
+progress_total_workouts:
+progress_week_title:
+progress_week_note:
+progress_body_title:
+progress_body_add:
+progress_metric_weight:
+progress_metric_waist:
+progress_empty_title:
+progress_empty_text:
+progress_latest:
+progress_entry_delete:
+progress_share_subtitle:
+progress_share_a11y:
+progress_share_text:
+  args:
+    workouts: int
+    activeDays: int

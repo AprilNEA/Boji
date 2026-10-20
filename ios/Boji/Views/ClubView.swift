@@ -2,55 +2,72 @@ import SwiftUI
 
 struct ClubView: View {
     @Environment(BojiStore.self) private var store
-    @State private var settings = false
+    @Namespace private var transition
     private var trainingDays: Int {
         guard let week = Calendar.current.dateInterval(of: .weekOfYear, for: Date()) else { return 0 }
         return store.weekRecords.filter { week.contains($0.date) && !$0.completedWorkoutIDs.isEmpty }.count
     }
+
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    PageHeading(eyebrow: "A CLUB FOR EVERY BODY", title: "不必完美，也能入会。", subtitle: "在这里，照顾自己就是入场券。")
-                    MembershipEntryView()
-                    Surface {
-                        VStack(alignment: .leading, spacing: 18) {
-                            HStack { Text("这周，为自己留一点时间").font(.headline); Spacer(); Image(systemName: "flag.checkered").foregroundStyle(BojiTheme.accent) }
-                            Text("选择两天动一动，其余时间好好恢复。\n这是你的本地挑战，不排名，也不催促。")
-                                .font(.subheadline).foregroundStyle(.secondary)
-                            if store.joinedChallenge {
-                                HStack(spacing: 12) {
-                                    ForEach(0..<2) { i in Image(systemName: trainingDays > i ? "checkmark.circle.fill" : "circle.dashed").font(.title).foregroundStyle(BojiTheme.green) }
-                                    Spacer()
-                                    Text("\(min(trainingDays, 2)) / 2 天").font(.headline).monospacedDigit()
-                                }
-                                Text(trainingDays >= 2 ? "本周的小目标完成了，给自己一点掌声。" : "训练记录会自动点亮这个小目标。")
-                                    .font(.footnote).foregroundStyle(.secondary)
-                                Button("退出本地挑战") { store.joinedChallenge = false }.font(.subheadline).frame(minHeight: 44)
-                            } else {
-                                PrimaryButton(title: "加入本地挑战", symbol: "plus") { store.joinedChallenge = true }
+            PageScroll {
+                MembershipEntryView()
+                challengeCard
+                VStack(alignment: .leading, spacing: 12) {
+                    SectionHeading(title: String(localized: .Shared.clubGuideTitle), detail: String(localized: .Shared.clubGuideDetail))
+                    GroupedRows {
+                        ForEach(ClubArticle.all) { article in
+                            NavigationLink {
+                                ArticleView(article: article)
+                                    .navigationTransition(.zoom(sourceID: article.id, in: transition))
+                            } label: {
+                                NavigationRowLabel(title: article.title, detail: article.subtitle, symbol: article.symbol, color: article.color)
                             }
+                            .buttonStyle(RowButtonStyle())
+                            .matchedTransitionSource(id: article.id, in: transition)
                         }
                     }
-                    SectionHeading(title: "薄肌入门手册", detail: "少一点焦虑，多一点行动")
-                    ForEach(ClubArticle.all) { article in
-                        NavigationLink { ArticleView(article: article) } label: {
-                            Surface {
-                                HStack(spacing: 14) {
-                                    SymbolTile(symbol: article.symbol, color: article.color)
-                                    VStack(alignment: .leading, spacing: 5) { Text(article.title).font(.headline); Text(article.subtitle).font(.caption).foregroundStyle(.secondary) }
-                                    Spacer(minLength: 0)
-                                    Image(systemName: "chevron.right").font(.caption).foregroundStyle(.secondary)
-                                }
-                            }
-                        }.buttonStyle(.plain)
+                }
+                Text("会员身份由俱乐部服务保存，日常记录仍留在本机。多人小队和线上社区尚未开放。")
+                    .font(.footnote).foregroundStyle(.secondary)
+            }
+            .navigationTitle(.Shared.tabClub)
+            .navigationSubtitle(.Shared.clubTitle)
+            .profileToolbar()
+        }
+    }
+
+    private var challengeCard: some View {
+        Surface {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(alignment: .top, spacing: 12) {
+                    SymbolTile(symbol: "flag.checkered", color: BojiTheme.accent)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(.Shared.clubChallengeTitle).font(.headline)
+                        Text("选择两天动一动，其余时间好好恢复。这是你的本地挑战，不排名，也不催促。")
+                            .font(.subheadline).foregroundStyle(.secondary)
                     }
-                    Text("会员身份由俱乐部服务保存，日常记录仍留在本机。多人小队和线上社区尚未开放。")
-                        .font(.footnote).foregroundStyle(.secondary).padding(.bottom, 20)
-                }.padding(20).frame(maxWidth: 680).frame(maxWidth: .infinity)
-            }.pageBackground().navigationTitle("俱乐部").navigationBarTitleDisplayMode(.inline)
-                .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("设置", systemImage: "gearshape") { settings = true } } }
-                .sheet(isPresented: $settings) { SettingsView() }
+                }
+                if store.joinedChallenge {
+                    HStack(spacing: 10) {
+                        ForEach(0..<2, id: \.self) { i in
+                            Image(systemName: trainingDays > i ? "checkmark.circle.fill" : "circle.dashed")
+                                .font(.title).foregroundStyle(BojiTheme.green)
+                                .contentTransition(.symbolEffect(.replace))
+                        }
+                        Spacer()
+                        Text(.Shared.clubChallengeProgress(days: min(trainingDays, 2))).font(.headline).monospacedDigit()
+                    }
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("本周已训练 \(min(trainingDays, 2)) 天，目标 2 天")
+                    Text(trainingDays >= 2 ? LocalizedStringResource.Shared.clubChallengeDone : .Shared.clubChallengePending)
+                        .font(.footnote).foregroundStyle(.secondary)
+                    Button(.Shared.clubChallengeLeave, role: .destructive) { withAnimation(.snappy) { store.joinedChallenge = false } }
+                        .font(.subheadline).buttonStyle(.borderless).frame(minHeight: 44)
+                } else {
+                    CardButton(title: String(localized: .Shared.clubChallengeJoin), symbol: "plus") { withAnimation(.snappy) { store.joinedChallenge = true } }
+                }
+            }
         }
     }
 }
@@ -76,19 +93,25 @@ struct ArticleView: View {
     let article: ClubArticle
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 26) {
-                SymbolTile(symbol: article.symbol, color: article.color)
-                Text(article.title).font(.largeTitle.bold())
-                Text(article.subtitle).font(.subheadline).foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: 12) {
+                    SymbolTile(symbol: article.symbol, color: article.color)
+                    Text(article.title).font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
+                    Text(article.subtitle).font(.subheadline).foregroundStyle(.secondary)
+                }
                 ForEach(article.sections.indices, id: \.self) { index in
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text(article.sections[index].0).font(.title3.bold())
-                        Text(article.sections[index].1).font(.body).foregroundStyle(.secondary).lineSpacing(6)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(article.sections[index].0).font(.title3.bold()).accessibilityAddTraits(.isHeader)
+                        Text(article.sections[index].1).font(.body).lineSpacing(6)
                     }
                 }
                 Divider()
-                Text("Boji 编辑内容 · 一般生活提示，不替代医疗建议。").font(.footnote).foregroundStyle(.secondary)
-            }.padding(24).frame(maxWidth: 680).frame(maxWidth: .infinity)
-        }.pageBackground().navigationTitle("入门手册").navigationBarTitleDisplayMode(.inline)
+                Text(.Shared.articleFooter).font(.footnote).foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 20).padding(.vertical, 16)
+            .frame(maxWidth: 680, alignment: .leading).frame(maxWidth: .infinity)
+        }
+        .pageBackground()
+        .navigationTitle(.Shared.articleScreenTitle).navigationBarTitleDisplayMode(.inline)
     }
 }

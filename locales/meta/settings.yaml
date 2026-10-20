@@ -1,0 +1,17 @@
+settings_profile:
+settings_nickname:
+settings_appearance:
+settings_display_mode:
+appearance_system:
+appearance_light:
+appearance_dark:
+settings_privacy:
+settings_export:
+settings_export_failed:
+settings_delete:
+settings_delete_confirm:
+settings_about:
+settings_version:
+  args:
+    version: string
+    build: int

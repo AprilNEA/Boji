@@ -43,8 +43,11 @@ struct AccountSecurityView: View {
                         .font(.footnote).foregroundStyle(.secondary)
                 }
             }
+            .pageBackground()
             .navigationTitle("账号与安全").navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { dismiss() } } }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("关闭", systemImage: "xmark", role: .close) { dismiss() } }
+            }
             .task {
                 membership.errorMessage = nil
                 membership.notice = nil
@@ -53,7 +56,7 @@ struct AccountSecurityView: View {
             .sheet(isPresented: $showPassword) { ChangePasswordView() }
             .confirmationDialog("退出其他登录会话？", isPresented: $confirmRevoke, titleVisibility: .visible) {
                 Button("退出其他会话", role: .destructive) { Task { _ = await membership.revokeOtherSessions() } }
-                Button("取消", role: .cancel) {}
+                Button(.Shared.actionCancel, role: .cancel) {}
             } message: { Text("其他登录会话将失效，需要重新登录。当前会话与本地记录保留。") }
         }
     }
@@ -88,8 +91,13 @@ private struct ChangePasswordView: View {
                         .disabled(!canSubmit).accessibilityIdentifier("account-save-password")
                 } footer: { Text("更新后，其他会话会退出。请妥善保存新密码。") }
             }
+            .pageBackground()
             .navigationTitle("修改密码").navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("取消") { dismiss() }.disabled(membership.isBusy) } }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(.Shared.actionCancel, systemImage: "xmark", role: .cancel) { dismiss() }.disabled(membership.isBusy)
+                }
+            }
             .interactiveDismissDisabled(membership.isBusy)
             .onAppear { membership.errorMessage = nil; membership.notice = nil }
             .onDisappear { currentPassword = ""; newPassword = ""; confirmation = "" }
@@ -102,7 +110,7 @@ private struct ChangePasswordView: View {
                         }
                     }
                 }
-                Button("取消", role: .cancel) {}
+                Button(.Shared.actionCancel, role: .cancel) {}
             } message: { Text("其他设备需要重新登录。如当前会话无法恢复，你也需要使用新密码登录。") }
         }
     }

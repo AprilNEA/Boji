@@ -5,6 +5,45 @@ import XCTest
 
 @MainActor
 final class MembershipTests: XCTestCase {
+    func testInvalidCardNamesNeverReachService() async {
+        let transport = FakeTransport(responses: [])
+        let store = makeStore(transport: transport)
+        for name in ["", String(repeating: "名", count: 25), "昵称\n换行", "昵称\u{0000}"] {
+            await store.enroll(displayName: name, acceptedTerms: true)
+            XCTAssertNotNil(store.errorMessage)
+            XCTAssertEqual(transport.requestCount, 0)
+            XCTAssertNil(store.card)
+        }
+    }
+
+    func testCachedCardRemainsUnverifiedDuringRestoreAndRetry() async {
+        let account = verifiedAccount()
+        let card = member(account: account)
+        let cache = InMemoryMembershipCacheStore(initialRecord: MembershipCacheRecord(
+            serviceOrigin: "https://example.test", account: account, card: card, lastSyncedAt: Date()
+        ))
+        let transport = PendingMembershipTransport()
+        let store = MembershipStore.testing(serviceURL: URL(string: "https://example.test"), transport: transport,
+                                            tokenStore: InMemoryMembershipTokenStore(initialToken: "stored-token"), cacheStore: cache)
+        let restore = Task { await store.restore() }
+        await transport.waitUntilEntered()
+        XCTAssertEqual(store.card, card)
+        XCTAssertTrue(store.isBusy)
+        XCTAssertTrue(store.isOffline)
+        await transport.fail()
+        await restore.value
+
+        await transport.reset()
+        let refresh = Task { await store.refresh() }
+        await transport.waitUntilEntered()
+        XCTAssertTrue(store.isBusy)
+        XCTAssertTrue(store.isOffline)
+        await transport.fail()
+        await refresh.value
+        XCTAssertTrue(store.isOffline)
+        XCTAssertFalse(store.isBusy)
+    }
+
     func testEnrollmentRequiresTermsAndDoesNotSendRequest() async throws {
         let transport = FakeTransport(responses: [
             signInResponse(token: "token-1"),
@@ -361,5 +400,30 @@ private final class FakeTransport: MembershipTransport, @unchecked Sendable {
         }
         return try response.get()
     }
+}
+
+private actor PendingMembershipTransport: MembershipTransport {
+    private var continuation: CheckedContinuation<MembershipHTTPResponse, Error>?
+    private var waiting: CheckedContinuation<Void, Never>?
+    private var entered = false
+
+    func send(_ request: URLRequest) async throws -> MembershipHTTPResponse {
+        entered = true
+        waiting?.resume()
+        waiting = nil
+        return try await withCheckedThrowingContinuation { continuation = $0 }
+    }
+
+    func waitUntilEntered() async {
+        if entered { return }
+        await withCheckedContinuation { waiting = $0 }
+    }
+
+    func fail() {
+        continuation?.resume(throwing: URLError(.notConnectedToInternet))
+        continuation = nil
+    }
+
+    func reset() { entered = false }
 }
 #endif

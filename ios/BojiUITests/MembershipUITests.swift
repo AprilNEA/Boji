@@ -2,9 +2,14 @@ import XCTest
 
 @MainActor
 final class MembershipUITests: XCTestCase {
-    private func launchApp() -> XCUIApplication {
+    override func setUpWithError() throws { continueAfterFailure = false }
+
+    private func launchApp(scenario: String = "standard", largeDark: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting", "-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN"]
+        app.launchArguments = ["--uitesting", "--membership-fixture=\(scenario)", "-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance", largeDark ? "dark" : "light"]
+        if largeDark {
+            app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        }
         app.launch()
         let start = app.buttons["开始我的计划"]
         XCTAssertTrue(start.waitForExistence(timeout: 10))
@@ -15,21 +20,57 @@ final class MembershipUITests: XCTestCase {
     }
 
     private func tap(_ element: XCUIElement, in app: XCUIApplication) {
-        XCTAssertTrue(element.waitForExistence(timeout: 5))
-        for _ in 0..<6 where !element.isHittable { app.swipeUp() }
+        XCTAssertTrue(element.waitForExistence(timeout: 8))
+        for _ in 0..<10 where !element.isHittable { app.swipeUp() }
         XCTAssertTrue(element.isHittable)
         element.tap()
     }
 
-    private func signIn(_ app: XCUIApplication) {
+    private func type(_ text: String, into field: XCUIElement, in app: XCUIApplication) {
+        for _ in 0..<10 {
+            if field.waitForExistence(timeout: 1) { break }
+            app.swipeUp()
+        }
+        XCTAssertTrue(field.exists)
+        // XCTest scrolls a realized input above the keyboard when tapping it.
+        field.tap()
+        field.typeText(text)
+    }
+
+    private func signIn(_ app: XCUIApplication, existingCard: Bool = false) {
         tap(app.buttons["membership-auth-start"], in: app)
         let email = app.textFields["auth-email"]
-        XCTAssertTrue(email.waitForExistence(timeout: 5))
-        email.tap(); email.typeText("member@example.test")
+        type("member@example.test", into: email, in: app)
         let password = app.secureTextFields["auth-password"]
-        password.tap(); password.typeText("test-password-123")
+        type("test-password-123", into: password, in: app)
         tap(app.buttons["auth-submit"], in: app)
-        XCTAssertTrue(app.buttons["membership-enroll-start"].waitForExistence(timeout: 5))
+        let target = existingCard ? app.staticTexts["membership-status"] : app.buttons["membership-enroll-start"]
+        XCTAssertTrue(target.waitForExistence(timeout: 8))
+    }
+
+    private func confirmPledges(_ app: XCUIApplication) {
+        for id in ["belonging", "pace", "privacy"] {
+            tap(app.switches["membership-pledge-\(id)"], in: app)
+        }
+    }
+
+    private func enroll(_ app: XCUIApplication) {
+        tap(app.buttons["membership-enroll-start"], in: app)
+        tap(app.buttons["membership-enroll-next"], in: app)
+        confirmPledges(app)
+        tap(app.buttons["membership-enroll-next"], in: app)
+        tap(app.switches["membership-terms"], in: app)
+        tap(app.buttons["membership-enroll-confirm"], in: app)
+        XCTAssertTrue(app.buttons["membership-enrollment-done"].waitForExistence(timeout: 8))
+        capture("membership-welcome", app)
+        tap(app.buttons["membership-enrollment-done"], in: app)
+    }
+
+    private func capture(_ name: String, _ app: XCUIApplication) {
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 
     func testGuestDoesNotReceiveAnAutomaticCard() {
@@ -37,40 +78,99 @@ final class MembershipUITests: XCTestCase {
         XCTAssertTrue(app.buttons["membership-auth-start"].exists)
         XCTAssertFalse(app.staticTexts["PREVIEW-MEMBER"].exists)
         XCTAssertTrue(app.staticTexts["免费社区会员"].exists)
+        capture("membership-guest", app)
     }
 
-    func testEnrollmentNeedsConsentAndProducesShareImage() {
+    func testEnrollmentRequiresEveryPledgeAndExplicitConsent() {
         let app = launchApp()
         signIn(app)
         tap(app.buttons["membership-enroll-start"], in: app)
+        capture("membership-name-preview", app)
+        tap(app.buttons["membership-enroll-next"], in: app)
+        XCTAssertFalse(app.buttons["membership-enroll-next"].isEnabled)
+        confirmPledges(app)
+        XCTAssertTrue(app.buttons["membership-enroll-next"].isEnabled)
+        tap(app.switches["membership-pledge-privacy"], in: app)
+        XCTAssertFalse(app.buttons["membership-enroll-next"].isEnabled)
+        tap(app.switches["membership-pledge-privacy"], in: app)
+        capture("membership-pledges", app)
+        tap(app.buttons["membership-enroll-next"], in: app)
         let confirm = app.buttons["membership-enroll-confirm"]
-        XCTAssertTrue(confirm.waitForExistence(timeout: 5))
         XCTAssertFalse(confirm.isEnabled)
         tap(app.switches["membership-terms"], in: app)
         XCTAssertTrue(confirm.isEnabled)
         tap(confirm, in: app)
-        XCTAssertTrue(app.buttons["membership-share"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["membership-enrollment-done"].waitForExistence(timeout: 8))
+        tap(app.buttons["membership-enrollment-done"], in: app)
         tap(app.buttons["membership-share"], in: app)
         XCTAssertTrue(app.navigationBars["分享预览"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["分享图片"].exists)
-        let attachment = XCTAttachment(screenshot: app.screenshot())
-        attachment.name = "membership-share-preview"
-        attachment.lifetime = .keepAlways
-        add(attachment)
+        let privacy = app.switches["membership-share-number"]
+        XCTAssertEqual(privacy.value as? String, "0")
+        XCTAssertTrue(app.images["membership-share-image"].label.contains("卡号已隐藏"))
+        capture("membership-share-private", app)
+        tap(privacy, in: app)
+        XCTAssertEqual(privacy.value as? String, "1")
+        XCTAssertTrue(app.images["membership-share-image"].label.contains("包含完整卡号"))
+        XCTAssertTrue(app.buttons["membership-share-export"].exists)
+        capture("membership-share-number", app)
+    }
+
+    func testCancelEnrollmentDoesNotCreateCardAndClearsConsent() {
+        let app = launchApp()
+        signIn(app)
+        tap(app.buttons["membership-enroll-start"], in: app)
+        tap(app.buttons["membership-enroll-next"], in: app)
+        tap(app.switches["membership-pledge-belonging"], in: app)
+        tap(app.buttons["取消"], in: app)
+        XCTAssertFalse(app.buttons["membership-share"].exists)
+        tap(app.buttons["membership-enroll-start"], in: app)
+        tap(app.buttons["membership-enroll-next"], in: app)
+        XCTAssertEqual(app.switches["membership-pledge-belonging"].value as? String, "0")
+        XCTAssertFalse(app.buttons["membership-enroll-next"].isEnabled)
     }
 
     func testSignOutRemovesCardButKeepsGuestAccess() {
         let app = launchApp()
         signIn(app)
-        tap(app.buttons["membership-enroll-start"], in: app)
-        tap(app.switches["membership-terms"], in: app)
-        tap(app.buttons["membership-enroll-confirm"], in: app)
-        XCTAssertTrue(app.buttons["membership-share"].waitForExistence(timeout: 5))
+        enroll(app)
         tap(app.buttons["退出账号"], in: app)
         let sheetButton = app.sheets.buttons["退出账号"]
         XCTAssertTrue(sheetButton.waitForExistence(timeout: 5))
         sheetButton.tap()
         XCTAssertTrue(app.buttons["membership-auth-start"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["membership-share"].exists)
+    }
+
+    func testSuspendedCardDoesNotOfferShareOrWallet() {
+        let app = launchApp(scenario: "suspended")
+        signIn(app, existingCard: true)
+        XCTAssertEqual(app.staticTexts["membership-status"].label, "会员卡已暂停")
+        XCTAssertFalse(app.buttons["membership-share"].exists)
+        XCTAssertFalse(app.buttons["wallet-add"].exists)
+        capture("membership-suspended", app)
+    }
+
+    func testOfflineCardIsClearlyMarked() {
+        let app = launchApp(scenario: "offline")
+        signIn(app, existingCard: true)
+        tap(app.buttons["membership-refresh"], in: app)
+        let offline = NSPredicate(format: "label == %@", "离线副本")
+        expectation(for: offline, evaluatedWith: app.staticTexts["membership-status"])
+        waitForExpectations(timeout: 8)
+        tap(app.buttons["membership-share"], in: app)
+        XCTAssertTrue(app.images["membership-share-image"].waitForExistence(timeout: 8))
+        capture("membership-offline-share", app)
+    }
+
+    func testLongCardNumberInLargeDarkLayout() {
+        let app = launchApp(scenario: "long-number", largeDark: true)
+        signIn(app, existingCard: true)
+        let number = app.staticTexts["membership-card-number"]
+        XCTAssertTrue(number.exists)
+        XCTAssertTrue(number.label.contains("00-PREVIEW-ALPHA-BETA-GAMMA-DELTA-EPSILON-1234567890-EXAMPLE"))
+        capture("membership-dark-large-number", app)
+        tap(app.buttons["membership-share"], in: app)
+        XCTAssertTrue(app.navigationBars["分享预览"].waitForExistence(timeout: 8))
+        capture("membership-dark-large-share", app)
     }
 }

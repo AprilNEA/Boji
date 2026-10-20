@@ -1,0 +1,22 @@
+app_title:
+tab_today:
+tab_training:
+tab_progress:
+tab_club:
+action_settings:
+action_cancel:
+action_save:
+action_done:
+action_ok:
+storage_error_a11y:
+  args:
+    message: string
+storage_read_failed:
+  args:
+    detail: string
+storage_write_failed:
+  args:
+    detail: string
+storage_delete_failed:
+  args:
+    detail: string

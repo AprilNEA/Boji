@@ -1,0 +1,51 @@
+{
+  "features" : [
+    "refractivity"
+  ],
+  "fill" : {
+    "automatic-gradient" : "extended-srgb:0.92941,0.93333,0.91373,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "fill-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "extended-srgb:0.81176,0.86275,0.81961,1.00000"
+              }
+            },
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "extended-srgb:0.88000,0.88000,0.88000,1.00000"
+              }
+            }
+          ],
+          "image-name" : "mark.svg",
+          "name" : "薄肌俱乐部 · 站稳"
+        }
+      ],
+      "refractivity" : {
+        "depth" : 0.35,
+        "enabled" : true,
+        "strength" : 0.35
+      },
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.18
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.38
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}

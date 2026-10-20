@@ -1,0 +1,21 @@
+today_title:
+today_rhythm_none:
+today_rhythm_some:
+today_rhythm_all:
+today_rhythm_total:
+today_rhythm:
+habit_sleep:
+habit_recorded:
+habit_not_recorded:
+today_habits_title:
+today_habits_detail:
+habit_water_title:
+habit_sleep_title:
+habit_card_a11y:
+  args:
+    title: string
+    value: string
+    unit: string
+today_recommend_title:
+today_recommend_detail:
+today_rest_note:
