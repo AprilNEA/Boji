@@ -21,6 +21,9 @@ export const LAUNCH_FILM = {
   duration: "0:21",
 } as const;
 
+export const CONTACT_EMAIL = "thinmuscle-club@proton.me";
+export const DISCORD_URL = "https://discord.gg/Fwb5dchAw";
+
 export const NAV_LINKS = [
   { href: "/theory/", label: "理论" },
   { href: "/pro/", label: "薄肌" },

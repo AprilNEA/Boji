@@ -1,0 +1,6 @@
+{
+  "title": "开发者文档",
+  "description": "Boji 的客户端、后端和接口",
+  "root": true,
+  "pages": ["index"]
+}

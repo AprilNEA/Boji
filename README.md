@@ -60,7 +60,7 @@ Boji 把薄肌理论变成每天可以打卡的记录：
 | `android/` | Android App：Kotlin、Jetpack Compose 和 Gradle 工程 | 训练和记录功能已移植；账号、会员和设备联动尚未移植 | [Android 说明](android/README.md) |
 | `bizserver/` | 后端：Rust、Axum、ConnectRPC、SeaORM 和 PostgreSQL | 开发中，尚未部署 | [后端说明](bizserver/README.md) |
 | `animations/` | 动作 Lottie 动画：TypeScript 生成器和生成的 JSON | 16 个课程动作已生成 | [动作动画说明](animations/README.md) |
-| `websites/` | 薄肌俱乐部宣传网站：Next.js 静态导出、Tailwind CSS 和 Motion | 已从 `bojiclub` 导入 | [网站说明](websites/README.md) |
+| `websites/` | 薄肌俱乐部宣传网站和 `/docs` 文档站：Next.js 静态导出、Tailwind CSS、Motion 和 Fumadocs | 网站已从 `bojiclub` 导入；文档站只有占位页面 | [网站说明](websites/README.md) |
 | `docs/` | 两端共享的文档 | 不适用 | [会员卡开发说明](docs/membership.md) |
 | `assets/public/` | 部署到 `https://assets.leanmuscle.club` 的通用静态文件，目前是浅色和深色应用图标，本 README 也使用这两张图 | 已上线 | 不适用 |
 

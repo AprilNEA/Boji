@@ -1,0 +1,6 @@
+{
+  "title": "用户指南",
+  "description": "怎样使用 Boji App",
+  "root": true,
+  "pages": ["index"]
+}

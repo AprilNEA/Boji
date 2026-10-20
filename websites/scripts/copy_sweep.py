@@ -6,7 +6,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 FILES = [p for d in ("src", "public") for p in (ROOT / d).rglob("*") if p.suffix in {".ts", ".tsx", ".json"}]
-SKIP = {"src/app/calculator/page.tsx", "src/app/join/page.tsx"}  # 旧链接跳转页，本身就要写 /store/
+SKIP = {"src/app/(site)/calculator/page.tsx", "src/app/(site)/join/page.tsx"}  # 旧链接跳转页，本身就要写 /store/
 
 # 只看引号内或 JSX 文本里的 Pro，排除组件名
 PRO = re.compile(r"Pro(?![a-zA-Z])")

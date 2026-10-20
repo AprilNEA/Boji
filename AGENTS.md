@@ -10,7 +10,7 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 | `android/` | Android app: Kotlin, Jetpack Compose and a Gradle project | `android/AGENTS.md` |
 | `animations/` | Exercise Lottie animations: a TypeScript generator and the generated JSON | `animations/AGENTS.md` |
 | `bizserver/` | Rust backend migration: Axum, better-auth-rs, ConnectRPC, SeaORM and PostgreSQL | `bizserver/AGENTS.md` |
-| `websites/` | 薄肌俱乐部 promotional website: Next.js static export, Tailwind CSS and Motion | `websites/AGENTS.md` |
+| `websites/` | 薄肌俱乐部 promotional website and the Fumadocs docs site under `/docs`: Next.js static export, Tailwind CSS and Motion | `websites/AGENTS.md` |
 | `locales/` | Copy that more than one client shows: ICU MessageFormat in YAML, one directory per language | `locales/README.md` |
 | `crates/` | Rust tools for the repository, in their own Cargo workspace. `crates/locales/` generates the client string resources from `locales/` | `crates/AGENTS.md` |
 | `docs/` | Documents shared by both clients. `docs/membership.md` is the membership contract. `docs/ACCESSIBILITY.md` is the accessibility statement | this file |

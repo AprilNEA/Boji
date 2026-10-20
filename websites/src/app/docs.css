@@ -1,0 +1,57 @@
+/*
+ * Styles for the docs root layout, src/app/(docs)/layout.tsx. The site pages use globals.css instead.
+ * Keep the two files separate: Fumadocs sets base styles on body and on every border, and defines the dark variant.
+ */
+@import "tailwindcss";
+/* Fumadocs default colors. The Boji values below override them. This file also defines the callout colors. */
+@import "fumadocs-ui/css/lib/default-colors.css";
+@import "fumadocs-ui/css/preset.css";
+
+/*
+ * Boji colors for the Fumadocs tokens. The values come from the tokens in globals.css and from
+ * ios/Boji/Views/DesignSystem.swift (light and dark variants). Change them together.
+ */
+@theme {
+  --color-fd-background: #f7f5f0; /* paper, DesignSystem background (light) */
+  --color-fd-foreground: #1e1d1b; /* ink */
+  --color-fd-muted: #efebe4; /* mist */
+  --color-fd-muted-foreground: #706e69; /* ash-dark */
+  --color-fd-popover: #ffffff;
+  --color-fd-popover-foreground: #1e1d1b;
+  --color-fd-card: #ffffff; /* App cards are white on the paper background */
+  --color-fd-card-foreground: #1e1d1b;
+  --color-fd-border: #dfdcd5; /* fog-strong */
+  --color-fd-primary: #9e2e16; /* accent-deep, DesignSystem accent (light, high contrast). Sidebar and TOC text is small */
+  --color-fd-primary-foreground: #f7f5f0;
+  --color-fd-secondary: #ebe8e1; /* fog */
+  --color-fd-secondary-foreground: #1e1d1b;
+  --color-fd-accent: rgba(213, 210, 203, 0.5); /* silver at 50 % */
+  --color-fd-accent-foreground: #1e1d1b;
+  --color-fd-ring: #898681; /* ash */
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter Variable", "PingFang SC", "Hiragino Sans GB",
+    "Noto Sans SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+}
+
+.dark {
+  --color-fd-background: #131312; /* DesignSystem background (dark) */
+  --color-fd-foreground: #f7f5f0; /* paper */
+  --color-fd-muted: #1e1d1b; /* ink */
+  --color-fd-muted-foreground: #a4a19b; /* haze */
+  --color-fd-popover: #1e1d1b;
+  --color-fd-popover-foreground: #f7f5f0;
+  --color-fd-card: #1e1d1b;
+  --color-fd-card-foreground: #f7f5f0;
+  --color-fd-border: #3b3a37; /* smoke */
+  --color-fd-primary: #ff7a4d; /* accent-bright, DesignSystem accent (dark) */
+  --color-fd-primary-foreground: #131312;
+  --color-fd-secondary: #1e1d1b;
+  --color-fd-secondary-foreground: #f7f5f0;
+  --color-fd-accent: rgba(164, 161, 155, 0.16); /* haze at 16 % */
+  --color-fd-accent-foreground: #f7f5f0;
+  --color-fd-ring: #706e69; /* ash-dark */
+}
+
+::selection {
+  background: rgba(140, 213, 188, 0.45); /* mint, same as globals.css */
+}

@@ -1,6 +1,6 @@
 # 薄肌俱乐部网站
 
-本目录是薄肌俱乐部的粉丝向宣传网站，原项目为 `bojiclub`（版本 `827ca94`）。网站使用 Next.js 16 静态导出，样式用 Tailwind CSS 4，动画用 Motion 和 Lenis。
+本目录是薄肌俱乐部的粉丝向宣传网站，原项目为 `bojiclub`（版本 `827ca94`）。网站使用 Next.js 16 静态导出，样式用 Tailwind CSS 4，动画用 Motion 和 Lenis。`/docs` 下是 Boji 的文档站，使用 Fumadocs，和官网一起构建和部署。
 
 ## 本地运行
 
@@ -16,12 +16,13 @@ pnpm build      # 静态构建，产物在 out/
 
 ## 独立托管
 
-网站不依赖 Manus 或其他后端服务。`pnpm build` 生成的 `out/` 是纯静态文件，可以放到任意静态服务器或 CDN 上。站点专用的图片、视频和字体都在 `out/` 内，页面运行时只请求本站资源。页脚的 Discord 邀请链接是唯一的外部链接，只在用户点击时打开。
+网站不依赖 Manus 或其他后端服务。`pnpm build` 生成的 `out/` 是纯静态文件，可以放到任意静态服务器或 CDN 上。站点专用的图片、视频和字体都在 `out/` 内，页面运行时只请求本站资源。Discord 邀请链接是唯一的外部链接，在官网页脚和文档侧边栏中出现，只在用户点击时打开。
 
-部署时注意两点：
+部署时注意三点：
 
 - 构建开启了 `trailingSlash`，每个路由导出为 `<路由>/index.html`。服务器需要把 `/theory/` 映射到 `theory/index.html`，大多数静态服务器默认如此。
 - 未知路径要返回 `404.html`。例如 Nginx 配置 `error_page 404 /404.html;`。
+- 文档的搜索索引是 `out/api/search`，这是一个没有扩展名的 JSON 文件。服务器要能按原路径返回它。
 
 本地预览构建产物：
 
@@ -43,6 +44,30 @@ Python 自带的服务器不会返回 `404.html`，所以用它预览时看不�
 | `/founders/` | 创始人 |
 | `/join/` | 入会：宣誓并领取会员卡 |
 | `/calculator/` | 旧链接，在客户端跳转到 `/store/` |
+| `/docs/` | 文档首页 |
+| `/docs/guide/` | 用户指南（占位） |
+| `/docs/developers/` | 开发者文档（占位） |
+
+## 文档站
+
+文档页面是 `content/docs/` 中的 MDX 文件，分为两个栏目：
+
+| 目录 | 栏目 | 读者 |
+| --- | --- | --- |
+| `content/docs/guide/` | 用户指南 | Boji App 的用户 |
+| `content/docs/developers/` | 开发者文档 | 开发者 |
+
+新增页面的步骤：
+
+1. 在栏目目录中新建 `.mdx` 文件，例如 `content/docs/guide/install.mdx`。页面地址是 `/docs/guide/install/`。
+2. 在文件开头的 front matter 中写 `title` 和 `description`。
+3. 把文件名（不含扩展名）加到同一目录 `meta.json` 的 `pages` 中，用来确定侧边栏的顺序。
+
+MDX 中可以直接使用 Fumadocs 的 `Callout`、`Card` 和 `Cards` 组件。站内链接可以写相对文件路径，例如 `[安装](./install.mdx)`。
+
+文档站的界面文字是中文，搜索在浏览器中完成，不需要服务器。构建时会生成搜索索引 `out/api/search`。文档的配色在 `src/app/docs.css` 中定义，和官网一样取自 Boji App，并支持深色模式。
+
+不要把内部文档放到文档站，例如 `docs/membership.md` 和 `ios/docs/`。
 
 ## 视觉风格
 
