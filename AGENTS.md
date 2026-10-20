@@ -48,7 +48,7 @@ devenv does not provide Xcode, `ictool`, XcodeGen, the Android SDK, Chromium for
 - The iOS and Android build and test commands are in `ios/AGENTS.md` and `android/AGENTS.md`.
 - The website commands are in `websites/AGENTS.md`.
 - `cargo locales check` in `crates/` validates `locales/` and verifies that the generated string resources are current. `cargo locales generate` writes them. See `crates/AGENTS.md`.
-- `buf generate` in `ios/BojiAPI/` regenerates the Swift client code from `bizserver/proto/boji/v1/`. See "API contract" below.
+- `buf generate` in `ios/BojiAPI/` and in `android/rpc/` regenerates the Swift and Kotlin client code from `bizserver/proto/boji/v1/`. See "API contract" below.
 
 ### README icon
 
@@ -68,7 +68,11 @@ ICTOOL="/Applications/Xcode.app/Contents/Applications/Icon Composer.app/Contents
 
 `bizserver/proto/` is the only source of the API contract. Its buf workspace is `bizserver/buf.yaml`, and `bizserver/buf.lock` pins googleapis. Clients use code that `buf generate` produces from that workspace. Do not copy proto files into a client, and do not hand-write request or response types.
 
-The iOS code is the local Swift package `ios/BojiAPI/`. Its `buf.gen.yaml` pins the plugin versions, and its `Package.swift` pins the runtime versions. Keep each plugin version equal to its runtime: `apple/swift` to `swift-protobuf`, and `connectrpc/swift` to `connect-swift`. Keep the googleapis commit in `buf.gen.yaml` equal to `bizserver/buf.lock`. After a change to `bizserver/proto/boji/v1/`, run `buf generate` in `ios/BojiAPI/` and commit the regenerated files in the same change.
+The iOS code is the local Swift package `ios/BojiAPI/`. Its `buf.gen.yaml` pins the plugin versions, and its `Package.swift` pins the runtime versions. Keep each plugin version equal to its runtime: `apple/swift` to `swift-protobuf`, and `connectrpc/swift` to `connect-swift`.
+
+The Android code is the library module `android/rpc/`. Its `buf.gen.yaml` pins the plugin versions, and `android/gradle/libs.versions.toml` pins the runtime versions. Keep `protocolbuffers/java` and `protocolbuffers/kotlin` at the protoc release of `protobuf`, and `connectrpc/kotlin` equal to `connectKotlin`.
+
+Keep the googleapis commit in each `buf.gen.yaml` equal to `bizserver/buf.lock`. After a change to `bizserver/proto/boji/v1/`, run `buf generate` in `ios/BojiAPI/` and in `android/rpc/`. Commit the regenerated files of both clients in the same change.
 
 ### Asset host
 

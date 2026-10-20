@@ -42,7 +42,7 @@
 
   packages = [
     # The buf workspace in bizserver/: bizserver/build.rs runs `buf build`,
-    # `buf lint` runs in bizserver/, and `buf generate` runs in ios/BojiAPI/.
+    # `buf lint` runs in bizserver/, and `buf generate` runs in ios/BojiAPI/ and android/rpc/.
     # Keep the bufbuild/buf image tag in bizserver/Dockerfile equal to this version.
     pkgs.buf
     # bizserver/: better-auth links openssl-sys through josekit and webauthn-rs-core.

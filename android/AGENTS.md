@@ -20,6 +20,9 @@ Run these commands in `android/`.
 
 # Run the Compose UI tests. A device or an emulator must be connected.
 ./gradlew connectedDebugAndroidTest
+
+# Regenerate the API client code after a change to ../bizserver/proto/boji/v1/.
+(cd rpc && buf generate)
 ```
 
 ## Rules
@@ -29,6 +32,13 @@ Run these commands in `android/`.
 - Declare every dependency and plugin version in `gradle/libs.versions.toml`.
 - AGP provides built-in Kotlin. Do not apply the `org.jetbrains.kotlin.android` plugin.
 - To upgrade Kotlin, change only the `kotlin` version in `gradle/libs.versions.toml`. The Kotlin Gradle plugin in the root `build.gradle.kts` and the Compose compiler plugin use that version.
+
+### API client
+
+- `rpc/` is an Android library with the Java lite messages, the Kotlin builders and the Connect clients of the `boji.v1` API. No app module depends on it yet.
+- `buf generate` in `rpc/` writes `rpc/generated/` from `../bizserver/proto/boji/v1/`. Do not edit `rpc/generated/`. Commit it in the same change as the proto change. `buf` comes from the devenv shell, and the first run needs network access to the BSR.
+- The Gradle build compiles `rpc/generated/` as source. It does not run `protoc` or `buf`. Do not add the protobuf Gradle plugin.
+- Keep the plugin versions in `rpc/buf.gen.yaml` equal to the runtimes in `gradle/libs.versions.toml`: `protocolbuffers/java` and `protocolbuffers/kotlin` at the protoc release of `protobuf` (v36.2 for 4.36.2), and `connectrpc/kotlin` equal to `connectKotlin`. Follow "API contract" in the root `AGENTS.md`.
 
 ### Design
 
