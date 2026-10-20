@@ -27,14 +27,10 @@
 
 ## 薄肌理论
 
-薄肌理论全文很短，只有四条：
-
 - **薄肌**：穿衣显瘦，脱衣有肉。体脂长期保持在 13% 以下，不吃欺骗餐。
 - **黄毛**：不被外界评价左右，坚持自己判断过的方向。
 - **大水**：成年男性每天喝 1700 mL 水，成年女性每天 1500 mL 起。
 - **大睡**：每晚睡 7 小时～9 小时，不靠周末补觉。
-
-薄肌是一种审美偏好，不是医学健康标准。长期维持过低体脂，可能影响激素、骨骼和免疫健康。
 
 ## 功能
 
@@ -50,82 +46,31 @@ Boji 把薄肌理论变成每天可以打卡的记录：
 
 课程是通用参考，不提供医疗诊断。
 
-## 仓库结构
-
-本仓库包含两个原生客户端、一个后端、两端共用的动作动画和薄肌俱乐部宣传网站。每个目录各自独立构建。
-
-| 目录 | 内容 | 状态 | 说明文档 |
-| --- | --- | --- | --- |
-| `ios/` | iOS App、watchOS App 和小组件：SwiftUI 和 XcodeGen 工程 | 首版功能已实现 | [iOS 说明](ios/README.md) |
-| `android/` | Android App：Kotlin、Jetpack Compose 和 Gradle 工程 | 训练和记录功能已移植；账号、会员和设备联动尚未移植 | [Android 说明](android/README.md) |
-| `bizserver/` | 后端：Rust、Axum、ConnectRPC、SeaORM 和 PostgreSQL | 开发中，尚未部署 | [后端说明](bizserver/README.md) |
-| `animations/` | 动作 Lottie 动画：TypeScript 生成器和生成的 JSON | 16 个课程动作已生成 | [动作动画说明](animations/README.md) |
-| `websites/` | 薄肌俱乐部宣传网站和 `/docs` 文档站：Next.js 静态导出、Tailwind CSS、Motion 和 Fumadocs | 网站已从 `bojiclub` 导入；文档站只有占位页面 | [网站说明](websites/README.md) |
-| `docs/` | 两端共享的文档 | 不适用 | [会员卡开发说明](docs/membership.md) |
-| `assets/public/` | 部署到 `https://assets.leanmuscle.club` 的通用静态文件，目前是浅色和深色应用图标，本 README 也使用这两张图 | 已上线 | 不适用 |
-
-每个目录还有一份 `AGENTS.md`，记录面向编码代理的目录规则。
-
-## 本地开发
-
-按组件选择入口。完整的环境要求、构建和测试命令见各目录的说明文档。
-
-- **iOS**：用 Xcode 打开 `ios/Boji.xcodeproj`，选择 `Boji` scheme 和 iOS 模拟器后运行。修改 `ios/project.yml` 后，在 `ios/` 目录运行 `xcodegen generate` 重新生成工程。
-- **Android**：用 Android Studio 打开 `android/` 目录，不要打开仓库根目录。命令行构建需要 `local.properties` 中的 SDK 路径。在 devenv 环境中进入 `android/` 目录，运行 `./gradlew assembleDebug testDebugUnitTest lintDebug`。
-- **后端**：PostgreSQL 由 ArcBox 中的 `compose.yml` 提供。准备 `.env` 后，在 devenv 环境中进入 `bizserver/` 目录，依次运行 `docker compose up -d postgres`、`cargo run --locked -- migrate` 和 `cargo run --locked -- serve`。
-- **动作动画**：在 devenv 环境中进入 `animations/` 目录，运行 `pnpm build` 重新生成 `lottie/`。
-- **网站**：在 devenv 环境中进入 `websites/` 目录，运行 `pnpm dev` 启动开发服务器，运行 `pnpm build` 生成静态站点。
-
-根目录的 `devenv.nix` 提供命令行工具链，使用前必须先安装 [devenv](https://devenv.sh "前往 devenv 官网")。
-
-| 目录 | devenv 提供的工具 |
-| --- | --- |
-| `animations/`、`websites/` | Node.js 26 和 pnpm 12 |
-| `bizserver/` | Rust（版本由 `bizserver/rust-toolchain.toml` 决定）、`buf`、OpenSSL 和 `pkg-config` |
-| `android/` | JDK 17，并设置 `JAVA_HOME` |
-| `websites/scripts/` | Python 3，带 Pillow 和 rembg |
-
-Xcode、XcodeGen、Android SDK、ArcBox 和 PostgreSQL 不由 devenv 提供，需要另行安装。在仓库根目录运行 `devenv test`，会检查 `animations/` 和 `websites/` 的类型，并确认 `animations/lottie/` 与源码一致。
-
-iOS 的 Debug 构建默认连接 `http://localhost:3000`。这个地址就是用 `cargo run` 启动的本机后端地址。网站开发服务器的默认端口也是 3000。
-
-## 共享约定
-
-两个客户端和动画目录共用以下约定：
-
-- **动作 ID**：iOS 的 [`Exercise.id`](ios/Boji/Models/BojiStore.swift)、Android 的 [`Workout.kt`](android/app/src/main/kotlin/club/leanmuscle/boji/core/model/Workout.kt) 和动画的 [`COURSES`](animations/src/courses.ts) 使用同一套 ID。重命名或新增课程动作时，必须同时修改这三处，并重新生成 `animations/lottie/`。
-- **会员号**：会员号是服务端返回的不透明字符串。客户端原样保存和显示，不做数值转换，也不推断格式。
-- **会员接口**：用户流程、接口契约和隐私规则见[会员卡开发说明](docs/membership.md)。
-
-## 数据与隐私
-
-基础记录保存在应用自身的 `state.json` 中，两端使用相同的 JSON 结构。两端目前都没有导入功能，跨平台迁移尚未实现。
-
-领取会员卡需要登录。登录会向后端提交邮箱和认证信息，训练和身体记录不会因领卡上传。各端的存储位置、备份行为和导出范围见 [iOS 说明](ios/README.md#数据与隐私)和 [Android 说明](android/README.md#数据与隐私)。
-
-## 命名与发布
-
-「薄肌」为开发暂用名称，商标核查尚未完成。iOS 的发布签名和 App Store 审核也尚未完成。
-
 ## 参与开发
 
-- 外部贡献者必须先签署[贡献者许可协议](.github/CLA.md)（CLA），Pull Request 才能合并。签署方式是在 Pull Request 中原样评论 `I have read the CLA Document and I hereby sign the CLA`。CLA 允许 AprilNEA LLC 以其他条款（包括商业条款）分发贡献，贡献者仍保留著作权。
-- 默认分支为 `master`。
-- 提交信息使用英文，遵循 Conventional Commits。只改动一个顶层目录时，用目录名作为 scope，例如 `feat(ios): add membership cards`。
-- 修改某个目录的结构、命令或规则时，在同一次改动中更新该目录的 `AGENTS.md`。
-- 本项目的提交附带以下协作署名，署名与提交正文之间空一行：
+本仓库包含 iOS 与 Android 两个原生客户端、Rust 后端、两端共用的动作动画与文案，以及薄肌俱乐部宣传网站，各目录独立构建。目录结构、工具链与本地运行方式详见[开发指南](docs/DEVELOPMENT.md)。
 
-    ```text
-    Co-authored-by: Manus <dev-agent@manus.ai>
-    ```
+外部贡献者必须先签署[贡献者许可协议](.github/CLA.md)（CLA），其 Pull Request 方可合并。签署方式为在 Pull Request 中原样评论以下文字：
+
+```text
+I have read the CLA Document and I hereby sign the CLA
+```
+
+依据该协议，贡献者保留其贡献的著作权，并授权 AprilNEA LLC 以包括商业条款在内的任意条款分发其贡献。
 
 ## 许可证
 
-本仓库的代码和文档由 AprilNEA LLC 以 [PolyForm Noncommercial License 1.0.0](LICENSE.md) 授权。你可以出于非商业目的使用、修改和分发它们。商业使用必须另行取得 AprilNEA LLC 的授权，联系方式是 GitHub 上的 [@AprilNEA](https://github.com/AprilNEA)。这个许可证禁止商业使用，所以 Boji 是源码公开（source-available）项目，不是开源项目。
+本仓库的代码与文档由 AprilNEA LLC 依据 [PolyForm Noncommercial License 1.0.0](LICENSE.md) 授权，仅限非商业使用。
 
-以下内容不在这个许可证的授权范围内：
+下列内容不适用该许可证，其权利归各自的权利人所有：
 
-- **名称和图标**：「Boji」「薄肌」「薄肌俱乐部」名称，`ios/Boji/Resources/AppIcon.icon`，`assets/public/boji-icon.png` 和 `assets/public/boji-icon-dark.png`，以及 `bizserver/assets/wallet/` 中的通行证图标。AprilNEA LLC 保留所有权利。
-- **网站媒体**：`websites/public/media/` 中的图片和短片。AprilNEA LLC 保留所有权利。
-- **人像照片**：`websites/public/images/portraits/` 中的照片。著作权属于原拍摄者，本仓库不授予任何权利。
-- **第三方依赖和字体**：例如 Inter 字体、各端使用的软件包，以及 Apple 发布的 `bizserver/assets/wallet/apple-root-ca.crt`。它们适用各自的许可证或条款。
+| 内容 | 目录 |
+| --- | --- |
+| App 图标 | `ios/Boji/Resources/AppIcon.icon`、`assets/public/boji-icon.png`、`assets/public/boji-icon-dark.png`、`bizserver/assets/wallet/icon*.png` |
+| 网站媒体 | `websites/public/media/` |
+| 人像照片 | `websites/public/images/portraits/` |
+| 动作库 | `animations/src/exercises/library/` |
+| Apple Root CA 证书 | `bizserver/assets/wallet/apple-root-ca.crt` |
+| 第三方依赖与字体 | — |
+
+如需使用动作库，须另行取得 AprilNEA LLC 的商业授权。
