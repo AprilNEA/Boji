@@ -23,7 +23,7 @@ Do not reimplement Connect framing or password and session algorithms. Use `app:
 | `tests/` | Contract and database integration tests |
 | `docs/` | Chinese interface and migration documents |
 | `buf.yaml`, `buf.lock` | buf workspace of `proto/` and the pinned googleapis dependency from the BSR |
-| `Dockerfile`, `compose.yml` | Development image and isolated local services |
+| `Dockerfile`, `compose.yml` | Service image for local services and GHCR releases, and isolated local services |
 
 ## Migration safety
 
@@ -96,9 +96,23 @@ To change the Rust version, update `rust-toolchain.toml`, `rust-version` in `Car
 
 The image build copies `buf` from the `bufbuild/buf` image. Keep that image tag in `Dockerfile` equal to the buf version that devenv provides.
 
+`Dockerfile` uses BuildKit cache mounts for the crate registry, the buf module cache and `target/`. The cache stays on the builder and is not part of the image. The target cache has one ID for each platform. Keep the step that copies the binary out of the cache.
+
 Run the local database only with `docker compose up -d postgres` on ArcBox. Confirm that `docker context show` prints `arcbox` first, or set `DOCKER_CONTEXT=arcbox` for the command. If `~/.arcbox/bin/abctl daemon status` reports `stopped`, start ArcBox with `~/.arcbox/bin/abctl daemon start`. Do not set up local PostgreSQL with devenv, Nix binaries, Homebrew, or `initdb`. The Compose database listens on `127.0.0.1:55439`.
 
 Database tests are ignored by default. Create a `boji_test` database in the Compose PostgreSQL with `docker compose exec -T postgres createdb -U boji boji_test`. Point `TEST_DATABASE_URL` at it before running `cargo test --locked -- --include-ignored --test-threads=1`. Never run those tests against `boji_rust`, production, or the shared client fixture.
+
+## Release image
+
+`../.github/workflows/image.yml` publishes `ghcr.io/aprilnea/boji-bizserver` when a `bizserver/v<version>` tag is pushed. It calls the reusable workflow `build.yml` of `docker/github-builder`. Do not replace it with hand-written build, digest or manifest steps.
+
+`docker/github-builder` builds `linux/amd64` and `linux/arm64` on native runners from the Git context `bizserver/`. It joins the digests into one image index, adds an SBOM and provenance attestations, and pushes the tags `<version>` and `<major>.<minor>`. A version without a pre-release part also gets `latest`.
+
+The workflow takes the version from the tag. It does not compare the tag with `Cargo.toml`, check the branch, or run the tests. To release, run the commands above, change `version` in `Cargo.toml`, run `cargo update --workspace` to update `Cargo.lock`, merge both files to `master`, and push the tag on the merged commit.
+
+The image sets `APP_ENV=production`, so a published image without production settings stops at startup. Keep `APP_ENV=development` in `compose.yml`.
+
+Pin `docker/github-builder` to a commit SHA and write its version in a comment. While the repository is private, keep `sign: "false"` and do not grant `id-token: write`. Signing uses the public Sigstore instance, which records the repository name and the commit in a public log. When the repository becomes public, remove `sign` and grant `id-token: write` to get signed provenance.
 
 ## Code and collaboration
 

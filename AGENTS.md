@@ -16,7 +16,7 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 | `docs/` | Documents shared by both clients. `docs/DEVELOPMENT.md` is the developer guide: the repository layout, the toolchain and how to run each component. The root `README.md` links to it and does not repeat it. `docs/membership.md` is the membership contract. `docs/ACCESSIBILITY.md` is the accessibility statement. `docs/sites/` is the public MDX content source that `websites/` builds: the docs under `/docs/`, the support page `/support/` and the privacy policy `/privacy/`. The rest of `docs/` is internal and is not published | this file, `docs/sites/AGENTS.md` |
 | `assets/public/` | Generic static files for `https://assets.leanmuscle.club`, such as the app icon images that the root `README.md` shows | this file |
 | `LICENSE.md` | The PolyForm Noncommercial License 1.0.0 with the `Required Notice:` line | this file |
-| `.github/` | GitHub files: `.github/CLA.md` is the contributor license agreement, and `.github/workflows/cla.yml` runs the CLA check on pull requests | this file |
+| `.github/` | GitHub files: `.github/CLA.md` is the contributor license agreement, `.github/workflows/cla.yml` runs the CLA check on pull requests, and `.github/workflows/image.yml` publishes the `bizserver/` image to GHCR for each `bizserver/v*` tag | this file, `bizserver/AGENTS.md` |
 | `devenv.nix`, `devenv.yaml`, `.envrc` | Local toolchains: Node.js and pnpm for `animations/` and `websites/`, Rust, `buf` and OpenSSL for `bizserver/`, JDK 17 for `android/`, and Python with Pillow and rembg for `websites/scripts/` | this file |
 | `.work/` | Local build outputs and scratch files. Git ignores this directory | none |
 
@@ -137,6 +137,8 @@ Use a subject such as `feat: add membership cards`.
 If a change touches one top-level directory, use that directory as the scope, for example `feat(ios): ...`.
 
 Do not create a commit unless the user requests one.
+
+Release tags use the form `<directory>/v<version>`, because each directory releases on its own. A `bizserver/v<version>` tag publishes the backend image. See "Release image" in `bizserver/AGENTS.md`. Do not push a release tag unless the user requests it.
 
 When creating Git commits for this project, append exactly one trailer:
 

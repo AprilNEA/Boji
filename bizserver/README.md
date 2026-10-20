@@ -84,6 +84,34 @@ Docker 服务地址为 `http://localhost:3002`。Compose 等待数据库就绪�
 
 镜像构建阶段从 `bufbuild/buf` 镜像复制 `buf`，镜像标签与 devenv 提供的 buf 版本一致。
 
+## 发布镜像
+
+推送 `bizserver/v<版本号>` 标签后，GitHub Actions 构建镜像，并推送到 `ghcr.io/aprilnea/boji-bizserver`。流程定义在 [`image.yml`](../.github/workflows/image.yml) 中，构建和发布由 Docker 官方的可复用工作流 [`docker/github-builder`](https://github.com/docker/github-builder) 完成。镜像发布不代表服务已部署。
+
+发布流程从标签中读取版本号。它不比较标签和 `Cargo.toml`，不检查分支，也不运行测试。发布前在本目录运行「验证命令」一节的命令，然后按顺序操作：
+
+1. 修改 `Cargo.toml` 中的 `version`，再运行 `cargo update --workspace` 更新 `Cargo.lock`。
+2. 把这两个文件的改动合入 `master`。
+3. 在合入后的 `master` 提交上创建标签并推送，例如 `git tag bizserver/v0.1.0`，再运行 `git push origin bizserver/v0.1.0`。标签中的版本号必须等于 `Cargo.toml` 中的 `version`。
+
+每个版本生成以下镜像标签：
+
+| 版本号 | 镜像标签 |
+| --- | --- |
+| `0.2.1` | `0.2.1`、`0.2`、`latest` |
+| `0.3.0-rc.1` | `0.3.0-rc.1` |
+
+镜像包含 `linux/amd64` 和 `linux/arm64` 两个平台，两个平台分别在 GitHub 托管的原生 runner 上构建。每个平台附带 SBOM 和 SLSA 来源证明 (provenance)。仓库为私有仓库时，流程不签名来源证明，因为公共 Sigstore 服务会把仓库名和提交记录到公开日志中。
+
+镜像默认设置 `APP_ENV=production`，缺少生产配置时服务拒绝启动。`compose.yml` 为本地服务设置 `APP_ENV=development`。部署时先运行 `migrate`，再运行 `serve`：
+
+```bash
+docker run --rm --env-file .env.production ghcr.io/aprilnea/boji-bizserver:0.1.0 migrate
+docker run -d --env-file .env.production -p 3000:3000 ghcr.io/aprilnea/boji-bizserver:0.1.0
+```
+
+首次发布的 GHCR 镜像默认是私有的。拉取镜像前，用带 `read:packages` 权限的令牌登录 `ghcr.io`。
+
 ## 接口入口
 
 认证保留 `/api/auth/*`。业务改用版本化 RPC 路径。协议按 Google AIP 设计，协议文件是接口的唯一来源：

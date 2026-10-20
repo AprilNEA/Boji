@@ -1,0 +1,54 @@
+# Publishes the bizserver image to GHCR when a bizserver/v<version> tag is pushed.
+#
+# docker/github-builder builds each platform on a native runner, joins the
+# digests into one image index and pushes the tags. Signing is off while the
+# repository is private: it uses the public Sigstore instance, which records
+# the repository name and the commit in a public log.
+name: image
+
+on:
+  push:
+    tags:
+      - "bizserver/v*"
+
+permissions: {}
+
+# A tag publishes once. Do not cancel a running release.
+concurrency:
+  group: image-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  bizserver:
+    uses: docker/github-builder/.github/workflows/build.yml@4345a1cea1e4cfb65c8a5e2b1b80f9e630068827 # v1.18.0
+    permissions:
+      contents: read # to fetch the Git context
+      packages: write # to push to GHCR
+    with:
+      context: bizserver
+      output: image
+      push: true
+      platforms: linux/amd64,linux/arm64
+      sbom: true
+      sign: "false"
+      meta-images: ghcr.io/aprilnea/boji-bizserver
+      # The tag bizserver/v1.2.3 gives 1.2.3, 1.2 and latest. A pre-release gives only its version.
+      meta-tags: |
+        type=semver,pattern={{version}},match=^bizserver/v(.+)$
+        type=semver,pattern={{major}}.{{minor}},match=^bizserver/v(.+)$
+      set-meta-labels: true
+      set-meta-annotations: true
+      # GitHub does not detect the license of LICENSE.md, so set its SPDX ID here.
+      meta-labels: |
+        org.opencontainers.image.title=boji-bizserver
+        org.opencontainers.image.description=Boji business server
+        org.opencontainers.image.licenses=PolyForm-Noncommercial-1.0.0
+      meta-annotations: |
+        org.opencontainers.image.title=boji-bizserver
+        org.opencontainers.image.description=Boji business server
+        org.opencontainers.image.licenses=PolyForm-Noncommercial-1.0.0
+    secrets:
+      registry-auths: |
+        - registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
