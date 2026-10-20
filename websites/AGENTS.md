@@ -30,9 +30,11 @@ Run these commands in this directory:
 - `pnpm dev` starts the dev server on port 3000.
 - `pnpm typecheck` runs `tsc --noEmit`. `devenv test` at the repository root also runs it.
 - `pnpm build` writes the static site to `out/`.
+- `python3 -m http.server 4173 --bind 127.0.0.1 --directory out` serves the build for a local check. It does not serve `404.html`.
 
 ## Rules
 
+- The site is self-hosted as static files. Do not add runtime requests to Manus or other third-party services, and do not add Manus proxy hosts to `next.config.ts`. The site must not read `app.config.ts` or `public/manus-routes.json`.
 - Keep the files that only this site uses in `public/` and reference them by local path. Use the asset host `https://assets.leanmuscle.club` only for the generic files in the repository-level `assets/public/`, such as the app icon.
 - Do not add `/manus-storage/` paths, `files.manuscdn.com` URLs or other hosted storage URLs.
 - Keep the site static. Do not add API routes, server actions or other features that `output: "export"` does not support.
