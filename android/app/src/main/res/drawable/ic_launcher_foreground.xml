@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Geometric lowercase "b" based on the iOS icon.
+    The glyph stays inside the 66 dp adaptive-icon safe zone (radius 33 around 54,54).
+    It uses no font outline, because the SF fonts are licensed for Apple platforms.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:pathData="M41,31.5L41,76.5"
+        android:strokeWidth="10"
+        android:strokeColor="@color/ic_launcher_foreground"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M54,50.5a13,13 0,1 1,0 26a13,13 0,1 1,0 -26z"
+        android:strokeWidth="10"
+        android:strokeColor="@color/ic_launcher_foreground" />
+</vector>

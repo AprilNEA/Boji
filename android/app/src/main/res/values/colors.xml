@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Same values as the iOS app icon in ios/scripts/generate-app-icon.swift. -->
+    <color name="ic_launcher_background">#C7401F</color>
+    <color name="ic_launcher_foreground">#FCF7E8</color>
+
+    <!-- Matches BackgroundLight in ui/theme/Color.kt. -->
+    <color name="window_background">#FFF8F6</color>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Working name, same as iOS. Trademark clearance is pending. -->
+    <string name="app_name">薄肌</string>
+
+    <string name="tab_today">今天</string>
+    <string name="tab_training">训练</string>
+    <string name="tab_progress">足迹</string>
+    <string name="tab_club">俱乐部</string>
+
+    <string name="placeholder_title">此页面尚未实现</string>
+    <string name="placeholder_body">Android 版正在初始化。功能将参照 iOS 版逐步移植。</string>
+</resources>
