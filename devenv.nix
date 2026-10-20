@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
-  # Toolchain for animations/ and web/: Node.js LTS, pnpm, tsx and TypeScript (via pnpm).
+  # Toolchain for animations/ and websites/: Node.js LTS, pnpm, tsx and TypeScript (via pnpm).
   languages.javascript = {
     enable = true;
     package = pkgs.nodejs_24;
@@ -11,10 +11,10 @@
     };
   };
 
-  # languages.javascript installs one directory only, so install web/ here.
-  tasks."web:install" = {
+  # languages.javascript installs one directory only, so install websites/ here.
+  tasks."websites:install" = {
     exec = ''
-      cd "$DEVENV_ROOT/web"
+      cd "$DEVENV_ROOT/websites"
       pnpm install --frozen-lockfile
     '';
     before = [ "devenv:enterShell" "devenv:enterTest" ];
@@ -25,7 +25,7 @@
     cd "$DEVENV_ROOT/animations"
     pnpm typecheck
     pnpm check
-    cd "$DEVENV_ROOT/web"
+    cd "$DEVENV_ROOT/websites"
     pnpm typecheck
   '';
 }

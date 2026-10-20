@@ -1,10 +1,10 @@
-# web/
+# websites/
 
 This directory holds the 薄肌俱乐部 promotional website. It is a Next.js 16 App Router project with a static export (`output: "export"`), Tailwind CSS 4, Motion and Lenis. Read `README.md` for the page list and `docs/` for the original plan, TODO list and research notes.
 
 ## Toolchain
 
-- Use the devenv shell from the repository root (`devenv shell`, or direnv with `.envrc`). It provides Node.js 24 and pnpm 12. The `web:install` task runs `pnpm install --frozen-lockfile` in this directory.
+- Use the devenv shell from the repository root (`devenv shell`, or direnv with `.envrc`). It provides Node.js 24 and pnpm 12. The `websites:install` task runs `pnpm install --frozen-lockfile` in this directory.
 - Use pnpm only. Do not add `package-lock.json`, `yarn.lock` or `bun.lock`.
 - Keep `tsconfig.json` strict. Import project files with the `@/` alias.
 
