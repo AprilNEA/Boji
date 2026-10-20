@@ -282,7 +282,7 @@ export function torsoShapes(pathProp: Prop, pal: Palette): LottieObject[] {
   return [group('shirt', [{ ty: 'sh', nm: 'Path', ks: pathProp }, fill(pal.shirt)])];
 }
 
-/** Display names for muscle keys, used in lottie/index.json. */
+/** Display names for muscle keys, used in index.json. */
 export const MUSCLE_NAMES: Record<MuscleKey, string> = {
   quads: '股四头肌', glutes: '臀大肌', hamstrings: '腘绳肌', hipFlexor: '髂腰肌', calves: '小腿三头肌',
   delts: '三角肌', triceps: '肱三头肌', biceps: '肱二头肌', pecs: '胸大肌', abs: '腹直肌',

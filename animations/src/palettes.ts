@@ -9,7 +9,10 @@ const light = {
   mat: '#E7DED1', matEdge: '#D5C9B9', metal: '#9DA3AB', metalDark: '#7F858E', cable: '#5B6068', plate: '#3E424A',
 };
 
-/** Hex colors, plus `shadowOpacity` in percent. */
+/**
+ * Hex colors, plus `shadowOpacity` in percent. The shadow is translucent, so it adapts to the card color.
+ * Both palettes give the floor shadow about 1.20:1 contrast: light on #FFFFFF, dark on #222220.
+ */
 export type Palette = typeof light;
 export type PaletteName = 'light' | 'dark';
 
@@ -19,7 +22,7 @@ export const PALETTES: Record<PaletteName, Palette> = {
     skin: '#E9B994', skinFar: '#C69071', skinShade: '#C88E6C', hair: '#5B473C', eye: '#2E2622',
     shirt: '#3F9176', shirtFar: '#2F6E59', shorts: '#5B6171', shortsFar: '#474C5A', band: '#6A7182',
     shoe: '#EEE9E0', shoeFar: '#C8C1B5', sole: '#9D9589', accent: '#FF7A4D',
-    shadow: '#000000', shadowOpacity: 32,
+    shadow: '#000000', shadowOpacity: 55,
     prop: '#3E3E42', propDark: '#2F2F33', propLight: '#4B4B50', pad: '#5E6370', padFar: '#4C505B',
     mat: '#2E2D30', matEdge: '#3B3A3E', metal: '#7E848D', metalDark: '#666B73', cable: '#A4AAB2', plate: '#3A3D44',
   },

@@ -1,8 +1,8 @@
-// Gym machine parts shared by the machine exercises.
-import { add, ang, mul, timeline, type Timeline, type Vec2 } from '../math.ts';
+// Gym machine parts and free weights shared by the exercise scripts.
+import { add, ang, dir, mul, timeline, type Timeline, type Vec2 } from '../math.ts';
 import type { PropShape, RigidPart } from '../exercise.ts';
 import type { Palette } from '../palettes.ts';
-import type { Joints } from '../rig.ts';
+import type { Joints, Side } from '../rig.ts';
 import { G } from './common.ts';
 
 /** Concentric 1.0 s, short squeeze, 1.6 s controlled return, short rest. */
@@ -69,3 +69,56 @@ export const backrestAt = (J: Joints, s: number, gapBack = 9, size: Vec2 = [18, 
   const c = add(add(J.B(s), mul(A, -(16 + gapBack))), mul(t, shiftUp));
   return { c, rot: ang(t) - 90, size };
 };
+
+// ---------- Dumbbells ----------
+
+/** Middle of the closed hand: 9 px past the wrist along the hand. */
+export const gripAt = (J: Joints, side: Side = 'n'): Vec2 => add(J[`wrist_${side}`], mul(dir(J[`hand_${side}`].a), 9));
+
+/** Plate diameter and handle length in px. Thigh 94 px is about 45 cm, so 28 px is about 13 cm. */
+const DB = { plate: 28, plateW: 9, handle: 22, bar: 5 };
+
+/** Dumbbell seen end-on: the handle points into the screen (pronated or supinated grip). */
+const endShapes = (pal: Palette): PropShape[] => [
+  { kind: 'oval', nm: 'plate', color: pal.plate, c: [0, 0], s: [DB.plate, DB.plate] },
+  { kind: 'oval', nm: 'plate-face', color: pal.metalDark, c: [0, 0], s: [DB.plate - 9, DB.plate - 9] },
+  { kind: 'oval', nm: 'hub', color: pal.metal, c: [0, 0], s: [8, 8] },
+];
+
+/** Dumbbell seen from the side: the handle runs along local x (neutral grip). */
+const profileShapes = (pal: Palette): PropShape[] => {
+  const px = DB.handle / 2 + DB.plateW / 2;
+  return [
+    { kind: 'box', nm: 'handle', color: pal.metal, c: [0, 0], s: [DB.handle + 2, DB.bar], r: DB.bar / 2 },
+    { kind: 'box', nm: 'plate-a', color: pal.plate, c: [-px, 0], s: [DB.plateW, DB.plate], r: 3 },
+    { kind: 'box', nm: 'plate-b', color: pal.plate, c: [px, 0], s: [DB.plateW, DB.plate], r: 3 },
+  ];
+};
+
+/** Half the length of a profile dumbbell, for placing a vertical one under the hands. */
+export const DUMBBELL_HALF = DB.handle / 2 + DB.plateW;
+
+/**
+ * Dumbbell held in one hand.
+ * 'end': pronated or supinated grip. The near dumbbell covers the hand, as the near plate does.
+ * 'profile': neutral grip. The handle lies across the hand, under the near arm.
+ */
+export function dumbbell(side: Side, view: 'end' | 'profile'): RigidPart {
+  const near = side === 'n';
+  return {
+    nm: `${near ? 'Near' : 'Far'} Dumbbell`,
+    z: view === 'end' ? (near ? 'front' : 'overFarArm') : (near ? 'underNearArm' : 'overFarArm'),
+    kind: 'rigid',
+    shapes: view === 'end' ? endShapes : profileShapes,
+    // Profile: the handle is perpendicular to the hand.
+    at: (J: Joints) => ({ p: gripAt(J, side), a: view === 'end' ? 0 : J[`hand_${side}`].a + 90 }),
+  };
+}
+
+/** One dumbbell held upright in both hands at chest height (goblet hold). */
+export const gobletDumbbell = (): RigidPart => ({
+  nm: 'Goblet Dumbbell', z: 'underNearArm', kind: 'rigid',
+  shapes: profileShapes,
+  // The hands cup the top plate; the dumbbell hangs below them.
+  at: (J: Joints) => ({ p: add(gripAt(J, 'n'), [0, DUMBBELL_HALF - DB.plateW / 2 - 2]), a: 90 }),
+});

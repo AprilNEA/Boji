@@ -24,7 +24,12 @@ export interface Props {
 
 interface MovingBase {
   nm: string;
-  z: 'back' | 'front';
+  /**
+   * Draw order. 'back': behind the whole figure. 'front': in front of it.
+   * 'underNearArm': in front of the head, torso and near leg, behind the near arm.
+   * 'overFarArm': in front of the far arm, behind the torso.
+   */
+  z: 'back' | 'front' | 'underNearArm' | 'overFarArm';
 }
 
 /** Equipment that moves as one piece, such as a weight stack or a handle. */
@@ -67,6 +72,11 @@ export interface Exercise {
   /** Horizontal extent of the props, included when centering the animation. */
   propsBox?: [number, number];
   dynamic?: MovingPart[];
+  /**
+   * Loop time in [0, 1) of the poster frame, the still image shown when animations are off.
+   * Default: the middle of the first span with the highest total muscle effort.
+   */
+  poster?: number;
   /** Rig pose at loop time t in [0, 1). */
   pose(t: number): Pose;
 }

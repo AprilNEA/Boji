@@ -5,6 +5,7 @@
     "course": "home-beginner",
     "seconds": 3.5,
     "frames": 210,
+    "posterFrame": 106,
     "fps": 60,
     "muscles": [
       {
@@ -27,6 +28,7 @@
     "course": "home-beginner",
     "seconds": 3.3,
     "frames": 198,
+    "posterFrame": 97,
     "fps": 60,
     "muscles": [
       {
@@ -49,6 +51,7 @@
     "course": "home-beginner",
     "seconds": 4.2,
     "frames": 252,
+    "posterFrame": 72,
     "fps": 60,
     "muscles": [
       {
@@ -71,6 +74,7 @@
     "course": "home-beginner",
     "seconds": 7.4,
     "frames": 444,
+    "posterFrame": 126,
     "fps": 60,
     "muscles": [
       {
@@ -97,6 +101,7 @@
     "course": "home-intermediate",
     "seconds": 6.3,
     "frames": 378,
+    "posterFrame": 94,
     "fps": 60,
     "muscles": [
       {
@@ -119,6 +124,7 @@
     "course": "home-intermediate",
     "seconds": 3.3,
     "frames": 198,
+    "posterFrame": 97,
     "fps": 60,
     "muscles": [
       {
@@ -145,6 +151,7 @@
     "course": "home-intermediate",
     "seconds": 6.6,
     "frames": 396,
+    "posterFrame": 108,
     "fps": 60,
     "muscles": [
       {
@@ -167,6 +174,7 @@
     "course": "home-intermediate",
     "seconds": 6.2,
     "frames": 372,
+    "posterFrame": 264,
     "fps": 60,
     "muscles": [
       {
@@ -189,6 +197,7 @@
     "course": "home-intermediate",
     "seconds": 4,
     "frames": 240,
+    "posterFrame": 120,
     "fps": 60,
     "muscles": [
       {
@@ -215,6 +224,7 @@
     "course": "gym-beginner",
     "seconds": 3.4,
     "frames": 204,
+    "posterFrame": 60,
     "fps": 60,
     "muscles": [
       {
@@ -241,6 +251,7 @@
     "course": "gym-beginner",
     "seconds": 3.5,
     "frames": 210,
+    "posterFrame": 60,
     "fps": 60,
     "muscles": [
       {
@@ -267,6 +278,7 @@
     "course": "gym-beginner",
     "seconds": 3.6,
     "frames": 216,
+    "posterFrame": 66,
     "fps": 60,
     "muscles": [
       {
@@ -289,6 +301,7 @@
     "course": "gym-beginner",
     "seconds": 3.5,
     "frames": 210,
+    "posterFrame": 60,
     "fps": 60,
     "muscles": [
       {
@@ -315,6 +328,7 @@
     "course": "mobility",
     "seconds": 5,
     "frames": 300,
+    "posterFrame": 75,
     "fps": 60,
     "muscles": [
       {
@@ -337,6 +351,7 @@
     "course": "mobility",
     "seconds": 5.8,
     "frames": 348,
+    "posterFrame": 168,
     "fps": 60,
     "muscles": [
       {
@@ -359,6 +374,7 @@
     "course": "mobility",
     "seconds": 5.4,
     "frames": 324,
+    "posterFrame": 156,
     "fps": 60,
     "muscles": [
       {

@@ -24,7 +24,7 @@ When you change the structure, the commands or the rules of a directory, update 
 
 ## Commands
 
-- `devenv test` at the repository root runs the type check of `animations/`, verifies that `animations/lottie/` matches its source, and runs the type check of `web/`.
+- `devenv test` at the repository root runs the type check of `animations/`, verifies that `animations/lottie/` and `animations/lottie-library/` match their source, and runs the type check of `web/`.
 - The iOS and Android build and test commands are in `ios/AGENTS.md` and `android/AGENTS.md`.
 - The website commands are in `web/AGENTS.md`.
 
@@ -54,7 +54,7 @@ This rule applies to both clients and to all documentation in this repository.
 
 Three places use the same exercise IDs: `Exercise.id` in `ios/Boji/Models/BojiStore.swift`, the Android course model (`Workout.kt`), and `COURSES` in `animations/src/courses.ts`. Keep the IDs equal. If you rename or add a course exercise, update all three places and regenerate `animations/lottie/`.
 
-`LIBRARY` in `animations/src/courses.ts` holds animated exercises that no app course uses yet. When an app course adopts one, move it from `LIBRARY` to `COURSES`.
+`LIBRARY` in `animations/src/courses.ts` holds animated exercises that no app course uses yet. Their files are in `animations/lottie-library/`, which no app bundles. When an app course adopts one, move it from `LIBRARY` to `COURSES` and regenerate.
 
 ### Documentation language
 

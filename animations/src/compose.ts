@@ -66,6 +66,18 @@ function propGroup(p: PropShape): LottieObject {
   return group(p.nm, [ellipse([0, 0], p.s), fill(p.color)], tr({ p: p.c, r: p.rot ?? 0 }));
 }
 
+/** Effort 0 to 1 of one highlighted muscle at loop time t. Drives the highlight opacity and the poster frame. */
+export function muscleEffort(ex: Exercise, m: MuscleSpec, t: number): number {
+  let e: number;
+  if (m.e) {
+    e = m.e(t);
+  } else {
+    if (!ex.tl.at) throw new Error(`${ex.id}: muscles without e() need a timeline with at()`);
+    e = ex.tl.at(t).e;
+  }
+  return Math.max(0, Math.min(1, e * (m.scale ?? 1)));
+}
+
 export function compose(ex: Exercise, palName: PaletteName): Composition {
   const pal = PALETTES[palName];
   const N = Math.round(ex.tl.total * FPS);
@@ -90,15 +102,7 @@ export function compose(ex: Exercise, palName: PaletteName): Composition {
   if (bb[2] - bb[0] > W - 8) warnings.push(`width ${(bb[2] - bb[0]).toFixed(0)} exceeds the canvas`);
 
   const shift = (p: Vec2): Vec2 => [p[0] + ox, p[1]];
-  const phaseEffort = (t: number): number => {
-    if (!ex.tl.at) throw new Error(`${ex.id}: muscles without e() need a timeline with at()`);
-    return ex.tl.at(t).e;
-  };
-  const effort = (m: MuscleSpec, t: number): number => {
-    const e = m.e ? m.e(t) : phaseEffort(t);
-    return Math.max(0, Math.min(1, e * (m.scale ?? 1)));
-  };
-  const opacityProp = (m: MuscleSpec) => animProp(frames.map(({ t }) => 14 + 66 * effort(m, t)), 'scalar', TOL.opacity);
+  const opacityProp = (m: MuscleSpec) => animProp(frames.map(({ t }) => 14 + 66 * muscleEffort(ex, m, t)), 'scalar', TOL.opacity);
 
   // Muscle highlights grouped by layer key.
   const highlights: Partial<Record<LayerKey, LottieObject[]>> = {};
@@ -148,6 +152,8 @@ export function compose(ex: Exercise, palName: PaletteName): Composition {
   for (const d of (ex.dynamic ?? []).filter((x) => x.z === 'back')) layers.push(dynamicLayer(d));
 
   for (const key of Z) {
+    // Held equipment between body layers: under the near arm, or over the far arm.
+    if (key === 'upper_n') for (const d of (ex.dynamic ?? []).filter((x) => x.z === 'underNearArm')) layers.push(dynamicLayer(d));
     const hl = highlights[key] ?? [];
     if (key === 'torso') {
       const paths = frames.map(({ J }) => smoothClosed(J.torsoPts.map(shift), [0, J.torsoPts.length - 1]));
@@ -159,6 +165,7 @@ export function compose(ex: Exercise, palName: PaletteName): Composition {
     const far = key.endsWith('_f');
     const shapes = [...partShapes(part, pal, far), ...hl];
     rigid(key, LAYER_NAMES[key], shapes.reverse());
+    if (key === 'hand_f') for (const d of (ex.dynamic ?? []).filter((x) => x.z === 'overFarArm')) layers.push(dynamicLayer(d));
   }
   for (const d of (ex.dynamic ?? []).filter((x) => x.z === 'front')) layers.push(dynamicLayer(d));
   if (props.front?.length) layers.push({ nm: 'Props Front', shapes: props.front.map(propGroup).reverse(), ks: transformKS({ p: { a: 0, k: [ox, 0] } }) });

@@ -1,6 +1,6 @@
 // Shared floor levels and base poses for exercise scripts.
-import { ang, sub, type Vec2 } from '../math.ts';
-import { BODY, GROUND, solve, type LimbPair, type LimbSpec } from '../rig.ts';
+import { add, ang, clamp, mul, sub, type Vec2 } from '../math.ts';
+import { BODY, GROUND, solve, type Joints, type LimbPair, type LimbSpec } from '../rig.ts';
 
 export const G = GROUND;
 export const FLOOR = G - 6; // top of the exercise mat
@@ -9,6 +9,18 @@ export const A = BODY.ankleH; // ankle joint height above the ground
 export const standLegs = (x0: number, farDx = -6): LimbPair => ({
   near: { target: [x0, G - A], foot: 0, side: [1, 0] },
   far: { target: [x0 + farDx, G - A], foot: 0, side: [1, 0] },
+});
+
+/** Foot angle that keeps the toes on the ground for ankle height h: 40 sin a + 13 cos a = h. */
+export const toesDown = (h: number): number => {
+  const r = Math.hypot(40, 13), phi = Math.atan2(13, 40);
+  return (Math.asin(clamp(h / r, -1, 1)) - phi) * (180 / Math.PI);
+};
+
+/** Standing arm with the hand on the hip. dx shifts the hand for the far arm. */
+export const handOnHip = (dx: number): LimbSpec => ({
+  target: (J: Joints) => add(add(J.B(0.2), mul(J.A(0.2), 3)), [dx, 0]),
+  hand: (J: Joints) => ang(J.T(0.2)) + 150,
 });
 
 // ---------- 四点跪姿基础 ----------

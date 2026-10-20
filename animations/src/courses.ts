@@ -17,6 +17,15 @@ import latPulldown from './exercises/lat-pulldown.ts';
 import catCow from './exercises/cat-cow.ts';
 import hipFlexorStretch from './exercises/hip-flexor-stretch.ts';
 import chestStretch from './exercises/chest-stretch.ts';
+import pushUp from './exercises/push-up.ts';
+import mountainClimber from './exercises/mountain-climber.ts';
+import crunch from './exercises/crunch.ts';
+import calfRaise from './exercises/calf-raise.ts';
+import romanianDeadlift from './exercises/romanian-deadlift.ts';
+import dumbbellShoulderPress from './exercises/dumbbell-shoulder-press.ts';
+import bicepsCurl from './exercises/biceps-curl.ts';
+import gobletSquat from './exercises/goblet-squat.ts';
+import childsPose from './exercises/childs-pose.ts';
 
 export type CourseId = 'home-beginner' | 'home-intermediate' | 'gym-beginner' | 'mobility';
 
@@ -27,8 +36,11 @@ export const COURSES: { id: CourseId; exercises: Exercise[] }[] = [
   { id: 'mobility', exercises: [catCow, hipFlexorStretch, chestStretch] },
 ];
 
-/** Exercises with animations that no app course uses yet. index.json lists them with `course: null`. */
-export const LIBRARY: Exercise[] = [];
+/** Exercises with animations that no app course uses yet. They go to lottie-library/, which no app bundles. */
+export const LIBRARY: Exercise[] = [
+  pushUp, mountainClimber, crunch, calfRaise, romanianDeadlift,
+  dumbbellShoulderPress, bicepsCurl, gobletSquat, childsPose,
+];
 
 export interface CourseExercise extends Exercise {
   course: CourseId | null;

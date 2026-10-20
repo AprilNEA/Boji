@@ -1,8 +1,8 @@
 // 后撤步弓步蹲 (reverse-lunge). One rep per leg: the far leg steps back first, then the near leg. pose(t) returns a rig pose for t in [0, 1).
 import type { Exercise } from '../exercise.ts';
-import { add, ang, clamp, lerp, lerpV, mul, smooth, timeline, type Vec2 } from '../math.ts';
-import type { Joints, LimbSpec } from '../rig.ts';
-import { A, G } from './common.ts';
+import { clamp, lerp, lerpV, smooth, timeline, type Vec2 } from '../math.ts';
+import type { LimbSpec } from '../rig.ts';
+import { A, G, handOnHip, toesDown } from './common.ts';
 
 const repTL = timeline([
   { d: 1.3, from: 0, to: 1, e: [0.15, 0.7] },
@@ -19,17 +19,6 @@ const lungePhase = (t: number) => {
 const X0 = 280; // near ankle when standing
 const STRIDE = 178; // front ankle to back ankle at the bottom
 const HEEL_UP = 30; // back ankle height at the bottom
-
-/** Foot angle that keeps the toes on the ground for ankle height h: 40 sin a + 13 cos a = h. */
-const toesDown = (h: number): number => {
-  const r = Math.hypot(40, 13), phi = Math.atan2(13, 40);
-  return (Math.asin(clamp(h / r, -1, 1)) - phi) * (180 / Math.PI);
-};
-
-const handOnHip = (dx: number) => ({
-  target: (J: Joints) => add(add(J.B(0.2), mul(J.A(0.2), 3)), [dx, 0]),
-  hand: (J: Joints) => ang(J.T(0.2)) + 150,
-});
 
 const reverseLunge = {
   id: 'reverse-lunge', name: '后撤步弓步蹲', tl: lungeTL,
