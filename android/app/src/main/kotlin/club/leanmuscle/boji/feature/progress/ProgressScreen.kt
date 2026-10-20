@@ -1,5 +1,8 @@
 package club.leanmuscle.boji.feature.progress
 
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import club.leanmuscle.boji.feature.entry.DailyEntryActions
 import android.content.Intent
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Canvas
@@ -45,6 +48,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -52,7 +56,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import club.leanmuscle.boji.R
-import club.leanmuscle.boji.core.data.BojiStore
 import club.leanmuscle.boji.core.model.BodyEntry
 import club.leanmuscle.boji.core.model.BojiSnapshot
 import club.leanmuscle.boji.feature.entry.DailyEntrySheet
@@ -76,7 +79,12 @@ private enum class BodyMetric { Weight, Waist }
 private const val VISIBLE_ENTRIES = 5
 
 @Composable
-fun ProgressScreen(snapshot: BojiSnapshot, store: BojiStore, modifier: Modifier = Modifier) {
+fun ProgressScreen(
+    snapshot: BojiSnapshot,
+    entryActions: DailyEntryActions,
+    onDeleteBodyEntry: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var showBodySheet by rememberSaveable { mutableStateOf(false) }
     BojiScaffold(title = stringResource(R.string.tab_progress), modifier = modifier.testTag("screen_Progress")) { padding ->
         PageColumn(modifier = Modifier.padding(padding)) {
@@ -110,12 +118,12 @@ fun ProgressScreen(snapshot: BojiSnapshot, store: BojiStore, modifier: Modifier 
                     Text(stringResource(R.string.progress_body_add), modifier = Modifier.padding(start = 4.dp))
                 }
             }
-            BodyCard(entries = snapshot.bodyEntriesByDate, zone = snapshot.zone, onDelete = store::deleteBodyEntry)
+            BodyCard(entries = snapshot.bodyEntriesByDate, zone = snapshot.zone, onDelete = onDeleteBodyEntry)
             ShareCard(totalWorkouts = snapshot.totalWorkouts, activeDays = snapshot.activeDays)
         }
     }
     if (showBodySheet) {
-        DailyEntrySheet(kind = DailySheet.Body, snapshot = snapshot, store = store, onDismiss = { showBodySheet = false })
+        DailyEntrySheet(kind = DailySheet.Body, snapshot = snapshot, actions = entryActions, onDismiss = { showBodySheet = false })
     }
 }
 
@@ -222,7 +230,7 @@ private fun BodyCard(entries: List<BodyEntry>, zone: ZoneId, onDelete: (String) 
             )
         }
         Spacer(Modifier.height(12.dp))
-        val chartLabel = stringResource(R.string.progress_chart_a11y, entries.size)
+        val chartLabel = pluralStringResource(R.plurals.progress_chart_a11y, entries.size, entries.size)
         TrendChart(
             values = entries.map(valueOf),
             color = MaterialTheme.colorScheme.primary,
@@ -302,7 +310,11 @@ private fun EntryRow(date: String, value: String, onDelete: () -> Unit) {
 @Composable
 private fun ShareCard(totalWorkouts: Int, activeDays: Int) {
     val context = LocalContext.current
-    val text = stringResource(R.string.progress_share_text, totalWorkouts, activeDays)
+    val text = stringResource(
+        R.string.progress_share_text,
+        pluralStringResource(R.plurals.progress_share_workouts, totalWorkouts, totalWorkouts),
+        pluralStringResource(R.plurals.progress_share_days, activeDays, activeDays),
+    )
     val chooserTitle = stringResource(R.string.progress_share_title)
     BojiCard(contentPadding = PaddingValues(16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -327,4 +339,11 @@ private fun ShareCard(totalWorkouts: Int, activeDays: Int) {
             }
         }
     }
+}
+
+/** 足迹 with its view model. Shows nothing until state.json has been read. */
+@Composable
+fun ProgressScreen(modifier: Modifier = Modifier, viewModel: ProgressViewModel = hiltViewModel()) {
+    val snapshot by viewModel.snapshot.collectAsStateWithLifecycle()
+    snapshot?.let { ProgressScreen(it, viewModel, viewModel::deleteBodyEntry, modifier) }
 }

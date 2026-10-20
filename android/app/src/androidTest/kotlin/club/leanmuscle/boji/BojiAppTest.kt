@@ -3,55 +3,69 @@ package club.leanmuscle.boji
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
-import androidx.compose.ui.test.junit4.StateRestorationTester
-import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import club.leanmuscle.boji.core.data.Appearance
+import club.leanmuscle.boji.core.data.AppearanceSettings
 import club.leanmuscle.boji.core.data.BojiStore
+import club.leanmuscle.boji.core.model.BojiSnapshot
 import club.leanmuscle.boji.core.model.BojiState
 import club.leanmuscle.boji.core.model.PlanKind
 import club.leanmuscle.boji.core.model.WorkoutLibrary
-import club.leanmuscle.boji.ui.BojiApp
 import club.leanmuscle.boji.ui.navigation.BojiDestination
-import club.leanmuscle.boji.ui.theme.BojiTheme
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import javax.inject.Inject
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/** Waits until the stored state matches, because writes finish on a background thread. */
+private fun androidx.compose.ui.test.junit4.ComposeTestRule.awaitStore(
+    store: BojiStore,
+    predicate: (BojiSnapshot) -> Boolean,
+): BojiSnapshot {
+    waitUntil(timeoutMillis = 5_000) { store.snapshot.value?.let(predicate) == true }
+    return checkNotNull(store.snapshot.value)
+}
+
+/** The app after onboarding, started through [MainActivity] with a new state.json for every test. */
+@HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class BojiAppTest {
-    @get:Rule
-    val composeRule = createComposeRule()
+    @get:Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
 
-    private fun launch(state: BojiState = BojiState(hasOnboarded = true)): BojiStore {
-        val store = BojiStore.inMemory(state)
-        composeRule.setContent { BojiTheme { BojiApp(store, Appearance.System, onAppearanceChange = {}) } }
-        return store
-    }
+    @get:Rule(order = 1)
+    val stateRule = StateFileRule(BojiState(hasOnboarded = true))
 
-    private val BojiStore.current get() = checkNotNull(snapshot.value)
+    @get:Rule(order = 2)
+    val composeRule = createAndroidComposeRule<MainActivity>()
 
-    @Test
-    fun onboardingSavesThePlanAndOpensToday() {
-        val store = launch(BojiState())
-        composeRule.onNodeWithTag("screen_Welcome").assertIsDisplayed()
+    @Inject
+    lateinit var store: BojiStore
 
-        composeRule.onNodeWithTag("plan_Gym").performScrollTo().performClick()
-        composeRule.onNodeWithTag("welcome_start").performClick()
+    @Inject
+    lateinit var appearance: AppearanceSettings
 
-        composeRule.onNodeWithTag(BojiDestination.Today.screenTag).assertIsDisplayed()
-        assertEquals(PlanKind.Gym, store.current.state.selectedPlan)
-        assertEquals(true, store.current.state.hasOnboarded)
+    @Before
+    fun inject() {
+        hiltRule.inject()
+        composeRule.waitUntil(timeoutMillis = 5_000) {
+            composeRule.onAllNodesWithTag(BojiDestination.Today.screenTag).fetchSemanticsNodes().isNotEmpty()
+        }
     }
 
     @Test
     fun startsOnTodayAndSwitchesEveryTab() {
-        launch()
         composeRule.onNodeWithTag(BojiDestination.Today.tabTag).assertIsSelected()
         composeRule.onNodeWithTag(BojiDestination.Today.screenTag).assertIsDisplayed()
 
@@ -63,21 +77,20 @@ class BojiAppTest {
     }
 
     @Test
-    fun keepsSelectedTabAfterStateRestore() {
-        val store = BojiStore.inMemory(BojiState(hasOnboarded = true))
-        val restorationTester = StateRestorationTester(composeRule)
-        restorationTester.setContent { BojiTheme { BojiApp(store, Appearance.System, onAppearanceChange = {}) } }
-
+    fun keepsSelectedTabAndDetailAfterRecreate() {
         composeRule.onNodeWithTag(BojiDestination.Training.tabTag).performClick()
-        restorationTester.emulateSavedInstanceStateRestore()
+        composeRule.onNodeWithTag("mobility_workout").performScrollTo().performClick()
+        composeRule.onNodeWithTag("screen_WorkoutDetail").assertIsDisplayed()
+
+        // A configuration change, such as rotation or a theme switch.
+        composeRule.activityRule.scenario.recreate()
 
         composeRule.onNodeWithTag(BojiDestination.Training.tabTag).assertIsSelected()
-        composeRule.onNodeWithTag(BojiDestination.Training.screenTag).assertIsDisplayed()
+        composeRule.onNodeWithTag("screen_WorkoutDetail").assertIsDisplayed()
     }
 
     @Test
     fun eachTabKeepsItsOwnBackStack() {
-        launch()
         composeRule.onNodeWithTag("recommended_workout").performScrollTo().performClick()
         composeRule.onNodeWithTag("screen_WorkoutDetail").assertIsDisplayed()
 
@@ -93,16 +106,13 @@ class BojiAppTest {
 
     @Test
     fun waterSheetSavesTheDefaultAmount() {
-        val store = launch()
         composeRule.onNodeWithTag("habit_water").performScrollTo().performClick()
         composeRule.onNodeWithTag("sheet_save").performClick()
-        composeRule.waitForIdle()
-        assertEquals(250, store.current.todayRecord.waterML)
+        composeRule.awaitStore(store) { it.todayRecord.waterML == 250 }
     }
 
     @Test
     fun finishingASessionRecordsTheWorkout() {
-        val store = launch()
         val workout = WorkoutLibrary.Mobility
         composeRule.onNodeWithTag(BojiDestination.Training.tabTag).performClick()
         composeRule.onNodeWithTag("mobility_workout").performScrollTo().performClick()
@@ -112,15 +122,15 @@ class BojiAppTest {
         repeat(workout.totalSets * 2 - 1) { composeRule.onNodeWithTag("session_primary").performClick() }
 
         composeRule.onNodeWithTag("session_finished").assertIsDisplayed()
-        assertEquals(1, store.current.totalWorkouts)
+        composeRule.awaitStore(store) { it.totalWorkouts == 1 }
         composeRule.onNodeWithTag("session_done").performClick()
         composeRule.onNodeWithTag("screen_WorkoutDetail").assertIsDisplayed()
-        composeRule.onNodeWithText("再次练习").assertIsDisplayed()
+        // Read the copy from resources: the device language decides between values/ and values-b+zh+Hans/.
+        composeRule.onNodeWithText(composeRule.activity.getString(R.string.detail_again)).assertIsDisplayed()
     }
 
     @Test
     fun endingASessionEarlyRecordsNothing() {
-        val store = launch()
         composeRule.onNodeWithTag("recommended_workout").performScrollTo().performClick()
         composeRule.onNodeWithTag("start_workout").performClick()
         composeRule.onNodeWithTag("session_primary").performClick()
@@ -128,27 +138,85 @@ class BojiAppTest {
         composeRule.onNodeWithTag("session_end_confirm").performClick()
 
         composeRule.onNodeWithTag("screen_WorkoutDetail").assertIsDisplayed()
-        assertEquals(0, store.current.totalWorkouts)
+        composeRule.waitForIdle()
+        assertEquals(0, checkNotNull(store.snapshot.value).totalWorkouts)
+    }
+
+    @Test
+    fun sessionPlaysTheExerciseAnimationInTheLightTheme() = assertSessionShowsAnimation(Appearance.Light)
+
+    @Test
+    fun sessionPlaysTheExerciseAnimationInTheDarkTheme() = assertSessionShowsAnimation(Appearance.Dark)
+
+    private fun assertSessionShowsAnimation(mode: Appearance) {
+        runBlocking { appearance.setAppearance(mode) }
+        composeRule.onNodeWithTag("recommended_workout").performScrollTo().performClick()
+        composeRule.onNodeWithTag("start_workout").performClick()
+
+        // The composition loads from assets on a background thread.
+        composeRule.waitUntil(timeoutMillis = 5_000) {
+            composeRule.onAllNodesWithTag("exercise_animation").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onNodeWithTag("exercise_animation").assertIsDisplayed()
     }
 
     @Test
     fun localChallengeCanBeJoinedAndLeft() {
-        val store = launch()
         composeRule.onNodeWithTag(BojiDestination.Club.tabTag).performClick()
         composeRule.onNodeWithTag("challenge_join").performScrollTo().performClick()
-        assertEquals(true, store.current.state.joinedChallenge)
+        composeRule.awaitStore(store) { it.state.joinedChallenge }
         composeRule.onNodeWithTag("challenge_leave").performScrollTo().performClick()
-        assertEquals(false, store.current.state.joinedChallenge)
+        composeRule.awaitStore(store) { !it.state.joinedChallenge }
     }
 
     @Test
     fun deletingAllDataReturnsToWelcome() {
-        val store = launch(BojiState(hasOnboarded = true, displayName = "测试"))
+        runBlocking { store.setDisplayName("测试") }
         composeRule.onNodeWithTag("open_settings").performClick()
         composeRule.onNodeWithTag("settings_delete").performScrollTo().performClick()
         composeRule.onNodeWithTag("settings_delete_confirm").performClick()
 
+        // Deleting clears the account files and then state.json on background threads.
+        composeRule.waitUntil(timeoutMillis = 5_000) {
+            composeRule.onAllNodesWithTag("screen_Welcome").fetchSemanticsNodes().isNotEmpty()
+        }
         composeRule.onNodeWithTag("screen_Welcome").assertIsDisplayed()
-        assertEquals(BojiState(), store.current.state)
+        // A new state takes its nickname from default_display_name, which depends on the app language.
+        val newState = BojiState(displayName = composeRule.activity.getString(R.string.default_display_name))
+        composeRule.awaitStore(store) { it.state == newState }
+    }
+}
+
+/** First launch: no state.json, so the app shows onboarding. */
+@HiltAndroidTest
+@RunWith(AndroidJUnit4::class)
+class WelcomeFlowTest {
+    @get:Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule(order = 1)
+    val stateRule = StateFileRule(state = null)
+
+    @get:Rule(order = 2)
+    val composeRule = createAndroidComposeRule<MainActivity>()
+
+    @Inject
+    lateinit var store: BojiStore
+
+    @Before
+    fun inject() = hiltRule.inject()
+
+    @Test
+    fun onboardingSavesThePlanAndOpensToday() {
+        composeRule.waitUntil(timeoutMillis = 5_000) {
+            composeRule.onAllNodesWithTag("screen_Welcome").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onNodeWithTag("plan_Gym").performScrollTo().performClick()
+        composeRule.onNodeWithTag("welcome_start").performClick()
+
+        composeRule.onNodeWithTag(BojiDestination.Today.screenTag).assertIsDisplayed()
+        val snapshot = composeRule.awaitStore(store) { it.state.hasOnboarded }
+        assertEquals(PlanKind.Gym, snapshot.state.selectedPlan)
+        assertEquals("state.json now exists", true, TestFiles.stateFile.exists())
     }
 }

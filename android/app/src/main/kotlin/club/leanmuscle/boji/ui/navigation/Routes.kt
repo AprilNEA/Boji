@@ -32,3 +32,19 @@ data class ArticleRoute(val articleId: Int) : NavKey
 
 @Serializable
 data object SettingsRoute : NavKey
+
+// Member center. Pushed in the tab that opened it: the Club tab or Settings.
+@Serializable
+data object MembershipRoute : NavKey
+
+@Serializable
+data object AuthRoute : NavKey
+
+@Serializable
+data object EnrollRoute : NavKey
+
+@Serializable
+data object MembershipTermsRoute : NavKey
+
+@Serializable
+data object AccountSecurityRoute : NavKey

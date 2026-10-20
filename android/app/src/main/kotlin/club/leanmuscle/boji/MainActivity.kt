@@ -6,24 +6,30 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import club.leanmuscle.boji.core.data.Appearance
+import club.leanmuscle.boji.ui.AppViewModel
 import club.leanmuscle.boji.ui.BojiApp
 import club.leanmuscle.boji.ui.theme.BojiTheme
-import kotlinx.coroutines.launch
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val appViewModel: AppViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // Android 15+ enforces edge-to-edge for apps that target API 35 or higher.
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        val container = (application as BojiApplication).container
         setContent {
-            val appearance by container.appearance.appearance.collectAsStateWithLifecycle(initialValue = null)
+            val appearance by appViewModel.appearance.collectAsStateWithLifecycle()
             val systemDark = isSystemInDarkTheme()
             val dark = when (appearance) {
                 Appearance.Light -> false
@@ -40,12 +46,8 @@ class MainActivity : ComponentActivity() {
             }
             BojiTheme(darkTheme = dark) {
                 // Wait for the stored mode, so the first frame does not flash the other mode.
-                val loaded = appearance ?: return@BojiTheme
-                BojiApp(
-                    store = container.store,
-                    appearance = loaded,
-                    onAppearanceChange = { value -> lifecycleScope.launch { container.appearance.setAppearance(value) } },
-                )
+                // Test tags become resource IDs, so UiAutomator journeys in :baselineprofile can find them.
+                if (appearance != null) BojiApp(modifier = Modifier.semantics { testTagsAsResourceId = true }, viewModel = appViewModel)
             }
         }
     }

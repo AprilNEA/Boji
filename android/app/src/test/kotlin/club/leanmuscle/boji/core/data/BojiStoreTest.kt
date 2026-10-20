@@ -1,5 +1,6 @@
 package club.leanmuscle.boji.core.data
 
+import club.leanmuscle.boji.core.model.BojiSnapshot
 import club.leanmuscle.boji.core.model.BojiState
 import club.leanmuscle.boji.core.model.PlanKind
 import club.leanmuscle.boji.core.model.StorageError
@@ -10,8 +11,11 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.WeekFields
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -37,6 +41,7 @@ class BojiStoreTest {
 
     private lateinit var directory: File
     private lateinit var stateFile: File
+    private var opened: TestStore? = null
 
     @Before
     fun createDirectory() {
@@ -49,19 +54,23 @@ class BojiStoreTest {
         directory.deleteRecursively()
     }
 
-    private fun TestScope.persistentStore(): BojiStore {
-        val store = BojiStore.persistent(stateFile, backgroundScope, StandardTestDispatcher(testScheduler)) { now }
+    /** Opens [file] after closing the previous store, as a new process would. */
+    private suspend fun TestScope.open(file: File = stateFile): BojiStore {
+        opened?.close()
+        val next = TestStore(file, backgroundScope) { now }
+        opened = next
         runCurrent()
-        return store
+        return next.store
     }
 
-    private fun memoryStore() = BojiStore.inMemory { now }
-
-    private val BojiStore.current get() = checkNotNull(snapshot.value)
+    private fun TestScope.current(store: BojiStore): BojiSnapshot {
+        runCurrent()
+        return checkNotNull(store.snapshot.value)
+    }
 
     @Test
     fun persistenceReloadsState() = runTest {
-        val first = persistentStore()
+        val first = open()
         first.setSelectedPlan(PlanKind.Gym)
         first.completeOnboarding(PlanKind.Gym)
         first.setDisplayName("小博")
@@ -70,9 +79,8 @@ class BojiStoreTest {
         first.setSleep(7.5)
         first.completeWorkout(WorkoutLibrary.Gym)
         first.addBodyEntry(weight = 68.2, waist = 78.0)
-        runCurrent()
 
-        val reloaded = persistentStore().current
+        val reloaded = current(open())
 
         assertNull(reloaded.storageError)
         assertEquals(PlanKind.Gym, reloaded.state.selectedPlan)
@@ -87,64 +95,75 @@ class BojiStoreTest {
     }
 
     @Test
-    fun completingSameWorkoutIsIdempotent() {
-        val store = memoryStore()
-
-        store.completeWorkout(WorkoutLibrary.Home)
-        store.completeWorkout(WorkoutLibrary.Home)
-
-        assertEquals(listOf(WorkoutLibrary.Home.id), store.current.todayRecord.completedWorkoutIDs)
-        assertEquals(WorkoutLibrary.Home.minutes, store.current.todayRecord.minutes)
-        assertEquals(1, store.current.totalWorkouts)
-        assertEquals(1, store.current.activeDays)
+    fun missingFileStartsWithDefaults() = runTest {
+        val snapshot = current(open())
+        assertNull(snapshot.storageError)
+        assertEquals(BojiState(), snapshot.state)
+        assertFalse("reading alone does not create the file", stateFile.exists())
     }
 
     @Test
-    fun inputValidationRejectsInvalidValues() {
-        val store = memoryStore()
+    fun completingSameWorkoutIsIdempotent() = runTest {
+        val store = open()
+
+        store.completeWorkout(WorkoutLibrary.Home)
+        store.completeWorkout(WorkoutLibrary.Home)
+
+        val snapshot = current(store)
+        assertEquals(listOf(WorkoutLibrary.Home.id), snapshot.todayRecord.completedWorkoutIDs)
+        assertEquals(WorkoutLibrary.Home.minutes, snapshot.todayRecord.minutes)
+        assertEquals(1, snapshot.totalWorkouts)
+        assertEquals(1, snapshot.activeDays)
+    }
+
+    @Test
+    fun inputValidationRejectsInvalidValues() = runTest {
+        val store = open()
 
         store.addWater(500)
         store.addWater(-900)
-        assertEquals(0, store.current.todayRecord.waterML)
+        assertEquals(0, current(store).todayRecord.waterML)
 
         store.addWater(100_001)
         store.addWater(Int.MIN_VALUE)
-        assertEquals(0, store.current.todayRecord.waterML)
+        assertEquals(0, current(store).todayRecord.waterML)
 
         store.setSleep(8.0)
         store.setSleep(16.1)
         store.setSleep(Double.NaN)
-        assertEquals(8.0, store.current.todayRecord.sleepHours!!, 0.0)
+        assertEquals(8.0, current(store).todayRecord.sleepHours!!, 0.0)
 
         store.addBodyEntry(weight = 65.0, waist = 75.0)
         store.addBodyEntry(weight = 29.9, waist = 75.0)
         store.addBodyEntry(weight = 65.0, waist = 250.1)
         store.addBodyEntry(weight = Double.POSITIVE_INFINITY, waist = 75.0)
-        assertEquals(1, store.current.state.bodyEntries.size)
+        assertEquals(1, current(store).state.bodyEntries.size)
     }
 
     @Test
-    fun waterIsCappedPerDay() {
-        val store = memoryStore()
+    fun waterIsCappedPerDay() = runTest {
+        val store = open()
         store.addWater(10_000)
         store.addWater(10_000)
         store.addWater(500)
-        assertEquals(BojiStore.MAX_DAILY_WATER_ML, store.current.todayRecord.waterML)
+        assertEquals(BojiStore.MAX_DAILY_WATER_ML, current(store).todayRecord.waterML)
     }
 
     @Test
-    fun noOpChangesDoNotCreateRecords() {
-        val store = memoryStore()
+    fun noOpChangesDoNotCreateRecords() = runTest {
+        val store = open()
         store.addWater(-250)
         store.addWater(0)
-        assertTrue(store.current.state.records.isEmpty())
+        assertTrue(current(store).state.records.isEmpty())
+        assertFalse("an unchanged state is not written", stateFile.exists())
     }
 
     @Test
-    fun exportJsonMatchesIosFormat() {
-        val store = memoryStore()
+    fun exportJsonMatchesIosFormat() = runTest {
+        val store = open()
         store.setDisplayName("导出测试")
         store.addWater(300)
+        runCurrent()
 
         val text = checkNotNull(store.exportJson())
         val root = Json.parseToJsonElement(text).jsonObject
@@ -158,10 +177,11 @@ class BojiStoreTest {
         // Start of the Shanghai day, encoded like Swift `.iso8601`.
         assertEquals("2026-10-19T16:00:00Z", record.getValue("date").jsonPrimitive.content)
         assertFalse("nil optionals are omitted", "sleepHours" in record)
+        assertEquals("the file and the export use the same bytes", text, stateFile.readText())
     }
 
     @Test
-    fun decodesStateWrittenByIos() {
+    fun decodesStateWrittenByIos() = runTest {
         val ios = """
             {
               "bodyEntries" : [
@@ -178,20 +198,18 @@ class BojiStoreTest {
         """.trimIndent()
         stateFile.writeText(ios)
 
-        runTest {
-            val snapshot = persistentStore().current
-            assertNull(snapshot.storageError)
-            assertEquals(PlanKind.Gym, snapshot.state.selectedPlan)
-            assertEquals(8.0, snapshot.todayRecord.sleepHours!!, 0.0)
-            assertEquals(250, snapshot.todayRecord.waterML)
-            assertTrue(snapshot.isCompletedToday(WorkoutLibrary.Gym))
-            assertEquals(78.0, snapshot.state.bodyEntries.single().waist, 0.0)
-        }
+        val snapshot = current(open())
+        assertNull(snapshot.storageError)
+        assertEquals(PlanKind.Gym, snapshot.state.selectedPlan)
+        assertEquals(8.0, snapshot.todayRecord.sleepHours!!, 0.0)
+        assertEquals(250, snapshot.todayRecord.waterML)
+        assertTrue(snapshot.isCompletedToday(WorkoutLibrary.Gym))
+        assertEquals(78.0, snapshot.state.bodyEntries.single().waist, 0.0)
     }
 
     @Test
-    fun resetAllRestoresEmptyDefaults() {
-        val store = memoryStore()
+    fun resetAllRestoresEmptyDefaults() = runTest {
+        val store = open()
         store.completeOnboarding(PlanKind.Gym)
         store.setDisplayName("需要重置")
         store.setJoinedChallenge(true)
@@ -200,14 +218,15 @@ class BojiStoreTest {
 
         store.resetAll()
 
-        val state = store.current.state
+        val snapshot = current(store)
+        val state = snapshot.state
         assertEquals(PlanKind.Home, state.selectedPlan)
         assertFalse(state.hasOnboarded)
         assertEquals(BojiState.DEFAULT_DISPLAY_NAME, state.displayName)
         assertFalse(state.joinedChallenge)
         assertTrue(state.records.isEmpty())
         assertTrue(state.bodyEntries.isEmpty())
-        assertEquals(0, store.current.todayRecord.waterML)
+        assertEquals(0, snapshot.todayRecord.waterML)
     }
 
     @Test
@@ -215,59 +234,86 @@ class BojiStoreTest {
         val corrupt = "not valid JSON"
         stateFile.writeText(corrupt)
 
-        val store = persistentStore()
-        assertTrue(store.current.storageError is StorageError.ReadFailed)
+        val store = open()
+        assertTrue(current(store).storageError is StorageError.ReadFailed)
 
         store.setDisplayName("不应写入")
         store.addWater(500)
-        runCurrent()
 
         assertEquals(corrupt, stateFile.readText())
-        assertTrue(store.current.storageError is StorageError.ReadFailed)
+        assertTrue(current(store).storageError is StorageError.ReadFailed)
+    }
+
+    @Test
+    fun invalidDateCountsAsCorruption() = runTest {
+        // Valid JSON, but the date is not ISO 8601. The parser throws DateTimeParseException.
+        val invalid = """{"bodyEntries":[{"date":"yesterday","id":"A","waist":78,"weight":68.2}]}"""
+        stateFile.writeText(invalid)
+
+        val store = open()
+        assertTrue(current(store).storageError is StorageError.ReadFailed)
+
+        store.setDisplayName("不应写入")
+        assertEquals(invalid, stateFile.readText())
     }
 
     @Test
     fun explicitResetClearsCorruptFile() = runTest {
         stateFile.writeText("private corrupted data")
-        val store = persistentStore()
-        store.resetAll()
-        runCurrent()
+        val store = open()
+        assertTrue(current(store).storageError is StorageError.ReadFailed)
 
-        val reloaded = persistentStore().current
+        store.resetAll()
+        val afterReset = current(store)
+        assertNull("the same store recovers after the reset", afterReset.storageError)
+
+        val reloaded = current(open())
         assertNull(reloaded.storageError)
         assertTrue(reloaded.state.records.isEmpty())
         assertEquals(BojiState.DEFAULT_DISPLAY_NAME, reloaded.state.displayName)
     }
 
     @Test
-    fun queuedWritesDoNotRestoreDataAfterReset() = runTest {
-        val store = persistentStore()
-        store.addBodyEntry(weight = 70.0, waist = 80.0)
-        store.addWater(250)
-        store.resetAll()
+    fun concurrentWritesKeepCallOrder() = runTest {
+        val store = open()
+        launch { store.addBodyEntry(weight = 70.0, waist = 80.0) }
+        launch { store.addWater(250) }
+        launch { store.resetAll() }
         runCurrent()
 
-        val reloaded = persistentStore().current
+        val reloaded = current(open())
         assertTrue(reloaded.state.bodyEntries.isEmpty())
         assertTrue(reloaded.state.records.isEmpty())
     }
 
     @Test
-    fun habitDaysAndRollingWeek() {
-        val store = memoryStore()
-        assertEquals(7, store.current.weekRecords.size)
-        assertEquals(0, store.current.activeDays)
-        store.addWater(250)
-        assertEquals(1, store.current.activeDays)
-        store.setSleep(7.0)
-        assertEquals(1, store.current.activeDays)
-        assertEquals(250, store.current.weekRecords.last().waterML)
-        assertEquals(LocalDate.of(2026, 10, 14), store.current.weekRecords.first().localDate(zone))
+    fun cancelledCallerDoesNotCancelTheWrite() = runTest {
+        val store = open()
+        // A view model scope that closes right after the call, like a dismissed screen.
+        val screen = CoroutineScope(coroutineContext + Job())
+        screen.launch { store.addWater(250) }
+        runCurrent()
+        screen.cancel()
+
+        assertEquals(250, current(open()).todayRecord.waterML)
     }
 
     @Test
-    fun trainingDaysCountOnlyTheCurrentCalendarWeek() {
-        val store = memoryStore()
+    fun habitDaysAndRollingWeek() = runTest {
+        val store = open()
+        assertEquals(7, current(store).weekRecords.size)
+        assertEquals(0, current(store).activeDays)
+        store.addWater(250)
+        assertEquals(1, current(store).activeDays)
+        store.setSleep(7.0)
+        assertEquals(1, current(store).activeDays)
+        assertEquals(250, current(store).weekRecords.last().waterML)
+        assertEquals(LocalDate.of(2026, 10, 14), current(store).weekRecords.first().localDate(zone))
+    }
+
+    @Test
+    fun trainingDaysCountOnlyTheCurrentCalendarWeek() = runTest {
+        val store = open()
         now = ZonedDateTime.of(2026, 10, 18, 20, 0, 0, 0, zone) // Sunday, previous ISO week
         store.completeWorkout(WorkoutLibrary.Home)
         now = ZonedDateTime.of(2026, 10, 19, 8, 0, 0, 0, zone) // Monday
@@ -276,37 +322,35 @@ class BojiStoreTest {
         store.completeWorkout(WorkoutLibrary.Mobility)
         store.refreshDay()
 
-        assertEquals(2, store.current.trainingDaysThisWeek(WeekFields.ISO))
-        assertEquals(3, store.current.trainingDaysThisWeek(WeekFields.SUNDAY_START))
+        assertEquals(2, current(store).trainingDaysThisWeek(WeekFields.ISO))
+        assertEquals(3, current(store).trainingDaysThisWeek(WeekFields.SUNDAY_START))
     }
 
     @Test
-    fun refreshDayMovesTodayForward() {
-        val store = memoryStore()
+    fun refreshDayMovesTodayForward() = runTest {
+        val store = open()
         store.addWater(250)
         now = now.plusDays(1)
         store.refreshDay()
-        assertEquals(0, store.current.todayRecord.waterML)
-        assertEquals(1, store.current.activeDays)
+        assertEquals(0, current(store).todayRecord.waterML)
+        assertEquals(1, current(store).activeDays)
     }
 
     @Test
-    fun deletingBodyEntry() {
-        val store = memoryStore()
+    fun deletingBodyEntry() = runTest {
+        val store = open()
         store.addBodyEntry(weight = 70.0, waist = 80.0)
-        val id = store.current.state.bodyEntries.first().id
+        val id = current(store).state.bodyEntries.first().id
         assertEquals(id.uppercase(), id)
         store.deleteBodyEntry(id)
-        assertTrue(store.current.state.bodyEntries.isEmpty())
+        assertTrue(current(store).state.bodyEntries.isEmpty())
     }
 
     @Test
     fun writeFailureIsReported() = runTest {
         val blocker = File(directory, "blocked").apply { writeText("file, not a directory") }
-        val store = BojiStore.persistent(File(blocker, "state.json"), backgroundScope, StandardTestDispatcher(testScheduler)) { now }
-        runCurrent()
+        val store = open(File(blocker, "state.json"))
         store.addWater(250)
-        runCurrent()
-        assertNotNull(store.current.storageError as? StorageError.WriteFailed)
+        assertNotNull(current(store).storageError as? StorageError.WriteFailed)
     }
 }

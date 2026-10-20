@@ -4,6 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import club.leanmuscle.boji.core.data.BojiStore
 import club.leanmuscle.boji.core.model.Workout
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +21,11 @@ import kotlinx.coroutines.launch
  * Runs one session. The timer restarts on resume, so the first tick after a pause comes one
  * full second later, as on iOS. The workout is recorded once, when the last set is done.
  */
-class TrainingSessionViewModel(workout: Workout, private val store: BojiStore) : ViewModel() {
+@HiltViewModel(assistedFactory = TrainingSessionViewModel.Factory::class)
+class TrainingSessionViewModel @AssistedInject constructor(
+    @Assisted workout: Workout,
+    private val store: BojiStore,
+) : ViewModel() {
     private val _session = MutableStateFlow(TrainingSession(workout))
     val session: StateFlow<TrainingSession> = _session.asStateFlow()
 
@@ -33,7 +41,8 @@ class TrainingSessionViewModel(workout: Workout, private val store: BojiStore) :
         _session.value = after
         if (!before.finished && after.finished) {
             ticker?.cancel()
-            store.completeWorkout(after.workout)
+            // The store finishes the write in the application scope, even if the screen closes.
+            viewModelScope.launch { store.completeWorkout(after.workout) }
         }
     }
 
@@ -50,5 +59,10 @@ class TrainingSessionViewModel(workout: Workout, private val store: BojiStore) :
                 _session.update { it.tick() }
             }
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(workout: Workout): TrainingSessionViewModel
     }
 }

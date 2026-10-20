@@ -1,5 +1,8 @@
 package club.leanmuscle.boji.feature.today
 
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import club.leanmuscle.boji.feature.entry.DailyEntryActions
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
@@ -39,7 +42,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import club.leanmuscle.boji.R
-import club.leanmuscle.boji.core.data.BojiStore
 import club.leanmuscle.boji.core.model.BojiSnapshot
 import club.leanmuscle.boji.core.model.Workout
 import club.leanmuscle.boji.feature.entry.DailyEntrySheet
@@ -61,7 +63,7 @@ private const val LARGE_FONT_SCALE = 1.5f
 @Composable
 fun TodayScreen(
     snapshot: BojiSnapshot,
-    store: BojiStore,
+    entryActions: DailyEntryActions,
     onOpenWorkout: (Workout) -> Unit,
     onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
@@ -96,7 +98,7 @@ fun TodayScreen(
         }
     }
     sheet?.let { kind ->
-        DailyEntrySheet(kind = kind, snapshot = snapshot, store = store, onDismiss = { sheet = null })
+        DailyEntrySheet(kind = kind, snapshot = snapshot, actions = entryActions, onDismiss = { sheet = null })
     }
 }
 
@@ -110,7 +112,8 @@ private fun RhythmCard(snapshot: BojiSnapshot) {
         Habit(stringResource(R.string.habit_water), colors.water, record.waterML > 0),
         Habit(stringResource(R.string.habit_sleep), colors.sleep, record.sleepHours != null),
     )
-    val summary = stringResource(R.string.today_rhythm_a11y, count)
+    val total = BojiSnapshot.TODAY_TASK_TOTAL
+    val summary = stringResource(R.string.today_rhythm_a11y, count, total)
     BojiCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(
@@ -133,7 +136,7 @@ private fun RhythmCard(snapshot: BojiSnapshot) {
                     Text("$count", style = MaterialTheme.typography.displayMedium, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.width(6.dp))
                     Text(
-                        stringResource(R.string.today_rhythm_total),
+                        stringResource(R.string.today_rhythm_total, total),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(bottom = 8.dp),
@@ -143,7 +146,7 @@ private fun RhythmCard(snapshot: BojiSnapshot) {
                     text = stringResource(
                         when (count) {
                             0 -> R.string.today_rhythm_none
-                            3 -> R.string.today_rhythm_all
+                            total -> R.string.today_rhythm_all
                             else -> R.string.today_rhythm_some
                         },
                     ),
@@ -154,7 +157,7 @@ private fun RhythmCard(snapshot: BojiSnapshot) {
                     habits.forEach { HabitDot(it) }
                 }
             }
-            HabitRings(habits = habits, allDone = count == 3)
+            HabitRings(habits = habits, allDone = count == total)
         }
     }
 }
@@ -234,7 +237,7 @@ private fun HabitCards(snapshot: BojiSnapshot, onOpen: (DailySheet) -> Unit) {
             title = stringResource(R.string.habit_sleep_title),
             icon = R.drawable.ic_bedtime,
             color = colors.sleep,
-            value = record.sleepHours?.let(::formatOneDecimal) ?: "—",
+            value = record.sleepHours?.let { formatOneDecimal(it) } ?: "—",
             unit = stringResource(R.string.unit_hours),
             onClick = { onOpen(DailySheet.Sleep) },
             modifier = modifier.testTag("habit_sleep"),
@@ -290,4 +293,16 @@ private fun HabitCard(
             }
         }
     }
+}
+
+/** 今天 with its view model. Shows nothing until state.json has been read. */
+@Composable
+fun TodayScreen(
+    onOpenWorkout: (Workout) -> Unit,
+    onOpenSettings: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: TodayViewModel = hiltViewModel(),
+) {
+    val snapshot by viewModel.snapshot.collectAsStateWithLifecycle()
+    snapshot?.let { TodayScreen(it, viewModel, onOpenWorkout, onOpenSettings, modifier) }
 }

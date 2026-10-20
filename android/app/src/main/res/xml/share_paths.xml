@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Only the share image directory in the cache. MembershipShareImage writes one file there. -->
+<paths>
+    <cache-path name="share" path="share/" />
+</paths>

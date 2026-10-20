@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Simplified Chinese copy of the member center. values/strings_membership.xml defines every name.
+    The wording follows ios/Boji/Views/Membership*.swift and ios/Boji/Models/MembershipStore.swift.
+-->
+<resources>
+    <!-- Entry points -->
+    <string name="membership_title">会员卡与账号</string>
+    <string name="settings_account">俱乐部账号</string>
+    <string name="settings_account_signed_out">基础记录无需登录。领取身份卡时才需要账号。</string>
+    <string name="settings_account_signed_in">已登录：%1$s</string>
+    <string name="settings_delete_membership_note">同时删除本机的会员卡缓存和登录状态。不会注销账号，也不会删除服务器上的会员身份。</string>
+    <string name="club_entry_title">给自己，一个位置。</string>
+    <string name="club_entry_claim">领取免费会员卡</string>
+    <string name="club_entry_view">查看我的会员卡</string>
+
+    <!-- Member center -->
+    <string name="membership_hero_title">不必达标，\n也能加入。</string>
+    <string name="membership_hero_text">一张属于你的身份卡，记录一起开始的这一天。</string>
+    <string name="membership_free_badge">免费社区会员</string>
+    <string name="membership_free_steps">写下昵称 · 确认共识 · 领取身份卡</string>
+    <string name="membership_local_note">基础记录和训练始终可以免登录使用。领卡需要已验证的邮箱账号。</string>
+    <string name="membership_not_configured_title">暂时无法在线领卡</string>
+    <string name="membership_not_configured_text">当前版本尚未连接会员服务。基础训练和记录仍可使用。</string>
+    <string name="membership_restoring">正在连接俱乐部…</string>
+    <string name="membership_verified_title">邮箱已验证，可以领取</string>
+    <string name="membership_claim">领取免费身份卡</string>
+    <string name="membership_verify_first">先验证邮箱，再领取会员卡。</string>
+    <string name="membership_resend_verification">重发验证邮件</string>
+    <string name="membership_refresh_account">刷新账号与会员卡</string>
+    <string name="membership_sign_in_to_claim">登录或注册领取</string>
+    <string name="membership_point_no_photos">不需要提供身体照片或体脂数据</string>
+    <string name="membership_point_hide_number">分享前可以隐藏会员卡号</string>
+    <string name="membership_point_no_upload">训练和身体记录不会随领卡上传</string>
+    <string name="membership_terms_link">俱乐部守则与数据说明</string>
+    <string name="membership_free_disclaimer">这是免费身份卡，不是付费订阅、支付卡或场馆核销凭证。不自动续费。</string>
+    <string name="membership_last_synced">上次同步 %1$s</string>
+    <string name="membership_refresh">刷新</string>
+    <string name="membership_make_share_card">制作会员分享卡</string>
+    <string name="membership_details">身份详情</string>
+    <string name="membership_full_number">完整会员卡号</string>
+    <string name="membership_copy_number">复制完整卡号</string>
+    <string name="membership_number_copied">卡号已复制</string>
+    <string name="membership_joined">加入于</string>
+    <string name="membership_expires">有效至</string>
+    <string name="membership_details_note">卡片信息由会员服务确认，分享图片仅作纪念。</string>
+    <string name="membership_entitlements">你的社区权益</string>
+    <string name="membership_entitlements_detail">没有订阅费用</string>
+    <string name="membership_entitlement_granted">授权于 %1$s</string>
+    <string name="membership_entitlement_until">有效至 %1$s</string>
+    <string name="membership_entitlements_pending">权益信息待刷新 · 本地功能不受影响</string>
+    <string name="membership_entitlements_none">会员权益未授予 · 本地功能不受影响</string>
+    <string name="membership_entitlements_note">基础记录、训练和足迹也可免登录使用。付费会员尚未开放，本版不会收取费用。</string>
+    <string name="membership_account">当前账号</string>
+    <string name="membership_security">账号安全</string>
+    <string name="membership_account_note">会员卡绑定此账号。退出不会删除本机训练记录，也不会注销账号。</string>
+    <string name="membership_sign_out">退出账号</string>
+    <string name="membership_sign_out_title">退出此账号？</string>
+    <string name="membership_sign_out_text">本机登录信息和会员卡缓存会清除。本机训练记录不受影响，此操作不会注销账号。</string>
+
+    <!-- Card face -->
+    <string name="card_club_name">薄肌俱乐部</string>
+    <string name="card_kind">免费俱乐部身份卡</string>
+    <string name="card_number_label">会员卡号</string>
+    <string name="card_number_a11y">会员卡号，%1$s</string>
+    <string name="card_number_placeholder">领取后显示会员卡号</string>
+    <string name="card_number_hidden">卡号已隐藏</string>
+    <string name="card_joined_on">加入于 %1$s</string>
+    <string name="card_joined_pending">入会日期将在领取后显示</string>
+    <string name="card_offline">离线副本 · 状态待同步</string>
+    <string name="card_style_forest">松林</string>
+    <string name="card_style_chalk">月白</string>
+    <string name="card_style_ink">曜石</string>
+
+    <!-- Card condition -->
+    <string name="card_condition_active">已加入俱乐部</string>
+    <string name="card_condition_offline">离线副本</string>
+    <string name="card_condition_suspended">会员卡已暂停</string>
+    <string name="card_condition_expired">会员卡已到期</string>
+    <string name="card_condition_unavailable">会员卡当前不可用</string>
+    <string name="card_condition_active_detail">会员状态已确认。本地功能不受影响。</string>
+    <string name="card_condition_offline_detail">离线时不能确认会员状态。本地功能不受影响。</string>
+    <string name="card_condition_suspended_detail">会员卡当前已暂停。本地功能不受影响。</string>
+    <string name="card_condition_expired_detail">会员卡已到期。本地功能不受影响。</string>
+    <string name="card_condition_unavailable_detail">会员状态暂不可用。本地功能不受影响。</string>
+
+    <!-- Sign in and registration -->
+    <string name="auth_sign_in_title">登录俱乐部</string>
+    <string name="auth_register_title">加入俱乐部</string>
+    <string name="auth_mode">账号操作</string>
+    <string name="auth_sign_in">登录</string>
+    <string name="auth_register">注册</string>
+    <string name="auth_intro">登录仅用于恢复你的俱乐部身份。训练和身体记录不会上传。</string>
+    <string name="auth_register_heading">创建俱乐部账号</string>
+    <string name="auth_sign_in_heading">欢迎回来</string>
+    <string name="auth_name">姓名</string>
+    <string name="auth_email">邮箱</string>
+    <string name="auth_password">密码</string>
+    <string name="auth_password_rule">密码（%1$d 至 %2$d 个字符）</string>
+    <string name="auth_consent">我同意将邮箱和昵称用于创建账号</string>
+    <string name="auth_register_note">注册后需要先验证邮箱，再返回 App 登录。</string>
+    <string name="auth_dev_mail_note">本地开发服务会把邮件保存到后端目录，不会发送到真实邮箱。</string>
+    <string name="auth_wait">请稍候……</string>
+    <string name="auth_register_action">注册并验证邮箱</string>
+    <string name="auth_help">邮箱与密码帮助</string>
+    <string name="auth_resend">重新发送验证邮件</string>
+    <string name="auth_reset">发送密码重置邮件</string>
+    <string name="auth_help_note">先填写邮箱，再选择需要的邮件。验证或重置完成后，返回这里登录。</string>
+    <string name="auth_data_link">查看账号与会员数据说明</string>
+    <string name="auth_data_note">邮箱和认证信息将提交至俱乐部服务。登录令牌加密保存在本机，不会写入数据导出。</string>
+    <string name="auth_dev_service">开发服务：%1$s</string>
+    <string name="auth_use_saved">使用已保存的密码</string>
+
+    <!-- Card enrollment -->
+    <string name="enroll_title">领取免费身份卡</string>
+    <string name="enroll_step_nickname">写下昵称</string>
+    <string name="enroll_step_pledges">确认守则</string>
+    <string name="enroll_step_review">核对并领取</string>
+    <string name="enroll_progress">领取进度，第 %1$d 步，共 %2$d 步</string>
+    <string name="enroll_nickname_title">给自己，\n一个位置。</string>
+    <string name="enroll_nickname_text">不必达到某种身材，今天就可以开始。</string>
+    <string name="enroll_nickname_label">卡面昵称</string>
+    <string name="enroll_nickname_rule">%1$d～%2$d 个字符</string>
+    <string name="enroll_nickname_note">昵称会出现在卡片上，领卡后本版暂不支持修改。</string>
+    <string name="enroll_nickname_placeholder">你的昵称</string>
+    <string name="enroll_preview">卡面预览</string>
+    <string name="enroll_preview_note">尚未领取 · 预览不代表已加入</string>
+    <string name="enroll_pledges_title">三条共识，\n一起开始。</string>
+    <string name="enroll_pledges_text">没有身材门槛，也不需要跟别人比较。</string>
+    <string name="enroll_pledges_count">%1$d / %2$d 已确认</string>
+    <string name="enroll_read_terms">阅读完整守则与数据说明</string>
+    <string name="enroll_review_title">以这个名字，\n加入俱乐部。</string>
+    <string name="enroll_review_free">无支付步骤，不会自动续费。卡号与入会日期将在服务确认后显示。</string>
+    <string name="enroll_review_data">本次会提交昵称和守则版本。训练、饮水、睡眠及身体记录不会随领卡上传。</string>
+    <string name="enroll_accept">我已阅读并同意守则与数据说明</string>
+    <string name="enroll_welcome_title">欢迎加入。\n按你的节奏来。</string>
+    <string name="enroll_welcome_synced">会员卡已同步。</string>
+    <string name="enroll_welcome_text">照顾自己，就是今天的开始。</string>
+    <string name="enroll_welcome_note">在会员中心可以查看身份详情、制作分享卡和了解免费权益。</string>
+    <string name="enroll_view_card">查看我的会员卡</string>
+    <string name="enroll_previous">上一步</string>
+    <string name="enroll_confirming">正在确认…</string>
+    <string name="enroll_confirm">确认免费领卡</string>
+    <string name="enroll_continue">继续</string>
+
+    <!-- Pledges -->
+    <string name="pledge_belonging_title">人人都有位置</string>
+    <string name="pledge_belonging_text">不以身材、体重或体脂决定是否可以加入。</string>
+    <string name="pledge_pace_title">尊重自己的节奏</string>
+    <string name="pledge_pace_text">不排名，不鼓励极端减脂；不舒服时停止训练。</string>
+    <string name="pledge_privacy_title">尊重他人与隐私</string>
+    <string name="pledge_privacy_text">不冒用他人身份，不在昵称中包含他人隐私。</string>
+
+    <!-- Nickname problems -->
+    <string name="nickname_empty">请输入昵称。</string>
+    <string name="nickname_too_long">昵称不能超过 %1$d 个字符。</string>
+    <string name="nickname_invalid">昵称不能包含控制字符、换行或不可见字符。</string>
+
+    <!-- Terms and data -->
+    <string name="terms_title">守则与数据说明</string>
+    <string name="terms_pledges">俱乐部守则</string>
+    <string name="terms_data">账号与会员数据</string>
+    <string name="terms_data_account">登录会将邮箱和认证信息发送到俱乐部服务。领卡会提交昵称和守则版本，由服务器保存卡号、入会日期和会员状态。</string>
+    <string name="terms_data_local">训练、饮水、睡眠和身体记录仍只保存在此设备，不随领卡上传。</string>
+    <string name="terms_data_token">登录令牌用 Android Keystore 中的密钥加密后保存在本机。退出会清除本机登录信息和会员缓存，但不注销账号或删除服务器会员。</string>
+    <string name="terms_data_share">分享图片包含昵称和入会日期。卡号默认隐藏，可以在预览中主动开启。确认前，图片不会自动上传或分享。</string>
+    <string name="terms_boundary">卡片的边界</string>
+    <string name="terms_boundary_text">免费会员卡是俱乐部身份记录，不代表付费权益，也不能用于支付或场馆核销。图片只是纪念副本，会员状态以服务器为准。</string>
+    <string name="terms_deletion">当前尚无 App 内账号注销入口。公开发布前需补齐账号删除与正式隐私政策。</string>
+    <string name="terms_version">守则版本：%1$s</string>
+
+    <!-- Account security -->
+    <string name="security_title">账号与安全</string>
+    <string name="security_email">邮箱</string>
+    <string name="security_email_verified">邮箱已验证</string>
+    <string name="security_email_unverified">邮箱尚未验证</string>
+    <string name="security_session">当前会话</string>
+    <string name="security_signed_in_at">登录时间</string>
+    <string name="security_expires_at">到期时间</string>
+    <string name="security_session_unknown">当前会话尚未确认，请刷新。</string>
+    <string name="security_refresh_session">刷新会话</string>
+    <string name="security_section">登录安全</string>
+    <string name="security_revoke_others">退出其他登录会话</string>
+    <string name="security_note">修改密码会退出其他会话。仅适用于已设置邮箱密码的账号。</string>
+    <string name="security_signed_out">请先登录，再管理账号安全。</string>
+    <string name="security_footer">认证由 Better Auth 管理。本页不会删除账号、会员卡或本地记录。</string>
+    <string name="security_revoke_title">退出其他登录会话？</string>
+    <string name="security_revoke_action">退出其他会话</string>
+    <string name="security_revoke_text">其他登录会话将失效，需要重新登录。当前会话与本地记录保留。</string>
+    <string name="security_password_section">邮箱登录密码</string>
+    <string name="security_current_password">当前密码</string>
+    <string name="security_new_password">新密码（%1$d 至 %2$d 个字符）</string>
+    <string name="security_repeat_password">再次输入新密码</string>
+    <string name="security_password_mismatch">两次输入的新密码不一致。</string>
+    <string name="security_updating">正在更新…</string>
+    <string name="security_update_password">更新密码</string>
+    <string name="security_password_note">更新后，其他会话会退出。请妥善保存新密码。</string>
+    <string name="security_password_confirm_title">更新密码并退出其他会话？</string>
+    <string name="security_password_confirm_action">确认更新</string>
+    <string name="security_password_confirm_text">其他设备需要重新登录。如当前会话无法恢复，你也需要使用新密码登录。</string>
+
+    <!-- Share card -->
+    <string name="share_title">分享预览</string>
+    <string name="share_intro">把开始的这一天，留作纪念。</string>
+    <string name="share_style">分享卡配色</string>
+    <string name="share_style_note">配色只改变分享图片，不改变会员身份或权益。</string>
+    <string name="share_show_number">在图片中显示完整卡号</string>
+    <string name="share_number_shown_note">分享后，其他人可以看到你的昵称、完整卡号和入会日期。</string>
+    <string name="share_number_hidden_note">默认隐藏卡号。图片仍包含昵称和入会日期。</string>
+    <string name="share_footer">只有你在系统分享窗口确认后，图片才会发出。图片不是支付或核销凭证，也不证明当前会员状态。</string>
+    <string name="share_chooser_title">我的 Boji 会员纪念卡</string>
+    <string name="share_action">分享图片</string>
+    <string name="share_failed">无法生成分享图片，请更换配色后重试。</string>
+    <string name="share_preview_a11y">会员分享图片预览，%1$s</string>
+    <string name="share_card_headline">我在薄肌俱乐部</string>
+    <string name="share_card_motto">不必完美，也能开始。</string>
+    <string name="share_card_kind">会员纪念卡</string>
+    <string name="share_card_record">免费俱乐部身份记录</string>
+    <string name="share_card_generated">生成于 %1$s</string>
+    <string name="share_card_footer">会员状态以 App 同步结果为准\n非支付或核销凭证</string>
+
+    <!-- Operation results -->
+    <string name="msg_signed_in">登录成功。</string>
+    <string name="msg_registered">注册成功，请在邮箱完成验证后登录。</string>
+    <string name="msg_verification_sent">已提交验证邮件请求，请检查收件箱。</string>
+    <string name="msg_reset_requested">已提交重置请求。若邮箱可用，请检查收件箱。</string>
+    <string name="msg_card_updated">会员卡已更新。</string>
+    <string name="msg_signed_out">已退出登录。</string>
+    <string name="msg_signed_out_locally">已清除本机登录状态；服务器退出未确认。</string>
+    <string name="msg_password_changed">密码已修改，其他会话已退出。</string>
+    <string name="msg_password_changed_sign_in">密码已修改，请使用新密码重新登录。</string>
+    <string name="msg_other_sessions_revoked">其他登录会话已退出，当前会话保留。</string>
+    <string name="msg_not_configured">会员服务尚未配置。</string>
+    <string name="msg_email_password_required">请输入邮箱和密码。</string>
+    <string name="msg_registration_incomplete">请完整填写姓名、邮箱和密码，密码需为 %1$d 至 %2$d 个字符。</string>
+    <string name="msg_verification_email_required">请输入需要验证的邮箱。</string>
+    <string name="msg_reset_email_required">请输入需要重置密码的邮箱。</string>
+    <string name="msg_invalid_credentials">邮箱或密码不正确，请检查后重试。</string>
+    <string name="msg_sign_in_required">请先登录后再继续。</string>
+    <string name="msg_account_mismatch">账号状态不一致，请重新登录。</string>
+    <string name="msg_storage_failed">无法安全保存登录状态，请稍后重试。</string>
+    <string name="msg_clear_failed">无法完全清除本机登录状态。</string>
+    <string name="msg_password_rules">请输入当前密码，新密码需为 %1$d 至 %2$d 个字符。</string>
+    <string name="msg_same_password">新密码不能与当前密码相同。</string>
+    <string name="msg_password_changed_storage">密码已修改，但登录状态无法安全保存。请重新登录。</string>
+    <string name="msg_terms_required">请先同意社区会员条款。</string>
+    <string name="msg_nickname_rejected">会员服务没有接受这个昵称，请修改后重试。</string>
+    <string name="msg_too_many_requests">操作过于频繁，请稍后再试。</string>
+    <string name="msg_wrong_current_password">当前密码不正确，请重新输入。</string>
+    <string name="msg_no_email_password">此账号尚未设置邮箱密码，请使用原登录方式。</string>
+    <string name="msg_session_not_fresh">此操作需要重新登录后再试。</string>
+    <string name="msg_session_expired">登录已失效，请重新登录。</string>
+    <string name="msg_email_not_verified">邮箱尚未验证，请先完成验证。</string>
+    <string name="msg_offline_card">网络不可用，正在显示本地会员卡。</string>
+    <string name="msg_permission_denied">当前账户没有执行此操作的权限。</string>
+    <string name="msg_network_refresh">无法连接会员服务，请稍后重试。</string>
+    <string name="msg_network_sign_in">无法连接会员服务，暂时无法登录。</string>
+    <string name="msg_network_register">无法连接会员服务，暂时无法注册。</string>
+    <string name="msg_network_verification">无法连接会员服务，暂时无法发送验证邮件。</string>
+    <string name="msg_network_reset">无法连接会员服务，暂时无法发送重置邮件。</string>
+    <string name="msg_network_enroll">无法连接会员服务，暂时无法领取会员卡。</string>
+    <string name="msg_network_session">无法连接认证服务，暂时无法确认会话。</string>
+    <string name="msg_network_password">密码修改结果未确认。请检查网络，必要时使用密码找回。</string>
+    <string name="msg_network_revoke">其他会话的退出结果未确认，请稍后重试。</string>
+    <string name="msg_failed_refresh">无法更新会员信息，请稍后重试。</string>
+    <string name="msg_failed_sign_in">登录失败，请检查邮箱和密码。</string>
+    <string name="msg_failed_register">注册失败，请检查信息后重试。</string>
+    <string name="msg_failed_verification">验证邮件发送失败，请稍后重试。</string>
+    <string name="msg_failed_reset">密码重置邮件发送失败，请稍后重试。</string>
+    <string name="msg_failed_enroll">领卡失败，请稍后重试。</string>
+    <string name="msg_failed_session">无法确认当前登录会话，请刷新后重试。</string>
+    <string name="msg_failed_password">密码修改未确认，请检查当前密码或使用密码找回。</string>
+    <string name="msg_failed_revoke">暂时无法退出其他登录会话。</string>
+</resources>

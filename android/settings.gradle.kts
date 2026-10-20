@@ -22,4 +22,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Boji"
 include(":app")
+include(":baselineprofile")
 include(":rpc")

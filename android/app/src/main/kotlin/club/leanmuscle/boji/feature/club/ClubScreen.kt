@@ -1,5 +1,9 @@
 package club.leanmuscle.boji.feature.club
 
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -30,7 +34,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import club.leanmuscle.boji.R
-import club.leanmuscle.boji.core.data.BojiStore
+import club.leanmuscle.boji.core.membership.AccountState
+import club.leanmuscle.boji.feature.membership.MembershipEntry
 import club.leanmuscle.boji.core.model.BojiSnapshot
 import club.leanmuscle.boji.core.model.ClubArticle
 import club.leanmuscle.boji.core.model.ClubArticles
@@ -42,6 +47,7 @@ import club.leanmuscle.boji.ui.components.PageHeading
 import club.leanmuscle.boji.ui.components.PrimaryButton
 import club.leanmuscle.boji.ui.components.SectionHeading
 import club.leanmuscle.boji.ui.components.SymbolTile
+import club.leanmuscle.boji.ui.components.articleMeta
 import club.leanmuscle.boji.ui.components.color
 import club.leanmuscle.boji.ui.components.iconRes
 import club.leanmuscle.boji.ui.theme.BojiThemeColors
@@ -53,10 +59,12 @@ private const val CHALLENGE_DAYS = 2
 @Composable
 fun ClubScreen(
     snapshot: BojiSnapshot,
-    store: BojiStore,
+    membership: AccountState,
+    onSetJoinedChallenge: (Boolean) -> Unit,
     weekFields: WeekFields,
     onOpenArticle: (ClubArticle) -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenMembership: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BojiScaffold(
@@ -74,24 +82,11 @@ fun ClubScreen(
                 title = stringResource(R.string.club_title),
                 subtitle = stringResource(R.string.club_subtitle),
             )
-            BojiCard(contentPadding = PaddingValues(16.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    SymbolTile(icon = R.drawable.ic_verified, color = MaterialTheme.colorScheme.primary)
-                    Spacer(Modifier.width(14.dp))
-                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(stringResource(R.string.club_membership_title), style = MaterialTheme.typography.titleMedium)
-                        Text(
-                            stringResource(R.string.club_membership_text),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-            }
+            MembershipEntry(state = membership, onOpen = onOpenMembership)
             ChallengeCard(
                 joined = snapshot.state.joinedChallenge,
                 trainingDays = snapshot.trainingDaysThisWeek(weekFields),
-                onSetJoined = store::setJoinedChallenge,
+                onSetJoined = onSetJoinedChallenge,
             )
             SectionHeading(stringResource(R.string.club_guide_title), stringResource(R.string.club_guide_detail))
             ClubArticles.all.forEach { article ->
@@ -104,9 +99,9 @@ fun ClubScreen(
                         SymbolTile(icon = article.icon.iconRes, color = article.tone.color)
                         Spacer(Modifier.width(14.dp))
                         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(article.title, style = MaterialTheme.typography.titleMedium)
+                            Text(stringResource(article.title), style = MaterialTheme.typography.titleMedium)
                             Text(
-                                article.subtitle,
+                                articleMeta(article),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -186,22 +181,22 @@ fun ArticleScreen(article: ClubArticle, onBack: () -> Unit, modifier: Modifier =
         PageColumn(modifier = Modifier.padding(padding), spacing = 20.dp) {
             SymbolTile(icon = article.icon.iconRes, color = article.tone.color)
             Text(
-                article.title,
+                stringResource(article.title),
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.semantics { heading() },
             )
-            Text(article.subtitle, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(articleMeta(article), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             article.sections.forEach { section ->
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        section.title,
+                        stringResource(section.title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.semantics { heading() },
                     )
                     Text(
-                        section.body,
+                        stringResource(section.body),
                         style = MaterialTheme.typography.bodyLarge,
                         lineHeight = 28.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -215,5 +210,39 @@ fun ArticleScreen(article: ClubArticle, onBack: () -> Unit, modifier: Modifier =
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+    }
+}
+
+/** 俱乐部 with its view model. Shows nothing until state.json has been read. */
+@Composable
+fun ClubScreen(
+    weekFields: WeekFields,
+    onOpenArticle: (ClubArticle) -> Unit,
+    onOpenSettings: () -> Unit,
+    onOpenMembership: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: ClubViewModel = hiltViewModel(),
+) {
+    val snapshot by viewModel.snapshot.collectAsStateWithLifecycle()
+    val membership by viewModel.membership.collectAsStateWithLifecycle()
+    snapshot?.let {
+        ClubScreen(it, membership, viewModel::setJoinedChallenge, weekFields, onOpenArticle, onOpenSettings, onOpenMembership, modifier)
+    }
+}
+
+/** One article by ID. An unknown ID closes the screen. */
+@Composable
+fun ArticleScreen(
+    articleId: Int,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: ArticleViewModel =
+        hiltViewModel<ArticleViewModel, ArticleViewModel.Factory>(key = "article-$articleId") { it.create(articleId) },
+) {
+    val article = viewModel.article
+    if (article == null) {
+        LaunchedEffect(articleId) { onBack() }
+    } else {
+        ArticleScreen(article, onBack, modifier)
     }
 }

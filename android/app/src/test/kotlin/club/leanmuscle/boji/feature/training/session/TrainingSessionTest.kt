@@ -1,6 +1,6 @@
 package club.leanmuscle.boji.feature.training.session
 
-import club.leanmuscle.boji.core.data.BojiStore
+import club.leanmuscle.boji.core.data.TestStore
 import club.leanmuscle.boji.core.model.WorkoutLibrary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,6 +15,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import org.junit.Test
 
 class TrainingSessionTest {
@@ -92,6 +94,9 @@ class TrainingSessionTest {
 class TrainingSessionViewModelTest {
     private val dispatcher = StandardTestDispatcher()
 
+    @get:Rule
+    val temp = TemporaryFolder()
+
     @Before
     fun setMain() {
         Dispatchers.setMain(dispatcher)
@@ -104,7 +109,8 @@ class TrainingSessionViewModelTest {
 
     @Test
     fun timerTicksEverySecondAndStopsWhenPaused() = runTest(dispatcher) {
-        val viewModel = TrainingSessionViewModel(WorkoutLibrary.Home, BojiStore.inMemory())
+        val store = TestStore(temp.newFile("state.json").also { it.delete() }, backgroundScope).store
+        val viewModel = TrainingSessionViewModel(WorkoutLibrary.Home, store)
         advanceTimeBy(3_000)
         runCurrent()
         assertEquals(3, viewModel.session.value.elapsedSeconds)
@@ -126,11 +132,12 @@ class TrainingSessionViewModelTest {
 
     @Test
     fun finishingRecordsTheWorkoutOnce() = runTest(dispatcher) {
-        val store = BojiStore.inMemory()
+        val store = TestStore(temp.newFile("state.json").also { it.delete() }, backgroundScope).store
         val workout = WorkoutLibrary.Mobility
         val viewModel = TrainingSessionViewModel(workout, store)
         while (!viewModel.session.value.finished) viewModel.primaryAction()
         viewModel.primaryAction()
+        runCurrent()
 
         val snapshot = checkNotNull(store.snapshot.value)
         assertEquals(1, snapshot.totalWorkouts)

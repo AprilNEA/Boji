@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copy of the member center. This directory is the fallback language, English.
+    values-b+zh+Hans/strings_membership.xml holds the Simplified Chinese copy with the same names.
+    The wording follows ios/Boji/Views/Membership*.swift and ios/Boji/Models/MembershipStore.swift.
+    Both clients show this copy, so it belongs in locales/. Move it into locales/ when iOS reads
+    the generated symbols for the member center, then delete both files.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+        PluralsCandidate is ignored on the strings below whose counts are constants above 1
+        (password and nickname length limits) or whose word after the count is not a noun.
+    -->
+    <!-- Entry points -->
+    <string name="membership_title">Membership &amp; Account</string>
+    <string name="settings_account">Club Account</string>
+    <string name="settings_account_signed_out">Basic tracking needs no account. You only need one to claim a member card.</string>
+    <string name="settings_account_signed_in">Signed in as %1$s</string>
+    <string name="settings_delete_membership_note">This also deletes the cached member card and the sign-in state on this device. It doesn’t delete your account or your membership on the server.</string>
+    <string name="club_entry_title">Make room for yourself.</string>
+    <string name="club_entry_claim">Claim a Free Member Card</string>
+    <string name="club_entry_view">View My Member Card</string>
+
+    <!-- Member center -->
+    <string name="membership_hero_title">No need to be perfect\nto join.</string>
+    <string name="membership_hero_text">A card of your own, marking the day you started with us.</string>
+    <string name="membership_free_badge">Free Community Membership</string>
+    <string name="membership_free_steps">Choose a nickname · Confirm the pledges · Claim your card</string>
+    <string name="membership_local_note">Basic tracking and workouts always work without an account. Claiming a card needs an account with a verified email.</string>
+    <string name="membership_not_configured_title">Can’t Claim Cards Online Yet</string>
+    <string name="membership_not_configured_text">This version isn’t connected to the member service. Basic workouts and tracking still work.</string>
+    <string name="membership_restoring">Connecting to the club…</string>
+    <string name="membership_verified_title">Email verified. You can claim your card.</string>
+    <string name="membership_claim">Claim Your Free Card</string>
+    <string name="membership_verify_first">Verify your email before you claim a member card.</string>
+    <string name="membership_resend_verification">Resend Verification Email</string>
+    <string name="membership_refresh_account">Refresh Account and Card</string>
+    <string name="membership_sign_in_to_claim">Sign In or Register to Claim</string>
+    <string name="membership_point_no_photos">No body photos or body fat data needed</string>
+    <string name="membership_point_hide_number">You can hide your card number before you share</string>
+    <string name="membership_point_no_upload">Workouts and body records aren’t uploaded when you claim a card</string>
+    <string name="membership_terms_link">Club Guidelines and Data Notice</string>
+    <string name="membership_free_disclaimer">This is a free membership card. It isn’t a paid subscription, a payment card or a gym pass. Nothing renews automatically.</string>
+    <string name="membership_last_synced">Last synced %1$s</string>
+    <string name="membership_refresh">Refresh</string>
+    <string name="membership_make_share_card">Make a Share Card</string>
+    <string name="membership_details">Card Details</string>
+    <string name="membership_full_number">Full Card Number</string>
+    <string name="membership_copy_number">Copy Full Card Number</string>
+    <string name="membership_number_copied">Card number copied</string>
+    <string name="membership_joined">Joined</string>
+    <string name="membership_expires">Valid Until</string>
+    <string name="membership_details_note">The member service confirms the card details. Shared images are keepsakes only.</string>
+    <string name="membership_entitlements">Your Community Benefits</string>
+    <string name="membership_entitlements_detail">No subscription fee</string>
+    <string name="membership_entitlement_granted">Granted %1$s</string>
+    <string name="membership_entitlement_until">Valid until %1$s</string>
+    <string name="membership_entitlements_pending">Benefits need a refresh · Local features still work</string>
+    <string name="membership_entitlements_none">No membership benefits granted · Local features still work</string>
+    <string name="membership_entitlements_note">Basic tracking, workouts and Journey also work without an account. Paid membership isn’t available yet, and this version charges nothing.</string>
+    <string name="membership_account">Current Account</string>
+    <string name="membership_security">Account Security</string>
+    <string name="membership_account_note">The member card belongs to this account. Signing out doesn’t delete the workout records on this device or your account.</string>
+    <string name="membership_sign_out">Sign Out</string>
+    <string name="membership_sign_out_title">Sign out of this account?</string>
+    <string name="membership_sign_out_text">The sign-in data and the cached member card on this device will be cleared. Workout records on this device stay. This doesn’t delete your account.</string>
+
+    <!-- Card face -->
+    <string name="card_club_name">Lean Muscle Club</string>
+    <string name="card_kind">Free Club Membership Card</string>
+    <string name="card_number_label">Card Number</string>
+    <string name="card_number_a11y">Card number, %1$s</string>
+    <string name="card_number_placeholder">Your card number appears after you claim</string>
+    <string name="card_number_hidden">Card number hidden</string>
+    <string name="card_joined_on">Joined %1$s</string>
+    <string name="card_joined_pending">Your join date appears after you claim</string>
+    <string name="card_offline">Offline copy · Status not synced</string>
+    <string name="card_style_forest">Pine</string>
+    <string name="card_style_chalk">Moonlight</string>
+    <string name="card_style_ink">Obsidian</string>
+
+    <!-- Card condition -->
+    <string name="card_condition_active">Club Member</string>
+    <string name="card_condition_offline">Offline Copy</string>
+    <string name="card_condition_suspended">Card Suspended</string>
+    <string name="card_condition_expired">Card Expired</string>
+    <string name="card_condition_unavailable">Card Unavailable</string>
+    <string name="card_condition_active_detail">Membership confirmed. Local features still work.</string>
+    <string name="card_condition_offline_detail">Membership can’t be confirmed offline. Local features still work.</string>
+    <string name="card_condition_suspended_detail">This member card is suspended. Local features still work.</string>
+    <string name="card_condition_expired_detail">This member card has expired. Local features still work.</string>
+    <string name="card_condition_unavailable_detail">Membership status is unavailable right now. Local features still work.</string>
+
+    <!-- Sign in and registration -->
+    <string name="auth_sign_in_title">Sign In to the Club</string>
+    <string name="auth_register_title">Join the Club</string>
+    <string name="auth_mode">Account action</string>
+    <string name="auth_sign_in">Sign In</string>
+    <string name="auth_register">Register</string>
+    <string name="auth_intro">Signing in only restores your club membership. Workouts and body records aren’t uploaded.</string>
+    <string name="auth_register_heading">Create a Club Account</string>
+    <string name="auth_sign_in_heading">Welcome Back</string>
+    <string name="auth_name">Name</string>
+    <string name="auth_email">Email</string>
+    <string name="auth_password">Password</string>
+    <string name="auth_password_rule" tools:ignore="PluralsCandidate">Password (%1$d to %2$d characters)</string>
+    <string name="auth_consent">I agree to the use of my email and nickname to create an account</string>
+    <string name="auth_register_note">After you register, verify your email, then come back to the app to sign in.</string>
+    <string name="auth_dev_mail_note">The local development service saves emails to a backend directory. It doesn’t send them to real inboxes.</string>
+    <string name="auth_wait">Please wait…</string>
+    <string name="auth_register_action">Register and Verify Email</string>
+    <string name="auth_help">Email and Password Help</string>
+    <string name="auth_resend">Resend Verification Email</string>
+    <string name="auth_reset">Send Password Reset Email</string>
+    <string name="auth_help_note">Enter your email first, then choose the email you need. After you verify or reset, come back here to sign in.</string>
+    <string name="auth_data_link">Account and Membership Data</string>
+    <string name="auth_data_note">Your email and sign-in details go to the club service. The sign-in token is stored encrypted on this device and is never included in data exports.</string>
+    <string name="auth_dev_service">Development service: %1$s</string>
+    <string name="auth_use_saved">Use Saved Password</string>
+
+    <!-- Card enrollment -->
+    <string name="enroll_title">Claim a Free Member Card</string>
+    <string name="enroll_step_nickname">Nickname</string>
+    <string name="enroll_step_pledges">Guidelines</string>
+    <string name="enroll_step_review">Review and Claim</string>
+    <string name="enroll_progress">Claim progress, step %1$d of %2$d</string>
+    <string name="enroll_nickname_title">Make room\nfor yourself.</string>
+    <string name="enroll_nickname_text">You don’t need a certain body. You can start today.</string>
+    <string name="enroll_nickname_label">Card Nickname</string>
+    <string name="enroll_nickname_rule" tools:ignore="PluralsCandidate">%1$d–%2$d characters</string>
+    <string name="enroll_nickname_note">Your nickname appears on the card. This version can’t change it after you claim.</string>
+    <string name="enroll_nickname_placeholder">Your nickname</string>
+    <string name="enroll_preview">Card Preview</string>
+    <string name="enroll_preview_note">Not claimed yet · A preview doesn’t mean you’ve joined</string>
+    <string name="enroll_pledges_title">Three pledges.\nWe start together.</string>
+    <string name="enroll_pledges_text">No body requirements, and no need to compare yourself with anyone.</string>
+    <string name="enroll_pledges_count" tools:ignore="PluralsCandidate">%1$d / %2$d confirmed</string>
+    <string name="enroll_read_terms">Read the Full Guidelines and Data Notice</string>
+    <string name="enroll_review_title">Join the club\nunder this name.</string>
+    <string name="enroll_review_free">There’s no payment, and nothing renews automatically. Your card number and join date appear after the service confirms them.</string>
+    <string name="enroll_review_data">This sends your nickname and the guidelines version. Workout, water, sleep and body records aren’t uploaded with your claim.</string>
+    <string name="enroll_accept">I’ve read and agree to the guidelines and data notice</string>
+    <string name="enroll_welcome_title">Welcome.\nGo at your own pace.</string>
+    <string name="enroll_welcome_synced">Your member card is synced.</string>
+    <string name="enroll_welcome_text">Taking care of yourself is how today starts.</string>
+    <string name="enroll_welcome_note">In the member center, you can see your card details, make a share card and learn about your free benefits.</string>
+    <string name="enroll_view_card">View My Member Card</string>
+    <string name="enroll_previous">Back</string>
+    <string name="enroll_confirming">Confirming…</string>
+    <string name="enroll_confirm">Claim My Free Card</string>
+    <string name="enroll_continue">Continue</string>
+
+    <!-- Pledges -->
+    <string name="pledge_belonging_title">Everyone Has a Place</string>
+    <string name="pledge_belonging_text">Body shape, weight or body fat never decides who can join.</string>
+    <string name="pledge_pace_title">Respect Your Own Pace</string>
+    <string name="pledge_pace_text">No rankings and no extreme cutting. Stop training when you feel unwell.</string>
+    <string name="pledge_privacy_title">Respect Others and Their Privacy</string>
+    <string name="pledge_privacy_text">Don’t pretend to be someone else, and don’t put other people’s private information in your nickname.</string>
+
+    <!-- Nickname problems -->
+    <string name="nickname_empty">Enter a nickname.</string>
+    <string name="nickname_too_long" tools:ignore="PluralsCandidate">A nickname can have at most %1$d characters.</string>
+    <string name="nickname_invalid">A nickname can’t contain control characters, line breaks or invisible characters.</string>
+
+    <!-- Terms and data -->
+    <string name="terms_title">Guidelines and Data</string>
+    <string name="terms_pledges">Club Guidelines</string>
+    <string name="terms_data">Account and Membership Data</string>
+    <string name="terms_data_account">Signing in sends your email and sign-in details to the club service. Claiming a card sends your nickname and the guidelines version. The server stores your card number, join date and membership status.</string>
+    <string name="terms_data_local">Workout, water, sleep and body records stay on this device only. Claiming a card doesn’t upload them.</string>
+    <string name="terms_data_token">The sign-in token is encrypted with a key in the Android Keystore and stored on this device. Signing out clears the sign-in data and the cached membership on this device. It doesn’t delete your account or your membership on the server.</string>
+    <string name="terms_data_share">Share images contain your nickname and join date. The card number is hidden by default, and you can turn it on in the preview. Nothing is uploaded or shared until you confirm.</string>
+    <string name="terms_boundary">What the Card Is Not</string>
+    <string name="terms_boundary_text">The free member card records your club membership. It grants no paid benefits and can’t be used for payment or gym entry. Images are keepsake copies only. The server decides your membership status.</string>
+    <string name="terms_deletion">The app has no account deletion option yet. Account deletion and a formal privacy policy must be added before the public release.</string>
+    <string name="terms_version">Guidelines version: %1$s</string>
+
+    <!-- Account security -->
+    <string name="security_title">Account and Security</string>
+    <string name="security_email">Email</string>
+    <string name="security_email_verified">Email verified</string>
+    <string name="security_email_unverified">Email not verified</string>
+    <string name="security_session">Current Session</string>
+    <string name="security_signed_in_at">Signed In</string>
+    <string name="security_expires_at">Expires</string>
+    <string name="security_session_unknown">The current session isn’t confirmed yet. Refresh to check.</string>
+    <string name="security_refresh_session">Refresh Session</string>
+    <string name="security_section">Sign-In Security</string>
+    <string name="security_revoke_others">Sign Out Other Sessions</string>
+    <string name="security_note">Changing your password signs out your other sessions. This only applies to accounts with an email password.</string>
+    <string name="security_signed_out">Sign in first to manage account security.</string>
+    <string name="security_footer">Better Auth manages sign-in. This page doesn’t delete your account, member card or local records.</string>
+    <string name="security_revoke_title">Sign out other sessions?</string>
+    <string name="security_revoke_action">Sign Out Others</string>
+    <string name="security_revoke_text">Your other sessions will end and must sign in again. This session and your local records stay.</string>
+    <string name="security_password_section">Email Password</string>
+    <string name="security_current_password">Current password</string>
+    <string name="security_new_password" tools:ignore="PluralsCandidate">New password (%1$d to %2$d characters)</string>
+    <string name="security_repeat_password">Repeat new password</string>
+    <string name="security_password_mismatch">The new passwords don’t match.</string>
+    <string name="security_updating">Updating…</string>
+    <string name="security_update_password">Update Password</string>
+    <string name="security_password_note">After the update, your other sessions sign out. Keep your new password safe.</string>
+    <string name="security_password_confirm_title">Update password and sign out other sessions?</string>
+    <string name="security_password_confirm_action">Update</string>
+    <string name="security_password_confirm_text">Other devices must sign in again. If this session can’t be restored, you also need to sign in with the new password.</string>
+
+    <!-- Share card -->
+    <string name="share_title">Share Preview</string>
+    <string name="share_intro">Keep the day you started as a keepsake.</string>
+    <string name="share_style">Card Color</string>
+    <string name="share_style_note">The color only changes the share image. It doesn’t change your membership or benefits.</string>
+    <string name="share_show_number">Show the full card number in the image</string>
+    <string name="share_number_shown_note">After you share, others can see your nickname, full card number and join date.</string>
+    <string name="share_number_hidden_note">The card number is hidden by default. The image still shows your nickname and join date.</string>
+    <string name="share_footer">The image is sent only after you confirm in the system share sheet. It isn’t a payment or entry pass and doesn’t prove your current membership.</string>
+    <string name="share_chooser_title">My Lean Muscle Club Keepsake Card</string>
+    <string name="share_action">Share Image</string>
+    <string name="share_failed">Can’t create the share image. Choose another color and try again.</string>
+    <string name="share_preview_a11y">Share image preview, %1$s</string>
+    <string name="share_card_headline">I’m in the Lean Muscle Club</string>
+    <string name="share_card_motto">No need to be perfect to start.</string>
+    <string name="share_card_kind">Keepsake Card</string>
+    <string name="share_card_record">Free club membership record</string>
+    <string name="share_card_generated">Created %1$s</string>
+    <string name="share_card_footer">Membership status follows the app’s latest sync\nNot a payment or entry pass</string>
+
+    <!-- Operation results -->
+    <string name="msg_signed_in">Signed in.</string>
+    <string name="msg_registered">Registered. Verify your email, then sign in.</string>
+    <string name="msg_verification_sent">Verification email requested. Check your inbox.</string>
+    <string name="msg_reset_requested">Reset requested. If the address can receive email, check your inbox.</string>
+    <string name="msg_card_updated">Member card updated.</string>
+    <string name="msg_signed_out">Signed out.</string>
+    <string name="msg_signed_out_locally">The sign-in state on this device is cleared. The server hasn’t confirmed the sign-out.</string>
+    <string name="msg_password_changed">Password changed. Your other sessions are signed out.</string>
+    <string name="msg_password_changed_sign_in">Password changed. Sign in again with the new password.</string>
+    <string name="msg_other_sessions_revoked">Other sessions are signed out. This session stays.</string>
+    <string name="msg_not_configured">The member service isn’t configured.</string>
+    <string name="msg_email_password_required">Enter your email and password.</string>
+    <string name="msg_registration_incomplete" tools:ignore="PluralsCandidate">Enter your name, your email and a password of %1$d to %2$d characters.</string>
+    <string name="msg_verification_email_required">Enter the email to verify.</string>
+    <string name="msg_reset_email_required">Enter the email for the password reset.</string>
+    <string name="msg_invalid_credentials">The email or password is incorrect. Check them and try again.</string>
+    <string name="msg_sign_in_required">Sign in to continue.</string>
+    <string name="msg_account_mismatch">The account state doesn’t match. Sign in again.</string>
+    <string name="msg_storage_failed">Can’t save the sign-in state securely. Try again later.</string>
+    <string name="msg_clear_failed">Can’t fully clear the sign-in state on this device.</string>
+    <string name="msg_password_rules" tools:ignore="PluralsCandidate">Enter your current password. The new password needs %1$d to %2$d characters.</string>
+    <string name="msg_same_password">The new password must differ from the current one.</string>
+    <string name="msg_password_changed_storage">Password changed, but the sign-in state can’t be saved securely. Sign in again.</string>
+    <string name="msg_terms_required">Agree to the community membership terms first.</string>
+    <string name="msg_nickname_rejected">The member service didn’t accept this nickname. Change it and try again.</string>
+    <string name="msg_too_many_requests">Too many attempts. Try again later.</string>
+    <string name="msg_wrong_current_password">The current password is incorrect. Enter it again.</string>
+    <string name="msg_no_email_password">This account has no email password. Use the sign-in method you used before.</string>
+    <string name="msg_session_not_fresh">Sign in again, then retry this action.</string>
+    <string name="msg_session_expired">Your session expired. Sign in again.</string>
+    <string name="msg_email_not_verified">Your email isn’t verified. Verify it first.</string>
+    <string name="msg_offline_card">No network. Showing the member card saved on this device.</string>
+    <string name="msg_permission_denied">This account isn’t allowed to do that.</string>
+    <string name="msg_network_refresh">Can’t reach the member service. Try again later.</string>
+    <string name="msg_network_sign_in">Can’t reach the member service, so you can’t sign in right now.</string>
+    <string name="msg_network_register">Can’t reach the member service, so you can’t register right now.</string>
+    <string name="msg_network_verification">Can’t reach the member service, so the verification email can’t be sent right now.</string>
+    <string name="msg_network_reset">Can’t reach the member service, so the reset email can’t be sent right now.</string>
+    <string name="msg_network_enroll">Can’t reach the member service, so you can’t claim a card right now.</string>
+    <string name="msg_network_session">Can’t reach the sign-in service, so the session can’t be confirmed right now.</string>
+    <string name="msg_network_password">The password change isn’t confirmed. Check your network, and reset your password if needed.</string>
+    <string name="msg_network_revoke">Signing out other sessions isn’t confirmed. Try again later.</string>
+    <string name="msg_failed_refresh">Can’t update the membership. Try again later.</string>
+    <string name="msg_failed_sign_in">Sign-in failed. Check your email and password.</string>
+    <string name="msg_failed_register">Registration failed. Check your details and try again.</string>
+    <string name="msg_failed_verification">Can’t send the verification email. Try again later.</string>
+    <string name="msg_failed_reset">Can’t send the password reset email. Try again later.</string>
+    <string name="msg_failed_enroll">Can’t claim the card. Try again later.</string>
+    <string name="msg_failed_session">Can’t confirm the current session. Refresh and try again.</string>
+    <string name="msg_failed_password">The password change isn’t confirmed. Check your current password or reset it.</string>
+    <string name="msg_failed_revoke">Can’t sign out other sessions right now.</string>
+</resources>

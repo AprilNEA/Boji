@@ -1,5 +1,6 @@
 package club.leanmuscle.boji.ui
 
+import androidx.activity.compose.ReportDrawnWhen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,10 +20,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,6 +34,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,15 +49,16 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import club.leanmuscle.boji.R
-import club.leanmuscle.boji.core.data.Appearance
-import club.leanmuscle.boji.core.data.BojiStore
-import club.leanmuscle.boji.core.model.BojiSnapshot
-import club.leanmuscle.boji.core.model.ClubArticles
 import club.leanmuscle.boji.core.model.StorageError
 import club.leanmuscle.boji.core.model.Workout
 import club.leanmuscle.boji.core.model.WorkoutLibrary
 import club.leanmuscle.boji.feature.club.ArticleScreen
 import club.leanmuscle.boji.feature.club.ClubScreen
+import club.leanmuscle.boji.feature.membership.AccountSecurityScreen
+import club.leanmuscle.boji.feature.membership.AuthScreen
+import club.leanmuscle.boji.feature.membership.EnrollScreen
+import club.leanmuscle.boji.feature.membership.MembershipScreen
+import club.leanmuscle.boji.feature.membership.MembershipTermsScreen
 import club.leanmuscle.boji.feature.onboarding.WelcomeScreen
 import club.leanmuscle.boji.feature.progress.ProgressScreen
 import club.leanmuscle.boji.feature.settings.SettingsScreen
@@ -66,10 +67,15 @@ import club.leanmuscle.boji.feature.training.TrainingScreen
 import club.leanmuscle.boji.feature.training.WorkoutDetailScreen
 import club.leanmuscle.boji.feature.training.session.TrainingSessionScreen
 import club.leanmuscle.boji.ui.components.storageErrorMessage
+import club.leanmuscle.boji.ui.navigation.AccountSecurityRoute
 import club.leanmuscle.boji.ui.navigation.ArticleRoute
+import club.leanmuscle.boji.ui.navigation.AuthRoute
 import club.leanmuscle.boji.ui.navigation.BojiDestination
 import club.leanmuscle.boji.ui.navigation.ClubRoute
+import club.leanmuscle.boji.ui.navigation.EnrollRoute
 import club.leanmuscle.boji.ui.navigation.HomeRoute
+import club.leanmuscle.boji.ui.navigation.MembershipRoute
+import club.leanmuscle.boji.ui.navigation.MembershipTermsRoute
 import club.leanmuscle.boji.ui.navigation.ProgressRoute
 import club.leanmuscle.boji.ui.navigation.SessionRoute
 import club.leanmuscle.boji.ui.navigation.SettingsRoute
@@ -86,22 +92,22 @@ private const val DAY_REFRESH_MILLIS = 60_000L
 
 /**
  * App root. It shows onboarding until a plan is chosen, then the tabs. A storage error is
- * shown above every screen, as on iOS.
+ * shown above every screen, as on iOS. Each screen reads its own view model.
  */
 @Composable
 fun BojiApp(
-    store: BojiStore,
-    appearance: Appearance,
-    onAppearanceChange: (Appearance) -> Unit,
     modifier: Modifier = Modifier,
     weekFields: WeekFields = WeekFields.of(Locale.getDefault(Locale.Category.FORMAT)),
+    viewModel: AppViewModel = hiltViewModel(),
 ) {
-    val snapshot by store.snapshot.collectAsStateWithLifecycle()
+    val snapshot by viewModel.snapshot.collectAsStateWithLifecycle()
+    // Time to full display ends when state.json has been read and the first real screen shows.
+    ReportDrawnWhen { snapshot != null }
     val lifecycleOwner = LocalLifecycleOwner.current
-    LaunchedEffect(store, lifecycleOwner) {
+    LaunchedEffect(viewModel, lifecycleOwner) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
             while (true) {
-                store.refreshDay()
+                viewModel.refreshDay()
                 delay(DAY_REFRESH_MILLIS)
             }
         }
@@ -114,11 +120,7 @@ fun BojiApp(
         Column {
             if (error != null) StorageBanner(error)
             Box(Modifier.weight(1f).then(if (error != null) Modifier.consumeWindowInsets(WindowInsets.statusBars) else Modifier)) {
-                if (current.state.hasOnboarded) {
-                    AppNavigation(rememberUpdatedState(current), store, rememberUpdatedState(appearance), onAppearanceChange, weekFields)
-                } else {
-                    WelcomeScreen(onStart = store::completeOnboarding)
-                }
+                if (current.state.hasOnboarded) AppNavigation(weekFields) else WelcomeScreen()
             }
         }
     }
@@ -152,18 +154,9 @@ private fun StorageBanner(error: StorageError) {
     }
 }
 
-/**
- * Top level: the tabs, with the training session above them, like the iOS full-screen cover.
- * Entries receive [State] objects, not values, so a cached entry always reads the latest data.
- */
+/** Top level: the tabs, with the training session above them, like the iOS full-screen cover. */
 @Composable
-private fun AppNavigation(
-    snapshot: State<BojiSnapshot>,
-    store: BojiStore,
-    appearance: State<Appearance>,
-    onAppearanceChange: (Appearance) -> Unit,
-    weekFields: WeekFields,
-) {
+private fun AppNavigation(weekFields: WeekFields) {
     val appStack = rememberNavBackStack(HomeRoute)
     NavDisplay(
         backStack = appStack,
@@ -171,21 +164,14 @@ private fun AppNavigation(
         entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator(), rememberViewModelStoreNavEntryDecorator()),
         entryProvider = entryProvider {
             entry<HomeRoute> {
-                HomeTabs(
-                    snapshot = snapshot,
-                    store = store,
-                    appearance = appearance,
-                    onAppearanceChange = onAppearanceChange,
-                    weekFields = weekFields,
-                    onStartSession = { workout -> appStack.add(SessionRoute(workout.id)) },
-                )
+                HomeTabs(weekFields = weekFields, onStartSession = { workout -> appStack.add(SessionRoute(workout.id)) })
             }
             entry<SessionRoute> { key ->
                 val workout = WorkoutLibrary.byId(key.workoutId)
                 if (workout == null) {
                     LaunchedEffect(key) { appStack.remove(key) }
                 } else {
-                    TrainingSessionScreen(workout = workout, store = store, onClose = { appStack.remove(key) })
+                    TrainingSessionScreen(workout = workout, onClose = { appStack.remove(key) })
                 }
             }
         },
@@ -194,26 +180,19 @@ private fun AppNavigation(
 
 /**
  * Tabs with one back stack each. Every tab decorates its own entries, so a hidden tab keeps
- * its scroll position and inputs. The display shows the start tab under the current tab, so
- * back from another tab's root returns to the start tab.
+ * its scroll position, inputs and view models. The display shows the start tab under the
+ * current tab, so back from another tab's root returns to the start tab.
  */
 @Composable
-private fun HomeTabs(
-    snapshot: State<BojiSnapshot>,
-    store: BojiStore,
-    appearance: State<Appearance>,
-    onAppearanceChange: (Appearance) -> Unit,
-    weekFields: WeekFields,
-    onStartSession: (Workout) -> Unit,
-) {
+private fun HomeTabs(weekFields: WeekFields, onStartSession: (Workout) -> Unit) {
     var current by rememberSaveable { mutableStateOf(BojiDestination.Start) }
     val stacks = BojiDestination.entries.associateWith { rememberNavBackStack(it.root) }
     val entries = BojiDestination.entries.associateWith { destination ->
         val stack = stacks.getValue(destination)
         rememberDecoratedNavEntries(
             stack,
-            listOf(rememberSaveableStateHolderNavEntryDecorator()),
-            tabEntryProvider(destination, stack, snapshot, store, appearance, onAppearanceChange, weekFields, onStartSession),
+            listOf(rememberSaveableStateHolderNavEntryDecorator(), rememberViewModelStoreNavEntryDecorator()),
+            tabEntryProvider(destination, stack, weekFields, onStartSession),
         )
     }
     val start = entries.getValue(BojiDestination.Start)
@@ -260,65 +239,64 @@ private fun NavBackStack<NavKey>.popToRoot() {
 private fun tabEntryProvider(
     tab: BojiDestination,
     stack: NavBackStack<NavKey>,
-    snapshot: State<BojiSnapshot>,
-    store: BojiStore,
-    appearance: State<Appearance>,
-    onAppearanceChange: (Appearance) -> Unit,
     weekFields: WeekFields,
     onStartSession: (Workout) -> Unit,
 ): (NavKey) -> NavEntry<NavKey> {
     val tabKey: (Any) -> Any = { key -> "${tab.name}/$key" }
     val back: () -> Unit = { stack.removeLastOrNull() }
-    val openWorkout: (Workout) -> Unit = { stack.add(WorkoutRoute(it.id)) }
-    val openSettings: () -> Unit = { stack.add(SettingsRoute) }
+    // A double tap must not push the same route twice: NavDisplay rejects duplicate keys.
+    val push: (NavKey) -> Unit = { route -> if (route !in stack) stack.add(route) }
+    val openWorkout: (Workout) -> Unit = { push(WorkoutRoute(it.id)) }
+    val openSettings: () -> Unit = { push(SettingsRoute) }
+    val openMembership: () -> Unit = { push(MembershipRoute) }
+    val openTerms: () -> Unit = { push(MembershipTermsRoute) }
     return entryProvider {
         entry<TodayRoute>(tabKey) {
-            TodayScreen(snapshot = snapshot.value, store = store, onOpenWorkout = openWorkout, onOpenSettings = openSettings)
+            TodayScreen(onOpenWorkout = openWorkout, onOpenSettings = openSettings)
         }
         entry<TrainingRoute>(tabKey) {
-            TrainingScreen(snapshot = snapshot.value, store = store, onOpenWorkout = openWorkout)
+            TrainingScreen(onOpenWorkout = openWorkout)
         }
         entry<ProgressRoute>(tabKey) {
-            ProgressScreen(snapshot = snapshot.value, store = store)
+            ProgressScreen()
         }
         entry<ClubRoute>(tabKey) {
             ClubScreen(
-                snapshot = snapshot.value,
-                store = store,
                 weekFields = weekFields,
-                onOpenArticle = { stack.add(ArticleRoute(it.id)) },
+                onOpenArticle = { push(ArticleRoute(it.id)) },
                 onOpenSettings = openSettings,
+                onOpenMembership = openMembership,
             )
         }
         entry<WorkoutRoute>(tabKey) { key ->
-            val workout = WorkoutLibrary.byId(key.workoutId)
-            if (workout == null) {
-                LaunchedEffect(key) { stack.remove(key) }
-            } else {
-                WorkoutDetailScreen(
-                    workout = workout,
-                    completedToday = snapshot.value.isCompletedToday(workout),
-                    onBack = back,
-                    onStart = { onStartSession(workout) },
-                )
-            }
+            WorkoutDetailScreen(workoutId = key.workoutId, onBack = { stack.remove(key) }, onStart = onStartSession)
         }
         entry<ArticleRoute>(tabKey) { key ->
-            val article = ClubArticles.byId(key.articleId)
-            if (article == null) {
-                LaunchedEffect(key) { stack.remove(key) }
-            } else {
-                ArticleScreen(article = article, onBack = back)
-            }
+            ArticleScreen(articleId = key.articleId, onBack = { stack.remove(key) })
         }
         entry<SettingsRoute>(tabKey) {
-            SettingsScreen(
-                snapshot = snapshot.value,
-                store = store,
-                appearance = appearance.value,
-                onAppearanceChange = onAppearanceChange,
-                onBack = back,
+            SettingsScreen(onBack = back, onOpenMembership = openMembership)
+        }
+        entry<MembershipRoute>(tabKey) { key ->
+            MembershipScreen(
+                onBack = { stack.remove(key) },
+                onOpenAuth = { push(AuthRoute) },
+                onOpenEnroll = { push(EnrollRoute) },
+                onOpenTerms = openTerms,
+                onOpenSecurity = { push(AccountSecurityRoute) },
             )
+        }
+        entry<AuthRoute>(tabKey) { key ->
+            AuthScreen(onBack = { stack.remove(key) }, onSignedIn = { stack.remove(key) }, onOpenTerms = openTerms)
+        }
+        entry<EnrollRoute>(tabKey) { key ->
+            EnrollScreen(onBack = { stack.remove(key) }, onDone = { stack.remove(key) }, onOpenTerms = openTerms)
+        }
+        entry<MembershipTermsRoute>(tabKey) { key ->
+            MembershipTermsScreen(onBack = { stack.remove(key) })
+        }
+        entry<AccountSecurityRoute>(tabKey) { key ->
+            AccountSecurityScreen(onBack = { stack.remove(key) })
         }
     }
 }

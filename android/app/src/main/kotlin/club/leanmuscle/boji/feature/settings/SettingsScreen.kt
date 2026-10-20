@@ -26,10 +26,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,9 +43,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.core.content.pm.PackageInfoCompat
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import club.leanmuscle.boji.R
 import club.leanmuscle.boji.core.data.Appearance
-import club.leanmuscle.boji.core.data.BojiStore
 import club.leanmuscle.boji.core.model.BojiSnapshot
 import club.leanmuscle.boji.core.model.PlanKind
 import club.leanmuscle.boji.ui.components.BojiCard
@@ -53,42 +54,68 @@ import club.leanmuscle.boji.ui.components.BojiTopBar
 import club.leanmuscle.boji.ui.components.FootNote
 import club.leanmuscle.boji.ui.components.PageColumn
 import club.leanmuscle.boji.ui.components.titleRes
-import java.io.IOException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
+/** 设置 with its view model. Shows nothing until state.json has been read. */
+@Composable
+fun SettingsScreen(
+    onBack: () -> Unit,
+    onOpenMembership: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: SettingsViewModel = hiltViewModel(),
+) {
+    val snapshot by viewModel.snapshot.collectAsStateWithLifecycle()
+    val appearance by viewModel.appearance.collectAsStateWithLifecycle()
+    val exportResult by viewModel.exportResult.collectAsStateWithLifecycle()
+    val accountEmail by viewModel.accountEmail.collectAsStateWithLifecycle()
+    val current = snapshot ?: return
+    SettingsScreen(
+        snapshot = current,
+        nickname = viewModel.nickname,
+        onNicknameChange = viewModel::updateNickname,
+        onSelectPlan = viewModel::setSelectedPlan,
+        appearance = appearance,
+        onAppearanceChange = viewModel::setAppearance,
+        exportResult = exportResult,
+        onExport = viewModel::export,
+        onExportResultShown = viewModel::clearExportResult,
+        onResetAll = viewModel::resetAll,
+        onBack = onBack,
+        accountEmail = accountEmail,
+        onOpenMembership = onOpenMembership,
+        modifier = modifier,
+    )
+}
 
 @Composable
 fun SettingsScreen(
     snapshot: BojiSnapshot,
-    store: BojiStore,
+    nickname: String,
+    onNicknameChange: (String) -> Unit,
+    onSelectPlan: (PlanKind) -> Unit,
     appearance: Appearance,
     onAppearanceChange: (Appearance) -> Unit,
+    exportResult: ExportResult?,
+    onExport: (Uri) -> Unit,
+    onExportResultShown: () -> Unit,
+    onResetAll: () -> Unit,
     onBack: () -> Unit,
+    accountEmail: String?,
+    onOpenMembership: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     val snackbar = remember { SnackbarHostState() }
-    var exportError by rememberSaveable { mutableStateOf<String?>(null) }
     var confirmDelete by rememberSaveable { mutableStateOf(false) }
     val exportDone = stringResource(R.string.settings_export_done)
     val unknownError = stringResource(R.string.storage_unknown_error)
 
     val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri: Uri? ->
-        val json = store.exportJson()
-        if (uri == null || json == null) return@rememberLauncherForActivityResult
-        scope.launch {
-            val error = withContext(Dispatchers.IO) {
-                try {
-                    val stream = context.contentResolver.openOutputStream(uri, "wt") ?: throw IOException(unknownError)
-                    stream.use { it.write(json.toByteArray(Charsets.UTF_8)) }
-                    null
-                } catch (error: Exception) {
-                    error.message ?: unknownError
-                }
-            }
-            if (error == null) snackbar.showSnackbar(exportDone) else exportError = error
+        if (uri != null) onExport(uri)
+    }
+    // A saved export shows a snackbar once. A failed export stays as a dialog until dismissed.
+    LaunchedEffect(exportResult) {
+        if (exportResult == ExportResult.Saved) {
+            onExportResultShown()
+            snackbar.showSnackbar(exportDone)
         }
     }
 
@@ -101,8 +128,8 @@ fun SettingsScreen(
         PageColumn(modifier = Modifier.padding(padding), spacing = 20.dp) {
             SettingsSection(stringResource(R.string.settings_profile)) {
                 OutlinedTextField(
-                    value = snapshot.state.displayName,
-                    onValueChange = store::setDisplayName,
+                    value = nickname,
+                    onValueChange = onNicknameChange,
                     label = { Text(stringResource(R.string.settings_nickname)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -113,7 +140,18 @@ fun SettingsScreen(
                     options = PlanKind.entries,
                     selected = snapshot.state.selectedPlan,
                     label = { stringResource(it.titleRes) },
-                    onSelect = store::setSelectedPlan,
+                    onSelect = onSelectPlan,
+                )
+            }
+            SettingsSection(stringResource(R.string.settings_account)) {
+                OutlinedButton(onClick = onOpenMembership, modifier = Modifier.fillMaxWidth().testTag("settings_membership")) {
+                    Icon(painterResource(R.drawable.ic_card_membership), contentDescription = null, modifier = Modifier.size(18.dp))
+                    Text(stringResource(R.string.membership_title), modifier = Modifier.padding(start = 8.dp).weight(1f))
+                    Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.size(18.dp))
+                }
+                FootNote(
+                    accountEmail?.let { stringResource(R.string.settings_account_signed_in, it) }
+                        ?: stringResource(R.string.settings_account_signed_out),
                 )
             }
             SettingsSection(stringResource(R.string.settings_appearance)) {
@@ -166,24 +204,29 @@ fun SettingsScreen(
         }
     }
 
-    exportError?.let { message ->
+    (exportResult as? ExportResult.Failed)?.let { failure ->
         AlertDialog(
-            onDismissRequest = { exportError = null },
+            onDismissRequest = onExportResultShown,
             title = { Text(stringResource(R.string.settings_export_failed)) },
-            text = { Text(message) },
-            confirmButton = { TextButton(onClick = { exportError = null }) { Text(stringResource(R.string.action_ok)) } },
+            text = { Text(failure.detail ?: unknownError) },
+            confirmButton = { TextButton(onClick = onExportResultShown) { Text(stringResource(R.string.action_ok)) } },
         )
     }
     if (confirmDelete) {
         AlertDialog(
             onDismissRequest = { confirmDelete = false },
             title = { Text(stringResource(R.string.settings_delete_confirm_title)) },
-            text = { Text(stringResource(R.string.settings_delete_confirm_text)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(stringResource(R.string.settings_delete_confirm_text))
+                    Text(stringResource(R.string.settings_delete_membership_note))
+                }
+            },
             confirmButton = {
                 TextButton(
                     onClick = {
                         confirmDelete = false
-                        store.resetAll()
+                        onResetAll()
                     },
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
                     modifier = Modifier.testTag("settings_delete_confirm"),

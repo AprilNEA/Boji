@@ -1,17 +1,21 @@
 package club.leanmuscle.boji.feature.training.session
 
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -22,6 +26,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -44,12 +50,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import club.leanmuscle.boji.R
-import club.leanmuscle.boji.core.data.BojiStore
 import club.leanmuscle.boji.core.model.Workout
+import club.leanmuscle.boji.feature.training.ExerciseAnimation
 import club.leanmuscle.boji.ui.components.BojiCard
-import club.leanmuscle.boji.ui.components.BojiLocale
 import club.leanmuscle.boji.ui.components.BojiScaffold
 import club.leanmuscle.boji.ui.components.ContentMaxWidth
 import club.leanmuscle.boji.ui.components.FootNote
@@ -57,17 +61,28 @@ import club.leanmuscle.boji.ui.components.OrbitArtwork
 import club.leanmuscle.boji.ui.components.PageColumn
 import club.leanmuscle.boji.ui.components.PrimaryButton
 import club.leanmuscle.boji.ui.components.iconRes
+import club.leanmuscle.boji.ui.components.repsText
+import club.leanmuscle.boji.ui.components.textLocale
 import club.leanmuscle.boji.ui.theme.BojiThemeColors
 
 /** Full-screen session. System back asks for confirmation, like the iOS 结束 button. */
 @Composable
-fun TrainingSessionScreen(workout: Workout, store: BojiStore, onClose: () -> Unit, modifier: Modifier = Modifier) {
-    val viewModel = viewModel(key = workout.id) { TrainingSessionViewModel(workout, store) }
+fun TrainingSessionScreen(
+    workout: Workout,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: TrainingSessionViewModel =
+        hiltViewModel<TrainingSessionViewModel, TrainingSessionViewModel.Factory>(key = workout.id) { it.create(workout) },
+) {
     val session by viewModel.session.collectAsStateWithLifecycle()
     var confirmEnd by rememberSaveable { mutableStateOf(false) }
 
-    // Leaving the foreground pauses the session, as on iOS.
-    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { viewModel.setRunning(false) }
+    // Leaving the foreground pauses the session, as on iOS. A configuration change (rotation,
+    // light or dark mode) also recreates the activity, but the session keeps running then.
+    val activity = LocalActivity.current
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+        if (activity?.isChangingConfigurations != true) viewModel.setRunning(false)
+    }
 
     val requestEnd = {
         viewModel.setRunning(false)
@@ -156,20 +171,36 @@ private fun ActiveContent(
                 progress = { session.completedSets.toFloat() / workout.totalSets },
                 modifier = Modifier.fillMaxWidth().clearAndSetSemantics { contentDescription = progressLabel },
             )
-            OrbitArtwork(
-                icon = if (session.isResting) R.drawable.ic_self_improvement else session.exercise.icon.iconRes,
-                color = if (session.isResting) calm else MaterialTheme.colorScheme.primary,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-            )
+            // One fixed square for both states, so the layout does not move between sets and rests.
+            Box(Modifier.align(Alignment.CenterHorizontally).size(ArtworkSize), contentAlignment = Alignment.Center) {
+                if (session.isResting) {
+                    OrbitArtwork(icon = R.drawable.ic_self_improvement, color = calm)
+                } else {
+                    val primary = MaterialTheme.colorScheme.primary
+                    Surface(
+                        shape = RoundedCornerShape(28.dp),
+                        color = BojiThemeColors.current.card,
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        ExerciseAnimation(
+                            exerciseId = session.exercise.id,
+                            playing = session.running,
+                            modifier = Modifier.fillMaxSize().padding(8.dp),
+                        ) {
+                            OrbitArtwork(icon = session.exercise.icon.iconRes, color = primary)
+                        }
+                    }
+                }
+            }
             Text(
-                text = if (session.isResting) stringResource(R.string.session_rest) else session.exercise.name,
+                text = if (session.isResting) stringResource(R.string.session_rest) else stringResource(session.exercise.name),
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth().semantics { heading() },
             )
             if (session.isResting) {
-                val restLabel = stringResource(R.string.session_rest_a11y, session.restRemaining)
+                val restLabel = pluralStringResource(R.plurals.session_rest_a11y, session.restRemaining, session.restRemaining)
                 Text(
                     text = "${session.restRemaining}",
                     fontSize = 62.sp,
@@ -186,14 +217,14 @@ private fun ActiveContent(
                 )
             } else {
                 Text(
-                    text = stringResource(R.string.session_set, session.currentSet, session.exercise.sets, session.exercise.reps),
+                    text = stringResource(R.string.session_set, session.currentSet, session.exercise.sets, repsText(session.exercise.reps)),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
                 )
                 BojiCard(contentPadding = PaddingValues(16.dp)) {
-                    Text(session.exercise.tip, style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(session.exercise.tip), style = MaterialTheme.typography.bodyMedium)
                 }
             }
             if (!session.running) {
@@ -265,7 +296,7 @@ private fun FinishedContent(session: TrainingSession, onDone: () -> Unit, modifi
                 modifier = Modifier.fillMaxWidth().semantics { heading() },
             )
             Text(
-                stringResource(R.string.session_finished_summary, session.workout.title, minutes, seconds),
+                stringResource(R.string.session_finished_summary, stringResource(session.workout.title), minutes, seconds),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -289,4 +320,9 @@ private fun FinishedContent(session: TrainingSession, onDone: () -> Unit, modifi
     }
 }
 
-private fun formatClock(totalSeconds: Int): String = String.format(BojiLocale, "%02d:%02d", totalSeconds / 60, totalSeconds % 60)
+@Composable
+@ReadOnlyComposable
+private fun formatClock(totalSeconds: Int): String =
+    String.format(textLocale, "%02d:%02d", totalSeconds / 60, totalSeconds % 60)
+
+private val ArtworkSize = 240.dp

@@ -1,5 +1,9 @@
 package club.leanmuscle.boji.feature.training
 
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,13 +38,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import club.leanmuscle.boji.R
-import club.leanmuscle.boji.core.data.BojiStore
 import club.leanmuscle.boji.core.model.BojiSnapshot
 import club.leanmuscle.boji.core.model.PlanKind
 import club.leanmuscle.boji.core.model.Workout
 import club.leanmuscle.boji.core.model.WorkoutLibrary
 import club.leanmuscle.boji.ui.components.BojiCard
-import club.leanmuscle.boji.ui.components.BojiLocale
 import club.leanmuscle.boji.ui.components.BojiScaffold
 import club.leanmuscle.boji.ui.components.ContentMaxWidth
 import club.leanmuscle.boji.ui.components.FootNote
@@ -50,13 +52,15 @@ import club.leanmuscle.boji.ui.components.PrimaryButton
 import club.leanmuscle.boji.ui.components.SectionHeading
 import club.leanmuscle.boji.ui.components.SymbolTile
 import club.leanmuscle.boji.ui.components.iconRes
+import club.leanmuscle.boji.ui.components.repsText
+import club.leanmuscle.boji.ui.components.textLocale
 import club.leanmuscle.boji.ui.components.titleRes
 import club.leanmuscle.boji.ui.theme.BojiThemeColors
 
 @Composable
 fun TrainingScreen(
     snapshot: BojiSnapshot,
-    store: BojiStore,
+    onSelectPlan: (PlanKind) -> Unit,
     onOpenWorkout: (Workout) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -67,7 +71,7 @@ fun TrainingScreen(
                 title = stringResource(R.string.training_title),
                 subtitle = stringResource(R.string.training_subtitle),
             )
-            PlanPicker(selected = snapshot.state.selectedPlan, onSelect = store::setSelectedPlan)
+            PlanPicker(selected = snapshot.state.selectedPlan, onSelect = onSelectPlan)
             val workout = snapshot.recommendedWorkout
             WorkoutCard(workout = workout, onClick = { onOpenWorkout(workout) })
             BojiCard {
@@ -117,7 +121,7 @@ private fun CourseRow(
             SymbolTile(icon = icon, color = color)
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(workout.title, style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(workout.title), style = MaterialTheme.typography.titleMedium)
                 Text(
                     detail,
                     style = MaterialTheme.typography.labelMedium,
@@ -155,7 +159,7 @@ fun WorkoutDetailScreen(
     modifier: Modifier = Modifier,
 ) {
     BojiScaffold(
-        title = workout.title,
+        title = stringResource(workout.title),
         modifier = modifier.testTag("screen_WorkoutDetail"),
         onBack = onBack,
         bottomBar = {
@@ -180,28 +184,28 @@ fun WorkoutDetailScreen(
                 Row(Modifier.fillMaxWidth()) {
                     Metric("${workout.minutes}", stringResource(R.string.detail_minutes), Modifier.weight(1f))
                     Metric("${workout.exercises.size}", stringResource(R.string.detail_exercises), Modifier.weight(1f))
-                    Metric(workout.level, stringResource(R.string.detail_level), Modifier.weight(1f))
+                    Metric(stringResource(workout.level.titleRes), stringResource(R.string.detail_level), Modifier.weight(1f))
                 }
             }
-            Text(workout.subtitle, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(workout.subtitle), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             SectionHeading(stringResource(R.string.detail_plan_title), stringResource(R.string.detail_plan_detail))
             workout.exercises.forEachIndexed { index, exercise ->
                 BojiCard(contentPadding = PaddingValues(16.dp)) {
                     Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                         Text(
-                            text = String.format(BojiLocale, "%02d", index + 1),
+                            text = String.format(textLocale, "%02d", index + 1),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary,
                         )
                         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                            Text(exercise.name, style = MaterialTheme.typography.titleMedium)
+                            Text(stringResource(exercise.name), style = MaterialTheme.typography.titleMedium)
                             Text(
-                                stringResource(R.string.detail_exercise_sets, exercise.sets, exercise.reps),
+                                stringResource(R.string.detail_exercise_sets, exercise.sets, repsText(exercise.reps)),
                                 style = MaterialTheme.typography.labelLarge,
                                 color = MaterialTheme.colorScheme.primary,
                             )
-                            Text(exercise.tip, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(stringResource(exercise.tip), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         Icon(
                             painterResource(exercise.icon.iconRes),
@@ -222,5 +226,35 @@ private fun Metric(value: String, label: String, modifier: Modifier = Modifier) 
     Column(modifier = modifier.semantics(mergeDescendants = true) {}, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+/** 训练 with its view model. Shows nothing until state.json has been read. */
+@Composable
+fun TrainingScreen(
+    onOpenWorkout: (Workout) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: TrainingViewModel = hiltViewModel(),
+) {
+    val snapshot by viewModel.snapshot.collectAsStateWithLifecycle()
+    snapshot?.let { TrainingScreen(it, viewModel::setSelectedPlan, onOpenWorkout, modifier) }
+}
+
+/** One course by ID. An unknown ID closes the screen. */
+@Composable
+fun WorkoutDetailScreen(
+    workoutId: String,
+    onBack: () -> Unit,
+    onStart: (Workout) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: WorkoutDetailViewModel =
+        hiltViewModel<WorkoutDetailViewModel, WorkoutDetailViewModel.Factory>(key = workoutId) { it.create(workoutId) },
+) {
+    val workout = viewModel.workout
+    val completedToday by viewModel.completedToday.collectAsStateWithLifecycle()
+    if (workout == null) {
+        LaunchedEffect(workoutId) { onBack() }
+    } else {
+        WorkoutDetailScreen(workout, completedToday, onBack, onStart = { onStart(workout) }, modifier = modifier)
     }
 }

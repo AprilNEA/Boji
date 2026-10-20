@@ -70,7 +70,7 @@ private const val SLEEP_STEP = 0.5
 /** Bottom sheet for one daily entry. Values are saved only when the user taps 保存. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DailyEntrySheet(kind: DailySheet, snapshot: BojiSnapshot, store: BojiStore, onDismiss: () -> Unit) {
+fun DailyEntrySheet(kind: DailySheet, snapshot: BojiSnapshot, actions: DailyEntryActions, onDismiss: () -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = kind == DailySheet.Body)
     val scope = rememberCoroutineScope()
     val close: () -> Unit = {
@@ -80,13 +80,13 @@ fun DailyEntrySheet(kind: DailySheet, snapshot: BojiSnapshot, store: BojiStore, 
         when (kind) {
             DailySheet.Water -> WaterContent(
                 todayWater = snapshot.todayRecord.waterML,
-                onSave = { store.addWater(it); close() },
-                onUndo = { store.addWater(-UNDO_WATER_ML); close() },
+                onSave = { actions.addWater(it); close() },
+                onUndo = { actions.addWater(-UNDO_WATER_ML); close() },
                 onCancel = close,
             )
             DailySheet.Sleep -> SleepContent(
                 initialHours = snapshot.todayRecord.sleepHours ?: 8.0,
-                onSave = { store.setSleep(it); close() },
+                onSave = { actions.setSleep(it); close() },
                 onCancel = close,
             )
             DailySheet.Body -> {
@@ -94,7 +94,7 @@ fun DailyEntrySheet(kind: DailySheet, snapshot: BojiSnapshot, store: BojiStore, 
                 BodyContent(
                     initialWeight = last?.weight?.toString().orEmpty(),
                     initialWaist = last?.waist?.toString().orEmpty(),
-                    onSave = { weight, waist -> store.addBodyEntry(weight, waist); close() },
+                    onSave = { weight, waist -> actions.addBodyEntry(weight, waist); close() },
                     onCancel = close,
                 )
             }

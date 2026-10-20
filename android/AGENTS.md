@@ -21,6 +21,14 @@ Run these commands in `android/`.
 # Run the Compose UI tests. A device or an emulator must be connected.
 ./gradlew connectedDebugAndroidTest
 
+# Regenerate the Baseline Profile on a connected emulator or device (API 28 or later), then commit
+# app/src/release/generated/baselineProfiles/.
+./gradlew :app:generateBaselineProfile
+
+# Point a build at a member service. Without a value, debug builds use http://10.0.2.2:3000 and
+# release builds stay offline.
+./gradlew assembleRelease -Pboji.apiBaseUrl=https://api.example.com
+
 # Regenerate the API client code after a change to ../bizserver/proto/boji/v1/.
 (cd rpc && buf generate)
 ```
@@ -34,13 +42,48 @@ Crash reporting is off unless the build sets a Sentry DSN with `-Pboji.sentryDsn
 - Declare every dependency and plugin version in `gradle/libs.versions.toml`.
 - AGP provides built-in Kotlin. Do not apply the `org.jetbrains.kotlin.android` plugin.
 - To upgrade Kotlin, change only the `kotlin` version in `gradle/libs.versions.toml`. The Kotlin Gradle plugin in the root `build.gradle.kts` and the Compose compiler plugin use that version.
+- `app/build.gradle.kts` adds `../animations/lottie` as a `main` assets directory. That directory holds only course exercises. Do not package `../animations/lottie-library`. Do not copy animation files into `app/src/`, and do not edit files in `../animations/`. Asset paths are `<light|dark>/<exercise ID>.json`. Load the JSON files directly. Do not convert them to `.lottie`.
+- `ExerciseAnimationIndex` reads `index.json` from the assets and ignores unknown fields. When system animations are off, show the `posterFrame` of the exercise, not frame 0.
+- `ExerciseAnimationAssetsTest` reads `../animations/lottie/index.json`. It fails when the index and the course exercises differ, when a `course` value does not contain the exercise, when `posterFrame` is outside `[0, frames)`, or when a light or dark file is missing.
 
 ### API client
 
-- `rpc/` is an Android library with the Java lite messages, the Kotlin builders and the Connect clients of the `boji.v1` API. No app module depends on it yet.
+- `rpc/` is an Android library with the Java lite messages, the Kotlin builders and the Connect clients of the `boji.v1` API. `app` uses it through `core/network/MembershipClient.kt` only.
 - `buf generate` in `rpc/` writes `rpc/generated/` from `../bizserver/proto/boji/v1/`. Do not edit `rpc/generated/`. Commit it in the same change as the proto change. `buf` comes from the devenv shell, and the first run needs network access to the BSR.
 - The Gradle build compiles `rpc/generated/` as source. It does not run `protoc` or `buf`. Do not add the protobuf Gradle plugin.
 - Keep the plugin versions in `rpc/buf.gen.yaml` equal to the runtimes in `gradle/libs.versions.toml`: `protocolbuffers/java` and `protocolbuffers/kotlin` at the protoc release of `protobuf` (v36.2 for 4.36.2), and `connectrpc/kotlin` equal to `connectKotlin`. Follow "API contract" in the root `AGENTS.md`.
+- Keep the `GeneratedMessageLite` field rule in `rpc/consumer-rules.pro`. The lite runtime reads fields by name, and `protobuf-javalite` ships no R8 rules. After a change to R8 rules or `protobuf`, run `:app:assembleRelease` and check that no `club.leanmuscle.boji.v1` field ending in `_` is renamed in `app/build/outputs/mapping/release/mapping.txt`.
+
+### Architecture
+
+- Hilt provides the dependencies. `BojiApplication` is `@HiltAndroidApp` and `MainActivity` is `@AndroidEntryPoint`. Put modules in `core/di/`. Run the Hilt compiler with KSP. Do not add kapt.
+- Each screen has a `@HiltViewModel`. A screen has a stateless overload, which takes the state and the callbacks, and a stateful overload, which gets its ViewModel with `hiltViewModel()`. Do not pass `BojiStore` or a repository to a composable.
+- `BojiApp` gives every Navigation 3 entry `rememberSaveableStateHolderNavEntryDecorator()` and `rememberViewModelStoreNavEntryDecorator()`, so a ViewModel lives as long as its back stack entry. `TrainingSessionViewModel` gets its workout with assisted injection.
+- A ViewModel exposes `StateFlow`. Composables collect it with `collectAsStateWithLifecycle()`.
+
+### Data
+
+- `state.json` in `filesDir` is a JSON DataStore with `BojiStateSerializer`. Keep the format of the iOS `state.json`: the same field names, sorted keys and ISO 8601 dates. `BojiStore` is the only writer.
+- `BojiStore` runs writes in the `@ApplicationScope` coroutine scope, so a closed screen does not cancel a save.
+- When `state.json` cannot be decoded, `BojiStore` shows `StorageError.ReadFailed` and does not overwrite the file. Do not replace it with an empty state.
+- The appearance setting is a Preferences DataStore in `AppearanceSettings`.
+- `allowBackup` is `false`, and `data_extraction_rules.xml` excludes every domain. Keep both, because the account files below must not leave the device.
+
+### Network and account
+
+- `BuildConfig.BOJI_API_BASE_URL` is the member service. `ServerEndpoint` validates it again at runtime: https only, and http only for `localhost`, `127.0.0.1`, `::1` and `10.0.2.2` in debug builds. An empty or rejected value means "not configured": the member center shows an offline notice and makes no request.
+- `src/main/res/xml/network_security_config.xml` forbids cleartext traffic. Only the debug copy allows it, for the same hosts.
+- `NetworkModule` provides the only `OkHttpClient`. Redirects are off. Better Auth (`/api/auth/` endpoints) is a JSON API outside the proto contract: call it through `BetterAuthApi` with Retrofit and the kotlinx.serialization converter. Call `boji.v1` services through the generated Connect clients. Do not hand-write RPC request or response types.
+- `AuthSessionStore` and `MembershipCacheStore` are DataStore files encrypted by `EncryptedJsonSerializer`. `KeystoreCipher` uses an AES-256-GCM key in the Android Keystore and passes the file purpose as associated data. When a file cannot be decrypted, for example after the key is lost, treat the account as signed out. Do not crash and do not log the file content.
+- `MembershipRepository` holds the account rules of `../ios/Boji/Models/MembershipStore.swift`. Map a server error by its `ErrorInfo.reason` first, then by the Connect code. Treat membership numbers as opaque strings, as the root `AGENTS.md` requires.
+- `PasswordCredentials` saves and offers the email password with Credential Manager. The app does not declare Digital Asset Links yet; `AndroidManifest.xml` records why.
+- Deleting all local data in Settings also clears the session and the cached member card. It does not delete the account or the membership on the server.
+- UI tests replace `DataFileModule`, `AccountFileModule` and `NetworkModule` with `@TestInstallIn` modules in `src/androidTest/`. Each test uses a new directory, and the member service is `null` unless a test starts `FakeMemberServerRule`.
+
+### Performance
+
+- `:baselineprofile` is a `com.android.test` module that generates the Baseline Profile and runs `StartupBenchmark`. `BojiJourneys` covers startup, onboarding, the tabs and the start of a session. When a journey changes, update `BojiJourneys` and regenerate the profile.
+- `MainActivity` exposes test tags as resource IDs for UiAutomator. `BojiApp` calls `ReportDrawnWhen` after `state.json` loads. Keep both, because the startup benchmark depends on them.
 
 ### Crash reporting
 
@@ -71,6 +114,8 @@ Crash reporting is off unless the build sets a Sentry DSN with `-Pboji.sentryDsn
 - The color scheme in `app/src/main/kotlin/club/leanmuscle/boji/ui/theme/Color.kt` is generated from the seed `#C7401F` with `@material/material-color-utilities`. To change the brand color, regenerate the full scheme. Do not edit single color roles.
 - Keep `app/src/main/res/drawable/ic_launcher_foreground.xml` aligned with `../ios/Boji/Resources/AppIcon.icon/Assets/mark.svg`. Use the same foreground for themed icons.
 - Do not lock the screen orientation. With target SDK 37, layouts must support landscape and large screens.
+- Play an exercise animation only in the current exercise card of a session. Lists keep icons, so a screen plays at most one animation. Choose the palette with `BojiThemeColors.isDark`, not `isSystemInDarkTheme()`.
+- A session pauses when the app leaves the foreground. A configuration change (rotation, light or dark mode) also sends `ON_PAUSE`, so check `isChangingConfigurations` before pausing.
 
 ### Parity with iOS
 

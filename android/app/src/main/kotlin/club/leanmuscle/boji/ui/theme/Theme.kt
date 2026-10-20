@@ -8,6 +8,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.staticCompositionLocalOf
 
 // Brand colors stay fixed. Dynamic color is off so Android matches the iOS accent.
 private val LightColors: ColorScheme = lightColorScheme(
@@ -131,10 +132,12 @@ fun BojiTheme(
         surfaceContainerHigh = neutral.high,
         surfaceContainerHighest = neutral.highest,
     )
-    CompositionLocalProvider(LocalBojiColors provides boji) {
+    CompositionLocalProvider(LocalBojiColors provides boji, LocalBojiDarkTheme provides darkTheme) {
         MaterialTheme(colorScheme = scheme, content = content)
     }
 }
+
+private val LocalBojiDarkTheme = staticCompositionLocalOf { false }
 
 /** Access to [BojiColors], in the style of `MaterialTheme.colorScheme`. */
 object BojiThemeColors {
@@ -142,4 +145,13 @@ object BojiThemeColors {
         @Composable
         @ReadOnlyComposable
         get() = LocalBojiColors.current
+
+    /**
+     * True when [BojiTheme] uses the dark palette. This follows the in-app appearance setting,
+     * so it can differ from `isSystemInDarkTheme()`.
+     */
+    val isDark: Boolean
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalBojiDarkTheme.current
 }

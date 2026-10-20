@@ -1,5 +1,6 @@
 package club.leanmuscle.boji.feature.onboarding
 
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -144,4 +145,10 @@ private fun PlanOption(plan: PlanKind, selected: Boolean, onSelect: () -> Unit) 
             )
         }
     }
+}
+
+/** Onboarding with its view model. Choosing a plan ends onboarding. */
+@Composable
+fun WelcomeScreen(modifier: Modifier = Modifier, viewModel: WelcomeViewModel = hiltViewModel()) {
+    WelcomeScreen(onStart = viewModel::start, modifier = modifier)
 }
