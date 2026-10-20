@@ -37,7 +37,9 @@ This rule applies to both clients and to all documentation in this repository.
 
 ### Exercise IDs
 
-Three places use the same exercise IDs: `Exercise.id` in `ios/Boji/Models/BojiStore.swift`, the Android course model (`Workout.kt`), and `animations/src/courses.ts`. Keep the IDs equal. If you rename or add an ID, update all three places and regenerate `animations/lottie/`.
+Three places use the same exercise IDs: `Exercise.id` in `ios/Boji/Models/BojiStore.swift`, the Android course model (`Workout.kt`), and `COURSES` in `animations/src/courses.ts`. Keep the IDs equal. If you rename or add a course exercise, update all three places and regenerate `animations/lottie/`.
+
+`LIBRARY` in `animations/src/courses.ts` holds animated exercises that no app course uses yet. When an app course adopts one, move it from `LIBRARY` to `COURSES`.
 
 ### Documentation language
 

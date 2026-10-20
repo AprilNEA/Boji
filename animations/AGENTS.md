@@ -14,13 +14,14 @@ This directory generates the exercise Lottie animations for the iOS and Android 
 - Do not edit files in `lottie/` by hand. Change `src/`, run `pnpm build`, and commit `lottie/` in the same commit as the source change.
 - Keep the generator deterministic. Do not use `Date`, `Math.random` or environment-dependent values in `src/`.
 - Use shape layers only: paths, ellipses, rectangles, fills and strokes. Do not add images, expressions, masks, layer parenting or text, because the native players must render the files.
-- Keep exercise IDs equal to `Exercise.id` in `ios/Boji/Models/BojiStore.swift` and to the IDs in Android `Workout.kt`. Keep the order in `src/courses.ts` equal to the app course order.
+- `COURSES` in `src/courses.ts` must match the app courses. Use the IDs of `Exercise.id` in `ios/Boji/Models/BojiStore.swift` and Android `Workout.kt`, in the app order.
+- Put exercises that no app course uses yet in `LIBRARY`. `index.json` lists them with `course: null`. When an app course adopts one, move it to `COURSES`.
 - Treat the paths `lottie/<palette>/<id>.json` and the `IndexEntry` fields in `src/generate.ts` as a contract with both apps. If you change them, update the iOS and Android consumers in the same change.
 - Each exercise script in `src/exercises/` default-exports an object that ends with `satisfies Exercise`.
 
 ## Add or change an exercise
 
-1. Edit or add `src/exercises/<id>.ts`. Register a new exercise in `src/courses.ts`.
+1. Edit or add `src/exercises/<id>.ts`. Register a new exercise in `src/courses.ts`: in `COURSES` if an app course uses it, otherwise in `LIBRARY`.
 2. Run `pnpm build`. A `WARN` line or exit code 1 means an IK target is out of reach. Fix the pose before you continue.
 3. Run `pnpm sheets` and inspect `docs/contact-sheet-light.jpg` and `docs/contact-sheet-dark.jpg`.
 4. Update the exercise table in `README.md`.

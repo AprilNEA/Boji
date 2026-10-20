@@ -12,6 +12,11 @@ import latPulldown from './exercises/lat-pulldown.ts';
 import catCow from './exercises/cat-cow.ts';
 import hipFlexorStretch from './exercises/hip-flexor-stretch.ts';
 import chestStretch from './exercises/chest-stretch.ts';
+import plank from './exercises/plank.ts';
+import kneePushUp from './exercises/knee-push-up.ts';
+import reverseLunge from './exercises/reverse-lunge.ts';
+import wallSit from './exercises/wall-sit.ts';
+import deadBug from './exercises/dead-bug.ts';
 
 export type CourseId = 'home-beginner' | 'gym-beginner' | 'mobility';
 
@@ -21,9 +26,15 @@ export const COURSES: { id: CourseId; exercises: Exercise[] }[] = [
   { id: 'mobility', exercises: [catCow, hipFlexorStretch, chestStretch] },
 ];
 
+/** Exercises with animations that no app course uses yet. index.json lists them with `course: null`. */
+export const LIBRARY: Exercise[] = [plank, kneePushUp, reverseLunge, wallSit, deadBug];
+
 export interface CourseExercise extends Exercise {
-  course: CourseId;
+  course: CourseId | null;
 }
 
-/** Flat list in course order. */
-export const EXERCISES: CourseExercise[] = COURSES.flatMap((c) => c.exercises.map((ex) => ({ ...ex, course: c.id })));
+/** Flat list in course order, followed by the library. */
+export const EXERCISES: CourseExercise[] = [
+  ...COURSES.flatMap((c) => c.exercises.map((ex) => ({ ...ex, course: c.id }))),
+  ...LIBRARY.map((ex) => ({ ...ex, course: null })),
+];

@@ -13,7 +13,8 @@ export const PALETTE_NAMES = Object.keys(PALETTES) as PaletteName[];
 export interface IndexEntry {
   id: string;
   name: string;
-  course: CourseId;
+  /** null: the exercise has an animation but no app course uses it yet. */
+  course: CourseId | null;
   seconds: number;
   frames: number;
   fps: number;
