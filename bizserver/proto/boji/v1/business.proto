@@ -1,0 +1,123 @@
+syntax = "proto3";
+package boji.v1;
+
+// Authentication remains under /api/auth and uses better-auth-rs.
+// ISO 8601 timestamps are UTC strings. IDs and cursors are opaque strings.
+service SystemService {
+  rpc GetCapabilities(GetCapabilitiesRequest) returns (GetCapabilitiesResponse);
+}
+service MembershipService {
+  rpc GetMembership(GetMembershipRequest) returns (GetMembershipResponse);
+  rpc EnrollMembership(EnrollMembershipRequest) returns (GetMembershipResponse);
+}
+service ActivityService {
+  rpc GetSyncState(GetSyncStateRequest) returns (SyncState);
+  rpc SetSyncState(SetSyncStateRequest) returns (SyncState);
+  rpc ApplyBatch(ApplyBatchRequest) returns (ApplyBatchResponse);
+  rpc ListChanges(ListChangesRequest) returns (ListChangesResponse);
+  rpc GetDays(GetDaysRequest) returns (GetDaysResponse);
+}
+message GetCapabilitiesRequest {}
+message GetCapabilitiesResponse {
+  bool apple_sign_in = 1;
+  bool wallet_pass = 2;
+  bool activity_sync = 3;
+  string api_version = 4;
+}
+message GetMembershipRequest {}
+message EnrollMembershipRequest { string display_name = 1; string terms_version = 2; }
+message GetMembershipResponse { Membership membership = 1; }
+message Membership {
+  string id = 1;
+  string user_id = 2;
+  string member_number = 3;
+  string display_name = 4;
+  string joined_at = 5;
+  string tier = 6;
+  string status = 7;
+  repeated Entitlement entitlements = 8;
+  optional string expires_at = 9;
+}
+message Entitlement {
+  string id = 1;
+  string code = 2;
+  string name = 3;
+  string description = 4;
+  string granted_at = 5;
+  optional string expires_at = 6;
+}
+message GetSyncStateRequest {}
+message SetSyncStateRequest { bool enabled = 1; optional string consent_version = 2; }
+message SyncState {
+  bool enabled = 1;
+  optional string consent_version = 2;
+  string required_consent_version = 3;
+  optional string consented_at = 4;
+}
+message ApplyBatchRequest { repeated ActivityOperation operations = 1; }
+message ActivityOperation {
+  string mutation_id = 1;
+  string id = 2;
+  uint32 expected_revision = 3;
+  oneof action { UpsertActivity upsert = 4; DeleteActivity delete = 5; }
+}
+message DeleteActivity {}
+message UpsertActivity {
+  string occurred_at = 1;
+  string time_zone = 2;
+  string source = 3;
+  oneof payload { Hydration hydration = 4; Sleep sleep = 5; Workout workout = 6; }
+}
+message Hydration { uint32 amount_ml = 1; }
+message Sleep { uint32 duration_minutes = 1; }
+message Workout {
+  string workout_id = 1;
+  string workout_version = 2;
+  uint32 duration_seconds = 3;
+  string duration_source = 4;
+  string status = 5;
+}
+message ApplyBatchResponse {
+  repeated MutationResult results = 1;
+  // A server watermark, NOT a replacement for the client's pull cursor.
+  string server_cursor = 2;
+}
+message MutationResult {
+  string mutation_id = 1;
+  string id = 2;
+  string status = 3;
+  optional uint32 revision = 4;
+  optional string sequence = 5;
+  optional string code = 6;
+  optional uint32 current_revision = 7;
+}
+message ListChangesRequest { string cursor = 1; uint32 limit = 2; }
+message ListChangesResponse {
+  repeated ActivityRecord records = 1;
+  string next_cursor = 2;
+  bool has_more = 3;
+}
+message ActivityRecord {
+  string id = 1;
+  string kind = 2;
+  string source = 3;
+  string occurred_at = 4;
+  string time_zone = 5;
+  string local_date = 6;
+  uint32 revision = 7;
+  string sequence = 8;
+  string updated_at = 9;
+  optional string deleted_at = 10;
+  oneof payload { Hydration hydration = 11; Sleep sleep = 12; Workout workout = 13; }
+}
+message GetDaysRequest { string from = 1; string to = 2; }
+message GetDaysResponse { repeated DailySummary days = 1; }
+message DailySummary {
+  string date = 1;
+  uint32 water_ml = 2;
+  optional uint32 sleep_minutes = 3;
+  uint32 workout_count = 4;
+  uint64 workout_seconds = 5;
+  uint32 task_count = 6;
+  bool has_record = 7;
+}

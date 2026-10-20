@@ -1,0 +1,58 @@
+name: boji-rust-dev
+x-app: &app
+  image: boji-bizserver-rust:local
+  build: .
+  environment: &env
+    APP_ENV: development
+    HOST: 0.0.0.0
+    PORT: "3000"
+    DATABASE_URL: postgresql://boji:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/boji_rust
+    BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?Set BETTER_AUTH_SECRET}
+    BETTER_AUTH_URL: ${DOCKER_BETTER_AUTH_URL:-http://localhost:3002}
+    CORS_ORIGINS: ${CORS_ORIGINS:-}
+    TRUSTED_ORIGINS: ${TRUSTED_ORIGINS:-}
+    MAIL_OUTPUT_DIR: /app/.data/mail
+  read_only: true
+  tmpfs:
+    - /tmp
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+services:
+  postgres:
+    image: postgres:18-bookworm
+    environment:
+      POSTGRES_USER: boji
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: boji_rust
+    ports:
+      - "127.0.0.1:55439:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U boji -d boji_rust"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  migrate:
+    <<: *app
+    command: ["migrate"]
+    healthcheck:
+      disable: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+  api:
+    <<: *app
+    command: ["serve"]
+    ports:
+      - "127.0.0.1:3002:3000"
+    volumes:
+      - mail-data:/app/.data
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+volumes:
+  pg-data:
+  mail-data:

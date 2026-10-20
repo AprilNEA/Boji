@@ -1,0 +1,12 @@
+/target/
+/.work/
+/.data/
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p8
+*.p12
+*.pfx
+*.pkpass

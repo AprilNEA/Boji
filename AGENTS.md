@@ -9,6 +9,7 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 | `ios/` | iOS app, watchOS app and widgets: SwiftUI and an XcodeGen project | `ios/AGENTS.md` |
 | `android/` | Android app: Kotlin, Jetpack Compose and a Gradle project | `android/AGENTS.md` |
 | `animations/` | Exercise Lottie animations: a TypeScript generator and the generated JSON | `animations/AGENTS.md` |
+| `bizserver/` | Rust backend migration: Axum, better-auth-rs, ConnectRPC, SeaORM and PostgreSQL | `bizserver/AGENTS.md` |
 | `docs/` | Documents shared by both clients. `docs/membership.md` is the membership contract | this file |
 | `devenv.nix`, `devenv.yaml`, `.envrc` | Local toolchain for `animations/` | `animations/AGENTS.md` |
 | `.work/` | Local build outputs and scratch files. Git ignores this directory | none |
