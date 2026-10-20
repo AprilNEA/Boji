@@ -1,6 +1,6 @@
 # Boji
 
-Boji is a local-first fitness tracking app. This repository holds two native clients, iOS and Android, and the exercise animations that both clients use. Each directory builds on its own.
+Boji is a local-first fitness tracking app. This repository holds two native clients, iOS and Android, the exercise animations that both clients use, and the 薄肌俱乐部 promotional website. Each directory builds on its own.
 
 ## Directory map
 
@@ -10,8 +10,9 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 | `android/` | Android app: Kotlin, Jetpack Compose and a Gradle project | `android/AGENTS.md` |
 | `animations/` | Exercise Lottie animations: a TypeScript generator and the generated JSON | `animations/AGENTS.md` |
 | `bizserver/` | Rust backend migration: Axum, better-auth-rs, ConnectRPC, SeaORM and PostgreSQL | `bizserver/AGENTS.md` |
+| `web/` | 薄肌俱乐部 promotional website: Next.js static export, Tailwind CSS and Motion | `web/AGENTS.md` |
 | `docs/` | Documents shared by both clients. `docs/membership.md` is the membership contract | this file |
-| `devenv.nix`, `devenv.yaml`, `.envrc` | Local toolchain for `animations/` | `animations/AGENTS.md` |
+| `devenv.nix`, `devenv.yaml`, `.envrc` | Local Node.js and pnpm toolchain for `animations/` and `web/` | `animations/AGENTS.md`, `web/AGENTS.md` |
 | `.work/` | Local build outputs and scratch files. Git ignores this directory | none |
 
 ## Guides
@@ -22,8 +23,9 @@ When you change the structure, the commands or the rules of a directory, update 
 
 ## Commands
 
-- `devenv test` at the repository root runs the type check of `animations/` and verifies that `animations/lottie/` matches its source.
+- `devenv test` at the repository root runs the type check of `animations/`, verifies that `animations/lottie/` matches its source, and runs the type check of `web/`.
 - The iOS and Android build and test commands are in `ios/AGENTS.md` and `android/AGENTS.md`.
+- The website commands are in `web/AGENTS.md`.
 
 ## Cross-directory rules
 
@@ -43,7 +45,7 @@ Three places use the same exercise IDs: `Exercise.id` in `ios/Boji/Models/BojiSt
 
 ### Documentation language
 
-Write human-facing documents in Chinese: `README.md` files, `docs/` and `ios/docs/`. Write `AGENTS.md` files in English.
+Write human-facing documents in Chinese: `README.md` files, `docs/`, `ios/docs/` and `web/docs/`. Write `AGENTS.md` files in English.
 
 ## Git
 
