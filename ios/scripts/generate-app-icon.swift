@@ -1,6 +1,6 @@
 import AppKit
 
-// Source-controlled icon; run with the repository root as the working directory.
+// Source-controlled icon; run from the ios/ directory: swift scripts/generate-app-icon.swift
 let directory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
     .appendingPathComponent("Boji/Resources/Assets.xcassets/AppIcon.appiconset")
 try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)

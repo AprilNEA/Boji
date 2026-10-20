@@ -58,4 +58,4 @@ Release 只接受 HTTPS。缺少有效地址时，会员服务显示未配置。
 
 Debug 的 `--uitesting` 使用隔离的内存测试服务。测试卡显示「测试卡 · 非真实会员」。该路径不用于真实联调，Release 不启用测试服务。
 
-17 项模型测试和 1 项真实后端集成测试通过。Debug 和 Release 编译通过，模拟器界面测试未运行。详情见[会员卡验证记录](membership-verification.md)。编译成功不等于真机、邮件服务或生产发布已通过。
+17 项模型测试和 1 项真实后端集成测试通过。Debug 和 Release 编译通过，模拟器界面测试未运行。详情见 iOS 的[会员卡验证记录](../ios/docs/membership-verification.md)。编译成功不等于真机、邮件服务或生产发布已通过。
