@@ -5,6 +5,7 @@ This directory holds the native Android app. The app uses Kotlin and Jetpack Com
 ## Setup
 
 - Use JDK 17 or later, Android SDK Platform 37 and Build Tools 36.0.0 or later.
+- For command-line builds, use the devenv shell from the repository root. It provides JDK 17 and sets `JAVA_HOME`. It does not provide the Android SDK.
 - Create `local.properties` with `sdk.dir`. Do not commit this file.
 - Use the Gradle wrapper (`./gradlew`). Do not install or call a system Gradle.
 - In Android Studio, open `android/`, not the repository root.

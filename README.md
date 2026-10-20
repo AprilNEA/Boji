@@ -71,12 +71,20 @@ Boji 把薄肌理论变成每天可以打卡的记录：
 按组件选择入口。完整的环境要求、构建和测试命令见各目录的说明文档。
 
 - **iOS**：用 Xcode 打开 `ios/Boji.xcodeproj`，选择 `Boji` scheme 和 iOS 模拟器后运行。修改 `ios/project.yml` 后，在 `ios/` 目录运行 `xcodegen generate` 重新生成工程。
-- **Android**：用 Android Studio 打开 `android/` 目录，不要打开仓库根目录。命令行构建需要 JDK 17 和 `local.properties` 中的 SDK 路径，然后在 `android/` 目录运行 `./gradlew assembleDebug testDebugUnitTest lintDebug`。
-- **后端**：需要 Rust 1.99.0、`protoc`、PostgreSQL 和本机的 better-auth-rs 工作区。准备 `.env` 后，在 `bizserver/` 目录依次运行 `docker compose up -d postgres`、`cargo run --locked -- migrate` 和 `cargo run --locked -- serve`。
+- **Android**：用 Android Studio 打开 `android/` 目录，不要打开仓库根目录。命令行构建需要 `local.properties` 中的 SDK 路径。在 devenv 环境中进入 `android/` 目录，运行 `./gradlew assembleDebug testDebugUnitTest lintDebug`。
+- **后端**：PostgreSQL 由 ArcBox 中的 `compose.yml` 提供。准备 `.env` 后，在 devenv 环境中进入 `bizserver/` 目录，依次运行 `docker compose up -d postgres`、`cargo run --locked -- migrate` 和 `cargo run --locked -- serve`。
 - **动作动画**：在 devenv 环境中进入 `animations/` 目录，运行 `pnpm build` 重新生成 `lottie/`。
 - **网站**：在 devenv 环境中进入 `websites/` 目录，运行 `pnpm dev` 启动开发服务器，运行 `pnpm build` 生成静态站点。
 
-动作动画和网站的工具链由根目录的 `devenv.nix` 提供，使用前必须先安装 [devenv](https://devenv.sh "前往 devenv 官网")。在仓库根目录运行 `devenv test`，会检查 `animations/` 和 `websites/` 的类型，并确认 `animations/lottie/` 与源码一致。
+根目录的 `devenv.nix` 提供命令行工具链，使用前必须先安装 [devenv](https://devenv.sh "前往 devenv 官网")。
+
+| 目录 | devenv 提供的工具 |
+| --- | --- |
+| `animations/`、`websites/` | Node.js 24 和 pnpm 12 |
+| `bizserver/` | Rust（版本由 `bizserver/rust-toolchain.toml` 决定）、`protoc`、`buf`、OpenSSL 和 `pkg-config` |
+| `android/` | JDK 17，并设置 `JAVA_HOME` |
+
+Xcode、XcodeGen、Android SDK、ArcBox 和 PostgreSQL 不由 devenv 提供，需要另行安装。在仓库根目录运行 `devenv test`，会检查 `animations/` 和 `websites/` 的类型，并确认 `animations/lottie/` 与源码一致。
 
 iOS 的 Debug 构建默认连接 `http://localhost:3000`。这个地址就是用 `cargo run` 启动的本机后端地址。网站开发服务器的默认端口也是 3000。
 

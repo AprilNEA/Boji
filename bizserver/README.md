@@ -16,7 +16,7 @@ Apple 登录、Wallet、SMTP 发件箱和运营接口尚未迁入。账号删除
 
 ## 本地启动
 
-需要 Rust 1.99.0、`protoc` 和 PostgreSQL。编译期间会生成 RPC 代码。首次编译需要访问依赖仓库。
+在仓库根目录进入 devenv（`devenv shell`，或用 direnv 加载 `.envrc`）。devenv 按 `rust-toolchain.toml` 提供 Rust 1.99.0，并提供 `protoc`、`buf`、OpenSSL 和 `pkg-config`。PostgreSQL 由 `compose.yml` 提供。编译期间会用 `protoc` 生成 RPC 代码。首次编译需要访问依赖仓库。
 
 ```bash
 cd bizserver

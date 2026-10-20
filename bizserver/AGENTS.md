@@ -25,7 +25,7 @@ Production startup currently fails closed. Do not remove that guard while authen
 
 ## Commands
 
-Run these commands in this directory:
+Run these commands in this directory inside the devenv shell of the repository root. devenv provides Rust from `rust-toolchain.toml`, `protoc` for `build.rs`, `buf`, OpenSSL and `pkg-config`. `better-auth` links `openssl-sys` through `josekit` and `webauthn-rs-core`, so the build needs OpenSSL.
 
 - `cargo fmt --all --check`
 - `cargo clippy --locked --all-targets -- -D warnings`
@@ -33,6 +33,8 @@ Run these commands in this directory:
 - `buf lint`
 - `cargo run --locked -- migrate`
 - `cargo run --locked -- serve`
+
+To change the Rust version, update `rust-toolchain.toml`, `rust-version` in `Cargo.toml` and the base image in `Dockerfile` in the same change. devenv reads `rust-toolchain.toml`, so `devenv.nix` needs no change.
 
 Database tests are ignored by default. Set `TEST_DATABASE_URL` to an isolated PostgreSQL database before running `cargo test --locked -- --include-ignored --test-threads=1`. Never run those tests against production or the shared client fixture.
 

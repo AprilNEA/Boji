@@ -2,3 +2,9 @@
 inputs:
   nixpkgs:
     url: github:cachix/devenv-nixpkgs/rolling
+  # languages.rust.toolchainFile reads bizserver/rust-toolchain.toml through rust-overlay.
+  rust-overlay:
+    url: github:oxalica/rust-overlay
+    inputs:
+      nixpkgs:
+        follows: nixpkgs

@@ -29,7 +29,7 @@ Boji 的原生 Android 客户端，使用 Kotlin 和 Jetpack Compose。Android �
     sdk.dir=/opt/homebrew/share/android-commandlinetools
     ```
 
-2. 将 `JAVA_HOME` 指向 JDK 17。下例为 Homebrew `openjdk@17` 的路径：
+2. 在仓库根目录进入 devenv（`devenv shell`，或用 direnv 加载 `.envrc`）。devenv 提供 JDK 17，并设置 `JAVA_HOME`。如果不用 devenv，就手动将 `JAVA_HOME` 指向 JDK 17。下例为 Homebrew `openjdk@17` 的路径：
 
     ```sh
     export JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home

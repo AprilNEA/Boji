@@ -13,7 +13,7 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 | `websites/` | 薄肌俱乐部 promotional website: Next.js static export, Tailwind CSS and Motion | `websites/AGENTS.md` |
 | `docs/` | Documents shared by both clients. `docs/membership.md` is the membership contract | this file |
 | `assets/public/` | Generic static files for `https://assets.leanmuscle.club`, such as the app icon images that the root `README.md` shows | this file |
-| `devenv.nix`, `devenv.yaml`, `.envrc` | Local Node.js and pnpm toolchain for `animations/` and `websites/` | `animations/AGENTS.md`, `websites/AGENTS.md` |
+| `devenv.nix`, `devenv.yaml`, `.envrc` | Local toolchains: Node.js and pnpm for `animations/` and `websites/`, Rust, `protoc`, `buf` and OpenSSL for `bizserver/`, and JDK 17 for `android/` | this file |
 | `.work/` | Local build outputs and scratch files. Git ignores this directory | none |
 
 ## Guides
@@ -21,6 +21,18 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 Read this file first. Then read the `AGENTS.md` that is closest to the file you edit. If two guides conflict, the closer guide takes precedence.
 
 When you change the structure, the commands or the rules of a directory, update the `AGENTS.md` of that directory in the same change. When you add or remove a top-level directory, update the directory map in this file.
+
+## Toolchain
+
+Enter the devenv shell at the repository root with `devenv shell`, or with direnv and `.envrc`. It provides these tools:
+
+| Directory | Tools from devenv |
+| --- | --- |
+| `animations/`, `websites/` | Node.js 24 and pnpm. devenv runs `pnpm install` in both directories |
+| `bizserver/` | Rust from `bizserver/rust-toolchain.toml` through the `rust-overlay` input, `protoc`, `buf`, OpenSSL and `pkg-config` |
+| `android/` | JDK 17 and `JAVA_HOME`. The Gradle wrapper provides Gradle |
+
+devenv does not provide Xcode, `ictool`, XcodeGen, the Android SDK, Chromium for `animations/` previews, the Python packages of `websites/scripts/`, Docker or PostgreSQL. Install them outside devenv. Do not add PostgreSQL to devenv, because `bizserver/AGENTS.md` requires the ArcBox Compose database. Do not add XcodeGen from nixpkgs unless its version matches the version that generated `ios/Boji.xcodeproj`.
 
 ## Commands
 
