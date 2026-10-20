@@ -20,7 +20,7 @@ struct TrainingView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeading(title: String(localized: .Shared.trainingRhythmTitle), detail: String(localized: .Shared.trainingRhythmDetail))
                     GroupedRows {
-                        InfoRow(text: "每周安排 2～3 次，训练日之间留出休息。", symbol: "calendar")
+                        InfoRow(text: String(localized: .Shared.trainingTipSchedule), symbol: "calendar")
                         InfoRow(text: String(localized: .Shared.trainingTipLoad), symbol: "figure.mind.and.body")
                     }
                 }

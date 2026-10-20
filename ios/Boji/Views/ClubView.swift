@@ -44,7 +44,7 @@ struct ClubView: View {
                     SymbolTile(symbol: "flag.checkered", color: BojiTheme.accent)
                     VStack(alignment: .leading, spacing: 4) {
                         Text(.Shared.clubChallengeTitle).font(.headline)
-                        Text("选择两天动一动，其余时间好好恢复。这是你的本地挑战，不排名，也不催促。")
+                        Text(.Shared.clubChallengeText)
                             .font(.subheadline).foregroundStyle(.secondary)
                     }
                 }

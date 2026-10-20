@@ -102,7 +102,7 @@ struct ProgressViewScreen: View {
                         ContentUnavailableView {
                             Label(.Shared.progressEmptyTitle, systemImage: "chart.xyaxis.line")
                         } description: {
-                            Text("数据仅在本机保存。每周记录一次就好，不必每天称量。")
+                            Text(.Shared.progressEmptyText)
                         }
                     }
                 }

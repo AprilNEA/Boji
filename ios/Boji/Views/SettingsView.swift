@@ -23,11 +23,12 @@ struct SettingsView: View {
     @State private var showMembership = false
     @State private var showAccountSecurity = false
     private var appVersion: String {
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—"
+        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "—"
         // `settings_version` takes an integer build number, the same value as the Android version code.
-        guard let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String,
-              let build = (Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String).flatMap(Int.init)
-        else { return "—" }
-        return String(localized: .Shared.settingsVersion(version: version, build: build))
+        // A build number that is not an integer keeps the plain format, so the version stays visible.
+        guard let number = Int(build) else { return "\(version) (\(build))" }
+        return String(localized: .Shared.settingsVersion(version: version, build: number))
     }
     var body: some View {
         @Bindable var store = store
@@ -106,10 +107,10 @@ struct SettingsView: View {
                 }
                 .sheet(isPresented: $showMembership) { MembershipCenterView() }
                 .sheet(isPresented: $showAccountSecurity) { AccountSecurityView() }
-                .confirmationDialog("删除全部本地数据？此操作无法撤销。", isPresented: $confirmDelete, titleVisibility: .visible) {
+                .confirmationDialog(Text(.Shared.settingsDeleteConfirmTitle), isPresented: $confirmDelete, titleVisibility: .visible) {
                     Button(.Shared.settingsDeleteConfirm, role: .destructive) { companion.disconnect(); health.disconnect(); membership.clearLocalSession(); store.resetAll(); dismiss() }
                     Button(.Shared.actionCancel, role: .cancel) {}
-                } message: { Text("删除本机记录及会员缓存，并断开健康数据查询。不会注销账号、删除服务器会员身份或健康 App 中的数据。") }
+                } message: { Text("删除本机记录及会员缓存，并断开健康数据查询。不会注销账号、删除服务器会员身份或健康 App 中的数据。此操作无法撤销。") }
                 .fileExporter(isPresented: $exporting, document: document, contentType: .json, defaultFilename: "boji-records") { result in
                     if case .failure(let error) = result { exportError = error.localizedDescription }
                 }

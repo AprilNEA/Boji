@@ -21,20 +21,32 @@ final class MembershipUITests: XCTestCase {
 
     private func tap(_ element: XCUIElement, in app: XCUIApplication) {
         XCTAssertTrue(element.waitForExistence(timeout: 8))
-        for _ in 0..<10 where !element.isHittable { app.swipeUp() }
+        for _ in 0..<20 where !element.isHittable { scrollUp(app) }
         XCTAssertTrue(element.isHittable)
         element.tap()
     }
 
     private func type(_ text: String, into field: XCUIElement, in app: XCUIApplication) {
-        for _ in 0..<10 {
+        for _ in 0..<20 {
             if field.waitForExistence(timeout: 1) { break }
-            app.swipeUp()
+            scrollUp(app)
         }
         XCTAssertTrue(field.exists)
         // XCTest scrolls a realized input above the keyboard when tapping it.
         field.tap()
         field.typeText(text)
+    }
+
+    /// Scrolls the content up by about a fifth of the screen.
+    ///
+    /// Do not use `swipeUp()` here. A swipe flings the view: in the large text layout it can move a
+    /// `Form` row past the screen, and the `Form` then removes the row from the hierarchy. A tap
+    /// during the fling only stops the scrolling, so the button does not run its action. This drag
+    /// starts above the keyboard and ends with a hold, so the view stops where the drag ends.
+    private func scrollUp(_ app: XCUIApplication) {
+        let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.25, dy: 0.45))
+        let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.25, dy: 0.25))
+        start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0.2)
     }
 
     private func signIn(_ app: XCUIApplication, existingCard: Bool = false) {

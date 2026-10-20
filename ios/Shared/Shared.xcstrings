@@ -870,6 +870,18 @@
         }
       }
     },
+    "settings_delete_confirm_title" : {
+      "comment" : "删除确认对话框的标题。正文由各端提供，因为两端删除的数据不同",
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除全部本地数据？"
+          }
+        }
+      }
+    },
     "settings_display_mode" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1179,12 +1191,13 @@
       }
     },
     "today_rhythm_total" : {
+      "comment" : "今日进度中跟在已完成数后面的部分，例如「2/3」中的「/3」",
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "/3"
+            "value" : "/%1$(total)lld"
           }
         }
       }

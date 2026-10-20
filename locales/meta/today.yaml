@@ -3,6 +3,9 @@ today_rhythm_none:
 today_rhythm_some:
 today_rhythm_all:
 today_rhythm_total:
+  comment: 今日进度中跟在已完成数后面的部分，例如「2/3」中的「/3」
+  args:
+    total: int
 today_rhythm:
 habit_sleep:
 habit_recorded:

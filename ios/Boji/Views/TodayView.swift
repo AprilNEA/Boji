@@ -53,14 +53,14 @@ struct TodayView: View {
             HStack(alignment: .top, spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(.Shared.todayTitle).font(.title2.bold())
-                    Text(taskCount == 0 ? "从一件小事开始。" : taskCount == 3 ? "今天的自己，照顾到了。" : "已经在好好照顾自己。")
+                    Text(taskCount == 0 ? LocalizedStringResource.Shared.todayRhythmNone : taskCount == 3 ? .Shared.todayRhythmAll : .Shared.todayRhythmSome)
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
                 Spacer(minLength: 8)
                 HStack(alignment: .firstTextBaseline, spacing: 2) {
                     Text("\(taskCount)").font(.system(.largeTitle, design: .rounded, weight: .bold))
                         .contentTransition(.numericText(value: Double(taskCount)))
-                    Text("/3").font(.title3.weight(.semibold)).foregroundStyle(.secondary)
+                    Text(.Shared.todayRhythmTotal(total: 3)).font(.title3.weight(.semibold)).foregroundStyle(.secondary)
                 }
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("已完成 \(taskCount) 项，共 3 项")

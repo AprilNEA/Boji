@@ -10,6 +10,8 @@ settings_export:
 settings_export_failed:
 settings_delete:
 settings_delete_confirm:
+settings_delete_confirm_title:
+  comment: 删除确认对话框的标题。正文由各端提供，因为两端删除的数据不同
 settings_about:
 settings_version:
   args:

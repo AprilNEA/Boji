@@ -87,6 +87,7 @@ xcodebuild -project Boji.xcodeproj -scheme Boji \
 - UI tests must not use the real backend, real HealthKit data or the user's records.
 - Membership UI tests can add `--membership-fixture=long-number`, `suspended`, or `offline`. These fixtures require the Debug `--uitesting` entry point.
 - Animation UI tests can add `--animation-reduce-motion` or `--animation-missing-asset`. These flags require Debug and `--uitesting`.
+- To reveal an element in a `Form` or a `List`, drag a short distance and end the drag with a hold, as `scrollUp(_:)` in `BojiUITests/MembershipUITests.swift` does. Do not use `swipeUp()` there. In the large text layout a swipe can move a row out of the hierarchy, and a tap during the fling does not run the button action.
 
 ### Accounts and data
 
