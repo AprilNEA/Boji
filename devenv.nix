@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, config, ... }:
 {
   # Toolchain for animations/ and websites/: Node.js LTS, pnpm, tsx and TypeScript (via pnpm).
   languages.javascript = {
@@ -24,6 +24,21 @@
     jdk.package = pkgs.jdk17;
     lsp.enable = false;
   };
+
+  # Toolchain for websites/scripts/. copy_sweep.py uses only the standard library.
+  # portraits.py imports Pillow and rembg. rembg downloads its model to ~/.u2net on first use.
+  languages.python = {
+    enable = true;
+    package = pkgs.python3.withPackages (ps: [
+      ps.pillow
+      ps.rembg
+    ]);
+    lsp.enable = false;
+  };
+
+  # rembg imports pymatting, which caches numba functions next to its source.
+  # The Nix store is read-only, so numba needs a writable cache directory.
+  env.NUMBA_CACHE_DIR = "${config.devenv.state}/numba";
 
   packages = [
     # bizserver/build.rs compiles the protobuf files with protoc through connectrpc-build.

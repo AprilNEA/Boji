@@ -83,6 +83,7 @@ Boji 把薄肌理论变成每天可以打卡的记录：
 | `animations/`、`websites/` | Node.js 24 和 pnpm 12 |
 | `bizserver/` | Rust（版本由 `bizserver/rust-toolchain.toml` 决定）、`protoc`、`buf`、OpenSSL 和 `pkg-config` |
 | `android/` | JDK 17，并设置 `JAVA_HOME` |
+| `websites/scripts/` | Python 3，带 Pillow 和 rembg |
 
 Xcode、XcodeGen、Android SDK、ArcBox 和 PostgreSQL 不由 devenv 提供，需要另行安装。在仓库根目录运行 `devenv test`，会检查 `animations/` 和 `websites/` 的类型，并确认 `animations/lottie/` 与源码一致。
 

@@ -5,6 +5,7 @@ This directory holds the 薄肌俱乐部 promotional website. It is a Next.js 16
 ## Toolchain
 
 - Use the devenv shell from the repository root (`devenv shell`, or direnv with `.envrc`). It provides Node.js 24 and pnpm 12. The `websites:install` task runs `pnpm install --frozen-lockfile` in this directory.
+- devenv also provides Python 3 with Pillow and rembg for `scripts/`. Run the scripts with `python3` in the devenv shell. To add a Python package, add it to `languages.python.package` in the root `devenv.nix`. Do not add `requirements.txt` or a virtual environment.
 - Use pnpm only. Do not add `package-lock.json`, `yarn.lock` or `bun.lock`.
 - Keep `tsconfig.json` strict. Import project files with the `@/` alias, which points to `src/`.
 
