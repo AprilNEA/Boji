@@ -1,0 +1,78 @@
+# Checks that every commit author of a pull request has signed .github/CLA.md.
+#
+# CLA Assistant Lite is archived, so the action is pinned to the commit of v2.6.1.
+# v2.6.1 cannot create the signature file on its first run:
+# https://github.com/contributor-assistant/github-action/issues/155
+# The "Prepare the signature file" step creates the branch and the file first.
+name: CLA
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_target:
+    types: [opened, reopened, synchronize, closed]
+
+permissions:
+  actions: write
+  contents: write
+  pull-requests: write
+  statuses: write
+
+# Signatures are written to one file. Run one job at a time to avoid lost updates.
+concurrency:
+  group: cla-signatures
+  cancel-in-progress: false
+
+jobs:
+  cla:
+    if: >-
+      github.event_name == 'pull_request_target' ||
+      (github.event.issue.pull_request &&
+        (github.event.comment.body == 'recheck' ||
+         github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA'))
+    runs-on: ubuntu-latest
+    env:
+      CLA_BRANCH: cla-signatures
+      CLA_SIGNATURES: signatures/version1/cla.json
+      CLA_DOCUMENT: ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.repository.default_branch }}/.github/CLA.md
+    steps:
+      - name: Prepare the signature file
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          content="$(jq -n '{signedContributors: []}')"
+          if ! gh api "repos/$REPO/git/ref/heads/$CLA_BRANCH" --silent 2>/dev/null; then
+            # Create an orphan branch that holds only the signature file.
+            tree="$(jq -n --arg path "$CLA_SIGNATURES" --arg content "$content" \
+              '{tree: [{path: $path, mode: "100644", type: "blob", content: ($content + "\n")}]}' |
+              gh api "repos/$REPO/git/trees" --input - --jq .sha)"
+            commit="$(gh api "repos/$REPO/git/commits" \
+              -f message="chore(cla): create the CLA signature branch" \
+              -f tree="$tree" --jq .sha)"
+            gh api "repos/$REPO/git/refs" -f ref="refs/heads/$CLA_BRANCH" -f sha="$commit" --silent
+          elif ! gh api "repos/$REPO/contents/$CLA_SIGNATURES?ref=$CLA_BRANCH" --silent 2>/dev/null; then
+            # A new CLA version uses a new path on the existing branch.
+            gh api -X PUT "repos/$REPO/contents/$CLA_SIGNATURES" \
+              -f message="chore(cla): create the CLA signature file" \
+              -f content="$(printf '%s\n' "$content" | base64 -w0)" \
+              -f branch="$CLA_BRANCH" --silent
+          fi
+
+      - name: Check CLA signatures
+        uses: contributor-assistant/github-action@ca4a40a7d1004f18d9960b404b97e5f30a505a08 # v2.6.1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          path-to-document: ${{ env.CLA_DOCUMENT }}
+          path-to-signatures: ${{ env.CLA_SIGNATURES }}
+          branch: ${{ env.CLA_BRANCH }}
+          allowlist: "AprilNEA,*[bot]"
+          create-file-commit-message: "chore(cla): create the CLA signature file"
+          signed-commit-message: "chore(cla): $contributorName signed the CLA"
+          custom-notsigned-prcomment: |-
+            感谢你的贡献。合并之前，这个 Pull Request 的每位提交作者都必须签署 [Boji 贡献者许可协议（CLA）](${{ env.CLA_DOCUMENT }})。签署方式是原样评论下面这句话。
+
+            Thank you for your contribution. Before we merge it, each commit author of this pull request must sign the [Boji Contributor License Agreement](${{ env.CLA_DOCUMENT }}). To sign, post the sentence below as a comment.
+          custom-allsigned-prcomment: "所有提交作者都已签署 CLA。All commit authors have signed the CLA."

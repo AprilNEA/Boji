@@ -109,6 +109,7 @@ iOS 的 Debug 构建默认连接 `http://localhost:3000`。这个地址就是用
 
 ## 参与开发
 
+- 外部贡献者必须先签署[贡献者许可协议](.github/CLA.md)（CLA），Pull Request 才能合并。签署方式是在 Pull Request 中原样评论 `I have read the CLA Document and I hereby sign the CLA`。CLA 允许 AprilNEA LLC 以其他条款（包括商业条款）分发贡献，贡献者仍保留著作权。
 - 默认分支为 `master`。
 - 提交信息使用英文，遵循 Conventional Commits。只改动一个顶层目录时，用目录名作为 scope，例如 `feat(ios): add membership cards`。
 - 修改某个目录的结构、命令或规则时，在同一次改动中更新该目录的 `AGENTS.md`。
@@ -117,3 +118,14 @@ iOS 的 Debug 构建默认连接 `http://localhost:3000`。这个地址就是用
     ```text
     Co-authored-by: Manus <dev-agent@manus.ai>
     ```
+
+## 许可证
+
+本仓库的代码和文档由 AprilNEA LLC 以 [PolyForm Noncommercial License 1.0.0](LICENSE.md) 授权。你可以出于非商业目的使用、修改和分发它们。商业使用必须另行取得 AprilNEA LLC 的授权，联系方式是 GitHub 上的 [@AprilNEA](https://github.com/AprilNEA)。这个许可证禁止商业使用，所以 Boji 是源码公开（source-available）项目，不是开源项目。
+
+以下内容不在这个许可证的授权范围内：
+
+- **名称和图标**：「Boji」「薄肌」「薄肌俱乐部」名称，`ios/Boji/Resources/AppIcon.icon`，以及 `assets/public/boji-icon.png` 和 `assets/public/boji-icon-dark.png`。AprilNEA LLC 保留所有权利。
+- **网站媒体**：`websites/public/media/` 中的图片和短片。AprilNEA LLC 保留所有权利。
+- **人像照片**：`websites/public/images/portraits/` 中的照片。著作权属于原拍摄者，本仓库不授予任何权利。
+- **第三方依赖和字体**：例如 Inter 字体和各端使用的软件包。它们适用各自的许可证。

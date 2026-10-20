@@ -13,6 +13,8 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 | `websites/` | 薄肌俱乐部 promotional website: Next.js static export, Tailwind CSS and Motion | `websites/AGENTS.md` |
 | `docs/` | Documents shared by both clients. `docs/membership.md` is the membership contract | this file |
 | `assets/public/` | Generic static files for `https://assets.leanmuscle.club`, such as the app icon images that the root `README.md` shows | this file |
+| `LICENSE.md` | The PolyForm Noncommercial License 1.0.0 with the `Required Notice:` line | this file |
+| `.github/` | GitHub files: `.github/CLA.md` is the contributor license agreement, and `.github/workflows/cla.yml` runs the CLA check on pull requests | this file |
 | `devenv.nix`, `devenv.yaml`, `.envrc` | Local toolchains: Node.js and pnpm for `animations/` and `websites/`, Rust, `protoc`, `buf` and OpenSSL for `bizserver/`, JDK 17 for `android/`, and Python with Pillow and rembg for `websites/scripts/` | this file |
 | `.work/` | Local build outputs and scratch files. Git ignores this directory | none |
 
@@ -21,6 +23,8 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 Read this file first. Then read the `AGENTS.md` that is closest to the file you edit. If two guides conflict, the closer guide takes precedence.
 
 When you change the structure, the commands or the rules of a directory, update the `AGENTS.md` of that directory in the same change. When you add or remove a top-level directory, update the directory map in this file.
+
+Keep the repository root small. Put a new repository-level file in `.github/`, `.config/` or `docs/`, not in the root. Keep a file in the root only when a tool requires it there. `LICENSE.md` stays in the root, because GitHub detects the license there.
 
 ## Toolchain
 
@@ -77,9 +81,23 @@ Three places use the same exercise IDs: `Exercise.id` in `ios/Boji/Models/BojiSt
 
 `LIBRARY` in `animations/src/courses.ts` holds animated exercises that no app course uses yet. Their files are in `animations/lottie-library/`, which no app bundles. When an app course adopts one, move it from `LIBRARY` to `COURSES` and regenerate.
 
+### License and CLA
+
+`LICENSE.md` holds the official text of the PolyForm Noncommercial License 1.0.0. Its first line is the `Required Notice:` line. AprilNEA LLC is the licensor and the CLA party. Do not edit the license text. Call the project source-available, not open source.
+
+The license does not cover the names Boji, 薄肌 and 薄肌俱乐部, the app icon, `websites/public/media/`, `websites/public/images/portraits/`, or third-party dependencies and fonts. The `## 许可证` section of the root `README.md` lists these exclusions. When you add brand assets or third-party material, add them to that list.
+
+`.github/CLA.md` is the contributor license agreement. `.github/workflows/cla.yml` asks each commit author of a pull request to sign it with a pull request comment. The workflow stores the signatures in `signatures/version1/cla.json` on the `cla-signatures` branch, and creates that branch on its first run. Do not protect `cla-signatures`, and do not merge it into `master`.
+
+The workflow uses CLA Assistant Lite (`contributor-assistant/github-action`), which is archived. Keep the action pinned to the commit SHA of v2.6.1. Keep the "Prepare the signature file" step, because v2.6.1 fails when the signature file does not exist.
+
+The check reads commit authors only. It does not read `Co-authored-by` trailers or the pull request author. The allowlist matches a commit author without a linked GitHub account by its free-text name, so an author name can bypass the check. Before you merge an external pull request, check its commit authors yourself.
+
+If you change the terms of `.github/CLA.md`, raise its version number and set `CLA_SIGNATURES` in the workflow to the next path, for example `signatures/version2/cla.json`. Contributors then sign again. Fix typos without a new version.
+
 ### Documentation language
 
-Write human-facing documents in Chinese: `README.md` files, `docs/`, `ios/docs/` and `websites/docs/`. Write `AGENTS.md` files in English.
+Write human-facing documents in Chinese: `README.md` files, `docs/`, `ios/docs/` and `websites/docs/`. Write `AGENTS.md` files in English. `LICENSE.md` and `.github/CLA.md` are legal texts in English. Do not translate them in place.
 
 ## Git
 
