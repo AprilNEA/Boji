@@ -99,11 +99,11 @@ iOS 版采用 Liquid Glass 和 Apple 人机界面指南。Android 版遵循 Mate
 | SF Symbols | Material Symbols 矢量图标，选中时使用填充样式 |
 | 强调色 `#C7401F` | 以 `#C7401F` 为种子生成 Material 3 配色。浅色 `primary` 为 `#A52806`，`primaryContainer` 为 `#C7401F` |
 | 应用内外观设置 | 跟随系统、浅色、深色三种模式。系统栏图标颜色跟随应用的模式 |
-| 浅色和深色图标 | 自适应图标，支持 Android 13 的主题图标 |
+| Icon Composer 图标 | 相同的叉腰人物与瓷白／灰绿配色，使用自适应矢量图标，支持 Android 13 的主题图标 |
 
 配色值位于 `ui/theme/Color.kt`，由 `@material/material-color-utilities` 0.4.0 的 `SchemeContent` 生成。修改品牌色时，重新生成整套配色，不要单独修改某个角色。饮水、睡眠等语义色位于 `ui/theme/BojiColors.kt`，浅色和深色各有一组，对比度按 WCAG AA 选取。
 
-启动图标中的「b」由几何路径绘制，没有使用 SF Rounded 字形。原因是 SF 字体的许可只覆盖 Apple 平台。
+启动图标的轮廓源自 `../ios/Boji/Resources/AppIcon.icon/Assets/mark.svg`，Android 矢量资源位于 `app/src/main/res/drawable/ic_launcher_foreground.xml`。图形按启动器安全区缩放，背景与前景分层，外轮廓由启动器裁切。主题图标复用同一前景的透明度轮廓。
 
 ### 有意保留的差异
 

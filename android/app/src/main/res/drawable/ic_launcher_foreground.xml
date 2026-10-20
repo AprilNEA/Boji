@@ -1,21 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Geometric lowercase "b" based on the iOS icon.
-    The glyph stays inside the 66 dp adaptive-icon safe zone (radius 33 around 54,54).
-    It uses no font outline, because the SF fonts are licensed for Apple platforms.
+    Source: ios/Boji/Resources/AppIcon.icon/Assets/mark.svg.
+    Map the 1024-unit canvas to the central 72 dp of the 108 dp adaptive layer.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path
-        android:pathData="M41,31.5L41,76.5"
-        android:strokeWidth="10"
-        android:strokeColor="@color/ic_launcher_foreground"
-        android:strokeLineCap="round" />
-    <path
-        android:pathData="M54,50.5a13,13 0,1 1,0 26a13,13 0,1 1,0 -26z"
-        android:strokeWidth="10"
-        android:strokeColor="@color/ic_launcher_foreground" />
+    <group
+        android:translateX="18"
+        android:translateY="18"
+        android:scaleX="0.0703125"
+        android:scaleY="0.0703125">
+        <path
+            android:fillColor="@color/ic_launcher_foreground"
+            android:pathData="M565,265 A62,62 0,1 0,441 265 A62,62 0,1 0,565 265 Z" />
+        <path
+            android:fillColor="@color/ic_launcher_foreground"
+            android:fillType="evenOdd"
+            android:pathData="
+                M432,367
+                C413,365 400,372 385,384
+                L300,451
+                C274,472 276,501 297,521
+                L398,609
+                C413,622 425,616 434,607
+                C438,603 446.25,605.5 444,613
+                L435,643
+                L371,751
+                C356,775 363,802 386,815
+                C409,828 434,819 447,797
+                L506.45,694.95
+                Q514,682 520.52,695.51
+                L568,794
+                C581,818 606,826 629,813
+                C652,800 660,776 646,752
+                L584,642
+                L576,610
+                C574,602 581,599 587,604
+                C599,614 620,609 635,593
+                L711,511
+                C731,490 728,461 706,444
+                L623,382
+                C607,370 593,367 577,370
+                C552,374 533,379 510,377
+                C484,375 459,365 432,367
+                Z
+                M408.44,436.05
+                Q424,427 427.61,444.63
+                L446.39,536.37
+                Q450,554 435.17,543.80
+                L352.83,487.20
+                Q338,477 353.56,467.95
+                Z
+                M563.91,446.89
+                Q562,430 577.24,437.54
+                L645.76,471.46
+                Q661,479 648.25,490.25
+                L588.75,542.75
+                Q576,554 574.09,537.11
+                Z" />
+    </group>
 </vector>
