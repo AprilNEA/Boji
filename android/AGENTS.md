@@ -40,6 +40,20 @@ Run these commands in `android/`.
 - The Gradle build compiles `rpc/generated/` as source. It does not run `protoc` or `buf`. Do not add the protobuf Gradle plugin.
 - Keep the plugin versions in `rpc/buf.gen.yaml` equal to the runtimes in `gradle/libs.versions.toml`: `protocolbuffers/java` and `protocolbuffers/kotlin` at the protoc release of `protobuf` (v36.2 for 4.36.2), and `connectrpc/kotlin` equal to `connectKotlin`. Follow "API contract" in the root `AGENTS.md`.
 
+### Strings
+
+- `app/src/main/res/values*/strings_shared.xml` is generated from `../locales/` by `../crates/locales/`. Do not edit it. To change copy that iOS also shows, edit `../locales/` and run `cargo locales generate` in `../crates/`.
+- English is the fallback language. `app/src/main/res/values/strings.xml` holds the English copy that only Android shows, and `values-b+zh+Hans/strings.xml` holds the same keys in Simplified Chinese. Other hand-written files, such as `strings_membership.xml`, follow the same pattern. Add each new key to both directories: Lint reports a missing language as a `MissingTranslation` error, and `lintDebug` fails.
+- Do not add a key to a hand-written file that `strings_shared.xml` already defines; the build fails on duplicate resources.
+- A count in English copy needs a `<plurals>` resource, even though Chinese has one form. Read it with `pluralStringResource`.
+- Pass format arguments in the order of `args` in `../locales/meta/`. A key with a plural argument is a `<plurals>` resource: read it with `pluralStringResource(id, count, ...)`.
+- Format dates and numbers in the language of the text. `textLocale` in `ui/components/ModelUi.kt` reads the generated `R.string.locale_tag`. Use the functions there, such as `formatMediumDate` and `formatOneDecimal`, or pass `textLocale` to `String.format`. Do not write a date pattern such as `y年M月d日`, and do not pass a fixed `Locale`. To add a date format, use a CLDR skeleton with `formatSkeleton`.
+- `stringResource(id, args)` formats its numeric arguments with the device language, not with `textLocale`. The digits differ only when the device language has no translation and uses non-Latin digits.
+- Do not write a number that the code knows into copy. Pass it as an argument, for example `today_rhythm_total` with `BojiSnapshot.TODAY_TASK_TOTAL`.
+- Course, exercise and article models hold `@StringRes` IDs, not text. Resolve them in the UI with `stringResource`. Do not resolve them in a model or a ViewModel: Android can change the app language without a new process, and a resolved string keeps the old language.
+- The format arguments of `stringResource(id, args)` have the type `Any`, so a resource ID, an enum or a model object compiles and shows the wrong text. Pass only strings and numbers. Resolve a resource ID with `stringResource` first, a level with `CourseLevel.titleRes`, reps with `repsText` and an article subtitle with `articleMeta`.
+- `default_display_name` is the nickname of a new state. `DataModule` passes it to `BojiStateSerializer` and `BojiStore`. `BojiState.DEFAULT_DISPLAY_NAME` is only the value for a state.json without `displayName`.
+
 ### Design
 
 - Follow Material 3. Do not imitate the iOS Liquid Glass material.

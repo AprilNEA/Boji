@@ -28,13 +28,18 @@ data class BojiSnapshot(
     val todayRecord: DailyRecord
         get() = recordOn(today) ?: DailyRecord.empty(today, zone)
 
-    /** 0 to 3: a workout, any water, and a sleep entry today. */
+    /** 0 to [TODAY_TASK_TOTAL]: a workout, any water, and a sleep entry today. */
     val todayTaskCount: Int
         get() = todayRecord.let {
             (if (it.completedWorkoutIDs.isEmpty()) 0 else 1) +
                 (if (it.waterML > 0) 1 else 0) +
                 (if (it.sleepHours == null) 0 else 1)
         }
+
+    companion object {
+        /** The number of daily tasks that [todayTaskCount] counts. */
+        const val TODAY_TASK_TOTAL = 3
+    }
 
     val totalWorkouts: Int
         get() = state.records.sumOf { it.completedWorkoutIDs.size }

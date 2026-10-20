@@ -51,6 +51,10 @@ data class BojiState(
     val bodyEntries: List<BodyEntry> = emptyList(),
 ) {
     companion object {
+        /**
+         * The nickname when state.json has no `displayName` field. A new state takes the
+         * localized `default_display_name` string instead, see `BojiStateSerializer`.
+         */
         const val DEFAULT_DISPLAY_NAME = "薄肌同学"
     }
 }

@@ -1,0 +1,14 @@
+course_home_beginner_title:
+course_home_beginner_subtitle:
+course_home_intermediate_title:
+course_home_intermediate_subtitle:
+course_gym_beginner_title:
+course_gym_beginner_subtitle:
+course_mobility_title:
+course_mobility_subtitle:
+course_level_beginner:
+  comment: 课程难度，显示在课程卡片和课程详情中
+course_level_intermediate:
+  comment: 课程难度，用于基础课程之后的下一步
+course_level_gentle:
+  comment: 课程难度，用于舒缓拉伸这类强度很低的课程

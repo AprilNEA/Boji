@@ -1,5 +1,7 @@
 package club.leanmuscle.boji.core.model
 
+import androidx.annotation.StringRes
+import club.leanmuscle.boji.R
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -27,81 +29,219 @@ enum class ExerciseIcon {
     ArmsOpen,
 }
 
+/** Difficulty of a course. The UI layer maps each level to a `course_level_*` string. */
+enum class CourseLevel { Beginner, Intermediate, Gentle }
+
+/**
+ * The amount of one set: repetitions or seconds, once or on each side.
+ * The UI layer formats it with the `exercise_reps_*` strings. Matches `Reps` in iOS `BojiStore.swift`.
+ */
+sealed interface Reps {
+    data class Count(val count: Int) : Reps
+
+    data class CountRange(val min: Int, val max: Int) : Reps
+
+    data class CountPerSide(val count: Int) : Reps
+
+    data class Seconds(val seconds: Int) : Reps
+
+    data class SecondsRange(val min: Int, val max: Int) : Reps
+
+    data class SecondsPerSide(val seconds: Int) : Reps
+}
+
+/** A course exercise. [name] and [tip] are the `exercise_<id>_name` and `exercise_<id>_tip` strings. */
 data class Exercise(
     val id: String,
-    val name: String,
+    @StringRes val name: Int,
     val sets: Int,
-    val reps: String,
-    val tip: String,
+    val reps: Reps,
+    @StringRes val tip: Int,
     val icon: ExerciseIcon,
 )
 
+/** A built-in course. [title] and [subtitle] are the `course_<id>_title` and `course_<id>_subtitle` strings. */
 data class Workout(
     val id: String,
-    val title: String,
-    val subtitle: String,
+    @StringRes val title: Int,
+    @StringRes val subtitle: Int,
     val minutes: Int,
-    val level: String,
+    val level: CourseLevel,
     val exercises: List<Exercise>,
 ) {
     val totalSets: Int get() = exercises.sumOf { it.sets }
 }
 
-/** Built-in courses. Content and IDs match `WorkoutLibrary` in ios/Boji/Models/BojiStore.swift. */
+/**
+ * Built-in courses. Structure and IDs match `WorkoutLibrary` in ios/Boji/Models/BojiStore.swift.
+ * The text is in `locales/` (groups `course` and `exercise`); both apps read the same keys.
+ */
 object WorkoutLibrary {
     val Home = Workout(
         id = "home-beginner",
-        title = "居家基础训练",
-        subtitle = "无需器械的全身入门",
+        title = R.string.course_home_beginner_title,
+        subtitle = R.string.course_home_beginner_subtitle,
         minutes = 20,
-        level = "新手",
+        level = CourseLevel.Beginner,
         exercises = listOf(
-            Exercise("bodyweight-squat", "徒手深蹲", 3, "8–10 次", "膝盖朝脚尖方向，缓慢起身。", ExerciseIcon.Strength),
-            Exercise("wall-push-up", "墙壁俯卧撑", 3, "8–10 次", "身体保持直线，双手稳稳撑墙。", ExerciseIcon.Walk),
-            Exercise("glute-bridge", "臀桥", 3, "10–12 次", "脚掌踩稳，抬起时不要耸肩。", ExerciseIcon.Core),
-            Exercise("bird-dog", "鸟狗式", 2, "每侧 8 次", "动作放慢，保持躯干稳定。", ExerciseIcon.Cooldown),
+            Exercise(
+                "bodyweight-squat",
+                R.string.exercise_bodyweight_squat_name,
+                3,
+                Reps.CountRange(8, 10),
+                R.string.exercise_bodyweight_squat_tip,
+                ExerciseIcon.Strength,
+            ),
+            Exercise(
+                "wall-push-up",
+                R.string.exercise_wall_push_up_name,
+                3,
+                Reps.CountRange(8, 10),
+                R.string.exercise_wall_push_up_tip,
+                ExerciseIcon.Walk,
+            ),
+            Exercise(
+                "glute-bridge",
+                R.string.exercise_glute_bridge_name,
+                3,
+                Reps.CountRange(10, 12),
+                R.string.exercise_glute_bridge_tip,
+                ExerciseIcon.Core,
+            ),
+            Exercise(
+                "bird-dog",
+                R.string.exercise_bird_dog_name,
+                2,
+                Reps.CountPerSide(8),
+                R.string.exercise_bird_dog_tip,
+                ExerciseIcon.Cooldown,
+            ),
         ),
     )
 
     val HomeIntermediate = Workout(
         id = "home-intermediate",
-        title = "居家进阶训练",
-        subtitle = "基础训练之后的下一步",
+        title = R.string.course_home_intermediate_title,
+        subtitle = R.string.course_home_intermediate_subtitle,
         minutes = 25,
-        level = "进阶",
+        level = CourseLevel.Intermediate,
         exercises = listOf(
-            Exercise("reverse-lunge", "后撤步弓步蹲", 3, "每侧 8 次", "后撤一步再下蹲，前膝对准脚尖。", ExerciseIcon.Lunge),
-            Exercise("knee-push-up", "跪姿俯卧撑", 3, "8–10 次", "膝盖到头保持一条直线，胸口慢慢下放。", ExerciseIcon.Strength),
-            Exercise("dead-bug", "死虫式", 3, "每侧 6 次", "腰背贴住地面，对侧手脚慢慢伸出。", ExerciseIcon.Core),
-            Exercise("wall-sit", "靠墙静蹲", 3, "20–30 秒", "背部贴墙，大腿与地面平行。", ExerciseIcon.Strength),
-            Exercise("plank", "平板支撑", 3, "20–30 秒", "肘在肩正下方，身体保持一条直线。", ExerciseIcon.Core),
+            Exercise(
+                "reverse-lunge",
+                R.string.exercise_reverse_lunge_name,
+                3,
+                Reps.CountPerSide(8),
+                R.string.exercise_reverse_lunge_tip,
+                ExerciseIcon.Lunge,
+            ),
+            Exercise(
+                "knee-push-up",
+                R.string.exercise_knee_push_up_name,
+                3,
+                Reps.CountRange(8, 10),
+                R.string.exercise_knee_push_up_tip,
+                ExerciseIcon.Strength,
+            ),
+            Exercise(
+                "dead-bug",
+                R.string.exercise_dead_bug_name,
+                3,
+                Reps.CountPerSide(6),
+                R.string.exercise_dead_bug_tip,
+                ExerciseIcon.Core,
+            ),
+            Exercise(
+                "wall-sit",
+                R.string.exercise_wall_sit_name,
+                3,
+                Reps.SecondsRange(20, 30),
+                R.string.exercise_wall_sit_tip,
+                ExerciseIcon.Strength,
+            ),
+            Exercise(
+                "plank",
+                R.string.exercise_plank_name,
+                3,
+                Reps.SecondsRange(20, 30),
+                R.string.exercise_plank_tip,
+                ExerciseIcon.Core,
+            ),
         ),
     )
 
     val Gym = Workout(
         id = "gym-beginner",
-        title = "器械基础训练",
-        subtitle = "轻重量熟悉常用器械",
+        title = R.string.course_gym_beginner_title,
+        subtitle = R.string.course_gym_beginner_subtitle,
         minutes = 30,
-        level = "新手",
+        level = CourseLevel.Beginner,
         exercises = listOf(
-            Exercise("chest-press", "坐姿推胸", 3, "8–10 次", "选择轻重量，背部贴稳靠垫。", ExerciseIcon.Dumbbell),
-            Exercise("seated-row", "坐姿划船", 3, "8–10 次", "拉向身体时保持肩部放松。", ExerciseIcon.Row),
-            Exercise("leg-press", "坐姿腿举", 3, "10 次", "使用可控重量，膝盖不要锁死。", ExerciseIcon.Strength),
-            Exercise("lat-pulldown", "高位下拉", 3, "8–10 次", "轻拉横杆，避免身体后仰。", ExerciseIcon.PullDown),
+            Exercise(
+                "chest-press",
+                R.string.exercise_chest_press_name,
+                3,
+                Reps.CountRange(8, 10),
+                R.string.exercise_chest_press_tip,
+                ExerciseIcon.Dumbbell,
+            ),
+            Exercise(
+                "seated-row",
+                R.string.exercise_seated_row_name,
+                3,
+                Reps.CountRange(8, 10),
+                R.string.exercise_seated_row_tip,
+                ExerciseIcon.Row,
+            ),
+            Exercise(
+                "leg-press",
+                R.string.exercise_leg_press_name,
+                3,
+                Reps.Count(10),
+                R.string.exercise_leg_press_tip,
+                ExerciseIcon.Strength,
+            ),
+            Exercise(
+                "lat-pulldown",
+                R.string.exercise_lat_pulldown_name,
+                3,
+                Reps.CountRange(8, 10),
+                R.string.exercise_lat_pulldown_tip,
+                ExerciseIcon.PullDown,
+            ),
         ),
     )
 
     val Mobility = Workout(
         id = "mobility",
-        title = "舒缓拉伸",
-        subtitle = "训练前后都可进行",
+        title = R.string.course_mobility_title,
+        subtitle = R.string.course_mobility_subtitle,
         minutes = 10,
-        level = "轻松",
+        level = CourseLevel.Gentle,
         exercises = listOf(
-            Exercise("cat-cow", "猫牛式", 2, "8 次", "配合呼吸，动作保持柔和。", ExerciseIcon.Flexibility),
-            Exercise("hip-flexor-stretch", "髋屈肌拉伸", 2, "每侧 20 秒", "骨盆保持平稳，不要弹震。", ExerciseIcon.Lunge),
-            Exercise("chest-stretch", "开胸拉伸", 2, "20 秒", "轻轻打开胸部，肩膀自然下沉。", ExerciseIcon.ArmsOpen),
+            Exercise(
+                "cat-cow",
+                R.string.exercise_cat_cow_name,
+                2,
+                Reps.Count(8),
+                R.string.exercise_cat_cow_tip,
+                ExerciseIcon.Flexibility,
+            ),
+            Exercise(
+                "hip-flexor-stretch",
+                R.string.exercise_hip_flexor_stretch_name,
+                2,
+                Reps.SecondsPerSide(20),
+                R.string.exercise_hip_flexor_stretch_tip,
+                ExerciseIcon.Lunge,
+            ),
+            Exercise(
+                "chest-stretch",
+                R.string.exercise_chest_stretch_name,
+                2,
+                Reps.Seconds(20),
+                R.string.exercise_chest_stretch_tip,
+                ExerciseIcon.ArmsOpen,
+            ),
         ),
     )
 

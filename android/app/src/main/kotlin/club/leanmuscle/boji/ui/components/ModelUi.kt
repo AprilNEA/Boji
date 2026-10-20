@@ -1,37 +1,67 @@
 package club.leanmuscle.boji.ui.components
 
+import android.text.format.DateFormat
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.MaterialTheme
 import club.leanmuscle.boji.R
 import club.leanmuscle.boji.core.model.ArticleIcon
 import club.leanmuscle.boji.core.model.ArticleTone
+import club.leanmuscle.boji.core.model.ClubArticle
+import club.leanmuscle.boji.core.model.CourseLevel
 import club.leanmuscle.boji.core.model.ExerciseIcon
 import club.leanmuscle.boji.core.model.PlanKind
+import club.leanmuscle.boji.core.model.Reps
 import club.leanmuscle.boji.core.model.StorageError
 import club.leanmuscle.boji.ui.theme.BojiThemeColors
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-/** The app text is Chinese only, so numbers and dates use zh-CN on every device, as on iOS. */
-val BojiLocale: Locale = Locale.SIMPLIFIED_CHINESE
+/**
+ * The language of the displayed text. Format dates and numbers with it.
+ *
+ * `R.string.locale_tag` is generated into the same `strings_shared.xml` as the shared text, so
+ * Android resolves both from the same `values*` directory. When the device language has no
+ * translation, the text, the dates and the numbers all use the fallback language.
+ */
+val textLocale: Locale
+    @Composable
+    @ReadOnlyComposable
+    get() = Locale.forLanguageTag(stringResource(R.string.locale_tag))
 
-private val longDayFormatter = DateTimeFormatter.ofPattern("M月d日 EEEE", BojiLocale)
-private val narrowWeekdayFormatter = DateTimeFormatter.ofPattern("EEEEE", BojiLocale)
-private val mediumDateFormatter = DateTimeFormatter.ofPattern("y年M月d日", BojiLocale)
+/** Month, day and weekday, such as 10月20日星期二. */
+@Composable
+@ReadOnlyComposable
+fun formatLongDay(day: LocalDate): String = formatSkeleton(day, "MMMMdEEEE")
 
-fun formatLongDay(day: LocalDate): String = longDayFormatter.format(day)
+@Composable
+@ReadOnlyComposable
+fun formatNarrowWeekday(day: LocalDate): String =
+    DateTimeFormatter.ofPattern("EEEEE", textLocale).format(day)
 
-fun formatNarrowWeekday(day: LocalDate): String = narrowWeekdayFormatter.format(day)
+/** Year, month and day, such as 2026年10月20日. */
+@Composable
+@ReadOnlyComposable
+fun formatMediumDate(day: LocalDate): String = formatSkeleton(day, "yMMMd")
 
-fun formatMediumDate(day: LocalDate): String = mediumDateFormatter.format(day)
+/** Formats a date with the pattern that [textLocale] uses for a CLDR skeleton. */
+@Composable
+@ReadOnlyComposable
+private fun formatSkeleton(day: LocalDate, skeleton: String): String {
+    val locale = textLocale
+    val pattern = DateFormat.getBestDateTimePattern(locale, skeleton)
+    return DateTimeFormatter.ofPattern(pattern, locale).format(day)
+}
 
-fun formatOneDecimal(value: Double): String = String.format(BojiLocale, "%.1f", value)
+@Composable
+@ReadOnlyComposable
+fun formatOneDecimal(value: Double): String = String.format(textLocale, "%.1f", value)
 
 /** Accepts both `.` and `,` as decimal separator. Returns null for anything else. */
 fun parseDecimal(text: String): Double? = text.trim().replace(',', '.').toDoubleOrNull()
@@ -49,6 +79,33 @@ val PlanKind.subtitleRes: Int
         PlanKind.Home -> R.string.plan_home_subtitle
         PlanKind.Gym -> R.string.plan_gym_subtitle
     }
+
+@get:StringRes
+val CourseLevel.titleRes: Int
+    get() = when (this) {
+        CourseLevel.Beginner -> R.string.course_level_beginner
+        CourseLevel.Intermediate -> R.string.course_level_intermediate
+        CourseLevel.Gentle -> R.string.course_level_gentle
+    }
+
+/** The amount of one set, such as 8～10 次 or 每侧 20 秒. */
+@Composable
+@ReadOnlyComposable
+fun repsText(reps: Reps): String = when (reps) {
+    is Reps.Count -> pluralStringResource(R.plurals.exercise_reps_count, reps.count, reps.count)
+    is Reps.CountRange -> stringResource(R.string.exercise_reps_count_range, reps.min, reps.max)
+    is Reps.CountPerSide -> pluralStringResource(R.plurals.exercise_reps_count_per_side, reps.count, reps.count)
+    is Reps.Seconds -> pluralStringResource(R.plurals.exercise_reps_seconds, reps.seconds, reps.seconds)
+    is Reps.SecondsRange -> stringResource(R.string.exercise_reps_seconds_range, reps.min, reps.max)
+    is Reps.SecondsPerSide ->
+        pluralStringResource(R.plurals.exercise_reps_seconds_per_side, reps.seconds, reps.seconds)
+}
+
+/** Category and reading time of an article, such as 训练起步 · 2 分钟阅读. */
+@Composable
+@ReadOnlyComposable
+fun articleMeta(article: ClubArticle): String =
+    stringResource(R.string.article_meta, stringResource(article.category), article.readingMinutes)
 
 @get:DrawableRes
 val PlanKind.iconRes: Int

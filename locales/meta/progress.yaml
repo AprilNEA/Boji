@@ -13,6 +13,15 @@ progress_entry_delete:
 progress_share_subtitle:
 progress_share_a11y:
 progress_share_text:
+  comment: 分享训练进度的文字。workouts 是 progress_share_workouts 的结果，activeDays 是 progress_share_days 的结果
   args:
-    workouts: int
-    activeDays: int
+    workouts: string
+    activeDays: string
+progress_share_workouts:
+  comment: 分享文字中的训练次数，例如「12 次训练」
+  args:
+    count: int
+progress_share_days:
+  comment: 分享文字中的活跃天数，例如「5 天生活足迹」
+  args:
+    count: int

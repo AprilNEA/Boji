@@ -26,6 +26,7 @@ import club.leanmuscle.boji.R
 import club.leanmuscle.boji.core.model.Workout
 import club.leanmuscle.boji.ui.components.CardShape
 import club.leanmuscle.boji.ui.components.OrbitArtwork
+import club.leanmuscle.boji.ui.components.titleRes
 import club.leanmuscle.boji.ui.theme.BojiThemeColors
 
 /** Course banner. Without [onClick] it is decorative, as on the detail screen. */
@@ -51,13 +52,13 @@ fun WorkoutCard(workout: Workout, modifier: Modifier = Modifier, onClick: (() ->
                     color = MaterialTheme.colorScheme.primary,
                 )
                 Text(
-                    text = workout.title,
+                    text = stringResource(workout.title),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.widthIn(max = 210.dp),
                 )
                 Text(
-                    text = stringResource(R.string.workout_card_meta, workout.minutes, workout.level),
+                    text = stringResource(R.string.workout_card_meta, workout.minutes, stringResource(workout.level.titleRes)),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

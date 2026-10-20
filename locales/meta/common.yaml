@@ -20,3 +20,5 @@ storage_write_failed:
 storage_delete_failed:
   args:
     detail: string
+default_display_name:
+  comment: 新用户的默认昵称。App 首次启动和删除全部数据后写入，用户可以修改

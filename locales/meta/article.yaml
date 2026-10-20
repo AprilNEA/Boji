@@ -1,0 +1,29 @@
+article_first_workout_title:
+article_first_workout_category:
+article_first_workout_s1_title:
+article_first_workout_s1_body:
+article_first_workout_s2_title:
+article_first_workout_s2_body:
+article_first_workout_s3_title:
+article_first_workout_s3_body:
+article_eat_well_title:
+article_eat_well_category:
+article_eat_well_s1_title:
+article_eat_well_s1_body:
+article_eat_well_s2_title:
+article_eat_well_s2_body:
+article_eat_well_s3_title:
+article_eat_well_s3_body:
+article_rest_well_title:
+article_rest_well_category:
+article_rest_well_s1_title:
+article_rest_well_s1_body:
+article_rest_well_s2_title:
+article_rest_well_s2_body:
+article_rest_well_s3_title:
+article_rest_well_s3_body:
+article_meta:
+  comment: 文章列表和文章页的副标题，由分类和预计阅读分钟数组成
+  args:
+    category: string
+    minutes: int

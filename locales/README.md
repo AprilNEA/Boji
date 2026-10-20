@@ -19,6 +19,18 @@
 
 分组按界面划分，例如 `common`、`today`、`training`。同一个键只能属于一个分组。每个语言目录的分组文件名必须与 `meta/` 一致。
 
+课程和文章的文字按内容划分，放在 3 个分组中。两端的代码只保存结构，例如组数、秒数和图标，文字都从这些键读取：
+
+| 分组 | 键 | 示例 |
+| --- | --- | --- |
+| `course` | `course_<课程 ID>_title`、`course_<课程 ID>_subtitle`、`course_level_*` | `course_home_beginner_title` |
+| `exercise` | `exercise_<动作 ID>_name`、`exercise_<动作 ID>_tip`、`exercise_reps_*` | `exercise_bodyweight_squat_tip` |
+| `article` | `article_<文章名>_title`、`_category`、`_s<序号>_title`、`_s<序号>_body`，以及 `article_meta` | `article_eat_well_s2_body` |
+
+键中的 ID 与代码中的课程 ID 和动作 ID 一致，`-` 换成 `_`。文章用名字作键，不用数字 ID。增加或改名课程和动作时，同步修改这些键，规则见根目录 `AGENTS.md` 的「Exercise IDs」。
+
+每组的量用 `exercise_reps_*` 的 6 种格式表达：次数、次数范围、每侧次数、秒数、秒数范围、每侧秒数。代码传入数字，不把「8～10 次」这样的文字写进代码。
+
 ## 修改文案
 
 1. 在 `zh-Hans/<分组>.yaml` 中修改文案。

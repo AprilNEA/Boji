@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Simplified Chinese copy that only Android shows. values/strings.xml defines every name.
+  Do not add the names that values/strings.xml marks translatable="false".
+-->
+<resources>
+    <string name="app_name">薄肌</string>
+
+
+    <!-- Common -->
+    <string name="action_back">返回</string>
+    <string name="stepper_decrease">减少</string>
+    <string name="stepper_increase">增加</string>
+    <string name="storage_unknown_error">未知错误</string>
+
+
+    <!-- Today -->
+    <string name="today_subtitle">不必一步到位，每一步都算数。</string>
+    <string name="today_rhythm_a11y">我的日常节奏，已记录 %1$d / %2$d</string>
+    <string name="habit_move">动</string>
+    <string name="habit_water">水</string>
+    <string name="habit_status">%1$s：%2$s</string>
+    <string name="habit_log">记录一下</string>
+    <string name="workout_card_eyebrow">MOVE AT YOUR PACE</string>
+    <string name="workout_card_meta">%1$d 分钟 · %2$s</string>
+    <string name="workout_card_action">查看训练</string>
+
+
+    <!-- Entry sheets -->
+    <string name="water_amount_label">本次饮水量</string>
+    <string name="water_undo">撤回 250 mL</string>
+    <string name="sleep_label">昨晚睡了</string>
+    <string name="sleep_value">%1$s 小时</string>
+    <string name="sleep_slider_a11y">睡眠小时数</string>
+    <string name="sleep_adjust">调整时长</string>
+    <string name="body_weight_invalid">请输入 30～300 之间的数值</string>
+    <string name="body_waist_invalid">请输入 30～250 之间的数值</string>
+
+    <!-- Training -->
+    <string name="training_eyebrow">BUILD YOUR OWN RHYTHM</string>
+    <string name="training_subtitle">把开始变简单，把坚持交给时间。</string>
+    <string name="training_progression_section">准备好了，再进一步</string>
+    <string name="training_mobility_section">给身体一点余地</string>
+    <string name="training_mobility_meta">%1$d 分钟 · 温和活动</string>
+    <string name="training_disclaimer">课程是通用入门参考，不是个性化处方。有伤病或运动限制时，先咨询专业人员。出现疼痛、头晕或不适时立即停止。</string>
+    <string name="detail_warmup">先热身，再开始。动作以舒适、可控为准。</string>
+
+    <!-- Training session -->
+    <string name="session_title">专注当下</string>
+    <string name="session_progress_a11y">已完成 %1$d / %2$d 组</string>
+    <plurals name="session_rest_a11y">
+        <item quantity="other">休息剩余 %1$d 秒</item>
+    </plurals>
+    <string name="session_footnote">按自己的速度完成动作，准备好再继续。\n如有疼痛或不适，请停止训练。</string>
+    <string name="session_end_confirm_title">结束本次训练？</string>
+    <string name="session_end_confirm_text">未完成的训练不会记录。</string>
+    <string name="session_finished_summary">%1$s已记录\n用时 %2$d 分 %3$d 秒</string>
+
+    <!-- Progress -->
+    <string name="progress_eyebrow">EVERY LITTLE STEP COUNTS</string>
+    <string name="progress_title">看见自己的变化。</string>
+    <string name="progress_active_days">日常打卡</string>
+    <string name="progress_week_detail">运动 / 饮水 / 睡眠</string>
+    <string name="progress_week_day_active">%1$s，有记录</string>
+    <string name="progress_week_day_empty">%1$s，暂无记录</string>
+    <plurals name="progress_chart_a11y">
+        <item quantity="other">身体记录趋势，共 %1$d 条。下方列出具体数值。</item>
+    </plurals>
+    <string name="progress_entry_value">%1$s %2$s</string>
+    <string name="progress_entry_manage">管理%1$s的记录</string>
+    <string name="progress_share_title">分享我的小小坚持</string>
+
+    <!-- Club -->
+    <string name="club_subtitle">在这里，照顾自己就是入场券。</string>
+    <string name="club_membership_title">会员卡</string>
+    <string name="club_membership_text">Android 版暂未接入俱乐部账号和会员卡。日常记录不需要账号。</string>
+    <string name="club_challenge_day">第 %1$d 天：%2$s</string>
+    <string name="club_challenge_day_done">已完成</string>
+    <string name="club_challenge_day_pending">未完成</string>
+    <string name="club_footnote">日常记录留在本机。会员卡、多人小队和线上社区尚未在 Android 版开放。</string>
+
+    <!-- Settings -->
+    <string name="settings_privacy_local">训练和身体记录只保存在此设备</string>
+    <string name="settings_privacy_note">记录不会上传。系统备份和设备迁移不包含这些记录，卸载应用会删除它们。导出文件含身体数据，请妥善保管。</string>
+    <string name="settings_export_done">已导出到所选位置</string>
+    <string name="settings_delete_confirm_text">此操作无法撤销。将删除本机的训练、饮水、睡眠和身体记录，以及昵称和训练场景。显示模式保持不变。</string>
+    <string name="settings_about_note">薄肌俱乐部 · 开发预览版\n不提供医疗诊断、AI 识餐或付费服务。名称为开发暂用，未完成商标审查。</string>
+</resources>
