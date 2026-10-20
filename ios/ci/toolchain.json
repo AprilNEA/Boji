@@ -1,0 +1,13 @@
+{
+  "runner": "macos-26",
+  "xcodeVersion": "26.6",
+  "xcodeBuild": "17F113",
+  "xcodePath": "/Applications/Xcode_26.6.app/Contents/Developer",
+  "nodeVersion": "26.11.1",
+  "pnpmVersion": "12.9.1",
+  "xcodegen": {
+    "version": "2.46.0",
+    "url": "https://github.com/yonaskolb/XcodeGen/releases/download/2.46.0/xcodegen.zip",
+    "sha256": "4d9e34b62172d645eed6457cac13fc222569974098ef4ee9c3368bedf0196806"
+  }
+}

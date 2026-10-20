@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "version": "1.0",
+  "testedCommit": "",
+  "testedBuildId": "",
+  "checks": {
+    "backend": false,
+    "reviewAccess": false,
+    "privacy": false,
+    "legal": false,
+    "screenshots": false,
+    "exportCompliance": false
+  }
+}

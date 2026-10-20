@@ -1,0 +1,322 @@
+name: iOS
+run-name: iOS / ${{ inputs.action || 'ci' }}
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+    paths:
+      - 'ios/**'
+      - 'animations/**'
+      - 'locales/**'
+      - 'crates/**'
+      - 'android/app/src/main/res/**/strings_shared.xml'
+      - '.github/workflows/ios.yml'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Select one stage; review never builds or uploads'
+        required: true
+        type: choice
+        default: ci
+        options: [ci, testflight, review]
+      version:
+        description: 'testflight only: must match both project versions'
+        required: false
+        type: string
+      build_number:
+        description: 'testflight only: unused Apple build number, for example 8'
+        required: false
+        type: string
+      testflight_run_id:
+        description: 'review only: successful testflight run ID, not a build ID'
+        required: false
+        type: string
+      submit:
+        description: 'review only: false checks readiness; true submits for review'
+        type: boolean
+        default: false
+        required: true
+
+permissions:
+  contents: read
+
+# CI can supersede CI. Store operations share a separate, non-cancelling group.
+concurrency:
+  group: ${{ github.event_name == 'workflow_dispatch' && inputs.action != 'ci' && 'ios-store-write' || format('ios-ci-{0}', github.event.pull_request.number || github.ref) }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' || inputs.action == 'ci' }}
+
+jobs:
+  validate:
+    name: validate
+    if: github.event_name != 'workflow_dispatch' || inputs.action == 'ci' || inputs.action == 'testflight'
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+      CARGO_TARGET_DIR: ${{ github.workspace }}/.work/boji-ios/ci/cargo
+      BOJI_SENTRY_DSN: ''
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '26.11.1'
+      - name: Check source and local release safeguards
+        run: |
+          python3 ios/ci/check.py toolchain
+          python3 ios/ci/check.py source
+          python3 -m unittest discover -s ios/ci/tests -v
+          python3 -m unittest discover -s ios/app-store/tests -v
+          python3 ios/app-store/manage.py install
+          python3 ios/app-store/manage.py validate
+      - name: Check generated strings
+        working-directory: crates
+        run: cargo run --locked --package boji-locales -- check
+      - name: Check generated animations
+        run: |
+          npm install --global pnpm@12.9.1 --ignore-scripts
+          pnpm --dir animations install --frozen-lockfile --ignore-scripts
+          pnpm --dir animations typecheck
+          pnpm --dir animations check
+      - name: Check generated Xcode project
+        run: |
+          python3 ios/ci/bootstrap.py
+          .work/tools/xcodegen/2.46.0/bin/xcodegen generate --no-env --spec ios/project.yml
+          git diff --exit-code -- ios/Boji.xcodeproj
+
+  build:
+    name: build
+    needs: validate
+    runs-on: macos-26
+    timeout-minutes: 60
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+      BOJI_SENTRY_DSN: ''
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Check toolchain and discover runner simulator
+        id: device
+        run: |
+          python3 ios/ci/check.py toolchain
+          echo "udid=$(python3 ios/ci/check.py simulator)" >> "$GITHUB_OUTPUT"
+      - name: Resolve only locked Swift packages
+        run: |
+          xcodebuild -resolvePackageDependencies -project ios/Boji.xcodeproj -scheme Boji \
+            -derivedDataPath .work/boji-ios/ci/DerivedData \
+            -onlyUsePackageVersionsFromResolvedFile
+          git diff --exit-code -- ios/Boji.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+      - name: Run isolated unit and UI tests
+        env:
+          SIMULATOR_UDID: ${{ steps.device.outputs.udid }}
+        run: |
+          mkdir -p .work/boji-ios/ci/reports
+          set -o pipefail
+          xcodebuild -project ios/Boji.xcodeproj -scheme Boji -configuration Debug \
+            -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
+            -derivedDataPath .work/boji-ios/ci/DerivedData \
+            -resultBundlePath .work/boji-ios/ci/reports/tests.xcresult \
+            -disableAutomaticPackageResolution -onlyUsePackageVersionsFromResolvedFile \
+            -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=NO \
+            BOJI_API_BASE_URL= BOJI_SENTRY_DSN= test \
+            | tee .work/boji-ios/ci/reports/tests.log
+      - name: Build Release and verify bundled resources
+        run: |
+          set -o pipefail
+          xcodebuild -project ios/Boji.xcodeproj -scheme Boji -configuration Release \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath .work/boji-ios/ci/DerivedData \
+            -disableAutomaticPackageResolution -onlyUsePackageVersionsFromResolvedFile \
+            CODE_SIGNING_ALLOWED=NO BOJI_API_BASE_URL= BOJI_SENTRY_DSN= build \
+            | tee .work/boji-ios/ci/reports/release.log
+          python3 ios/ci/check.py bundle \
+            --app .work/boji-ios/ci/DerivedData/Build/Products/Release-iphonesimulator/Boji.app
+      - name: Save isolated test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ios-ci-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .work/boji-ios/ci/reports/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  release-gate:
+    name: release-gate
+    if: github.event_name == 'workflow_dispatch' && (inputs.action == 'testflight' || inputs.action == 'review') && github.repository == 'AprilNEA/Boji' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Validate manual release source
+        env:
+          IOS_RELEASE_ENABLED: ${{ vars.IOS_RELEASE_ENABLED }}
+          RELEASE_ACTION: ${{ inputs.action }}
+        run: python3 ios/ci/guard.py dispatch
+
+  testflight:
+    name: testflight
+    needs: [release-gate, build]
+    if: github.event_name == 'workflow_dispatch' && inputs.action == 'testflight'
+    runs-on: macos-26
+    environment: ios-testflight
+    timeout-minutes: 90
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+      VERSION: ${{ inputs.version }}
+      BUILD_NUMBER: ${{ inputs.build_number }}
+    steps:
+      - name: Initialize release paths
+        run: |
+          {
+            echo "SIGNING_DIR=$RUNNER_TEMP/boji-signing"
+            echo "ARCHIVE_PATH=$RUNNER_TEMP/boji-archive/Boji.xcarchive"
+            echo "EXPORT_PATH=$RUNNER_TEMP/boji-export"
+            echo "PRIVATE_DIR=$RUNNER_TEMP/boji-private-evidence"
+            echo "RECEIPT_PATH=$RUNNER_TEMP/boji-receipt/receipt.json"
+          } >> "$GITHUB_ENV"
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Validate and install pinned tools before using credentials
+        env:
+          BOJI_API_BASE_URL: ${{ vars.BOJI_API_BASE_URL }}
+          IOS_BACKEND_VERIFIED: ${{ vars.IOS_BACKEND_VERIFIED }}
+        run: |
+          python3 ios/ci/check.py toolchain
+          python3 ios/ci/check.py source
+          python3 ios/ci/signing.py validate --version "$VERSION" --build-number "$BUILD_NUMBER"
+          python3 ios/ci/bootstrap.py
+          python3 ios/app-store/manage.py install
+      - name: Prepare encrypted diagnostics
+        id: evidence
+        env:
+          IOS_ARTIFACT_PUBLIC_KEY: ${{ vars.IOS_ARTIFACT_PUBLIC_KEY }}
+        run: python3 ios/ci/artifacts.py prepare --directory "$PRIVATE_DIR"
+      - name: Resolve locked Swift packages
+        run: |
+          set -o pipefail
+          xcodebuild -resolvePackageDependencies -project ios/Boji.xcodeproj -scheme Boji \
+            -derivedDataPath .work/boji-ios/ci/archive-derived \
+            -onlyUsePackageVersionsFromResolvedFile 2>&1 \
+            | python3 ios/ci/artifacts.py log --file "$PRIVATE_DIR/logs/resolve.log"
+          git diff --exit-code -- ios/Boji.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+      - name: Prepare signing certificates and profiles
+        env:
+          IOS_DISTRIBUTION_P12_BASE64: ${{ secrets.IOS_DISTRIBUTION_P12_BASE64 }}
+          IOS_DISTRIBUTION_P12_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_P12_PASSWORD }}
+          IOS_APP_PROFILE_BASE64: ${{ secrets.IOS_APP_PROFILE_BASE64 }}
+          IOS_WIDGET_PROFILE_BASE64: ${{ secrets.IOS_WIDGET_PROFILE_BASE64 }}
+          IOS_WATCH_PROFILE_BASE64: ${{ secrets.IOS_WATCH_PROFILE_BASE64 }}
+          BOJI_API_BASE_URL: ${{ vars.BOJI_API_BASE_URL }}
+          IOS_BACKEND_VERIFIED: ${{ vars.IOS_BACKEND_VERIFIED }}
+        run: |
+          python3 ios/ci/signing.py prepare --version "$VERSION" --build-number "$BUILD_NUMBER"
+      - name: Archive signed iOS app
+        run: |
+          umask 077
+          mkdir -p "$(dirname "$ARCHIVE_PATH")"
+          set -o pipefail
+          xcodebuild -project ios/Boji.xcodeproj -scheme Boji -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath .work/boji-ios/ci/archive-derived \
+            -archivePath "$ARCHIVE_PATH" \
+            -disableAutomaticPackageResolution -onlyUsePackageVersionsFromResolvedFile \
+            archive 2>&1 \
+            | python3 ios/ci/artifacts.py log --file "$PRIVATE_DIR/logs/archive.log"
+      - name: Export IPA
+        run: |
+          umask 077
+          set -o pipefail
+          xcodebuild -exportArchive -archivePath "$ARCHIVE_PATH" \
+            -exportPath "$EXPORT_PATH" \
+            -exportOptionsPlist "$SIGNING_DIR/ExportOptions.plist" 2>&1 \
+            | python3 ios/ci/artifacts.py log --file "$PRIVATE_DIR/logs/export.log"
+          test -f "$EXPORT_PATH/Boji.ipa"
+      - name: Upload IPA to App Store Connect and wait for processing
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_PRIVATE_KEY_P8: ${{ secrets.ASC_PRIVATE_KEY_P8 }}
+          ASC_BYPASS_KEYCHAIN: '1'
+          ASC_CONFIG_PATH: ${{ runner.temp }}/boji-no-asc-config.json
+        run: |
+          python3 ios/ci/store.py upload --ipa "$EXPORT_PATH/Boji.ipa" \
+            --version "$VERSION" --build-number "$BUILD_NUMBER" --commit "$GITHUB_SHA" \
+            --receipt "$RECEIPT_PATH" --apply
+      - name: Save non-secret build provenance only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ios-testflight-receipt
+          path: ${{ runner.temp }}/boji-receipt/receipt.json
+          if-no-files-found: error
+          retention-days: 90
+      - name: Encrypt build logs and dSYMs
+        id: seal
+        if: always() && steps.evidence.outcome == 'success'
+        run: |
+          python3 ios/ci/artifacts.py seal --directory "$PRIVATE_DIR" \
+            --archive "$ARCHIVE_PATH" --receipt "$RECEIPT_PATH" \
+            --output "$RUNNER_TEMP/boji-encrypted-evidence"
+      - name: Save encrypted diagnostics only
+        if: always() && steps.seal.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ios-release-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/boji-encrypted-evidence/release-evidence.tar.gpg
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 0
+      - name: Clean up signing and plaintext build files
+        if: always()
+        run: |
+          status=0
+          python3 ios/ci/signing.py cleanup || status=$?
+          rm -rf -- "$ARCHIVE_PATH" "$EXPORT_PATH" "$PRIVATE_DIR"
+          exit "$status"
+
+  review:
+    name: review
+    needs: release-gate
+    if: github.event_name == 'workflow_dispatch' && inputs.action == 'review'
+    runs-on: ubuntu-24.04
+    environment: ios-appstore-review
+    permissions:
+      contents: read
+      actions: read
+    timeout-minutes: 20
+    env:
+      TESTFLIGHT_RUN_ID: ${{ inputs.testflight_run_id }}
+      SUBMIT: ${{ inputs.submit }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify successful TestFlight jobs and download their receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IOS_RELEASE_ENABLED: ${{ vars.IOS_RELEASE_ENABLED }}
+          RELEASE_ACTION: ${{ inputs.action }}
+        run: |
+          export RECEIPT_DIR="$RUNNER_TEMP/boji-testflight-receipt"
+          echo "RECEIPT_DIR=$RECEIPT_DIR" >> "$GITHUB_ENV"
+          python3 ios/ci/guard.py fetch-receipt --run-id "$TESTFLIGHT_RUN_ID" --output "$RECEIPT_DIR"
+          python3 ios/app-store/manage.py install
+      - name: Check or submit the tested build without rebuilding
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_PRIVATE_KEY_P8: ${{ secrets.ASC_PRIVATE_KEY_P8 }}
+          ASC_BYPASS_KEYCHAIN: '1'
+          ASC_CONFIG_PATH: ${{ runner.temp }}/boji-no-asc-config.json
+        run: |
+          args=(--check-remote)
+          if [[ "$SUBMIT" == 'true' ]]; then args+=(--apply); fi
+          python3 ios/ci/store.py submit --receipt "$RECEIPT_DIR/receipt.json" "${args[@]}"

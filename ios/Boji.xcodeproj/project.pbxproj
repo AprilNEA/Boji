@@ -499,6 +499,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				Base,
+				en,
 				"zh-Hans",
 			);
 			mainGroup = C48DC8841BD83DFEFC66DAD0;

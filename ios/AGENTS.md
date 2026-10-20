@@ -19,6 +19,7 @@ This directory holds the native iOS app, its watchOS app and its widgets. The pr
 | `BojiAPI/` | Local Swift package with the generated messages and Connect clients of the `boji.v1` API |
 | `docs/` | Design notes, integration notes and verification records |
 | `app-store/` | Public App Store copy, pinned asc tooling and offline checks |
+| `ci/` | Pinned CI tools, signing validation, release provenance and offline tests; see `docs/ci-cd.md` |
 
 ## Commands
 
@@ -47,6 +48,23 @@ xcodebuild -project Boji.xcodeproj -scheme Boji \
 ```
 
 ## Rules
+
+### CI and release
+
+- Keep one workflow at `../.github/workflows/ios.yml`, with separate CI, TestFlight and review jobs. Manual dispatch selects `ci`, `testflight` or `review`.
+- PR jobs use GitHub-hosted runners without release secrets. Do not use `pull_request_target` or personal self-hosted runners for PR code.
+- Pin actions by commit SHA, Xcode by version/build and XcodeGen by archive checksum. Keep workflow values aligned with `ci/toolchain.json`.
+- Run `python3 -m unittest discover -s ios/ci/tests -v` and `actionlint .github/workflows/ios.yml` from the repository root after CI changes.
+- Release jobs require manual dispatch on `master` and protected environments. Do not create, copy or broaden signing credentials without authorization.
+- TestFlight requires successful CI jobs in the same run. Review must verify successful `validate`, `build`, `release-gate` and `testflight` jobs in the source run.
+- Preserve those job names or update `ci/guard.py` with them. A successful workflow conclusion alone does not prove that an upload occurred.
+- Keep archive, IPA export and upload visible as separate workflow steps. `ci/signing.py` only validates, prepares and cleans up signing state.
+- Run signing cleanup with `always()`. Preserve build failures through `pipefail`; never publish raw release logs, dSYMs or signing files.
+- Encrypt release diagnostics with the configured OpenPGP public key before uploading artifacts. Keep the decryption private key outside CI.
+- Keep `ci/release-approval.json` checks false until the corresponding build passes acceptance. Bind approval to the receipt's commit and build ID. Never reuse approval for another build.
+- Submit the exact TestFlight build recorded in its verified workflow receipt. Never rebuild during review submission or release the app automatically.
+- Require the existing manual-release store version to have that same build attached. Default submission checks may read Apple state but must not mutate it.
+- Simulator discovery in `ci/check.py` is for GitHub runners only. Use AppSim for local simulator operations.
 
 ### App Store metadata
 
