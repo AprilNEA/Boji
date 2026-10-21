@@ -67,6 +67,7 @@
 | `privacy@` | 别名，转入 `support@` | 个人信息权利请求、隐私投诉 | 隐私政策、第三方信息共享清单、支持页、App 内注销提示 |
 | `legal@` | 别名，转入 `support@` | 对用户协议的疑问、投诉和索赔，侵权通知，机关来函 | 用户协议第 16 条（App Store 自定义 EULA 的联系方式） |
 | `security@` | 别名，转入 `support@` | 安全漏洞报告 | `websites/public/.well-known/security.txt`、`.github/SECURITY.md` |
+| `conduct@` | 别名，转入 `support@` | 违反行为准则的举报 | `.github/CODE_OF_CONDUCT.md` |
 | `postmaster@`、`abuse@` | 别名，转入 `support@` | 邮件系统的必备地址 | 不写入公开文件 |
 | `dmarc@` | 独立邮箱 | 接收 DMARC 汇总报告 | 只写在 DNS 的 DMARC 记录中 |
 
