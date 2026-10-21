@@ -67,7 +67,7 @@ Debug 构建的 `--uitesting` 参数启用内存存储和会员测试服务。�
 
 Debug 默认连接 `http://localhost:3000`。正式配置通过构建设置 `BOJI_API_BASE_URL` 写入 `BojiAPIBaseURL`。Release 必须使用 HTTPS；未配置时禁用联网领卡。后端源码在仓库的 `bizserver/` 目录，不包含在此 iOS 目录。
 
-正式服务地址为 `https://api.leanmuscle.club`。TestFlight 构建从 GitHub 环境 `ios-testflight` 的同名变量读取它。本机要连接正式服务时，在构建命令中加入 `BOJI_API_BASE_URL=https://api.leanmuscle.club`。可以临时修改本机设置，但不要把正式地址提交到 `project.yml`。
+TestFlight 构建从 GitHub 环境 `ios-testflight` 的同名变量读取正式服务地址。本机要连接正式服务时，在构建命令中传入 `BOJI_API_BASE_URL`。可以临时修改本机设置，但不要把正式地址提交到 `project.yml`。
 
 接入与验证边界见[会员卡开发说明](../docs/developers/membership.mdx)。改用 Connect 接口后的测试结果见[Connect 接口迁移验证](docs/connect-verification.md)。这版不包含付费订阅或场馆核销。
 
