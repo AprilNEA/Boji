@@ -360,6 +360,7 @@ final class BojiStore {
         didSet { persistIfNeeded() }
     }
     private(set) var records: [DailyRecord] = []
+    /// Sorted by date, oldest first.
     private(set) var bodyEntries: [BodyEntry] = []
     private(set) var storageError: String?
     private var currentDate = Date()
@@ -474,7 +475,10 @@ final class BojiStore {
         guard weight.isFinite, waist.isFinite else { return }
         guard (30...300).contains(weight), (30...250).contains(waist) else { return }
 
-        bodyEntries.append(BodyEntry(weight: weight, waist: waist))
+        let entry = BodyEntry(weight: weight, waist: waist)
+        // The clock can move back, so a new entry is not always the latest one.
+        let index = bodyEntries.lastIndex { $0.date <= entry.date }.map { $0 + 1 } ?? 0
+        bodyEntries.insert(entry, at: index)
         persistIfNeeded()
     }
 
@@ -534,7 +538,7 @@ final class BojiStore {
             displayName = state.displayName
             joinedChallenge = state.joinedChallenge
             records = state.records
-            bodyEntries = state.bodyEntries
+            bodyEntries = state.bodyEntries.sorted { $0.date < $1.date }
             isLoading = false
             storageError = nil
         } catch {

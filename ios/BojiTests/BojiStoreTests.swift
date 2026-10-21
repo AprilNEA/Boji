@@ -152,6 +152,27 @@ final class BojiStoreTests: XCTestCase {
         XCTAssertTrue(store.bodyEntries.isEmpty)
     }
 
+    func testLoadingSortsBodyEntriesByDate() throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let url = directory.appendingPathComponent("state.json")
+        let json = """
+        {
+          "selectedPlan": "home", "hasOnboarded": true, "displayName": "排序", "joinedChallenge": false, "records": [],
+          "bodyEntries": [
+            { "id": "00000000-0000-0000-0000-000000000002", "date": "2026-02-01T00:00:00Z", "weight": 66, "waist": 76 },
+            { "id": "00000000-0000-0000-0000-000000000001", "date": "2026-01-01T00:00:00Z", "weight": 67, "waist": 77 }
+          ]
+        }
+        """
+        try Data(json.utf8).write(to: url)
+
+        let store = BojiStore(storageURL: url)
+
+        XCTAssertNil(store.storageError)
+        XCTAssertEqual(store.bodyEntries.map(\.weight), [67, 66])
+    }
+
     private func makeTemporaryDirectory() throws -> URL {
         let directory = FileManager.default.temporaryDirectory
             .appendingPathComponent("BojiStoreTests-\(UUID().uuidString)", isDirectory: true)
