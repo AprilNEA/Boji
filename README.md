@@ -21,7 +21,7 @@
     <img alt="Hits" src="https://hits.aprilnea.com/hits?url=https://github.com/aprilnea/boji">
 </div>
 
-<p align="center">支持 iPhone、Apple Watch 和 Android 手机。</p>
+<p align="center">支持 iPhone、Apple Watch、Android 手机和 Wear OS 手表。</p>
 
 ---
 
