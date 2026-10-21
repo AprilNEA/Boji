@@ -22,8 +22,7 @@ const SCREEN = {
 
 /**
  * 把 App 截图放进真实的 iPhone 机身。宽度由 className 决定。
- * Apple 的营销规范要求机身原样使用：不裁切、不遮挡、不加阴影或倒影、不倾斜或做位移动画，
- * 屏幕上至少 200 px 高。外层只用淡入。
+ * Apple 的营销规范要求机身原样使用：不裁切、不遮挡、不加阴影或倒影、不倾斜，屏幕上至少 200 px 高。
  */
 export function PhoneFrame({ src, alt, className = "", eager = false }: PhoneFrameProps) {
   const loading = eager ? "eager" : "lazy";

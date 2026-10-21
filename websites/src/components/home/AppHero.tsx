@@ -1,14 +1,22 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { useRef } from "react";
 import { AppStoreButton } from "@/components/ui/AppStoreButton";
 import { TextLink } from "@/components/ui/Buttons";
 import { PhoneFrame } from "@/components/ui/PhoneFrame";
 import { APP_ICON, SCREENS } from "@/lib/app";
 import { EASE_APPLE } from "@/lib/motion";
 
-/** 首屏：App 图标、一句话、下载按钮，下面是三台同样大小的 iPhone。 */
+/** 首屏：App 图标、一句话、下载按钮，下面是三台 iPhone。 */
 export function AppHero() {
+  const ref = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const leftX = useTransform(scrollYProgress, [0, 1], [0, -80]);
+  const rightX = useTransform(scrollYProgress, [0, 1], [0, 80]);
+  const sideY = useTransform(scrollYProgress, [0, 1], [0, 60]);
+
   const enter = (delay: number) => ({
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -16,7 +24,7 @@ export function AppHero() {
   });
 
   return (
-    <section className="bg-paper pt-[calc(var(--nav-h)+clamp(40px,7vh,88px))] text-ink">
+    <section ref={ref} className="overflow-x-clip bg-paper pt-[calc(var(--nav-h)+clamp(40px,7vh,88px))] text-ink">
       <div className="container-wide flex flex-col items-center text-center">
         <motion.img
           {...enter(1.1)}
@@ -49,17 +57,23 @@ export function AppHero() {
         </motion.p>
       </div>
 
-      {/* Apple 的营销规范要求机身不裁切、不加阴影、不做位移动画，多台设备保持同一比例。 */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.4, delay: 1.5, ease: EASE_APPLE }}
-        className="container-wide mt-[clamp(48px,8vh,88px)] flex justify-center gap-[clamp(16px,3vw,40px)] pb-[clamp(64px,10vw,120px)]"
-      >
-        <PhoneFrame {...SCREENS.training} className="hidden w-[28%] max-w-[320px] md:block" />
-        <PhoneFrame {...SCREENS.today} eager className="w-[min(72vw,320px)] md:w-[28%]" />
-        <PhoneFrame {...SCREENS.progress} className="hidden w-[28%] max-w-[320px] md:block" />
-      </motion.div>
+      {/* 三台手机从下方升起，两侧的手机落在中间那台的后方偏下；向下滚动时两侧向外散开，滚回顶部时向中间聚拢。 */}
+      <div className="relative mx-auto mt-[clamp(48px,8vh,88px)] max-w-[1080px] px-[22px] pb-[clamp(64px,10vw,120px)]">
+        <motion.div
+          initial={{ opacity: 0, y: 120 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.4, delay: 1.5, ease: EASE_APPLE }}
+          className="flex items-start justify-center gap-[clamp(16px,3vw,40px)]"
+        >
+          <motion.div style={reduce ? undefined : { x: leftX, y: sideY }} className="mt-[8%] hidden w-[26%] md:block">
+            <PhoneFrame {...SCREENS.training} />
+          </motion.div>
+          <PhoneFrame {...SCREENS.today} eager className="relative z-10 w-[min(72vw,320px)] md:w-[30%] md:max-w-none" />
+          <motion.div style={reduce ? undefined : { x: rightX, y: sideY }} className="mt-[8%] hidden w-[26%] md:block">
+            <PhoneFrame {...SCREENS.progress} />
+          </motion.div>
+        </motion.div>
+      </div>
     </section>
   );
 }

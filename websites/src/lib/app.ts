@@ -20,8 +20,8 @@ export const SCREENS = {
   progress: { src: iphone("progress"), alt: "足迹页：累计训练、最近一周和体重记录" },
   settings: { src: iphone("settings"), alt: "设置页：会员卡与账号、Apple 健康和打卡状态共享" },
   watch: {
-    src: `${ASSETS}/screenshots/apple/watch/zh-Hans/today.png`,
-    alt: "Apple Watch 的今日进度：已连接 iPhone，计划为居家训练，手动训练未记录，饮水和睡眠已记录",
+    src: `${ASSETS}/screenshots/apple/watch/zh-Hans/today/ultra-3-49mm/natural-ocean-band-anchor-blue.png`,
+    alt: "Apple Watch Ultra 3 上的今日进度：已连接 iPhone，计划为居家训练，手动训练未记录，饮水和睡眠已记录",
   },
 } as const;
 

@@ -50,16 +50,18 @@ export function ProgressSection() {
             </p>
           </Reveal>
 
-          <div className="mx-auto mt-16 grid max-w-[1080px] items-center gap-12 md:grid-cols-[minmax(0,320px)_1fr] md:gap-16">
-            <Reveal className="mx-auto w-[min(70vw,300px)]">
+          <div className="mx-auto mt-16 grid max-w-[1080px] items-center gap-12 md:grid-cols-[minmax(0,420px)_1fr] md:gap-16">
+            {/* 同一份打卡数据：iPhone 今天页和手表的今日进度。Apple 营销规范要求多台设备保持真实的相对大小：iPhone 机身高 163 mm，表壳高 49 mm，表壳约占手表图高度的 5/8，所以手表宽度是 iPhone 的 0.614 倍。 */}
+            <Reveal y={0} className="mx-auto flex w-[min(86vw,420px)] items-end gap-[6%] md:w-full">
+              <PhoneFrame {...SCREENS.today} className="w-[56%]" />
               <img
                 src={SCREENS.watch.src}
                 alt={SCREENS.watch.alt}
-                width={416}
-                height={496}
+                width={600}
+                height={960}
                 loading="lazy"
                 decoding="async"
-                className="h-auto w-full"
+                className="mb-[6%] h-auto w-[34.4%]"
                 draggable={false}
               />
             </Reveal>
