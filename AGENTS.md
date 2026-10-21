@@ -19,6 +19,7 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 | `.github/` | GitHub files: `.github/CLA.md` is the contributor license agreement, `.github/workflows/cla.yml` runs the CLA check on pull requests, and `.github/workflows/image.yml` publishes the `bizserver/` image to GHCR for each `bizserver/v*` tag. `.github/actionlint.yaml` declares runner labels that actionlint does not list yet, such as the GitHub-hosted `xcode-27` preview label. `workflows/ios.yml` runs iOS CI, manual TestFlight uploads and manual App Store review; see `ios/docs/ci-cd.md`. `.github/SECURITY.md` is the security policy: report vulnerabilities to `security@leanmuscle.club`. `.github/CODE_OF_CONDUCT.md` is the Contributor Covenant 3.0 code of conduct in English and Simplified Chinese: report violations to `conduct@leanmuscle.club`. | this file, `bizserver/AGENTS.md` |
 | `devenv.nix`, `devenv.yaml`, `.envrc` | Local toolchains: Node.js and pnpm for `animations/` and `websites/`, Rust, `buf` and OpenSSL for `bizserver/`, JDK 17 for `android/`, and Python with Pillow and rembg for `websites/scripts/` | this file |
 | `.work/` | Local build outputs and scratch files. Git ignores this directory | none |
+| `.agents/skills/`, `.claude/skills/`, `skills-lock.json` | Third-party agent skills that `npx skills` installs. `.agents/skills/` holds the files, `.claude/skills/` holds symbolic links to them, and `skills-lock.json` pins the source and hash of each skill | this file |
 
 ## Guides
 
@@ -168,6 +169,16 @@ The `## 功能` section of the root `README.md` also shows exercise images from 
 `README.md` shows each image in a `<picture>` element. The `dark` file is the source for `prefers-color-scheme: dark`, and the `light` file is the default. Keep the library images in `previews/library/`, because the exercise library has a separate license.
 
 Run `pnpm build` and then `pnpm readme` in `animations/` after you change a course exercise or the `GIFS` list. The script deletes `previews/course/` and `previews/library/` and writes them again. When `GIFS` changes, update the matching `<picture>` elements in `README.md`. Before you add a library exercise to `GIFS`, review its frames with `scripts/family.ts`, because most library families have no manual review.
+
+### Agent skills
+
+Manage the skills in `.agents/skills/` with the `skills` CLI. Do not edit the installed files, because `npx skills update` replaces them. Run these commands at the repository root:
+
+- `npx skills add <owner>/<repo> --skill <name>` installs a skill and records it in `skills-lock.json`.
+- `npx skills update -p` updates the project skills.
+- `npx skills experimental_install` restores the skills from `skills-lock.json`.
+
+Commit `skills-lock.json`, the files in `.agents/skills/` and the links in `.claude/skills/` together.
 
 ## Cross-directory rules
 
