@@ -6,12 +6,13 @@ import { Logo } from "@/components/ui/Logo";
 import { DISCORD_URL } from "@/lib/content";
 
 /**
- * 支持页和隐私政策。这两个地址用作 App Store Connect 的支持网址和隐私政策网址，
- * 修改前先更新商店资料。
+ * 支持页、隐私政策和用户协议。支持页和隐私政策的地址用作 App Store Connect 的
+ * 支持网址和隐私政策网址，修改前先更新商店资料。
  */
 export const PAGE_LINKS = [
   { text: "支持", url: "/support/" },
   { text: "隐私政策", url: "/privacy/" },
+  { text: "用户协议", url: "/terms/" },
 ] as const;
 
 /** 图标链接在侧边栏中显示在底部、深浅色切换按钮的左边，在顶栏中显示在右侧。 */
@@ -40,7 +41,7 @@ export function baseOptions(): BaseLayoutProps {
   };
 }
 
-/** 独立页面（/support/、/privacy/）的导航选项。这些页面没有侧边栏，链接显示在顶栏。 */
+/** 独立页面（/support/、/privacy/、/terms/）的导航选项。这些页面没有侧边栏，链接显示在顶栏。 */
 export function pageOptions(): BaseLayoutProps {
   return {
     nav: {
@@ -56,7 +57,7 @@ export function pageOptions(): BaseLayoutProps {
   };
 }
 
-/** 支持和隐私政策的文字链接，显示在文档侧边栏的最下面。 */
+/** 独立页面的文字链接，显示在文档侧边栏的最下面。 */
 export function PageLinks({ className = "" }: { className?: string }) {
   return (
     <nav aria-label="支持与隐私" className={`flex gap-4 text-sm text-fd-muted-foreground ${className}`}>

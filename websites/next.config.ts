@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   reactStrictMode: true,
   devIndicators: false,
-  // The docs content lives in ../docs/sites/, outside this package. Turbopack does not
+  // The docs content lives in ../docs/, outside this package. Turbopack does not
   // resolve files outside its root, and it detects websites/ as the root from
   // pnpm-lock.yaml. Next.js also uses this value for outputFileTracingRoot.
   turbopack: {
@@ -26,7 +26,7 @@ const nextConfig: NextConfig = {
   ],
 };
 
-// Compiles the MDX files in ../docs/sites/ for src/lib/source.ts.
+// Compiles the MDX files in ../docs/ for src/lib/source.ts.
 const withMDX = createMDX();
 
 export default withMDX(nextConfig);
