@@ -152,7 +152,7 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - Keep screenshots, the view hierarchy, network breadcrumbs, failed-request events and automatic performance instrumentation off. Network breadcrumbs and failed-request events carry URL query strings.
 - Only the app target links Sentry. Widgets and the watch app do not report crashes yet.
 - The Sentry SDK ships its own privacy manifest. Do not copy its collected data types into `Boji/Resources/PrivacyInfo.xcprivacy`.
-- See `../docs/sentry.md` for the data that a report holds and the App Store privacy answers.
+- See `../docs/developers/sentry.mdx` for the data that a report holds and the App Store privacy answers.
 
 ### Design
 

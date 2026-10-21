@@ -9,7 +9,7 @@ import java.time.Instant
  * A member card as the server returned it. The app stores it in the encrypted card cache.
  *
  * [memberNumber] is an opaque string: show it as it is, never convert or parse it
- * (docs/membership.md). [tier] and [state] keep the proto enum names, so that a value that this
+ * (docs/developers/membership.mdx). [tier] and [state] keep the proto enum names, so that a value that this
  * version does not know stays visible as "unavailable" instead of failing to decode.
  */
 @Serializable
@@ -38,7 +38,7 @@ data class MembershipCard(
 
     /**
      * Entitlements in effect at [now]. Unknown, expired or future entitlements unlock nothing
-     * (docs/membership.md). The app shows them only; every current feature is free.
+     * (docs/developers/membership.mdx). The app shows them only; every current feature is free.
      */
     fun effectiveEntitlements(now: Instant): List<CardEntitlement> = entitlements.filter { it.isEffective(now) }
 

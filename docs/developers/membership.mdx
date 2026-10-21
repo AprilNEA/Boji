@@ -1,4 +1,7 @@
-# 免费会员卡开发说明
+---
+title: 免费会员卡开发说明
+description: 会员卡的用户流程、接口契约、配置、安全隐私和测试设计。
+---
 
 会员卡是绑定账号的免费俱乐部身份，不是付费订阅。卡号、入会日期、状态和权益由后端决定。客户端不能离线签发，也不提供本地升级会员操作。
 
@@ -16,7 +19,7 @@
 
 ## 接口契约
 
-账号认证使用 Better Auth 的 `/api/auth/*` 端点。会员卡、服务能力和钱包凭证使用 bizserver 的 ConnectRPC 方法。RPC 契约以 `bizserver/proto/boji/v1/` 为准，详见 [RPC 使用说明](../bizserver/docs/connectrpc-api.md)。下表列出 iOS 的调用。
+账号认证使用 Better Auth 的 `/api/auth/*` 端点。会员卡、服务能力和钱包凭证使用 bizserver 的 ConnectRPC 方法。RPC 契约以 `bizserver/proto/boji/v1/` 为准，详见 [RPC 使用说明](https://github.com/AprilNEA/Boji/blob/master/bizserver/docs/connectrpc-api.md)。下表列出 iOS 的调用。
 
 | 接口 | 行为 |
 | --- | --- |
@@ -54,7 +57,7 @@ Connect 错误带有一个 `google.rpc.ErrorInfo`，客户端按它的 `reason` 
 
 ## 配置与边界
 
-Debug 默认访问 `http://localhost:3000`。通过 Xcode 构建设置 `BOJI_API_BASE_URL` 覆盖地址。该值写入应用的 `BojiAPIBaseURL` 配置。正式服务地址为 `https://api.leanmuscle.club`。要让 Debug 构建连接正式服务，在构建命令中加入 `BOJI_API_BASE_URL=https://api.leanmuscle.club`。
+Debug 默认访问 `http://localhost:3000`。通过 Xcode 构建设置 `BOJI_API_BASE_URL` 覆盖地址。该值写入应用的 `BojiAPIBaseURL` 配置。
 
 Release 只接受 HTTPS。缺少有效地址时，会员服务显示未配置。客户端不能为了展示效果而自动改用测试卡。
 
@@ -76,6 +79,6 @@ iOS 分享图片包含昵称和入会日期，卡号默认隐藏，用户可以�
 
 Debug 的 `--uitesting` 使用隔离的内存测试服务。测试卡显示「测试卡 · 非真实会员」。该路径不用于真实联调，Release 不启用测试服务。
 
-测试覆盖卡号原样编解码、服务端响应更新，以及新旧权益格式。最新结果见 iOS 的[能力验证记录](../ios/docs/capability-verification.md)。
+测试覆盖卡号原样编解码、服务端响应更新，以及新旧权益格式。最新结果见 iOS 的[能力验证记录](https://github.com/AprilNEA/Boji/blob/master/ios/docs/capability-verification.md)。
 
-此前的编译与联调结果见 iOS 的[会员卡验证记录](../ios/docs/membership-verification.md)。编译成功不等于真机、邮件服务或生产发布已通过。
+此前的编译与联调结果见 iOS 的[会员卡验证记录](https://github.com/AprilNEA/Boji/blob/master/ios/docs/membership-verification.md)。编译成功不等于真机、邮件服务或生产发布已通过。

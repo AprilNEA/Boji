@@ -62,7 +62,7 @@ data class CardFace(
 
 /**
  * The member card. The member number is shown exactly as the server sent it: no formatting, no
- * parsing (docs/membership.md).
+ * parsing (docs/developers/membership.mdx).
  */
 @Composable
 fun MembershipCardFace(face: CardFace, style: CardStyle, modifier: Modifier = Modifier) {

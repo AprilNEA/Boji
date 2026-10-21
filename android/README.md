@@ -346,7 +346,7 @@ Health Connect 的样本只在应用运行时保存在内存中，见[健康数�
 
 `network_security_config.xml` 禁止明文 HTTP。只有 Debug 构建允许访问 `10.0.2.2`、`localhost` 和 `127.0.0.1` 的 HTTP 地址。
 
-构建时设置了 Sentry DSN，应用才会上报崩溃和 ANR。默认构建不设置 DSN，不上报任何内容。上报内容不含训练和身体记录。启用方式和上报字段见 [Sentry 错误上报](../docs/sentry.md)。
+构建时设置了 Sentry DSN，应用才会上报崩溃和 ANR。默认构建不设置 DSN，不上报任何内容。上报内容不含训练和身体记录。启用方式和上报字段见 [Sentry 错误上报](../docs/developers/sentry.mdx)。
 
 ```sh
 ./gradlew :app:assembleRelease -Pboji.sentryDsn='https://<公钥>@<主机>/<项目编号>'
@@ -415,7 +415,7 @@ Credential Manager 对密码只是强烈建议声明 Digital Asset Links，对�
 
 步骤来自 [Google Wallet 的 Android 接入说明](https://developers.google.com/wallet/generic/android)（2026-10-21 查阅）。在本项目中尚未验证。
 
-会员接口契约见[会员卡开发说明](../docs/membership.md)。模拟器访问本机后端时，地址使用 `http://10.0.2.2:3000`，不能使用 `localhost`。
+会员接口契约见[会员卡开发说明](../docs/developers/membership.mdx)。模拟器访问本机后端时，地址使用 `http://10.0.2.2:3000`，不能使用 `localhost`。
 
 ## 验证记录
 

@@ -18,7 +18,7 @@ pnpm build      # 静态构建，产物在 out/
 
 网站不依赖 Manus 或其他后端服务。`pnpm build` 生成的 `out/` 是纯静态文件，可以放到任意静态服务器或 CDN 上。站点专用的图片、视频和字体都在 `out/` 内。首页的 App 图标、截图和动作图来自仓库根目录的 `assets/public/`，运行时从 `https://assets.leanmuscle.club` 加载。除此之外，页面只请求本站资源。外部链接只有两个：App Store 下载链接，以及官网页脚和文档侧边栏中的 GitHub Discussions 链接，都只在用户点击时打开。
 
-构建时设置了 `NEXT_PUBLIC_SENTRY_DSN`，网站才会把未捕获的错误上报到 Sentry，这是唯一的例外。默认构建不加载 Sentry，也不向 Sentry 发出请求。启用方式和上报字段见 [Sentry 错误上报](../docs/sentry.md)。
+构建时设置了 `NEXT_PUBLIC_SENTRY_DSN`，网站才会把未捕获的错误上报到 Sentry，这是唯一的例外。默认构建不加载 Sentry，也不向 Sentry 发出请求。启用方式和上报字段见 [Sentry 错误上报](../docs/developers/sentry.mdx)。
 
 ```sh
 NEXT_PUBLIC_SENTRY_DSN='https://<公钥>@<主机>/<项目编号>' pnpm build
@@ -56,8 +56,8 @@ Python 自带的服务器不会返回 `404.html`，所以用它预览时看不�
 | `/terms/`、`/en/terms/` | 用户协议，中文版和英文版 |
 | `/third-parties/`、`/en/third-parties/` | 第三方信息共享清单，中文版和英文版 |
 | `/docs/` | 文档首页 |
-| `/docs/guide/` | 用户指南（占位） |
-| `/docs/developers/` | 开发者文档（占位） |
+| `/docs/guide/` | 用户指南，含大学排名规则 `/docs/guide/school-ranking/` |
+| `/docs/developers/` | 开发者文档：会员卡开发说明、大学排名设计和 Sentry 错误上报 |
 
 ## 文档站
 
@@ -95,7 +95,7 @@ MDX 中可以直接使用 Fumadocs 的 `Callout`、`Card` 和 `Cards` 组件。�
 
 文档站的界面文字是中文，搜索在浏览器中完成，不需要服务器。构建时会生成搜索索引 `out/api/search`，其中包含文档区页面和各个独立页面，按语言分开。文档的配色在 `src/app/docs.css` 中定义，和官网一样取自 Boji App，并支持深色模式。
 
-内部文档使用 `.md` 扩展名，例如 `docs/membership.md` 和 `docs/sentry.md`。不要把内部文档改成 `.mdx`，也不要把 `ios/docs/` 等其他目录的文档放进 `docs/`。
+内部文档使用 `.md` 扩展名，例如 `docs/DEVELOPMENT.md` 和 `docs/ACCESSIBILITY.md`。不要把内部文档改成 `.mdx`，也不要把 `ios/docs/` 等其他目录的文档放进 `docs/`。
 
 内容源在本目录以外，所以 `next.config.ts` 把 Turbopack 的根目录 `turbopack.root` 设为仓库根目录。Turbopack 不解析根目录以外的文件。Next.js 命令要在本目录运行，因为 fumadocs-mdx 按当前工作目录解析 `../docs`。
 

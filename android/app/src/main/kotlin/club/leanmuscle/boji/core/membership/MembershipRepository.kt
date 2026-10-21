@@ -29,7 +29,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * The account and the member card. Mirrors `MembershipStore` on iOS and docs/membership.md:
+ * The account and the member card. Mirrors `MembershipStore` on iOS and docs/developers/membership.mdx:
  *
  * - Only one operation runs at a time. A second call while one runs returns null and does nothing.
  * - Operations run in the application scope, so closing a screen does not lose a new session token.

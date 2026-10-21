@@ -132,4 +132,4 @@ Sentry starts only when `SENTRY_DSN` is set. `main.rs` starts it before the Toki
 - When you add a route whose path holds a credential, add the parent segment to `SECRET_PARENTS` in `src/telemetry.rs` and add a test.
 - Log errors with an `event` field and no user data. The Sentry layer uses `event` as the title of an `ERROR` event and turns `INFO` and `WARN` events into breadcrumbs.
 - Keep the `sentry` features minimal and on `ureq` with `rustls`, which uses `ring` like the other dependencies. Do not enable the default features, because they add `reqwest` with `native-tls`.
-- See `../docs/sentry.md` for the data that each event holds.
+- See `../docs/developers/sentry.mdx` for the data that each event holds.

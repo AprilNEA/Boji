@@ -38,7 +38,7 @@ ANDROID_SERIAL=<watch> ./gradlew :wear:connectedDebugAndroidTest
 (cd rpc && buf generate)
 ```
 
-Crash reporting is off unless the build sets a Sentry DSN with `-Pboji.sentryDsn=https://...` or the `SENTRY_DSN` environment variable. See `../docs/sentry.md`.
+Crash reporting is off unless the build sets a Sentry DSN with `-Pboji.sentryDsn=https://...` or the `SENTRY_DSN` environment variable. See `../docs/developers/sentry.mdx`.
 
 ## Rules
 

@@ -69,7 +69,7 @@ Debug 默认连接 `http://localhost:3000`。正式配置通过构建设置 `BOJ
 
 正式服务地址为 `https://api.leanmuscle.club`。TestFlight 构建从 GitHub 环境 `ios-testflight` 的同名变量读取它。本机要连接正式服务时，在构建命令中加入 `BOJI_API_BASE_URL=https://api.leanmuscle.club`。可以临时修改本机设置，但不要把正式地址提交到 `project.yml`。
 
-接入与验证边界见[会员卡开发说明](../docs/membership.md)。改用 Connect 接口后的测试结果见[Connect 接口迁移验证](docs/connect-verification.md)。这版不包含付费订阅或场馆核销。
+接入与验证边界见[会员卡开发说明](../docs/developers/membership.mdx)。改用 Connect 接口后的测试结果见[Connect 接口迁移验证](docs/connect-verification.md)。这版不包含付费订阅或场馆核销。
 
 ## 账号与安全
 
@@ -94,7 +94,7 @@ Debug 默认连接 `http://localhost:3000`。正式配置通过构建设置 `BOJ
 
 主动导出的 JSON 包含身体数据，但不包含认证令牌。设备系统备份仍可能包含应用数据。卸载前需要自行导出重要记录。
 
-构建设置 `BOJI_SENTRY_DSN` 非空时，应用会把崩溃、卡顿和看门狗终止上报到 Sentry。`project.yml` 中的默认值为空，默认构建不上报任何内容。上报内容不含训练、身体和 HealthKit 记录，也不含账号信息、截图和网络请求。启用方式和上报字段见 [Sentry 错误上报](../docs/sentry.md)。
+构建设置 `BOJI_SENTRY_DSN` 非空时，应用会把崩溃、卡顿和看门狗终止上报到 Sentry。`project.yml` 中的默认值为空，默认构建不上报任何内容。上报内容不含训练、身体和 HealthKit 记录，也不含账号信息、截图和网络请求。启用方式和上报字段见 [Sentry 错误上报](../docs/developers/sentry.mdx)。
 
 ## 设计与发布边界
 

@@ -14,7 +14,7 @@ iOS 已从旧 REST 接口改用 bizserver 的接口。会员卡、服务能力�
 | 领卡 | `POST /api/membership/enroll` → `MembershipService.CreateMembership` |
 | 钱包凭证 | `GET /api/membership/wallet/pass` → `WalletService.GetMembershipPass` |
 
-Apple 登录仍调用 `/api/auth/sign-in/social`。后端拒绝身份令牌时，客户端按错误码显示提示，详见 [Apple 生态接入说明](apple-integration.md)。接口契约见 [会员卡开发说明](../../docs/membership.md)。
+Apple 登录仍调用 `/api/auth/sign-in/social`。后端拒绝身份令牌时，客户端按错误码显示提示，详见 [Apple 生态接入说明](apple-integration.md)。接口契约见 [会员卡开发说明](../../docs/developers/membership.mdx)。
 
 ## 已验证
 

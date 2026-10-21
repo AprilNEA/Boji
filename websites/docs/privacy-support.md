@@ -89,7 +89,7 @@
 | 密码只以哈希形式保存 | better-auth 默认 scrypt：`better-auth-core/src/utils/password.rs` |
 | 会员信息包括守则同意记录 | `bizserver/src/entities/membership.rs` 的 `terms_version`、`accepted_at` |
 | 设备与使用信息包括 IP、User-Agent、登录时间 | better-auth 写入 `session.ip_address`、`session.user_agent`：`better-auth-core/src/store/session_create.rs` |
-| 诊断信息的内容和排除项 | `docs/sentry.md`；`ios/Boji/CrashReporting.swift`；`bizserver/src/telemetry.rs` 的 `send_default_pii(false)` |
+| 诊断信息的内容和排除项 | `docs/developers/sentry.mdx`；`ios/Boji/CrashReporting.swift`；`bizserver/src/telemetry.rs` 的 `send_default_pii(false)` |
 | 诊断信息最长保存 90 天 | Sentry 文档「Data Retention Periods」：Team 和 Business 套餐的错误事件保存 90 天，Developer 套餐 30 天 |
 | 不收集精确位置、通讯录、照片和广告标识 | `ios/` 中没有 CoreLocation、Contacts、Photos、`identifierForVendor` 和 ATT；`PrivacyInfo.xcprivacy` 中 `NSPrivacyTracking` 为 `false` |
 | 网站不使用 Cookie，只在本地存储保存提示时间 | `websites/src/components/layout/Chrome.tsx` 的 `boji-cookie-last-shown` |

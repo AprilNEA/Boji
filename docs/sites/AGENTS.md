@@ -5,7 +5,7 @@ This directory is the MDX content source of the standalone pages that `websites/
 ## Boundary
 
 - Every `.mdx` file in this directory is published. Put only content that may be public here.
-- Do not move or copy `docs/membership.md`, `docs/sentry.md`, `ios/docs/` or other internal documents into this directory.
+- Do not move or copy `docs/developers/`, `ios/docs/` or other documents into this directory. Developer pages belong in `docs/developers/`.
 - `websites/src/lib/source.ts` collects only `*.mdx` here. Other files, such as this guide, are not published.
 - Do not put secrets, review contacts, review accounts, DSNs or private email addresses in pages.
 
