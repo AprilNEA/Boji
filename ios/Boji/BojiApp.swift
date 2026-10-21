@@ -8,6 +8,7 @@ struct BojiApp: App {
     @State private var companion: CompanionSharingStore
     @AppStorage("appearance") private var appearance = "system"
     init() {
+        CrashReporting.start()
         #if DEBUG
         _store = State(initialValue: BojiStore(inMemory: ProcessInfo.processInfo.arguments.contains("--uitesting")))
         _membership = State(initialValue: ProcessInfo.processInfo.arguments.contains("--uitesting") ? MembershipStore.uiTesting() : MembershipStore.live())

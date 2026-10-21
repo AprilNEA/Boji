@@ -4,6 +4,7 @@
 <dict>
     <key>BojiAPIBaseURL</key><string>$(BOJI_API_BASE_URL)</string>
     <key>BojiAppleSignInEnabled</key><string>$(BOJI_APPLE_SIGN_IN_ENABLED)</string>
+    <key>BojiSentryDSN</key><string>$(BOJI_SENTRY_DSN)</string>
     <key>BojiWalletPassTypeIdentifier</key><string>$(BOJI_WALLET_PASS_TYPE_IDENTIFIER)</string>
     <key>CFBundleDevelopmentRegion</key><string>en</string>
     <key>CFBundleURLTypes</key>

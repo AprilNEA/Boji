@@ -21,11 +21,16 @@ settings:
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     BOJI_API_BASE_URL: ''
     BOJI_APPLE_SIGN_IN_ENABLED: 'YES'
+    # Empty keeps Sentry crash reporting off. Set it per build, for example with xcodebuild BOJI_SENTRY_DSN=...
+    BOJI_SENTRY_DSN: ''
     BOJI_WALLET_PASS_TYPE_IDENTIFIER: pass.club.leanmuscle.boji.membership
 packages:
   Lottie:
     url: https://github.com/airbnb/lottie-spm
     exactVersion: 4.6.1
+  Sentry:
+    url: https://github.com/getsentry/sentry-cocoa
+    exactVersion: 9.30.2
 targets:
   Boji:
     type: application
@@ -45,6 +50,8 @@ targets:
       - target: BojiWatch
         embed: true
       - package: Lottie
+      - package: Sentry
+        product: Sentry
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: club.leanmuscle.boji

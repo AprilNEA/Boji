@@ -89,7 +89,7 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - Edit `Boji/Resources/AppIcon.icon` in Icon Composer. Xcode compiles the icon during the app build.
 - Write build outputs to `../.work/boji-ios/`. Do not write DerivedData or other build outputs inside `ios/`.
 - If a restricted terminal blocks Swift macro plugins with `sandbox_apply: Operation not permitted`, allow Xcode to run the plugins. Do not remove `@Observable` to hide the permission problem.
-- Lottie is pinned in `project.yml`. Keep the generated `Package.resolved` with the project.
+- Lottie and Sentry are pinned with `exactVersion` in `project.yml`. Keep the generated `Package.resolved` with the project.
 - Bundle `../animations/lottie` as a folder reference. Never bundle `lottie-library` or flatten the theme directories.
 - Load course animations by exercise ID through `ExerciseAnimationCatalog`. Use `posterFrame` for Reduce Motion; missing resources need a static fallback.
 - Keep only the current exercise player active. Pause for hidden views, inactive scenes, rests, and user pauses.
@@ -138,6 +138,15 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - A Release build must use an HTTPS `BOJI_API_BASE_URL`. If the value is not set, keep online membership features disabled.
 - Show HealthKit samples in memory only. Do not save them, upload them or let them overwrite manual records.
 - Widgets and the watch app show only today's check-in state. Do not share health samples or account data with them. Sharing is off by default.
+
+### Crash reporting
+
+- `Boji/CrashReporting.swift` starts Sentry from `BojiApp.init()`. It reads `BojiSentryDSN` from Info.plist, which `project.yml` fills from the `BOJI_SENTRY_DSN` build setting. An empty or non-HTTPS value keeps the SDK stopped. `BOJI_SENTRY_DSN` stays empty in `project.yml`.
+- The SDK never starts under XCTest or with `--uitesting`.
+- Keep screenshots, the view hierarchy, network breadcrumbs, failed-request events and automatic performance instrumentation off. Network breadcrumbs and failed-request events carry URL query strings.
+- Only the app target links Sentry. Widgets and the watch app do not report crashes yet.
+- The Sentry SDK ships its own privacy manifest. Do not copy its collected data types into `Boji/Resources/PrivacyInfo.xcprivacy`.
+- See `../docs/sentry.md` for the data that a report holds and the App Store privacy answers.
 
 ### Design
 
