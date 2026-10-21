@@ -2,7 +2,7 @@
 // The arms hang freely toward the ankles instead of pulling the body lower.
 // Both feet remain flat and the neck follows the spine.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { stretchTL } from './_stretch-lower-2.ts';
 
 const tl = stretchTL;

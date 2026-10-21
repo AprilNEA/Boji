@@ -1,7 +1,7 @@
 // Shared side-view geometry for the leg-curl family.
 // The prone variations keep the hips and chest on a flat bench while only the knees flex.
-import { lerp, type Vec2 } from '@/math.ts';
-import type { Pose } from '@/rig.ts';
+import { lerp, type Vec2 } from '@/math/vec2.ts';
+import type { Pose } from '@/rig/side.ts';
 import { G } from '@/exercises/common.ts';
 import { flatBench, workTL } from '@/exercises/equipment/index.ts';
 

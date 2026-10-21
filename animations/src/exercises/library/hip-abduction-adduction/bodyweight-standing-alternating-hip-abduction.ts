@@ -2,7 +2,8 @@
 // Lift the opposite straight leg sideways about 40°, return, then repeat on the other side.
 // The pelvis stays level and the support foot remains flat throughout the alternating loop.
 import type { FrontExercise } from '@/exercise.ts';
-import { lerp, timeline } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
 import { standingPose } from './_hip-abduction-adduction.ts';
 
 const tl = timeline([

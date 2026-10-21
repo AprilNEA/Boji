@@ -2,8 +2,9 @@
 // The builders keep the working upper arm fixed and use a 165° to 45° elbow range.
 // They keep planted feet, seats, balls and bench pads static while the dumbbells follow the hands.
 import type { SideExercise } from '@/exercise.ts';
-import { add, lerp, timeline, type Vec2 } from '@/math.ts';
-import { type LimbPair, type Pose } from '@/rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import { type LimbPair, type Pose } from '@/rig/side.ts';
 import { A, G, handOnHip, standLegs } from '@/exercises/common.ts';
 import { BALL, dumbbell, flatBench, inclineBench, preacherBench, stabilityBall, workTL } from '@/exercises/equipment/index.ts';
 

@@ -1,9 +1,10 @@
 // Private builders for core-flexion-2. Supine positions use the course crunch contact points.
 // The builders keep the pelvis or feet fixed when the source requires it, and put cable lines on their pulleys.
 import type { EquipmentTag, PropShape, SideExercise } from '@/exercise.ts';
-import { add, dir, lerp, lerpV, mul, timeline, type Vec2 } from '@/math.ts';
-import type { Joints } from '@/rig.ts';
-import type { Palette } from '@/palettes.ts';
+import { add, dir, lerp, lerpV, mul, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import type { Joints } from '@/rig/side.ts';
+import type { Palette } from '@/draw/palettes.ts';
 import { A, FLOOR, G, standLegs } from '@/exercises/common.ts';
 import { cableColumn, cableHandle, cableLine, dipBars, flatBench, inclineBench, towardCable } from '@/exercises/equipment/index.ts';
 

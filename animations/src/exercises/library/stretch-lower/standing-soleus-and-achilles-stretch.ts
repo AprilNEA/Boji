@@ -2,7 +2,7 @@
 // The knees travel forward together while the rear heel stays pressed into the floor.
 // The torso remains upright and the hands rest on the hips.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { handOnHip } from '@/exercises/common.ts';
 import { stretchTL } from './_stretch-lower-2.ts';
 

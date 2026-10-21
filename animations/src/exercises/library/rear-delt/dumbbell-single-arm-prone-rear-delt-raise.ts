@@ -1,8 +1,8 @@
 // Lie chest-down on a flat bench with one dumbbell hanging close to the body and the free hand bracing the pad.
 // Keep the working elbow nearly straight as the arm travels backward to torso height, then lower without trunk lift.
 import type { SideExercise } from '@/exercise.ts';
-import { add, lerp, type Vec2 } from '@/math.ts';
-import { type Joints } from '@/rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { type Joints } from '@/rig/side.ts';
 import { dumbbell, flatBench, workTL } from '@/exercises/equipment/index.ts';
 import { G } from '@/exercises/common.ts';
 

@@ -2,8 +2,8 @@
 // Press through the planted heel to lift the pelvis into a bridge, then lower with control.
 // The supporting foot and neck base stay fixed, and the raised knee remains flexed.
 import type { SideExercise } from '@/exercise.ts';
-import type { LimbPair } from '@/rig.ts';
-import { lerp } from '@/math.ts';
+import type { LimbPair } from '@/rig/side.ts';
+import { lerp } from '@/math/vec2.ts';
 import { bridgeArms, bridgePose, bridgeTL, BRIDGE_ANKLE } from './_hip-thrust-bridge.ts';
 
 const tl = bridgeTL();

@@ -2,10 +2,11 @@
 // One knee extends from 92° to 170–175° with a flexed ankle. The straight leg then moves out to the side.
 // The pelvis, torso, hands, and the inactive foot stay fixed. The left leg completes the path before the right leg repeats it.
 import type { FrontExercise } from '@/exercise.ts';
-import { timeline, lerp } from '@/math.ts';
-import { toeDir, type FSide, type FrontPose } from '@/front-rig.ts';
-import type { Vec3 } from '@/math3.ts';
-import { BODY } from '@/rig.ts';
+import { timeline } from '@/math/timeline.ts';
+import { lerp } from '@/math/vec2.ts';
+import { toeDir, type FSide, type FrontPose } from '@/rig/front.ts';
+import type { Vec3 } from '@/math/vec3.ts';
+import { BODY } from '@/rig/side.ts';
 
 const tl = timeline([
   { d: 0.7, from: 0, to: 1, e: [0.3, 0.95] },

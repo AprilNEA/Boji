@@ -2,7 +2,7 @@
 // The top knee bends behind the body, moving the heel toward the glutes.
 // A strap travels from the lifted foot over the shoulder to the hands.
 import type { SideExercise } from '@/exercise.ts';
-import type { Joints } from '@/rig.ts';
+import type { Joints } from '@/rig/side.ts';
 import { FLOOR } from '@/exercises/common.ts';
 import { loopedStrap, stretchTL } from './_stretch-lower-2.ts';
 

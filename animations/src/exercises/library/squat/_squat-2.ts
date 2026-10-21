@@ -1,6 +1,7 @@
 // Private builders for squat-2. Every standing pose keeps both soles planted unless the source asks for a lifted foot.
-import { add, ang, dir, lerp, mul, smooth, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import type { Joints, LimbPair, LimbSpec, Pose } from '@/rig.ts';
+import { add, ang, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline, type Timeline } from '@/math/timeline.ts';
+import type { Joints, LimbPair, LimbSpec, Pose } from '@/rig/side.ts';
 import { A, ARM_STRAIGHT, G, GRIP_IN_HAND } from '@/exercises/common.ts';
 
 export const X0 = 280;

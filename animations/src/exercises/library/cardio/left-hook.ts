@@ -1,9 +1,9 @@
 // Left hook, front view. The boxer starts in a soft-kneed guard with both hands high.
 // The left elbow swings level across the body while the hips and chest rotate, then the hand returns to the chin.
 import type { FrontExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
-import { add3 } from '@/math3.ts';
-import { BODY } from '@/rig.ts';
+import { lerp } from '@/math/vec2.ts';
+import { add3 } from '@/math/vec3.ts';
+import { BODY } from '@/rig/side.ts';
 import { cardioTL } from './_cardio-1.ts';
 
 const hook = (t: number): number => (1 - Math.cos(Math.PI * 2 * t)) / 2;

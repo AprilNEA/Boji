@@ -3,14 +3,14 @@
 // Usage: tsx scripts/gallery.ts [outDir]   (default: .renders). Writes gallery-<palette>.png.
 import fs from 'node:fs';
 import path from 'node:path';
-import { compose } from '@/compose.ts';
+import { compose } from '@/compose/index.ts';
 import type { Exercise, FrontExercise, MovingPart, Props, PropShape, SideExercise } from '@/exercise.ts';
-import type { FrontJoints, FrontPose } from '@/front-rig.ts';
-import { project } from '@/front-rig.ts';
-import { add3, type Vec3 } from '@/math3.ts';
-import { ang, dir, mul, sub, type Vec2 } from '@/math.ts';
-import type { Palette, PaletteName } from '@/palettes.ts';
-import { BODY, type Joints, type Pose } from '@/rig.ts';
+import type { FrontJoints, FrontPose } from '@/rig/front.ts';
+import { project } from '@/rig/front.ts';
+import { add3, type Vec3 } from '@/math/vec3.ts';
+import { ang, dir, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import type { Palette, PaletteName } from '@/draw/palettes.ts';
+import { BODY, type Joints, type Pose } from '@/rig/side.ts';
 import { A, G, standLegs } from '@/exercises/common.ts';
 import * as E from '@/exercises/equipment/index.ts';
 import { launch } from './browser.ts';

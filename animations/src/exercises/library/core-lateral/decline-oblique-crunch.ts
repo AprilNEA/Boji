@@ -2,8 +2,9 @@
 // Curl the upper torso toward the opposite knee, then lower under control.
 // Keep the hips and feet fixed below the roller while the torso flexes and turns.
 import type { SideExercise } from '@/exercise.ts';
-import { add, lerp, mul, timeline, type Vec2 } from '@/math.ts';
-import type { Pose } from '@/rig.ts';
+import { add, lerp, mul, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import type { Pose } from '@/rig/side.ts';
 import { declineBench } from '@/exercises/equipment/index.ts';
 
 const tl = timeline([

@@ -1,9 +1,10 @@
 // Shared side-view poses for the glute-kickback work list.
 // Each alternate repeats from a stable base so both sides can be shown without a loop seam.
 import type { Props, RigidPart } from '@/exercise.ts';
-import { dir, lerp, mul, add, type Timeline, type Vec2 } from '@/math.ts';
-import type { Palette } from '@/palettes.ts';
-import type { Joints, LimbPair, LimbSpec } from '@/rig.ts';
+import { dir, lerp, mul, add, type Vec2 } from '@/math/vec2.ts';
+import { type Timeline } from '@/math/timeline.ts';
+import type { Palette } from '@/draw/palettes.ts';
+import type { Joints, LimbPair, LimbSpec } from '@/rig/side.ts';
 import { A, G, QUAD, kneelLeg, plantedArm } from '@/exercises/common.ts';
 import { workTL } from '@/exercises/equipment/index.ts';
 

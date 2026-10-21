@@ -2,8 +2,9 @@
 // The working forefoot stays on the floor or platform while the heel and body rise together.
 // Seated variants keep the bench and forefoot block fixed; donkey variants keep both hands on the support.
 import type { LibraryMeta, MovingPart, PropShape, Props, SideExercise } from '@/exercise.ts';
-import { add, dir, lerp, mul, timeline, type Vec2 } from '@/math.ts';
-import { BODY, type Joints, type LimbPair, type LimbSpec, type Pose } from '@/rig.ts';
+import { add, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import { BODY, type Joints, type LimbPair, type LimbSpec, type Pose } from '@/rig/side.ts';
 import { A, G, handOnHip } from '@/exercises/common.ts';
 import {
   aerobicStep, bandCurve, bandLine, barbell, cableColumn, cableHandle, cableLine, dumbbell,

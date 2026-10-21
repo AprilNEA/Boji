@@ -5,8 +5,8 @@
 // Usage: tsx scripts/sheet.ts [outDir]   (default: docs). Writes contact-sheet-<palette>.jpg.
 import fs from 'node:fs';
 import path from 'node:path';
-import { readIndexes } from '@/generate.ts';
-import type { PaletteName } from '@/palettes.ts';
+import { readIndexes } from '@/build/generate.ts';
+import type { PaletteName } from '@/draw/palettes.ts';
 import { launch } from './browser.ts';
 import { renderGrid, THEMES } from './grid.ts';
 

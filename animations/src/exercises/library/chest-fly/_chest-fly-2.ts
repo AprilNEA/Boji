@@ -2,10 +2,10 @@
 // Each fly keeps soft elbows and moves the dumbbells from the chest-side stretch to above the chest. Feet stay planted,
 // except on the decline bench where the ankles remain under the rollers. The machine form keeps the back on its pad.
 import type { FrontExercise, Props, SideExercise } from '@/exercise.ts';
-import { add, lerp, type Vec2 } from '@/math.ts';
-import { add3, lerp3, mul3, norm3, type Vec3 } from '@/math3.ts';
-import { type FSide, type FrontJoints } from '@/front-rig.ts';
-import { BODY, type Joints, type Pose } from '@/rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { add3, lerp3, mul3, norm3, type Vec3 } from '@/math/vec3.ts';
+import { type FSide, type FrontJoints } from '@/rig/front.ts';
+import { BODY, type Joints, type Pose } from '@/rig/side.ts';
 import { A, G } from '@/exercises/common.ts';
 import { BALL, declineBench, dumbbell, flatBench, frontGripAt, inclineBench, stabilityBall, workTL } from '@/exercises/equipment/index.ts';
 

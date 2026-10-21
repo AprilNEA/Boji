@@ -2,7 +2,7 @@
 // The front foot rests forward with its forefoot looped by a rope.
 // The torso leans forward and both hands maintain gentle rope tension.
 import type { SideExercise } from '@/exercise.ts';
-import type { Joints } from '@/rig.ts';
+import type { Joints } from '@/rig/side.ts';
 import { loopedStrap, stretchTL } from './_stretch-lower-2.ts';
 
 const tl = stretchTL;

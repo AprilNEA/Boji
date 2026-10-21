@@ -2,7 +2,7 @@
 // Pull the rope toward the upper chest with upper arms horizontal and elbows traveling slightly behind the body.
 // The bench, feet and lower back remain fixed while the low cable tracks the rope attachment.
 import type { FrontExercise } from '@/exercise.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { cableColumn, cableHandle, cableLine, flatBench, towardCable } from '@/exercises/equipment/index.ts';
 import { rearDeltMuscles, rearDeltTL, ropeGrip, rowArm, seatPose } from './_rear-delt-1.ts';
 

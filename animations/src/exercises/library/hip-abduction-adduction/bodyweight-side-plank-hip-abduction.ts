@@ -2,10 +2,10 @@
 // Keep the trunk long while the top straight leg lifts about 50° toward the ceiling.
 // The forearm, lower foot and pelvis remain steady; both supplied records describe this visible motion.
 import type { FrontExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
-import { add3 } from '@/math3.ts';
-import { BODY } from '@/rig.ts';
-import { toeDir } from '@/front-rig.ts';
+import { lerp } from '@/math/vec2.ts';
+import { add3 } from '@/math/vec3.ts';
+import { BODY } from '@/rig/side.ts';
+import { toeDir } from '@/rig/front.ts';
 import { workTL } from '@/exercises/equipment/index.ts';
 
 const tl = workTL(0.45);

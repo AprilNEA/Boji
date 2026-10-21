@@ -2,9 +2,10 @@
 // The side poses keep a neutral head and spine. The deadlift variants use straight arm targets only when a bar must stay
 // at a fixed height. The less constrained hinges use fixed limb directions to avoid artificial reaches at the bottom.
 import type { EquipmentTag, MovingPart, MuscleSpec, PropShape, SideExercise } from '@/exercise.ts';
-import { add, clamp, lerp, smooth, sub, timeline, type Vec2 } from '@/math.ts';
-import type { Palette } from '@/palettes.ts';
-import type { Joints, Pose } from '@/rig.ts';
+import { add, clamp, lerp, sub, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline } from '@/math/timeline.ts';
+import type { Palette } from '@/draw/palettes.ts';
+import type { Joints, Pose } from '@/rig/side.ts';
 import { A, ARM_STRAIGHT, G, GRIP_IN_HAND, handOnHip, hipForShoulder, standLegs } from '@/exercises/common.ts';
 import {
   BARBELL, PLATE, aerobicStep, barbell, baseRail, cableColumn, cableHandle, cableLine, dumbbell, gripAt,

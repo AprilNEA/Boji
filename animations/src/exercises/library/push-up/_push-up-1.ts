@@ -2,12 +2,12 @@
 // Every floor contact is an IK target; plank variants keep a long trunk rather than moving the hips independently.
 // The front builder looks down the length of a prone body so that side-to-side hand and arm changes stay visible.
 import type { FrontExercise, SideExercise } from '@/exercise.ts';
-import { add, ang, dir, lerp, mul, smooth, sub, timeline, type Vec2 } from '@/math.ts';
-import { BODY, solve, type Joints, type LimbSpec, type Pose } from '@/rig.ts';
-import { toeDir, type FrontJoints } from '@/front-rig.ts';
-import { FLOOR, G, hipForShoulder, plantedArm } from '@/exercises/common.ts';
+import { add, ang, dir, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline } from '@/math/timeline.ts';
+import { BODY, solve, type Joints, type LimbSpec, type Pose } from '@/rig/side.ts';
+import { toeDir, type FrontJoints } from '@/rig/front.ts';
+import { FLOOR, G, hipForShoulder, plantedArm, HIGH_PLANK } from '@/exercises/common.ts';
 import { aerobicStep, bandCurve, kettlebell, KETTLEBELL, plyoBox, sagPoints, workTL } from '@/exercises/equipment/index.ts';
-import { HIGH_PLANK } from '@/exercises/push-up.ts';
 
 export type PushMeta = { id: string; name: string; en: string; sources: string[] };
 const tl = workTL(0.28);

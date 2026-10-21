@@ -2,8 +2,8 @@
 // Starting with the knee pads outside the thighs, press both knees apart and pause under control.
 // The torso, seat contact and feet stay still while the linked pads follow the knees.
 import type { FrontExercise, MovingPart } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
-import { project, type FrontJoints } from '@/front-rig.ts';
+import { lerp } from '@/math/vec2.ts';
+import { project, type FrontJoints } from '@/rig/front.ts';
 import { workTL } from '@/exercises/equipment/index.ts';
 import { seatedPose } from './_hip-abduction-adduction.ts';
 

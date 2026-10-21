@@ -2,7 +2,7 @@
 // Open the nearly straight arms laterally until they are parallel to the floor, then return under control.
 // The torso stays upright on the bench and each cable remains connected to its handle.
 import type { FrontExercise } from '@/exercise.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { cableColumn, cableHandle, cableLine, flatBench, frontGripAt, towardCable } from '@/exercises/equipment/index.ts';
 import { flyArm, rearDeltMuscles, rearDeltTL, seatPose } from './_rear-delt-1.ts';
 

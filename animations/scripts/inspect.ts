@@ -10,16 +10,17 @@
 //     figure's left (l) and right (r) limbs; the figure's left is on the right of the screen.
 //   - The lowest joint relative to the ground, to catch limbs that sink into the floor.
 // Exit code 1 when any frame has an IK warning or a joint more than 2 px below the ground.
-import { compose, FPS } from '@/compose.ts';
+import { compose, FPS } from '@/compose/index.ts';
 import type { Exercise, FrontExercise, SideExercise } from '@/exercise.ts';
 import { loadFamily } from '@/exercises/library/load.ts';
-import { solveFront } from '@/front-rig.ts';
+import { solveFront } from '@/rig/front.ts';
 import { parseArgs } from 'node:util';
 import { vec2, vec3 } from 'gl-matrix';
-import { ang, D2R, IK_WARNINGS, sub, type Vec2 } from '@/math.ts';
-import { dot3, mul3, sub3, type Vec3 } from '@/math3.ts';
-import { posterFrame } from '@/poster.ts';
-import { BODY, GROUND, solve } from '@/rig.ts';
+import { ang, D2R, sub, type Vec2 } from '@/math/vec2.ts';
+import { IK_WARNINGS } from '@/rig/ik.ts';
+import { dot3, mul3, sub3, type Vec3 } from '@/math/vec3.ts';
+import { posterFrame } from '@/build/poster.ts';
+import { BODY, GROUND, solve } from '@/rig/side.ts';
 
 const USAGE = 'usage: node --import tsx scripts/inspect.ts <family> <id> [--frames a,b,c] [--samples n]';
 const parseCli = () => parseArgs({ allowPositionals: true, options: { frames: { type: 'string' }, samples: { type: 'string', default: '8' } } });

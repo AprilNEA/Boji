@@ -1,10 +1,11 @@
 // Family-local upper-body stretch builders. Every variation uses an IK target for the working hand or fixed support.
 // Standing feet remain planted; alternating unilateral stretches return through neutral before the other side.
 import type { FrontExercise, LibraryMeta, MuscleSpec, SideExercise } from '@/exercise.ts';
-import { add, lerp, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import { add3, type Vec3 } from '@/math3.ts';
-import { BODY, GROUND, type Joints, type Pose } from '@/rig.ts';
-import { project, type FrontJoints } from '@/front-rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { timeline, type Timeline } from '@/math/timeline.ts';
+import { add3, type Vec3 } from '@/math/vec3.ts';
+import { BODY, GROUND, type Joints, type Pose } from '@/rig/side.ts';
+import { project, type FrontJoints } from '@/rig/front.ts';
 import { A, FLOOR, G, QUAD, kneelLeg, plantedArm, standLegs } from '@/exercises/common.ts';
 import { BALL, foamRoller, pullUpBar, stabilityBall, dumbbell } from '@/exercises/equipment/index.ts';
 

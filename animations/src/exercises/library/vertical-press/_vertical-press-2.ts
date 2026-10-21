@@ -1,9 +1,10 @@
 // Private builders for the vertical-press-2 exercise files. These keep the torso vertical,
 // feet planted, and the pressing hand on its implement while each named variation keeps its own metadata.
 import type { LibraryMeta, Props, PropShape, SideExercise } from '@/exercise.ts';
-import { add, clamp, lerp, smooth, type Vec2 } from '@/math.ts';
-import type { Palette } from '@/palettes.ts';
-import { BODY, type Joints, type LimbPair, type Pose } from '@/rig.ts';
+import { add, clamp, lerp, type Vec2 } from '@/math/vec2.ts';
+import { smooth } from '@/math/timeline.ts';
+import type { Palette } from '@/draw/palettes.ts';
+import { BODY, type Joints, type LimbPair, type Pose } from '@/rig/side.ts';
 import { A, ARM_STRAIGHT, G, handOnHip } from '@/exercises/common.ts';
 import {
   BALL, ballShapes, dumbbell, ezBar, gripAt, kettlebell, landmine, place, workTL,

@@ -2,9 +2,9 @@
 // The arms rise out to the sides in a wide arc to shoulder height, elbows slightly bent, then lower under control.
 // The shoulders stay down: no shrug.
 import type { FrontExercise } from '@/exercise.ts';
-import { add3 } from '@/math3.ts';
-import { D2R, lerp } from '@/math.ts';
-import { BODY } from '@/rig.ts';
+import { add3 } from '@/math/vec3.ts';
+import { D2R, lerp } from '@/math/vec2.ts';
+import { BODY } from '@/rig/side.ts';
 import { frontDumbbell, workTL } from '@/exercises/equipment/index.ts';
 
 const tl = workTL(0.3);

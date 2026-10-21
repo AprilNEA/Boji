@@ -1,8 +1,8 @@
 // Shared side-view horizontal-press builder for the horizontal-press-2 work list.
 // The support, grip, active arm count, cable path and bench angle are explicit so that each exported exercise remains a distinct movement.
 import type { LibraryMeta, Props, SideExercise } from '@/exercise.ts';
-import { add, ang, lerp, mul, type Vec2 } from '@/math.ts';
-import type { Joints, LimbSpec, Pose } from '@/rig.ts';
+import { add, ang, lerp, mul, type Vec2 } from '@/math/vec2.ts';
+import type { Joints, LimbSpec, Pose } from '@/rig/side.ts';
 import { A, ARM_STRAIGHT, G } from '@/exercises/common.ts';
 import {
   BALL, cableColumn, cableHandle, cableLine, declineBench, dumbbell, flatBench,

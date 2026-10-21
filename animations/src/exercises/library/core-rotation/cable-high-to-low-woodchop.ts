@@ -2,8 +2,8 @@
 // Rotate the rib cage to either side while the hips and feet stay stable.
 // Keep the cable taut from the pulley to the handle throughout the movement.
 import type { SideExercise } from '@/exercise.ts';
-import { add, lerpV } from '@/math.ts';
-import { BODY } from '@/rig.ts';
+import { add, lerpV } from '@/math/vec2.ts';
+import { BODY } from '@/rig/side.ts';
 import { A, G, standLegs } from '@/exercises/common.ts';
 import { cableColumn, cableHandle, cableLine, towardCable, workTL } from '@/exercises/equipment/index.ts';
 

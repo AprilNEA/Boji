@@ -1,13 +1,13 @@
 // Private builders for the mobility-drill work list. Each pose preserves a clear fixed base and shows its stated range.
 // Front drills keep both feet planted unless the instruction explicitly lifts, swings, or circles one leg.
 import type { FrontExercise, LibraryMeta, MuscleSpec, SideExercise } from '@/exercise.ts';
-import { D2R, add, lerp, mul, smooth, sub, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import { add3, type Vec3 } from '@/math3.ts';
-import { BODY, GROUND, type Pose } from '@/rig.ts';
-import { FB, toeDir, type FrontJoints, type FrontPose } from '@/front-rig.ts';
-import { A, FLOOR, G, QUAD, hipForShoulder, kneelLeg, plantedArm, standLegs, toesDown } from '@/exercises/common.ts';
+import { D2R, add, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline, type Timeline } from '@/math/timeline.ts';
+import { add3, type Vec3 } from '@/math/vec3.ts';
+import { BODY, GROUND, type Pose } from '@/rig/side.ts';
+import { FB, toeDir, type FrontJoints, type FrontPose } from '@/rig/front.ts';
+import { A, FLOOR, G, QUAD, hipForShoulder, kneelLeg, plantedArm, standLegs, toesDown, HIGH_PLANK } from '@/exercises/common.ts';
 import { kettlebell, pullUpBar } from '@/exercises/equipment/index.ts';
-import { HIGH_PLANK } from '@/exercises/push-up.ts';
 
 export type DrillMeta = LibraryMeta & { id: string; name: string };
 type FrontKind = 'arm-circles' | 'chest' | 'elbow' | 'knees' | 'archer' | 'arm-torso' | 'hip-circles' | 'knee-circles' | 'lateral-swing' | 'wrist' | 'halo' | 'halo-extension' | 'dowel';

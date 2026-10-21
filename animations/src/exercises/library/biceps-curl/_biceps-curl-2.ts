@@ -1,10 +1,10 @@
 // Shared biceps-curl-2 builders. Each curl keeps the upper arm fixed while the elbow closes from about 175° to 36°.
 // Cable attachments stay connected to their low or high pulley. Benches, pads and the ball support the stated start pose.
 import type { FrontExercise, MovingPart, SideExercise } from '@/exercise.ts';
-import { add, ang, dir, lerp, mul, sub, type Vec2 } from '@/math.ts';
-import { type Vec3 } from '@/math3.ts';
-import type { FrontJoints } from '@/front-rig.ts';
-import type { Joints, LimbPair, LimbSpec, Pose } from '@/rig.ts';
+import { add, ang, dir, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { type Vec3 } from '@/math/vec3.ts';
+import type { FrontJoints } from '@/rig/front.ts';
+import type { Joints, LimbPair, LimbSpec, Pose } from '@/rig/side.ts';
 import { A, FLOOR, G, handOnHip, standLegs } from '@/exercises/common.ts';
 import {
   BALL, barbell, cableColumn, cableHandle, cableLine, dumbbell, flatBench, frontGripAt, gripAt, inclineBench, preacherBench,

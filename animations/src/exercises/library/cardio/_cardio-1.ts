@@ -1,10 +1,11 @@
-import type { FrontPose, FSide } from '@/front-rig.ts';
-import { toeDir } from '@/front-rig.ts';
-import type { Palette } from '@/palettes.ts';
+import type { FrontPose, FSide } from '@/rig/front.ts';
+import { toeDir } from '@/rig/front.ts';
+import type { Palette } from '@/draw/palettes.ts';
 import type { Props } from '@/exercise.ts';
-import { add, lerp, timeline, type Vec2 } from '@/math.ts';
-import { add3, type Vec3 } from '@/math3.ts';
-import { BODY, type LimbSpec, type Pose } from '@/rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import { add3, type Vec3 } from '@/math/vec3.ts';
+import { BODY, type LimbSpec, type Pose } from '@/rig/side.ts';
 import { A, G, hipForShoulder, standLegs, toesDown } from '@/exercises/common.ts';
 
 export const TAU = Math.PI * 2;

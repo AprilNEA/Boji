@@ -2,10 +2,10 @@
 // Each builder keeps the upper arm stable unless the source requires a supported or machine-specific position.
 // Fixed legs use floor IK targets; held weights follow the closed hand on every frame.
 import type { FrontExercise, LibraryMeta, SideExercise } from '@/exercise.ts';
-import { add, lerp, type Vec2 } from '@/math.ts';
-import type { Vec3 } from '@/math3.ts';
-import type { FrontJoints } from '@/front-rig.ts';
-import { solve, type Joints, type Pose } from '@/rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import type { Vec3 } from '@/math/vec3.ts';
+import type { FrontJoints } from '@/rig/front.ts';
+import { solve, type Joints, type Pose } from '@/rig/side.ts';
 import { A, G, hipForShoulder, standLegs, toesDown } from '@/exercises/common.ts';
 import {
   BALL, bandCurve, dumbbell, ezBar, flatBench, frontGripAt, gobletDumbbell, gripAt, heldPlate, inclineBench, leverArm, medicineBall,

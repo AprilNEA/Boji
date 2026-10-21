@@ -2,7 +2,7 @@
 // Roll the support forward while the hips glide forward to open the front of the hips.
 // The knees stay fixed on the mat and the hands stay on top of the roller.
 import type { SideExercise } from '@/exercise.ts';
-import type { Joints } from '@/rig.ts';
+import type { Joints } from '@/rig/side.ts';
 import { FLOOR, QUAD, kneelLeg, plantedArm } from '@/exercises/common.ts';
 import { ROLLER, foamRoller } from '@/exercises/equipment/index.ts';
 import { stretchTL } from './_stretch-lower-2.ts';

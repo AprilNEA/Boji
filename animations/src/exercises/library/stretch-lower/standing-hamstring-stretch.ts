@@ -2,7 +2,7 @@
 // Both hands reach down the front shin without rounding the back.
 // The rear foot remains a stable support point throughout the hold.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { stretchTL } from './_stretch-lower-2.ts';
 
 const tl = stretchTL;

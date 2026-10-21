@@ -1,10 +1,10 @@
 // Shared front-view poses for rear-delt-1. The stance remains planted and the trunk stays neutral unless a variant
 // deliberately uses a hip hinge, seat or kneel. Fly motions keep the elbows soft and rows pull with high, wide elbows.
 // The helpers use fixed cable pulleys and exact wrist targets so handles and bands follow the hands without IK stretch.
-import type { FLimbSpec, FSide, FrontJoints, FrontPose } from '@/front-rig.ts';
-import { toeDir } from '@/front-rig.ts';
-import { add3, type Vec3 } from '@/math3.ts';
-import { BODY } from '@/rig.ts';
+import type { FLimbSpec, FSide, FrontJoints, FrontPose } from '@/rig/front.ts';
+import { toeDir } from '@/rig/front.ts';
+import { add3, type Vec3 } from '@/math/vec3.ts';
+import { BODY } from '@/rig/side.ts';
 import { frontGripAt, workTL } from '@/exercises/equipment/index.ts';
 
 export const rearDeltTL = workTL(0.35);

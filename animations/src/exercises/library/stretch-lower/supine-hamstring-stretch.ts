@@ -2,7 +2,7 @@
 // Both hands support the raised thigh while the opposite leg remains extended.
 // The pelvis and head stay on the mat for the full static hold.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { FLOOR } from '@/exercises/common.ts';
 import { stretchTL } from './_stretch-lower-2.ts';
 

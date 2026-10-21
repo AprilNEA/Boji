@@ -2,7 +2,7 @@
 // Both knees bend and the rear hip presses forward without arching the spine.
 // Hands remain on the hips so the lunge position stays clear.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { handOnHip } from '@/exercises/common.ts';
 import { stretchTL } from './_stretch-lower-2.ts';
 

@@ -1,9 +1,9 @@
 // Carioca quick step, front view. One foot crosses behind while the other knee drives high with a brisk arm block.
 // The torso stays tall and faces forward. The lifted foot clears the floor before the feet exchange roles.
 import type { FrontExercise } from '@/exercise.ts';
-import { add3 } from '@/math3.ts';
-import { BODY } from '@/rig.ts';
-import { toeDir } from '@/front-rig.ts';
+import { add3 } from '@/math/vec3.ts';
+import { BODY } from '@/rig/side.ts';
+import { toeDir } from '@/rig/front.ts';
 import { cardioTL } from './_cardio-1.ts';
 
 const TAU = Math.PI * 2;

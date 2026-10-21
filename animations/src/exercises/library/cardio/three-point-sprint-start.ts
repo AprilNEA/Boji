@@ -2,7 +2,8 @@
 // The knees stay near a right angle, the torso is almost horizontal and the free arm points behind at shoulder height.
 // A small preload lowers the hips without changing the fixed feet or grounded hand.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp, timeline } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
 import { G } from '@/exercises/common.ts';
 
 const tl = timeline([

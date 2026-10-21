@@ -1,10 +1,10 @@
 // Jumping jack, front view. One loop: hop out to a wide stance with the arms overhead, then hop back in.
 // Feet leave the ground in the middle of each transition; the knees soften at each landing.
 import type { FrontExercise } from '@/exercise.ts';
-import { add3, type Vec3 } from '@/math3.ts';
-import { lerp } from '@/math.ts';
-import { BODY } from '@/rig.ts';
-import { FB, type FSide } from '@/front-rig.ts';
+import { add3, type Vec3 } from '@/math/vec3.ts';
+import { lerp } from '@/math/vec2.ts';
+import { BODY } from '@/rig/side.ts';
+import { FB, type FSide } from '@/rig/front.ts';
 
 const TAU = Math.PI * 2;
 /** 0 with the feet together (t = 0), 1 in the wide stance (t = 0.5). */

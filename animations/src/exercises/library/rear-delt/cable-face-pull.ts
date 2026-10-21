@@ -2,7 +2,7 @@
 // Pull the rope directly toward the face and separate the hands while the upper arms stay horizontal.
 // The stance and torso remain still; the cable runs continuously from the high pulley to the rope.
 import type { FrontExercise } from '@/exercise.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { cableColumn, cableHandle, cableLine, towardCable } from '@/exercises/equipment/index.ts';
 import { facePullArm, rearDeltMuscles, rearDeltTL, ropeGrip, standPose } from './_rear-delt-1.ts';
 

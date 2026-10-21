@@ -1,7 +1,7 @@
 // Reverse-band box squat, side view. Bands hang from the top rail to a high-back bar while a box waits behind the hips.
 // The athlete sits back to the box without bouncing, pauses, and rises through planted heels with the bar level.
 import type { SideExercise } from '@/exercise.ts';
-import { add } from '@/math.ts';
+import { add } from '@/math/vec2.ts';
 import { bandLine, barbell, plyoBox } from '@/exercises/equipment/index.ts';
 import { backBarAt, backRackArms, squatPose, squatTL, X0 } from './_squat-2.ts';
 

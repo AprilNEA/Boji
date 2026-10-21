@@ -2,7 +2,7 @@
 // Keep the arms long while rotating the hips and trunk to arc the loaded end from side to side.
 // The landmine pivot stays fixed at the floor and the hands remain connected to the bar.
 import type { FrontExercise } from '@/exercise.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { landmine } from '@/exercises/equipment/index.ts';
 import { meanGrip, pairedHands, standing } from './_core-rotation-2.ts';
 

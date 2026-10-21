@@ -2,7 +2,7 @@
 // Reach the dumbbell toward the opposite foot with trunk rotation, then return under control.
 // The feet remain flat; the free hand stays near the hip for balance.
 import type { FrontExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { frontDumbbell, workTL } from '@/exercises/equipment/index.ts';
 import { standing } from './_core-rotation-2.ts';
 

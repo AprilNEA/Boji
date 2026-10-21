@@ -2,8 +2,8 @@
 // Alternate sides: extend the working hip to about 165 degrees and the knee to 180 degrees behind the body.
 // The supporting knee and both hands remain planted, so the low back does not arch to create range.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
-import type { LimbSpec } from '@/rig.ts';
+import { lerp } from '@/math/vec2.ts';
+import type { LimbSpec } from '@/rig/side.ts';
 import { alternate, alternateTL, activeValue, quadBase, quadrupedArms, quadrupedLegs } from './_glute-kickback.ts';
 
 const kickLeg = (p: number): LimbSpec => ({ a1: lerp(90, 180, p), a2: lerp(178, 180, p), foot: lerp(180, 90, p) });

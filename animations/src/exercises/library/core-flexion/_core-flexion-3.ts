@@ -2,9 +2,10 @@
 // Each builder keeps the stated supports fixed and moves the trunk, hips, or legs through the source range.
 // The small wrappers supply the catalog name and source records for each visible variation.
 import type { LibraryMeta, PropShape, SideExercise } from '@/exercise.ts';
-import { add, dir, lerp, mul, smooth, sub, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import { solve, type Joints, type LimbPair, type LimbSpec, type Pose } from '@/rig.ts';
-import type { Palette } from '@/palettes.ts';
+import { add, dir, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline, type Timeline } from '@/math/timeline.ts';
+import { solve, type Joints, type LimbPair, type LimbSpec, type Pose } from '@/rig/side.ts';
+import type { Palette } from '@/draw/palettes.ts';
 import { A, ARM_STRAIGHT, FLOOR, G, GRIP_IN_HAND, hipForShoulder } from '@/exercises/common.ts';
 import { BALL, ballShapes, barbell, baseRail, declineBench, dipBars, flatBench, foamRoller, heldPlate, medicineBall, pad, pullUpBar, rollerEnd, seatPad, smithRails, stabilityBall, tube, weightStack, workTL } from '@/exercises/equipment/index.ts';
 

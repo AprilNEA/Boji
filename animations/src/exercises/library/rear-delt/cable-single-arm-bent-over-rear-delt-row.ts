@@ -2,7 +2,7 @@
 // One arm rows a low-pulley handle to the upper chest with a flared elbow, then the animation shows the other side.
 // The hips and feet stay fixed through both sides; the handle and cable always follow the active hand.
 import type { FrontExercise } from '@/exercise.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { cableColumn, cableHandle, cableLine, frontGripAt, towardCable } from '@/exercises/equipment/index.ts';
 import { hingePose, rearDeltTL, rowArm, sideSign } from './_rear-delt-1.ts';
 

@@ -2,8 +2,8 @@
 // From a wide, straight-leg start, sweep the cuffed leg inward across the standing leg.
 // The support leg and trunk stay still while the cable remains connected to the ankle cuff.
 import type { FrontExercise, MovingPart } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
-import { project, type FrontJoints } from '@/front-rig.ts';
+import { lerp } from '@/math/vec2.ts';
+import { project, type FrontJoints } from '@/rig/front.ts';
 import { cableColumn, cableLine, workTL } from '@/exercises/equipment/index.ts';
 import { standingPose } from './_hip-abduction-adduction.ts';
 

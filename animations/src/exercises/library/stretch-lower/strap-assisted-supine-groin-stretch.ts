@@ -1,7 +1,7 @@
 // Start supine with a strap around one foot and both legs extended.
 // The working knee stays straight as the strap guides that leg out from the trunk; the pelvis stays down.
 import type { SideExercise } from '@/exercise.ts';
-import type { Joints } from '@/rig.ts';
+import type { Joints } from '@/rig/side.ts';
 import { bandLine } from '@/exercises/equipment/index.ts';
 import { libraryMeta, lowerStretch, supineRaised } from './_stretch-lower-1.ts';
 

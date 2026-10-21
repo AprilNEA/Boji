@@ -2,7 +2,7 @@
 // The moving knee goes from straight to about 70°; the upper leg stays vertical and the hands remain on the hips.
 // One loop shows the near leg, then the far leg, with both feet grounded at the switch and loop seam.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { G, handOnHip } from '@/exercises/common.ts';
 import { workTL } from '@/exercises/equipment/index.ts';
 

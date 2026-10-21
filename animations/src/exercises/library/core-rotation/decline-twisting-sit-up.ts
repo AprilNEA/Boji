@@ -2,7 +2,7 @@
 // Curl the trunk away from the pad and rotate one shoulder toward the opposite knee.
 // Lower slowly back to the pad, then repeat to the other side.
 import type { SideExercise } from '@/exercise.ts';
-import { add, lerp, lerpV, mul } from '@/math.ts';
+import { add, lerp, lerpV, mul } from '@/math/vec2.ts';
 import { declineBench } from '@/exercises/equipment/index.ts';
 import { alternatingTL, alternate } from './_core-rotation-1.ts';
 

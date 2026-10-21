@@ -2,7 +2,8 @@
 // Fold over the front leg to place the elbow near the instep, then lengthen that knee.
 // The front foot and rear toe stay fixed while the torso and arms make each phase clear.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp, timeline } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
 import { FLOOR } from '@/exercises/common.ts';
 
 const tl = timeline([

@@ -2,7 +2,7 @@
 // The hands rise from beneath the shoulders to shoulder height with nearly straight, softly unlocked elbows.
 // The feet and spine stay fixed; the bar remains level and moves as one rigid implement.
 import type { FrontExercise } from '@/exercise.ts';
-import { add3 } from '@/math3.ts';
+import { add3 } from '@/math/vec3.ts';
 import { barbell } from '@/exercises/equipment/index.ts';
 import { hingePose, rearDeltMuscles, rearDeltTL, ropeGrip, sideSign } from './_rear-delt-1.ts';
 

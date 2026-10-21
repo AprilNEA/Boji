@@ -2,8 +2,8 @@
 // The knees press outward against the band, pause, then return without moving the torso.
 // The hands remain on the seat for stable support.
 import type { FrontExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
-import { project } from '@/front-rig.ts';
+import { lerp } from '@/math/vec2.ts';
+import { project } from '@/rig/front.ts';
 import { bandCurve, miniBandPoints, workTL } from '@/exercises/equipment/index.ts';
 import { seatedPose } from './_hip-abduction-adduction.ts';
 

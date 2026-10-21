@@ -2,7 +2,7 @@
 // Both hands pull the toes of the long leg back toward the shin.
 // The head and pelvis remain relaxed on the mat during the hold.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { FLOOR } from '@/exercises/common.ts';
 import { stretchTL } from './_stretch-lower-2.ts';
 

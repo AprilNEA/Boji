@@ -1,9 +1,9 @@
 // Fixed stations for both views: pull-up bar, dip bars, plyo box, step, cable column with cables and handles,
 // and Smith machine rails. Side view: x values are screen x. Front view: screen x relative to the body midline.
 // Bar heights are screen y; set them from the hand positions, because a hanging figure decides the height.
-import { add, ang, mul, norm, polar, sub, type Vec2 } from '@/math.ts';
+import { add, ang, mul, norm, polar, sub, type Vec2 } from '@/math/vec2.ts';
 import type { Cable, PropShape, RigidPart } from '@/exercise.ts';
-import type { Palette } from '@/palettes.ts';
+import type { Palette } from '@/draw/palettes.ts';
 import { G } from '@/exercises/common.ts';
 
 type At<J> = (J: J, t: number) => { p: Vec2; a?: number };

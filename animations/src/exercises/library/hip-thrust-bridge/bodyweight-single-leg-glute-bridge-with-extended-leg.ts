@@ -2,7 +2,7 @@
 // The planted heel raises the pelvis into a straight bridge without dropping the extended leg.
 // The supporting foot and neck base stay fixed on the mat.
 import type { SideExercise } from '@/exercise.ts';
-import type { LimbPair } from '@/rig.ts';
+import type { LimbPair } from '@/rig/side.ts';
 import { bridgeArms, bridgePose, bridgeTL, BRIDGE_ANKLE } from './_hip-thrust-bridge.ts';
 
 const tl = bridgeTL();

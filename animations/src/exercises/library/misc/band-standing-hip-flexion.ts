@@ -2,7 +2,7 @@
 // Raise that knee to hip height while the standing foot, chest, and low anchor remain fixed.
 // Return the foot slowly to the floor before the next repetition.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp, lerpV, type Vec2 } from '@/math.ts';
+import { lerp, lerpV, type Vec2 } from '@/math/vec2.ts';
 import { A, G } from '@/exercises/common.ts';
 import { bandLine, workTL } from '@/exercises/equipment/index.ts';
 

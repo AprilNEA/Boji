@@ -2,11 +2,11 @@
 // trunk tall. Shrugs move only the shoulder joints with nearly straight elbows; upright rows lead with outward,
 // high elbows while the hands rise close to the torso.
 import type { EquipmentTag, FrontExercise, MuscleSpec, PropShape, Props, SideExercise } from '@/exercise.ts';
-import type { Palette } from '@/palettes.ts';
-import { lerp, type Vec2 } from '@/math.ts';
-import { add3, type Vec3 } from '@/math3.ts';
-import { type FSide, type FrontJoints, type FrontPose } from '@/front-rig.ts';
-import { BODY, type Pose } from '@/rig.ts';
+import type { Palette } from '@/draw/palettes.ts';
+import { lerp, type Vec2 } from '@/math/vec2.ts';
+import { add3, type Vec3 } from '@/math/vec3.ts';
+import { type FSide, type FrontJoints, type FrontPose } from '@/rig/front.ts';
+import { BODY, type Pose } from '@/rig/side.ts';
 import { A, G } from '@/exercises/common.ts';
 import { bandCurve, barbell, cableColumn, cableHandle, cableLine, declineBench, dumbbell, frontDumbbell, frontGripAt, inclineBench, smithRails, workTL } from '@/exercises/equipment/index.ts';
 

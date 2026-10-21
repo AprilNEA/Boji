@@ -5,7 +5,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { generate } from '@/generate.ts';
+import { generate } from '@/build/generate.ts';
 
 const root = path.resolve(import.meta.dirname, '..');
 const fresh = fs.mkdtempSync(path.join(os.tmpdir(), 'boji-lottie-'));

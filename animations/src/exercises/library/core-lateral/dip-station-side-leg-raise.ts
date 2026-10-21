@@ -2,8 +2,8 @@
 // Keep both legs together and raise them toward one side, then lower under control.
 // The shoulders stay depressed and the legs remain long throughout the raise.
 import type { FrontExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
-import { BODY, GROUND } from '@/rig.ts';
+import { lerp } from '@/math/vec2.ts';
+import { BODY, GROUND } from '@/rig/side.ts';
 import { dipBars, workTL } from '@/exercises/equipment/index.ts';
 
 const tl = workTL(0.35);

@@ -1,10 +1,10 @@
 // Shared, family-local row builders. Each keeps the torso and lower body fixed while the elbow retracts.
 import type { LibraryMeta, PropShape, SideExercise } from '@/exercise.ts';
-import { add, dir, lerp, lerpV, mul, smooth, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import { solve, type Joints, type LimbPair, type Pose } from '@/rig.ts';
-import type { Palette } from '@/palettes.ts';
-import { A, G, FLOOR, handOnHip, standLegs } from '@/exercises/common.ts';
-import { HIGH_PLANK } from '@/exercises/push-up.ts';
+import { add, dir, lerp, lerpV, mul, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline, type Timeline } from '@/math/timeline.ts';
+import { solve, type Joints, type LimbPair, type Pose } from '@/rig/side.ts';
+import type { Palette } from '@/draw/palettes.ts';
+import { A, G, FLOOR, handOnHip, standLegs, HIGH_PLANK } from '@/exercises/common.ts';
 
 type HandleKind = 'rope' | 'v' | 'straight' | 'single';
 type WeightKind = 'dumbbell' | 'kettlebell' | 'ez-bar';

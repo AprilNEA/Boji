@@ -2,7 +2,7 @@
 // Keep the elbows nearly straight while the arms open outward and slightly back to shoulder height.
 // The feet and trunk stay fixed, and each overhead cable remains attached to the opposite hand.
 import type { FrontExercise } from '@/exercise.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { cableColumn, cableHandle, cableLine, frontGripAt, towardCable } from '@/exercises/equipment/index.ts';
 import { flyArm, rearDeltMuscles, rearDeltTL, standPose } from './_rear-delt-1.ts';
 

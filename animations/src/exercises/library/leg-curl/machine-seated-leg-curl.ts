@@ -2,7 +2,7 @@
 // The lower-leg roller begins behind the calves with straight knees, then follows both shins under the seat to about 70°.
 // The torso, hips, thighs, lap pad, and side handles stay fixed while the lever and stack move.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp, type Vec2 } from '@/math.ts';
+import { lerp, type Vec2 } from '@/math/vec2.ts';
 import { baseRail, hub, leverArm, pad, rollerEnd, seatPad, tube, weightStack, workTL } from '@/exercises/equipment/index.ts';
 
 const tl = workTL(0.4);

@@ -2,7 +2,7 @@
 // Both hands travel toward the toes and pause low on the shins.
 // Feet remain flat and parallel for the full range.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { stretchTL } from './_stretch-lower-2.ts';
 
 const tl = stretchTL;

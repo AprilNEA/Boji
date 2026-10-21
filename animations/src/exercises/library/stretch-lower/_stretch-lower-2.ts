@@ -1,8 +1,8 @@
 // Private helpers for stretch-lower-2. Every stretch reaches a visible end position, holds, then returns.
 // Props stay simple and behind the person so contacts and the moving limbs remain legible.
 import type { Props } from '@/exercise.ts';
-import { timeline } from '@/math.ts';
-import type { Palette } from '@/palettes.ts';
+import { timeline } from '@/math/timeline.ts';
+import type { Palette } from '@/draw/palettes.ts';
 
 /** A calm static-stretch rhythm: enter for 1.8 s, hold for 3.2 s, return for 1.5 s, then rest. */
 export const stretchTL = timeline([

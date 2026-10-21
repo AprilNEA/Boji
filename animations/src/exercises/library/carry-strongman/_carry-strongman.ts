@@ -1,11 +1,12 @@
 // Shared side and front poses for the carry-strongman family.
 // The helpers keep feet, hands, straps and carried implements connected to the rig.
 import type { EquipmentTag, FrontExercise, MuscleSpec, PropShape, SideExercise } from '@/exercise.ts';
-import { add, lerp, sub, timeline, type Vec2 } from '@/math.ts';
-import { BODY, GROUND, type Joints, type Pose } from '@/rig.ts';
-import { project, type FrontJoints } from '@/front-rig.ts';
+import { add, lerp, sub, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import { BODY, GROUND, type Joints, type Pose } from '@/rig/side.ts';
+import { project, type FrontJoints } from '@/rig/front.ts';
 import { A, ARM_STRAIGHT, G, GRIP_IN_HAND, QUAD, hipForShoulder, standLegs } from '@/exercises/common.ts';
-import type { Palette } from '@/palettes.ts';
+import type { Palette } from '@/draw/palettes.ts';
 
 export interface StrongmanBase {
   id: string;

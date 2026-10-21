@@ -2,7 +2,7 @@
 // Extend one leg forward while the opposite hand leaves the floor and reaches toward that foot.
 // Replace the hand and foot with control, then repeat on the other side.
 import type { SideExercise } from '@/exercise.ts';
-import { lerpV } from '@/math.ts';
+import { lerpV } from '@/math/vec2.ts';
 import { FLOOR } from '@/exercises/common.ts';
 import { alternatingTL, alternate } from './_core-rotation-1.ts';
 

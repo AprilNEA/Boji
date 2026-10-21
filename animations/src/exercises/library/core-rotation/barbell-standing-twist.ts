@@ -2,8 +2,8 @@
 // Rotate the rib cage gently from side to side while the lower body remains stable.
 // The bar stays close to the chest throughout the controlled range.
 import type { SideExercise } from '@/exercise.ts';
-import { add } from '@/math.ts';
-import { BODY } from '@/rig.ts';
+import { add } from '@/math/vec2.ts';
+import { BODY } from '@/rig/side.ts';
 import { A, G, standLegs } from '@/exercises/common.ts';
 import { barbell } from '@/exercises/equipment/index.ts';
 import { alternatingTL, alternate } from './_core-rotation-1.ts';

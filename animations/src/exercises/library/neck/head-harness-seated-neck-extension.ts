@@ -2,8 +2,9 @@
 // The head lowers until the chin approaches the upper chest, then extends back in line with the fixed torso.
 // The harness and its hanging plate follow the head; the bench, pelvis, feet, and torso remain fixed.
 import type { SideExercise } from '@/exercise.ts';
-import { add, lerp, timeline, type Vec2 } from '@/math.ts';
-import type { Joints } from '@/rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import type { Joints } from '@/rig/side.ts';
 import { A, G } from '@/exercises/common.ts';
 import { flatBench, heldPlate } from '@/exercises/equipment/index.ts';
 

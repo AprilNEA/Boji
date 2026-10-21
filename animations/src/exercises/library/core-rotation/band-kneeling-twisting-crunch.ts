@@ -2,7 +2,7 @@
 // Flex and rotate the torso to draw the hands toward the opposite hip.
 // The knees stay down and the band remains attached to the fixed anchor.
 import type { SideExercise } from '@/exercise.ts';
-import { add, lerp } from '@/math.ts';
+import { add, lerp } from '@/math/vec2.ts';
 import { FLOOR } from '@/exercises/common.ts';
 import { bandLine } from '@/exercises/equipment/index.ts';
 import { alternatingTL, alternate } from './_core-rotation-1.ts';

@@ -1,11 +1,12 @@
 // Shared back-extension family poses. Hips or the torso stay on their support while the working segment moves.
 // Side poses use straight, fixed leg directions when an ankle should remain at a pad, ball, or wall.
 import type { FrontExercise, LibraryMeta, Props, SideExercise } from '@/exercise.ts';
-import { add, ang, dir, lerp, mul, timeline, type Vec2 } from '@/math.ts';
-import { add3, type Vec3 } from '@/math3.ts';
-import type { FrontJoints } from '@/front-rig.ts';
-import type { Palette } from '@/palettes.ts';
-import type { Joints, Pose } from '@/rig.ts';
+import { add, ang, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import { add3, type Vec3 } from '@/math/vec3.ts';
+import type { FrontJoints } from '@/rig/front.ts';
+import type { Palette } from '@/draw/palettes.ts';
+import type { Joints, Pose } from '@/rig/side.ts';
 import { FLOOR, G } from '@/exercises/common.ts';
 import { flatBench, heldPlate, stabilityBall, workTL } from '@/exercises/equipment/index.ts';
 

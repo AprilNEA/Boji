@@ -2,8 +2,8 @@
 // Keep the hips elevated while both knees rotate toward one side, then the other.
 // The shoulders and feet remain grounded as the lower body alternates sides.
 import type { FrontExercise } from '@/exercise.ts';
-import { toeDir } from '@/front-rig.ts';
-import { BODY } from '@/rig.ts';
+import { toeDir } from '@/rig/front.ts';
+import { BODY } from '@/rig/side.ts';
 
 const TAU = Math.PI * 2;
 const ankleY = BODY.ankleH;

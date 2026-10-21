@@ -1,8 +1,9 @@
 // Shared side-view builders for the pullover family.
 // The helpers keep the shoulder arc, bench contact, fixed feet, and moving implement tied to the solved rig.
 import type { LibraryMeta, MovingPart, Props, SideExercise } from '@/exercise.ts';
-import { add, ang, dir, lerp, mul, sub, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import { solve, type Joints, type LimbPair, type Pose } from '@/rig.ts';
+import { add, ang, dir, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { timeline, type Timeline } from '@/math/timeline.ts';
+import { solve, type Joints, type LimbPair, type Pose } from '@/rig/side.ts';
 import { A, ARM_STRAIGHT, G, GRIP_IN_HAND, hipForShoulder, standLegs } from '@/exercises/common.ts';
 import {
   backrestAt,

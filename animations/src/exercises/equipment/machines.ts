@@ -3,9 +3,9 @@
 // Colors: main frame metal, brackets and secondary frame metalDark, near pads pad, far or hidden pads padFar,
 // foot plates metalDark, loaded plates plate. Sizes: 2.09 px per cm (thigh 94 px is about 45 cm).
 import type { MovingPart, PropShape, RigidPart } from '@/exercise.ts';
-import { add, ang, dir, len, lerpV, mul, sub, type Vec2 } from '@/math.ts';
-import type { Palette } from '@/palettes.ts';
-import type { Joints } from '@/rig.ts';
+import { add, ang, dir, len, lerpV, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import type { Palette } from '@/draw/palettes.ts';
+import type { Joints } from '@/rig/side.ts';
 import { G } from '@/exercises/common.ts';
 import { plateEdge, type PlateSize } from './free-weights.ts';
 

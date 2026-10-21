@@ -2,7 +2,7 @@
 // The bar stays across the upper back as the hips sit back to a near-parallel working thigh.
 // The chest stays lifted with a neutral spine; the squat returns through the same controlled path.
 import type { SideExercise } from '@/exercise.ts';
-import { add } from '@/math.ts';
+import { add } from '@/math/vec2.ts';
 import { barbell } from '@/exercises/equipment/index.ts';
 import { pistolPose, pistolTL } from './_single-leg-squat.ts';
 

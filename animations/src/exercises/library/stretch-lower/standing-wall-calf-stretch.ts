@@ -2,7 +2,7 @@
 // The front knee bends while the rear leg stays long with its heel pressed down.
 // Head, hip and rear heel remain in one long diagonal line.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { A, G } from '@/exercises/common.ts';
 import { stretchTL, wall } from './_stretch-lower-2.ts';
 

@@ -1,11 +1,11 @@
 // Private builders for push-up-2. Each builder keeps the planted wrists, toes, or support surface fixed.
 // The side rig faces right, so feet are left of the hands in every prone pose.
 import type { LibraryMeta, MovingPart, MuscleSpec, Props, SideExercise } from '@/exercise.ts';
-import type { Palette } from '@/palettes.ts';
-import { add, dir, len, lerp, mul, sub, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import { BODY, solve, type Joints, type LimbSpec, type Pose } from '@/rig.ts';
-import { ARM_STRAIGHT, FLOOR, hipForShoulder, plantedArm } from '@/exercises/common.ts';
-import { HIGH_PLANK } from '@/exercises/push-up.ts';
+import type { Palette } from '@/draw/palettes.ts';
+import { add, dir, len, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { timeline, type Timeline } from '@/math/timeline.ts';
+import { BODY, solve, type Joints, type LimbSpec, type Pose } from '@/rig/side.ts';
+import { ARM_STRAIGHT, FLOOR, hipForShoulder, plantedArm, HIGH_PLANK } from '@/exercises/common.ts';
 import { dumbbell, kettlebell, medicineBall, stabilityBall } from '@/exercises/equipment/index.ts';
 
 export const PUSH_TL = timeline([

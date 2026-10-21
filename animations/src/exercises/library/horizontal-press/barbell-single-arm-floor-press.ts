@@ -1,8 +1,8 @@
 // Lie supine on the floor with both feet planted and the free arm placed beside the torso.
 // Lower one neutral-grip barbell until that upper arm contacts the floor, then press to lockout.
 import type { SideExercise } from '@/exercise.ts';
-import { add, lerp } from '@/math.ts';
-import type { Joints } from '@/rig.ts';
+import { add, lerp } from '@/math/vec2.ts';
+import type { Joints } from '@/rig/side.ts';
 import { A, G, GRIP_IN_HAND } from '@/exercises/common.ts';
 import { barbell, gripAt, workTL } from '@/exercises/equipment/index.ts';
 

@@ -3,8 +3,8 @@
 // the ankles. From about 90° of knee bend the knees straighten fully, hold briefly, then lower under control.
 // The thighs stay on the seat and the hips do not lift.
 import type { SideExercise } from '@/exercise.ts';
-import { add, lerp, type Vec2 } from '@/math.ts';
-import { solve, type LimbPair, type Pose } from '@/rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { solve, type LimbPair, type Pose } from '@/rig/side.ts';
 import { G } from '@/exercises/common.ts';
 import { backrestAt, baseRail, hub, leverArm, pad, seatPad, tube, weightStack, workTL } from '@/exercises/equipment/index.ts';
 

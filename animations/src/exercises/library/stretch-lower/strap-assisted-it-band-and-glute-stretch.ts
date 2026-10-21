@@ -1,7 +1,7 @@
 // Start supine with a strap looped around one foot and both legs long.
 // The working leg rises diagonally across the trunk while the pelvis and far leg stay on the mat.
 import type { SideExercise } from '@/exercise.ts';
-import type { Joints } from '@/rig.ts';
+import type { Joints } from '@/rig/side.ts';
 import { bandLine } from '@/exercises/equipment/index.ts';
 import { libraryMeta, lowerStretch, supineRaised } from './_stretch-lower-1.ts';
 

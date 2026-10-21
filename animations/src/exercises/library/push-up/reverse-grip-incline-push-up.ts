@@ -1,7 +1,7 @@
 // Start with toes on the floor and palms facing up around a fixed Smith bar at chest height.
 // Keep the body straight while bending the elbows to bring the chest to the bar, then extend the arms.
 import type { Props, SideExercise } from '@/exercise.ts';
-import type { Palette } from '@/palettes.ts';
+import type { Palette } from '@/draw/palettes.ts';
 import { raisedSupport, supportPush } from './_push-up-2.ts';
 
 const S = raisedSupport([402, 360]);

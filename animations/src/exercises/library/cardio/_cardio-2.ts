@@ -1,8 +1,9 @@
 // Private builders for cardio-2. Each pose keeps the machine contacts fixed or moves them on the correct crank or rail.
 // The figures face right. Fast cardio loops repeat at the starting pose without a seam.
 import type { SideExercise, PropShape } from '@/exercise.ts';
-import { add, lerp, timeline, type Vec2 } from '@/math.ts';
-import { BODY, type Joints, type Pose } from '@/rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import { BODY, type Joints, type Pose } from '@/rig/side.ts';
 import { A, G, GRIP_IN_HAND, standLegs } from '@/exercises/common.ts';
 import { dumbbell } from '@/exercises/equipment/index.ts';
 

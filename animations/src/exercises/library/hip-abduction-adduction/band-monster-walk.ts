@@ -2,7 +2,7 @@
 // Short alternating steps travel forward in depth while the knees stay pressed gently apart.
 // The torso remains braced and level; the loop returns to the same stance.
 import type { FrontExercise } from '@/exercise.ts';
-import { project } from '@/front-rig.ts';
+import { project } from '@/rig/front.ts';
 import { bandCurve, miniBandPoints } from '@/exercises/equipment/index.ts';
 import { standingPose } from './_hip-abduction-adduction.ts';
 

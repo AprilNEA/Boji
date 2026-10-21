@@ -26,8 +26,8 @@ An exercise file has these rules:
 
 ## Code
 
-- Import shared code with the `@/` alias, for example `import { polar } from '@/math.ts'` and `import { flatBench } from '@/exercises/equipment/index.ts'`. Import your family helper with `./_<name>.ts`. Do not write `../`.
-- Use the helpers of `src/math.ts` instead of `Math.sin`, `Math.cos` and hand-written formulas. `animations/AGENTS.md` lists them under "Math and geometry".
+- Import shared code with the `@/` alias, for example `import { polar } from '@/math/vec2.ts'` and `import { flatBench } from '@/exercises/equipment/index.ts'`. Import your family helper with `./_<name>.ts`. Do not write `../`.
+- Use the helpers of `src/math/` instead of `Math.sin`, `Math.cos` and hand-written formulas. `animations/AGENTS.md` lists them under "Math and geometry".
 
 | Instead of | Write |
 | --- | --- |
@@ -87,7 +87,7 @@ The work list `view` is a suggestion.
 
 ## Side-view rig
 
-Source: `src/rig.ts` and `src/exercises/common.ts`.
+Source: `src/rig/side.ts` and `src/exercises/common.ts`.
 
 - The canvas is 512 × 512 px. Y points down. `GROUND` (`G`) is 452. `FLOOR` is the top of the mat, `G - 6`.
 - The figure faces screen right (+x). The near limbs (`_n`) face the viewer, and the far limbs (`_f`) are behind the body.
@@ -114,7 +114,7 @@ The shoulder joint `J.S` is not the top of the spine. It sits in front of and be
 
 ## Front-view rig
 
-Source: `src/front-rig.ts`.
+Source: `src/rig/front.ts`.
 
 - World coordinates in px. X is lateral: +X is the figure's left, which is screen right. Y points up, and the ground is Y = 0. Z points toward the viewer.
 - Standing pelvis: `[0, BODY.ankleH + about 182, 0]`. Hip joints sit `FB.hipHalf` (17) from the midline, and shoulder joints sit `FB.shoulderHalf` (33) from it.
@@ -142,7 +142,7 @@ Static equipment goes in `props`. Equipment that moves goes in `dynamic`: a `rig
 ## Timing
 
 - Use `workTL(hold)` for a normal repetition: 1.0 s concentric, a short hold, 1.6 s eccentric and a short rest.
-- Build other rhythms with `timeline([...])` from `src/math.ts`. A segment has a duration `d`, `from` and `to` progress values, and muscle effort `e: [start, end]`.
+- Build other rhythms with `timeline([...])` from `src/math/timeline.ts`. A segment has a duration `d`, `from` and `to` progress values, and muscle effort `e: [start, end]`.
 - The loop must be seamless: the pose at t = 0 equals the pose at t = 1.
 - A repetition takes 2.5 to 4 s. Plyometric and cardio cycles take 0.6 to 1.5 s and may repeat inside one loop.
 - A static stretch reaches the end position in 1.5 to 2 s, holds for 3 to 4 s and returns.

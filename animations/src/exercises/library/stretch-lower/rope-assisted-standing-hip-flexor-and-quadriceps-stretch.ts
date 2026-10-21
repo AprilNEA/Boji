@@ -2,7 +2,7 @@
 // The other knee flexes behind the hip, bringing the heel toward the glutes.
 // One hand braces on a wall while the other holds the rope to the lifted ankle.
 import type { SideExercise } from '@/exercise.ts';
-import type { Joints } from '@/rig.ts';
+import type { Joints } from '@/rig/side.ts';
 import { strap, stretchTL, wall } from './_stretch-lower-2.ts';
 
 const tl = stretchTL;

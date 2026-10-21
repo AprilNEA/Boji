@@ -2,10 +2,11 @@
 // Each builder keeps every landing target above the ground and uses quick, seamless cycles.
 // The named variants change visible foot placement, arm action, equipment and range of motion.
 import type { EquipmentTag, FrontExercise, LibraryMeta, SideExercise } from '@/exercise.ts';
-import { add, lerp, timeline, type Vec2 } from '@/math.ts';
-import { add3, type Vec3 } from '@/math3.ts';
-import { BODY, type Joints, type LimbPair, type LimbSpec, type Pose } from '@/rig.ts';
-import { FB, toeDir } from '@/front-rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import { add3, type Vec3 } from '@/math/vec3.ts';
+import { BODY, type Joints, type LimbPair, type LimbSpec, type Pose } from '@/rig/side.ts';
+import { FB, toeDir } from '@/rig/front.ts';
 import { A, G } from '@/exercises/common.ts';
 import { barbell, flatBench, plyoBox } from '@/exercises/equipment/index.ts';
 

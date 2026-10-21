@@ -2,8 +2,9 @@
 // bottom, the rear knee stays above the floor, and the chest stays tall. Step-ups keep the lead foot fully on the
 // platform; rear-foot-elevated variations keep the rear foot on its support throughout the repetition.
 import type { MuscleSpec, SideExercise } from '@/exercise.ts';
-import { clamp, lerp, lerpV, smooth, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import type { Joints, LimbPair, LimbSpec, Pose } from '@/rig.ts';
+import { clamp, lerp, lerpV, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline, type Timeline } from '@/math/timeline.ts';
+import type { Joints, LimbPair, LimbSpec, Pose } from '@/rig/side.ts';
 import { A, G, toesDown } from '@/exercises/common.ts';
 import { barbell, dumbbell, flatBench, kettlebell, plyoBox, smithRails, workTL } from '@/exercises/equipment/index.ts';
 

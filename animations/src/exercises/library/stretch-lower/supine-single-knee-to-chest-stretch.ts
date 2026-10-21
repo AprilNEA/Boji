@@ -2,7 +2,7 @@
 // The other knee bends toward the chest and the hands hold behind that knee.
 // The neck stays neutral and the lower back remains settled on the mat.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { FLOOR } from '@/exercises/common.ts';
 import { stretchTL } from './_stretch-lower-2.ts';
 

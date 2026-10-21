@@ -1,7 +1,7 @@
 // Cable squat curl, side view. A low front pulley stays connected as straight arms curl while the hips lower.
 // The elbows stay close to the torso, the heels stay down, and the arms extend again as the athlete stands.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { cableColumn, cableHandle, cableLine, gripAt, towardCable } from '@/exercises/equipment/index.ts';
 import { squatPose, squatTL, X0 } from './_squat-2.ts';
 

@@ -1,9 +1,9 @@
 // Benches for both views. Side view: x values are screen x. Front view: screen x relative to the body midline,
 // usually 0. Heights are px above the ground (2.09 px per cm). Every bench returns static shapes for Props.back,
 // its x range for Exercise.propsBox, and the geometry an exercise needs to place the body on the pads.
-import { add, D2R, dir, mirrorX, mul, type Vec2 } from '@/math.ts';
+import { add, D2R, dir, mirrorX, mul, type Vec2 } from '@/math/vec2.ts';
 import type { PropShape } from '@/exercise.ts';
-import type { Palette } from '@/palettes.ts';
+import type { Palette } from '@/draw/palettes.ts';
 import { G } from '@/exercises/common.ts';
 
 /** Flat bench: pad top 43 cm, pad 6 cm thick, 120 cm long, 28 cm wide. */

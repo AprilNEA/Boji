@@ -2,8 +2,9 @@
 // The builders keep the torso and upper arms fixed while the elbow drives the implement.
 // Cable lines end at the attachment, and benches or balls support every seated or supine pose.
 import type { LibraryMeta, MovingPart, PropShape, SideExercise } from '@/exercise.ts';
-import { add, lerp, mul, sub, timeline, type Vec2 } from '@/math.ts';
-import type { Joints, Pose } from '@/rig.ts';
+import { add, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import type { Joints, Pose } from '@/rig/side.ts';
 import { A, G, GRIP_IN_HAND, handOnHip, standLegs } from '@/exercises/common.ts';
 import {
   cableColumn,

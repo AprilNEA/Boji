@@ -1,10 +1,11 @@
 // Private builders for the lunge-split-1 library files. Side poses keep the front foot flat and the rear heel raised.
 // The bottom lunge keeps both knees near 90 degrees, the torso vertical, and the rear knee just above the floor.
 import type { FrontExercise, LibraryMeta, MuscleSpec, PropShape, SideExercise } from '@/exercise.ts';
-import { add, clamp, lerp, lerpV, smooth, timeline, type Vec2 } from '@/math.ts';
-import { add3, lerp3, type Vec3 } from '@/math3.ts';
-import type { Joints, LimbSpec, Pose } from '@/rig.ts';
-import { BODY } from '@/rig.ts';
+import { add, clamp, lerp, lerpV, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline } from '@/math/timeline.ts';
+import { add3, lerp3, type Vec3 } from '@/math/vec3.ts';
+import type { Joints, LimbSpec, Pose } from '@/rig/side.ts';
+import { BODY } from '@/rig/side.ts';
 import { A, G, handOnHip, toesDown } from '@/exercises/common.ts';
 import { aerobicStep, bandCurve, bandLine, barbell, flatBench } from '@/exercises/equipment/index.ts';
 

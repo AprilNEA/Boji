@@ -2,8 +2,8 @@
 // Keep one hand planted as the other arm reaches vertically to open the chest.
 // Return to the stable plank before repeating to the other side.
 import type { SideExercise } from '@/exercise.ts';
-import { add, ang, dir, lerp, mul, sub } from '@/math.ts';
-import { HIGH_PLANK } from '@/exercises/push-up.ts';
+import { add, ang, dir, lerp, mul, sub } from '@/math/vec2.ts';
+import { HIGH_PLANK } from '@/exercises/common.ts';
 import { alternatingTL, alternate } from './_core-rotation-1.ts';
 
 export default {

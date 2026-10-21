@@ -2,7 +2,7 @@
 // Pull the rope from straight arms to the upper chest as the elbows flare out at shoulder height.
 // The feet stay shoulder-width and the cable stays taut from the pulley to the rope attachment.
 import type { FrontExercise } from '@/exercise.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { cableColumn, cableHandle, cableLine, towardCable } from '@/exercises/equipment/index.ts';
 import { rearDeltMuscles, rearDeltTL, ropeGrip, rowArm, standPose } from './_rear-delt-1.ts';
 

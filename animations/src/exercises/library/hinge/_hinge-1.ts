@@ -1,9 +1,10 @@
 // Private builders for hinge-1. Each pose keeps feet or a bar grip as an IK target.
 // Variations add only the visible setup that changes the movement: a rack, a platform, bands, chains, or a box.
 import type { FrontExercise, MovingPart, PropShape, Props, SideExercise } from '@/exercise.ts';
-import { add, clamp, lerp, smooth, sub, timeline, type Vec2 } from '@/math.ts';
-import { toeDir, type FrontJoints, type FrontPose } from '@/front-rig.ts';
-import type { Joints, LimbPair, Pose } from '@/rig.ts';
+import { add, clamp, lerp, sub, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline } from '@/math/timeline.ts';
+import { toeDir, type FrontJoints, type FrontPose } from '@/rig/front.ts';
+import type { Joints, LimbPair, Pose } from '@/rig/side.ts';
 import { ARM_STRAIGHT, G, GRIP_IN_HAND, handOnHip, hipForShoulder } from '@/exercises/common.ts';
 import { bandCurve, barbell, flatBench, frontGripAt, gripAt, PLATE, plyoBox } from '@/exercises/equipment/index.ts';
 

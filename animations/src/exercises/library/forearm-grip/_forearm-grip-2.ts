@@ -2,9 +2,9 @@
 // The load follows the closed hand through wrist flexion or extension. Source records that instead specify elbow flexion
 // use supported curls, so the displayed movement follows the instructions rather than the draft exercise name.
 import type { LibraryMeta, MovingPart, SideExercise } from '@/exercise.ts';
-import { add, dir, lerp, mul, type Vec2 } from '@/math.ts';
-import type { Palette } from '@/palettes.ts';
-import type { Joints, LimbPair, Pose } from '@/rig.ts';
+import { add, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
+import type { Palette } from '@/draw/palettes.ts';
+import type { Joints, LimbPair, Pose } from '@/rig/side.ts';
 import { A, G, standLegs } from '@/exercises/common.ts';
 import {
   barbell, cableColumn, cableHandle, cableLine, dumbbell, flatBench, gripAt, heldPlate, preacherBench,

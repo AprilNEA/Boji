@@ -2,8 +2,8 @@
 // Keep the hips level while alternately drawing one bent knee toward the chest.
 // The supporting foot and the upper back remain fixed on the floor.
 import type { SideExercise } from '@/exercise.ts';
-import type { LimbPair } from '@/rig.ts';
-import { lerp } from '@/math.ts';
+import type { LimbPair } from '@/rig/side.ts';
+import { lerp } from '@/math/vec2.ts';
 import { bridgeArms, bridgePose } from './_hip-thrust-bridge.ts';
 
 const TAU = Math.PI * 2;

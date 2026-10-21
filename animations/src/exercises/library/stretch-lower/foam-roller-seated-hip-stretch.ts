@@ -2,7 +2,7 @@
 // Lean on both hands behind the torso as the knees draw toward the chest over the roller.
 // The hands remain on the mat and the roller stays beneath the thighs throughout the stretch.
 import type { SideExercise } from '@/exercise.ts';
-import type { Joints } from '@/rig.ts';
+import type { Joints } from '@/rig/side.ts';
 import { FLOOR } from '@/exercises/common.ts';
 import { ROLLER, foamRoller } from '@/exercises/equipment/index.ts';
 import { stretchTL } from './_stretch-lower-2.ts';

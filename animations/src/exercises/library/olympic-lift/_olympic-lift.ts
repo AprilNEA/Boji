@@ -1,8 +1,9 @@
 // Private Olympic-lift builders. The side-view bar follows the hands, while planted feet and the rail keep the load path honest.
 // Clean and snatch builders show the pull, the turnover or punch, and the specific receiving position before a controlled return.
 import type { EquipmentTag, SideExercise } from '@/exercise.ts';
-import { add, clamp, lerp, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import type { Joints, LimbSpec, Pose } from '@/rig.ts';
+import { add, clamp, lerp, type Vec2 } from '@/math/vec2.ts';
+import { timeline, type Timeline } from '@/math/timeline.ts';
+import type { Joints, LimbSpec, Pose } from '@/rig/side.ts';
 import { ARM_STRAIGHT, G, GRIP_IN_HAND, hipForShoulder, standLegs, toesDown } from '@/exercises/common.ts';
 import { barbell, dumbbell, gripAt, PLATE, plyoBox, smithRails } from '@/exercises/equipment/index.ts';
 

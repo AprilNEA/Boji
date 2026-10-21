@@ -2,7 +2,7 @@
 // Start with soft elbows in front of the chest, then open the arms outward to shoulder height while retracting the shoulder blades.
 // The feet and upright trunk stay still; both cables stay crossed from the columns to the opposite hands.
 import type { FrontExercise } from '@/exercise.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { cableColumn, cableHandle, cableLine, frontGripAt, towardCable } from '@/exercises/equipment/index.ts';
 import { flyArm, rearDeltMuscles, rearDeltTL, standPose } from './_rear-delt-1.ts';
 

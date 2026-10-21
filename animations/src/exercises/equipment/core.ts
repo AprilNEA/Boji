@@ -1,10 +1,11 @@
 // Gym machine parts and free weights shared by the exercise scripts.
-import { add, ang, dir, mul, timeline, type Timeline, type Vec2 } from '@/math.ts';
+import { add, ang, dir, mul, type Vec2 } from '@/math/vec2.ts';
+import { timeline, type Timeline } from '@/math/timeline.ts';
 import type { PropShape, RigidPart } from '@/exercise.ts';
-import type { Palette } from '@/palettes.ts';
-import type { Joints, Side } from '@/rig.ts';
-import { add3, mul3, norm3, sub3 } from '@/math3.ts';
-import { project, type FSide, type FrontJoints } from '@/front-rig.ts';
+import type { Palette } from '@/draw/palettes.ts';
+import type { Joints, Side } from '@/rig/side.ts';
+import { add3, mul3, norm3, sub3 } from '@/math/vec3.ts';
+import { project, type FSide, type FrontJoints } from '@/rig/front.ts';
 import { G } from '@/exercises/common.ts';
 
 /** Concentric 1.0 s, short squeeze, 1.6 s controlled return, short rest. */

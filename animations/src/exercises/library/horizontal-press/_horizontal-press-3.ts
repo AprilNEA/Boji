@@ -2,8 +2,9 @@
 // The flat-bench poses keep the upper back on the pad and both feet planted.
 // The floor poses keep the spine on the floor and use a bent, planted support leg.
 import type { EquipmentTag, SideExercise } from '@/exercise.ts';
-import { add, ang, dir, len, lerp, mul, norm, sub, timeline, type Vec2 } from '@/math.ts';
-import { solve, type Joints, type LimbPair, type Pose } from '@/rig.ts';
+import { add, ang, dir, len, lerp, mul, norm, sub, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import { solve, type Joints, type LimbPair, type Pose } from '@/rig/side.ts';
 import { A, FLOOR, G, standLegs } from '@/exercises/common.ts';
 import {
   backrestAt, dumbbell, ezBar, flatBench, gobletDumbbell, gripAt, kettlebell, loadedPlates,

@@ -2,8 +2,8 @@
 // The hand direction alone moves, so the bar, cable handle, or band follows a true wrist-only range of motion.
 // Standing holds use a stable, upright base and show the exact loaded object in the gripping hand.
 import type { LibraryMeta, SideExercise } from '@/exercise.ts';
-import { add, lerp, type Vec2 } from '@/math.ts';
-import type { Joints, LimbPair, Pose } from '@/rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import type { Joints, LimbPair, Pose } from '@/rig/side.ts';
 import { A, G, standLegs } from '@/exercises/common.ts';
 import { bandLine, barbell, cableColumn, cableHandle, cableLine, dumbbell, flatBench, gripAt, handleEnd, heldPlate, towardCable, workTL } from '@/exercises/equipment/index.ts';
 

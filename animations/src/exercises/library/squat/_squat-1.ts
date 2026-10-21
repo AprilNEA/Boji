@@ -2,10 +2,11 @@
 // Back, front, hack, Jefferson, band-row, Smith, and kneeling variants use distinct bar, hand, and support contacts.
 // The bottom positions target parallel or full-depth knee and hip flexion without reaching through the floor.
 import type { EquipmentTag, FrontExercise, MovingPart, SideExercise } from '@/exercise.ts';
-import { add, clamp, lerp, mul, smooth, sub, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import { add3, lerp3, type Vec3 } from '@/math3.ts';
-import { project, toeDir, type FrontJoints } from '@/front-rig.ts';
-import { BODY, type Joints, type Pose } from '@/rig.ts';
+import { add, clamp, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline, type Timeline } from '@/math/timeline.ts';
+import { add3, lerp3, type Vec3 } from '@/math/vec3.ts';
+import { project, toeDir, type FrontJoints } from '@/rig/front.ts';
+import { BODY, type Joints, type Pose } from '@/rig/side.ts';
 import { A, G, GRIP_IN_HAND, standLegs } from '@/exercises/common.ts';
 import { barbell, bandCurve, bandLine, flatBench, miniBandPoints, plyoBox, smithRails } from '@/exercises/equipment/index.ts';
 

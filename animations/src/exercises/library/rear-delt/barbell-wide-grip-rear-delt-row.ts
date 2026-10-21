@@ -2,7 +2,7 @@
 // The arms hang first, then the elbows travel wide and high as the bar approaches the upper chest.
 // The back angle, planted feet and level bar remain fixed during the repetition.
 import type { FrontExercise } from '@/exercise.ts';
-import { add3 } from '@/math3.ts';
+import { add3 } from '@/math/vec3.ts';
 import { barbell } from '@/exercises/equipment/index.ts';
 import { hingePose, rearDeltMuscles, rearDeltTL, ropeGrip, sideSign } from './_rear-delt-1.ts';
 

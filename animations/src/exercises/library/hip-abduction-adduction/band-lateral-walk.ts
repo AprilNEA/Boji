@@ -2,8 +2,9 @@
 // The lead foot steps laterally first. The trailing foot follows while the hips stay low and square.
 // Both feet return to the start for a seamless demonstration loop.
 import type { FrontExercise } from '@/exercise.ts';
-import { clamp, smooth } from '@/math.ts';
-import { project } from '@/front-rig.ts';
+import { clamp } from '@/math/vec2.ts';
+import { smooth } from '@/math/timeline.ts';
+import { project } from '@/rig/front.ts';
 import { bandCurve, miniBandPoints } from '@/exercises/equipment/index.ts';
 import { standingPose } from './_hip-abduction-adduction.ts';
 

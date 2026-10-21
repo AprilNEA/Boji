@@ -1,5 +1,6 @@
-import { add, ang, lerp, mul, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import type { Joints, LimbSpec, Pose } from '@/rig.ts';
+import { add, ang, lerp, mul, type Vec2 } from '@/math/vec2.ts';
+import { timeline, type Timeline } from '@/math/timeline.ts';
+import type { Joints, LimbSpec, Pose } from '@/rig/side.ts';
 import { A, G, hipForShoulder } from '@/exercises/common.ts';
 
 /** Controlled descent, brief bottom pause, then a slower return to the same single-leg balance. */

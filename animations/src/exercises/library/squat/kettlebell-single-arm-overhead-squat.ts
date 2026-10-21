@@ -1,7 +1,7 @@
 // Single-arm kettlebell overhead squat, side view. The near arm stays locked overhead with one bell while the other hangs.
 // The chest remains up through the squat, the feet stay flat, and the loaded elbow never bends.
 import type { SideExercise } from '@/exercise.ts';
-import { add, mul } from '@/math.ts';
+import { add, mul } from '@/math/vec2.ts';
 import { gripAt, kettlebell } from '@/exercises/equipment/index.ts';
 import { ARM_STRAIGHT } from '@/exercises/common.ts';
 import { squatPose, squatTL } from './_squat-2.ts';

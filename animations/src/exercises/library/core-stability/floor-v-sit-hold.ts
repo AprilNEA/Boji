@@ -1,7 +1,8 @@
 // Balance on the buttocks with the torso reclined and both legs straight in front of the body.
 // Raise the torso and legs together into a V, then lower together under control.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp, timeline } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
 import { FLOOR } from '@/exercises/common.ts';
 
 const tl = timeline([

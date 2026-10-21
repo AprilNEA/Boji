@@ -2,7 +2,7 @@
 // The board stays level while the body makes a small, controlled lateral balance correction.
 // Both feet remain planted on the deck throughout the hold.
 import type { FrontExercise } from '@/exercise.ts';
-import { add3 } from '@/math3.ts';
+import { add3 } from '@/math/vec3.ts';
 
 const TAU = Math.PI * 2;
 

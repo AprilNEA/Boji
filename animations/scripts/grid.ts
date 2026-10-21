@@ -1,7 +1,7 @@
 // Renders rows of Lottie frames into one image with lottie-web in headless Chromium. Used by sheet.ts,
 // gallery.ts and family.ts; no image tools are required.
 import type { Browser } from 'playwright-core';
-import type { PaletteName } from '@/palettes.ts';
+import type { PaletteName } from '@/draw/palettes.ts';
 import { LOTTIE_JS } from './browser.ts';
 
 export const THEMES: Record<PaletteName, { bg: string; fg: string; muted: string }> = {

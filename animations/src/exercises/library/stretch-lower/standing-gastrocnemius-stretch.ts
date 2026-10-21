@@ -2,7 +2,7 @@
 // The torso folds from the hips so one hand can draw the raised toes back.
 // The support leg stays planted and the free hand rests on its thigh.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { G } from '@/exercises/common.ts';
 import { step, stretchTL } from './_stretch-lower-2.ts';
 

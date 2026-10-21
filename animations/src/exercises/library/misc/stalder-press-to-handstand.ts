@@ -2,7 +2,8 @@
 // Press the hips over the shoulders while the straight legs close from the straddle to a handstand.
 // Hold the stacked handstand briefly, then lower under control to the supported straddle.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp, timeline, type Vec2 } from '@/math.ts';
+import { lerp, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
 import { ARM_STRAIGHT, FLOOR, hipForShoulder } from '@/exercises/common.ts';
 
 const tl = timeline([

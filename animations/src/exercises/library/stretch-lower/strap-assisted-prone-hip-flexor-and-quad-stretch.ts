@@ -2,7 +2,7 @@
 // The working knee bends and hip extends so the lifted foot travels toward the head.
 // Both hands pull the strap above the back while the supporting leg stays long.
 import type { SideExercise } from '@/exercise.ts';
-import type { Joints } from '@/rig.ts';
+import type { Joints } from '@/rig/side.ts';
 import { FLOOR } from '@/exercises/common.ts';
 import { strap, stretchTL } from './_stretch-lower-2.ts';
 

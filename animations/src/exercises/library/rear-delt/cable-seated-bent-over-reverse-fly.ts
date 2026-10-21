@@ -2,7 +2,7 @@
 // Opposite low-pulley handles start below the knees, then the upper arms open to shoulder height with soft elbows.
 // The seat, feet and hip hinge stay fixed while both low cables cross under the knees.
 import type { FrontExercise } from '@/exercise.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { cableColumn, cableHandle, cableLine, flatBench, frontGripAt, towardCable } from '@/exercises/equipment/index.ts';
 import { flyArm, rearDeltMuscles, rearDeltTL, seatPose } from './_rear-delt-1.ts';
 

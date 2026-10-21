@@ -6,8 +6,9 @@
 // Everything follows from the bar height: shoulders sit at arm's length above the bar, the torso angle and the
 // shoulder offset depend on the height, the hips hang below the shoulders, and the legs reach the planted feet by IK.
 import type { SideExercise } from '@/exercise.ts';
-import { add, clamp, lerp, smooth, sub, timeline, type Vec2 } from '@/math.ts';
-import type { Pose } from '@/rig.ts';
+import { add, clamp, lerp, sub, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline } from '@/math/timeline.ts';
+import type { Pose } from '@/rig/side.ts';
 import { ARM_STRAIGHT, G, GRIP_IN_HAND, hipForShoulder, standLegs } from '@/exercises/common.ts';
 import { barbell, gripAt, PLATE } from '@/exercises/equipment/index.ts';
 

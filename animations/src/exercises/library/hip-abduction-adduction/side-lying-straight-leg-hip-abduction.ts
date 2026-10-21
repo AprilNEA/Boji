@@ -2,7 +2,7 @@
 // The upper straight leg lifts about 38° without rolling the pelvis, then lowers with control.
 // The bottom leg and the head-supporting arm stay fixed on the mat.
 import type { SideExercise } from '@/exercise.ts';
-import { add, ang, dir, lerp, mul, sub, type Vec2 } from '@/math.ts';
+import { add, ang, dir, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
 import { FLOOR } from '@/exercises/common.ts';
 import { workTL } from '@/exercises/equipment/index.ts';
 

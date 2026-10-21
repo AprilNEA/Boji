@@ -2,10 +2,11 @@
 // Front builders keep both feet planted and move the torso by lateral spinal flexion.
 // Side builders use the existing floor contacts for supine and plank-based movements.
 import type { FrontExercise, PropShape, SideExercise } from '@/exercise.ts';
-import { add, dir, lerp, mul, timeline, type Vec2 } from '@/math.ts';
-import { add3 } from '@/math3.ts';
-import { project, toeDir, type FrontPose } from '@/front-rig.ts';
-import { BODY, solve, type Pose } from '@/rig.ts';
+import { add, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import { add3 } from '@/math/vec3.ts';
+import { project, toeDir, type FrontPose } from '@/rig/front.ts';
+import { BODY, solve, type Pose } from '@/rig/side.ts';
 import { A, FLOOR, G } from '@/exercises/common.ts';
 import {
   BALL, barbell, cableColumn, cableHandle, cableLine, frontDumbbell, frontGripAt,

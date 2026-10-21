@@ -1,7 +1,7 @@
 // Start in a rigid inclined plank with hands at shoulder width on a fixed elevated Smith bar.
 // Bring the chest close to the bar through elbow flexion, then press back to straight arms without bending the hips.
 import type { Props, SideExercise } from '@/exercise.ts';
-import type { Palette } from '@/palettes.ts';
+import type { Palette } from '@/draw/palettes.ts';
 import { raisedSupport, supportPush } from './_push-up-2.ts';
 
 const S = raisedSupport([402, 360]);

@@ -2,7 +2,7 @@
 // Both heels rest on the ball at the start, then flex the knees to roll the ball toward the glutes.
 // The ball stays in floor contact and follows the ankles; the pelvis stays elevated throughout the curl.
 import type { SideExercise } from '@/exercise.ts';
-import { add, dir, lerp, mul, type Vec2 } from '@/math.ts';
+import { add, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
 import { A, FLOOR } from '@/exercises/common.ts';
 import { BALL, stabilityBall, workTL } from '@/exercises/equipment/index.ts';
 

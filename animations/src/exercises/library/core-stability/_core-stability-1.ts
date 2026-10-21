@@ -1,7 +1,8 @@
 // Shared, private poses for the core-stability-1 exercises.
 // The bases keep planted contacts as IK targets and use conservative reach values.
-import { add, ang, dir, lerp, mul, smooth, sub, type Vec2 } from '@/math.ts';
-import { BODY, solve, type LimbSpec, type Pose } from '@/rig.ts';
+import { add, ang, dir, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { smooth } from '@/math/timeline.ts';
+import { BODY, solve, type LimbSpec, type Pose } from '@/rig/side.ts';
 import { A, FLOOR, G, plantedArm, standLegs } from '@/exercises/common.ts';
 
 /** Upright stance with a two-hand press that moves from the sternum to near-straight arms. */

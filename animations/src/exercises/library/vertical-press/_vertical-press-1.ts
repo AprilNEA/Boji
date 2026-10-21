@@ -2,11 +2,12 @@
 // Front presses show bilateral or alternating arm paths in the frontal plane. Seated poses retain bench contact.
 // The helper keeps the different implements attached to the hands, cables attached to low pulleys, and bands under feet.
 import type { FrontExercise, LibraryMeta, MovingPart, Props, SideExercise } from '@/exercise.ts';
-import { add, lerp, lerpV, timeline, type Vec2 } from '@/math.ts';
-import { add3, lerp3, type Vec3 } from '@/math3.ts';
-import type { Palette } from '@/palettes.ts';
-import { BODY, type Joints, type Pose } from '@/rig.ts';
-import { project, type FrontJoints, type FrontPose } from '@/front-rig.ts';
+import { add, lerp, lerpV, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import { add3, lerp3, type Vec3 } from '@/math/vec3.ts';
+import type { Palette } from '@/draw/palettes.ts';
+import { BODY, type Joints, type Pose } from '@/rig/side.ts';
+import { project, type FrontJoints, type FrontPose } from '@/rig/front.ts';
 import { A, ARM_STRAIGHT, G, standLegs } from '@/exercises/common.ts';
 import {
   bandLine,

@@ -2,8 +2,9 @@
 // Each builder fixes the support points first: hands stay on their bar, bench, ball, or handles.
 // The body moves vertically through elbow flexion while feet, bench pads, and machine contacts stay credible.
 import type { LibraryMeta, SideExercise } from '@/exercise.ts';
-import { add, lerp, sub, timeline, type Vec2 } from '@/math.ts';
-import type { Joints, LimbPair, Pose } from '@/rig.ts';
+import { add, lerp, sub, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import type { Joints, LimbPair, Pose } from '@/rig/side.ts';
 import { ARM_STRAIGHT, G, GRIP_IN_HAND, handOnHip, hipForShoulder, standLegs } from '@/exercises/common.ts';
 import { BALL, baseRail, dipBars, flatBench, pad, pullUpBar, seatPad, stabilityBall, tube, weightStack, workTL } from '@/exercises/equipment/index.ts';
 

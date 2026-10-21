@@ -2,8 +2,8 @@
 // Keep the working thigh raised and still while its knee extends from about 90° to nearly straight in front.
 // The support foot, pelvis, and shoulders remain stable. The ankle band runs from the working ankle to the front anchor.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp, type Vec2 } from '@/math.ts';
-import type { Pose } from '@/rig.ts';
+import { lerp, type Vec2 } from '@/math/vec2.ts';
+import type { Pose } from '@/rig/side.ts';
 import { A, G, handOnHip } from '@/exercises/common.ts';
 import { bandLine, workTL } from '@/exercises/equipment/index.ts';
 

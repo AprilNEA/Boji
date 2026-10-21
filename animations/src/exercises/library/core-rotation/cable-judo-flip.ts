@@ -2,8 +2,8 @@
 // Rotate through the hips and torso as the handle travels up and over one shoulder.
 // Pivot the rear foot naturally, then reverse the movement and alternate sides.
 import type { SideExercise } from '@/exercise.ts';
-import { add, lerp } from '@/math.ts';
-import { BODY } from '@/rig.ts';
+import { add, lerp } from '@/math/vec2.ts';
+import { BODY } from '@/rig/side.ts';
 import { A, G, standLegs, toesDown } from '@/exercises/common.ts';
 import { cableColumn, cableHandle, cableLine, towardCable } from '@/exercises/equipment/index.ts';
 import { alternatingTL, alternate } from './_core-rotation-1.ts';

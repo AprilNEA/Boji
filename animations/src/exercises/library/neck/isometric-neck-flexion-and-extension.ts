@@ -2,8 +2,9 @@
 // Both hands resist at the forehead, then at the back of the head, without moving the head or torso.
 // The hands briefly return to rest between holds so the two resistance directions remain clear.
 import type { SideExercise } from '@/exercise.ts';
-import { add, clamp, lerpV, smooth, type Vec2 } from '@/math.ts';
-import type { Joints } from '@/rig.ts';
+import { add, clamp, lerpV, type Vec2 } from '@/math/vec2.ts';
+import { smooth } from '@/math/timeline.ts';
+import type { Joints } from '@/rig/side.ts';
 import { A, G, standLegs } from '@/exercises/common.ts';
 
 // A 183.8 px hip-to-ankle distance keeps the planted standing knees near 175°.

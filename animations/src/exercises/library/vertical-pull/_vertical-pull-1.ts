@@ -2,10 +2,11 @@
 // The builders distinguish seated and standing pulls, high anchors, wide bars, bands, and assisted supports.
 // Each wrapper supplies the exact display name, visible equipment, and source records.
 import type { FrontExercise, LibraryMeta, Props, SideExercise } from '@/exercise.ts';
-import { add, lerp, lerpV, smooth, sub, timeline, type Vec2 } from '@/math.ts';
-import { add3, type Vec3 } from '@/math3.ts';
-import { BODY, solve, type Joints, type LimbPair, type Pose } from '@/rig.ts';
-import { FB, project, type FrontJoints } from '@/front-rig.ts';
+import { add, lerp, lerpV, sub, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline } from '@/math/timeline.ts';
+import { add3, type Vec3 } from '@/math/vec3.ts';
+import { BODY, solve, type Joints, type LimbPair, type Pose } from '@/rig/side.ts';
+import { FB, project, type FrontJoints } from '@/rig/front.ts';
 import { A, G, GRIP_IN_HAND, hipForShoulder, standLegs } from '@/exercises/common.ts';
 import { bandCurve, bandLine, cableColumn, cableHandle, cableLine, frontGripAt, pullUpBar, sagPoints, towardCable, weightStack, workTL } from '@/exercises/equipment/index.ts';
 

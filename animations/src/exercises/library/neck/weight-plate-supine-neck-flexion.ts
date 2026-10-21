@@ -2,8 +2,9 @@
 // From the lowered head position, flex the neck to return the head to its neutral line while both hands secure the forehead plate.
 // The bench contact, torso, hips, and straight legs remain fixed throughout the controlled yes-motion.
 import type { SideExercise } from '@/exercise.ts';
-import { add, dir, lerp, mul, timeline, type Vec2 } from '@/math.ts';
-import { BODY, rotateLocal, type Joints } from '@/rig.ts';
+import { add, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import { BODY, rotateLocal, type Joints } from '@/rig/side.ts';
 import { flatBench, heldPlate } from '@/exercises/equipment/index.ts';
 
 const tl = timeline([

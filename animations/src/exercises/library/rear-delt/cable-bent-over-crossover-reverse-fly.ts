@@ -2,7 +2,7 @@
 // The crossed handles begin low in front, then the arms open out and back with softly unlocked elbows.
 // Both feet and the trunk remain stable while each cable stays connected to its opposite hand.
 import type { FrontExercise } from '@/exercise.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { cableColumn, cableHandle, cableLine, frontGripAt, towardCable } from '@/exercises/equipment/index.ts';
 import { flyArm, hingePose, rearDeltMuscles, rearDeltTL } from './_rear-delt-1.ts';
 

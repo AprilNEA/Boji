@@ -2,7 +2,7 @@
 // The back leg bends softly as the torso hinges toward the forward foot.
 // Both hands pull a strap around the raised forefoot without rounding the spine.
 import type { SideExercise } from '@/exercise.ts';
-import type { Joints } from '@/rig.ts';
+import type { Joints } from '@/rig/side.ts';
 import { loopedStrap, stretchTL } from './_stretch-lower-2.ts';
 
 const tl = stretchTL;

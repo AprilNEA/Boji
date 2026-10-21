@@ -1,9 +1,9 @@
 // Free weights for both views: barbell, EZ bar, kettlebell, medicine ball, a single plate and the landmine.
 // Scale: 2.09 px per cm (thigh 94 px = 45 cm). Held weights take an `at` function that returns the screen point
 // where the hands hold the weight and a rotation in degrees (clockwise on screen). Local axes are listed per part.
-import { add, ang, mul, norm, sub, type Vec2 } from '@/math.ts';
+import { add, ang, mul, norm, sub, type Vec2 } from '@/math/vec2.ts';
 import type { Cable, PropShape, RigidPart } from '@/exercise.ts';
-import type { Palette } from '@/palettes.ts';
+import type { Palette } from '@/draw/palettes.ts';
 
 type At<J> = (J: J, t: number) => { p: Vec2; a?: number };
 type Z = RigidPart['z'];

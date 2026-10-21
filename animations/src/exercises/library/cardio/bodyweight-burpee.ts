@@ -1,10 +1,10 @@
 // Bodyweight burpee, side view. Stand tall, fold into a low hands-down squat, kick back to a plank and do one push-up.
 // Return the feet under the hips, then jump with the arms overhead. Hands, toes and the chest path stay clear of the floor.
 import type { SideExercise } from '@/exercise.ts';
-import { add, len, lerp, lerpV, mul, sub, timeline, type Vec2 } from '@/math.ts';
-import type { LimbSpec, Pose } from '@/rig.ts';
-import { G, plantedArm } from '@/exercises/common.ts';
-import { HIGH_PLANK } from '@/exercises/push-up.ts';
+import { add, len, lerp, lerpV, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import type { LimbSpec, Pose } from '@/rig/side.ts';
+import { G, plantedArm, HIGH_PLANK } from '@/exercises/common.ts';
 
 const tl = timeline([
   { d: 0.32, from: 0, to: 1, e: [0.4, 0.8] },

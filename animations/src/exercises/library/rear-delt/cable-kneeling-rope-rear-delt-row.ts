@@ -2,7 +2,7 @@
 // Pull the rope from full reach toward the upper body while the elbows flare outward and shoulder blades retract.
 // The knees and feet remain grounded, and the low cable stays taut to the moving rope.
 import type { FrontExercise } from '@/exercise.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { cableColumn, cableHandle, cableLine, towardCable } from '@/exercises/equipment/index.ts';
 import { kneelPose, rearDeltMuscles, rearDeltTL, ropeGrip, rowArm } from './_rear-delt-1.ts';
 

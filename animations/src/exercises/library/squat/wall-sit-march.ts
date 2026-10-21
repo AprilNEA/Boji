@@ -1,7 +1,7 @@
 // Wall-sit march, side view. The back stays against the wall at a right-angle knee bend while the feet alternate.
 // One knee lifts toward the chest at a time; the supporting foot stays flat and the pelvis never rises from the wall.
 import type { SideExercise } from '@/exercise.ts';
-import { timeline } from '@/math.ts';
+import { timeline } from '@/math/timeline.ts';
 import { A, G } from '@/exercises/common.ts';
 import { hangingArms } from './_squat-2.ts';
 

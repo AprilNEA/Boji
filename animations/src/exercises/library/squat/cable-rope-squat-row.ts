@@ -1,8 +1,8 @@
 // Cable rope squat row, side view. The athlete faces a waist-high pulley, squats with the rope extended, then rows it in.
 // The chest stays lifted, both heels stay planted, and the cable remains visibly connected from pulley to rope.
 import type { SideExercise } from '@/exercise.ts';
-import { add, lerpV, mul } from '@/math.ts';
-import type { Joints, LimbPair } from '@/rig.ts';
+import { add, lerpV, mul } from '@/math/vec2.ts';
+import type { Joints, LimbPair } from '@/rig/side.ts';
 import { cableColumn, cableHandle, cableLine, gripAt, towardCable } from '@/exercises/equipment/index.ts';
 import { squatPose, squatTL, X0 } from './_squat-2.ts';
 

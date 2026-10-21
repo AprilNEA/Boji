@@ -2,9 +2,10 @@
 // Each ball or roller has local shapes centered on the origin; use them as a moving part, or with place() as a
 // static prop.
 import { range } from 'es-toolkit';
-import { add, bump, lerpV, mul, norm, sub, type Vec2 } from '@/math.ts';
+import { add, lerpV, mul, norm, sub, type Vec2 } from '@/math/vec2.ts';
+import { bump } from '@/math/timeline.ts';
 import type { Cable, Curve, PropShape, RigidPart } from '@/exercise.ts';
-import type { Palette } from '@/palettes.ts';
+import type { Palette } from '@/draw/palettes.ts';
 
 type At<J> = (J: J, t: number) => { p: Vec2; a?: number };
 

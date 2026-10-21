@@ -2,10 +2,11 @@
 // The bar remains across the upper back or the plate stays in front of the chest throughout the repetition.
 // Standard bottoms use a roughly 80° working knee. Cossack bottoms go lower. The trailing leg stays nearly straight and both feet stay flat.
 import type { FrontExercise } from '@/exercise.ts';
-import { lerp, smooth, timeline } from '@/math.ts';
-import { add3 } from '@/math3.ts';
-import { project, toeDir, type FSide, type FrontJoints, type FrontPose } from '@/front-rig.ts';
-import { BODY } from '@/rig.ts';
+import { lerp } from '@/math/vec2.ts';
+import { smooth, timeline } from '@/math/timeline.ts';
+import { add3 } from '@/math/vec3.ts';
+import { project, toeDir, type FSide, type FrontJoints, type FrontPose } from '@/rig/front.ts';
+import { BODY } from '@/rig/side.ts';
 import { barbell, frontGripAt, heldPlate, workTL } from '@/exercises/equipment/index.ts';
 
 type Side = FSide;

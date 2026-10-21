@@ -2,8 +2,8 @@
 // Each builder fixes the torso and upper arms, then changes only the elbow angle.
 // Benches, balls, and stations stay visible so the exercise setup remains recognizable.
 import type { LibraryMeta, MovingPart, PropShape, SideExercise } from '@/exercise.ts';
-import { add, lerp, sub, type Vec2 } from '@/math.ts';
-import { solve, type Joints } from '@/rig.ts';
+import { add, lerp, sub, type Vec2 } from '@/math/vec2.ts';
+import { solve, type Joints } from '@/rig/side.ts';
 import { A, G, GRIP_IN_HAND, handOnHip, standLegs } from '@/exercises/common.ts';
 import {
   BALL,

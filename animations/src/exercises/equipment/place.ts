@@ -1,5 +1,5 @@
 // Moves equipment shapes drawn in local coordinates to a screen position, for static props.
-import { add, D2R, len, rotate, type Vec2 } from '@/math.ts';
+import { add, D2R, len, rotate, type Vec2 } from '@/math/vec2.ts';
 import type { PropShape } from '@/exercise.ts';
 
 

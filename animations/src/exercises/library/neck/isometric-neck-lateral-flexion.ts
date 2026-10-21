@@ -2,10 +2,11 @@
 // One hand presses the matching side of the head without any neck travel, then the other side repeats.
 // The neck stays neutral; only the hands move between the relaxed position and the temple.
 import type { FrontExercise } from '@/exercise.ts';
-import { clamp, smooth } from '@/math.ts';
-import { add3, lerp3, type Vec3 } from '@/math3.ts';
-import { BODY } from '@/rig.ts';
-import type { FSide, FrontJoints } from '@/front-rig.ts';
+import { clamp } from '@/math/vec2.ts';
+import { smooth } from '@/math/timeline.ts';
+import { add3, lerp3, type Vec3 } from '@/math/vec3.ts';
+import { BODY } from '@/rig/side.ts';
+import type { FSide, FrontJoints } from '@/rig/front.ts';
 
 const ramp = (t: number, from: number, to: number): number => smooth(clamp((t - from) / (to - from), 0, 1));
 

@@ -3,7 +3,7 @@
 import type { SideExercise } from '@/exercise.ts';
 import { hipForShoulder, standLegs } from '@/exercises/common.ts';
 import { barbell, gripAt, PLATE, workTL } from '@/exercises/equipment/index.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 
 const tl = workTL(0.55);
 const X = 250;

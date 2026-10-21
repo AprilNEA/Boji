@@ -2,8 +2,8 @@
 // The active lower shin presses the pad from about 90° of knee bend to a near-straight knee, then lowers under control.
 // The thigh stays on the seat. The inactive leg remains bent behind the working leg and does not drive the lever.
 import type { SideExercise } from '@/exercise.ts';
-import { add, lerp, type Vec2 } from '@/math.ts';
-import { solve, type LimbPair, type Pose } from '@/rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { solve, type LimbPair, type Pose } from '@/rig/side.ts';
 import { G } from '@/exercises/common.ts';
 import { backrestAt, baseRail, hub, leverArm, pad, seatPad, tube, weightStack, workTL } from '@/exercises/equipment/index.ts';
 

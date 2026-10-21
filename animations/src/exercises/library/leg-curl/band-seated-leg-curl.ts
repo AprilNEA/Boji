@@ -2,7 +2,7 @@
 // Start with the knees straight, then lean back slightly and curl the feet beneath the bench to about 70°.
 // The thighs stay on the bench and the bands remain connected to both ankles throughout the repetition.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { flatBench, workTL } from '@/exercises/equipment/index.ts';
 
 const tl = workTL(0.4);

@@ -2,7 +2,7 @@
 // Keep the head and feet quiet while rotating the torso gently through the waist.
 // Use a small controlled range and return through center before changing sides.
 import type { SideExercise } from '@/exercise.ts';
-import { add } from '@/math.ts';
+import { add } from '@/math/vec2.ts';
 import { A, G } from '@/exercises/common.ts';
 import { barbell, flatBench } from '@/exercises/equipment/index.ts';
 import { alternatingTL, alternate } from './_core-rotation-1.ts';

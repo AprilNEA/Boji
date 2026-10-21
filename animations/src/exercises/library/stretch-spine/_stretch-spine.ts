@@ -1,11 +1,12 @@
 // Shared poses for the stretch-spine family. The side poses keep all floor and hand contacts as targets.
 // The front poses use the frontal rig only for lateral flexion and axial rotation, where the motion stays readable.
 import type { Props } from '@/exercise.ts';
-import type { FrontPose, FSide, Turn } from '@/front-rig.ts';
-import { BODY, type Pose } from '@/rig.ts';
-import type { Palette } from '@/palettes.ts';
-import { add, ang, dir, lerp, mul, sub, timeline, type Vec2 } from '@/math.ts';
-import type { Vec3 } from '@/math3.ts';
+import type { FrontPose, FSide, Turn } from '@/rig/front.ts';
+import { BODY, type Pose } from '@/rig/side.ts';
+import type { Palette } from '@/draw/palettes.ts';
+import { add, ang, dir, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import type { Vec3 } from '@/math/vec3.ts';
 import { A, FLOOR, G, QUAD, kneelLeg, plantedArm, standLegs } from '@/exercises/common.ts';
 
 /** A slow static stretch: arrive in 1.7 s, hold for 3.2 s, and return without a loop jump. */
@@ -42,7 +43,7 @@ export function standingSideBase(): Pose {
 /** Hands travel from the sides to directly above the shoulders while the pelvis and feet remain fixed. */
 export function standingOverheadPose(q: number): Pose {
   const arm = (far = false) => ({
-    target: (J: import('@/rig.ts').Joints): Vec2 => {
+    target: (J: import('@/rig/side.ts').Joints): Vec2 => {
       const S = far ? J.Sf : J.S;
       // Sweep forward in a long arc, rather than sending the wrist through the shoulder at mid-range.
       const a = (90 - 180 * q) * Math.PI / 180;
@@ -59,7 +60,7 @@ export function catPose(q: number): Pose {
   // This compact base keeps the shoulder less than one arm length above the mat at the fully rounded position.
   // Each wrist stays directly below its shoulder; the small horizontal shift is the natural scapular glide in cat.
   const hip: Vec2 = [240, FLOOR - 76];
-  const wrist = (far: boolean) => (J: import('@/rig.ts').Joints): Vec2 => [J.S[0] + (far ? -3 : 2), FLOOR - 7];
+  const wrist = (far: boolean) => (J: import('@/rig/side.ts').Joints): Vec2 => [J.S[0] + (far ? -3 : 2), FLOOR - 7];
   return {
     hip,
     // The full rounded position keeps the palms on the mat without forcing the shoulders beyond arm length.
@@ -83,7 +84,7 @@ export function chairForwardFoldPose(q: number): Pose {
     near: { target: [CHAIR_HIP[0] + 100, G - A] as Vec2, foot: 0, side: [0, -1] as Vec2 },
     far: { target: [CHAIR_HIP[0] + 94, G - A] as Vec2, foot: 0, side: [0, -1] as Vec2 },
   };
-  const thighHand = (far: boolean) => (J: import('@/rig.ts').Joints): Vec2 => {
+  const thighHand = (far: boolean) => (J: import('@/rig/side.ts').Joints): Vec2 => {
     const H = far ? J.Hf : J.H;
     const K = far ? J.knee_f : J.knee_n;
     return add(H, mul(sub(K, H), 0.52));
@@ -100,7 +101,7 @@ export function chairForwardFoldPose(q: number): Pose {
 /** Seated floor support: legs remain extended while straight arms support a modest backward lean. */
 export function seatedLeanBackPose(q: number): Pose {
   const spine = { lumbar: lerp(-91, -106, q), thoracic: lerp(-92, -108, q) };
-  const hand = (far: boolean) => (J: import('@/rig.ts').Joints): Vec2 => [
+  const hand = (far: boolean) => (J: import('@/rig/side.ts').Joints): Vec2 => [
     J.H[0] + lerp(-12, -28, q) + (far ? -4 : 0), FLOOR - 7,
   ];
   return {
@@ -158,7 +159,7 @@ export function sphinxPose(q: number): Pose {
 export function upwardDogPose(q: number): Pose {
   const hip: Vec2 = [250, lerp(FLOOR - 17, FLOOR - 50, q)];
   const spine = { lumbar: lerp(-8, -42, q), thoracic: lerp(-12, -70, q) };
-  const wrist = (far: boolean) => (J: import('@/rig.ts').Joints): Vec2 => [J.S[0] + (far ? -3 : 0), FLOOR - 7];
+  const wrist = (far: boolean) => (J: import('@/rig/side.ts').Joints): Vec2 => [J.S[0] + (far ? -3 : 0), FLOOR - 7];
   return {
     hip, spine, neck: lerp(-14, -60, q), head: lerp(-15, -58, q),
     legs: {
@@ -239,7 +240,7 @@ export function camelPose(q: number): Pose {
   const hip: Vec2 = [lerp(245, 270, q), FLOOR - 106];
   const thigh = ang(sub(knee, hip));
   const spine = { lumbar: lerp(130, 150, q), thoracic: lerp(170, 180, q) };
-  const heel = (far: boolean) => (J: import('@/rig.ts').Joints): Vec2 => {
+  const heel = (far: boolean) => (J: import('@/rig/side.ts').Joints): Vec2 => {
     const ankle = far ? J.ankle_f : J.ankle_n;
     return [ankle[0] - 14, ankle[1]];
   };
@@ -260,7 +261,7 @@ export function camelPose(q: number): Pose {
 export function ballHugPose(q: number): Pose {
   const hip: Vec2 = [250, lerp(FLOOR - 126, FLOOR - 92, q)];
   const spine = { lumbar: lerp(-92, -55, q), thoracic: lerp(-94, -58, q) };
-  const hug = (far: boolean) => (J: import('@/rig.ts').Joints): Vec2 => [
+  const hug = (far: boolean) => (J: import('@/rig/side.ts').Joints): Vec2 => [
     J.H[0] + 47 + (far ? -5 : 0), J.H[1] - 26,
   ];
   return {
@@ -281,7 +282,7 @@ export function ballLowerBackPose(q: number): Pose {
   const hip: Vec2 = [268, FLOOR - 74];
   const spine = { lumbar: lerp(-105, -145, q), thoracic: lerp(-102, -138, q) };
   // Arms solve before the head frame, so use the available neck base to place both hands behind the head.
-  const hand = (far: boolean) => (J: import('@/rig.ts').Joints): Vec2 => [J.N[0] - 16 + (far ? -4 : 0), J.N[1] - 10];
+  const hand = (far: boolean) => (J: import('@/rig/side.ts').Joints): Vec2 => [J.N[0] - 16 + (far ? -4 : 0), J.N[1] - 10];
   return {
     hip, spine, neck: lerp(-100, -142, q), head: lerp(-100, -140, q),
     legs: {
@@ -301,7 +302,7 @@ export function ballPyramidPose(q: number): Pose {
   // starting hip put the head below the mat before the pyramid began.
   const hip: Vec2 = [250, lerp(FLOOR - 136, FLOOR - 158, q)];
   const spine = { lumbar: lerp(42, 49, q), thoracic: lerp(42, 51, q) };
-  const wrist = (far: boolean) => (J: import('@/rig.ts').Joints): Vec2 => [J.S[0] + 32 + (far ? -3 : 0), FLOOR - 7];
+  const wrist = (far: boolean) => (J: import('@/rig/side.ts').Joints): Vec2 => [J.S[0] + 32 + (far ? -3 : 0), FLOOR - 7];
   return {
     hip, spine, neck: lerp(44, 52, q), head: lerp(44, 55, q),
     legs: {
@@ -346,7 +347,7 @@ export function frontChairProps(pal: Palette): Props {
 
 const sign = (side: FSide): number => side === 'l' ? 1 : -1;
 const chairLeg = (side: FSide) => ({ target: [sign(side) * 28, BODY.ankleH, 94] as Vec3, pole: [sign(side) * 0.2, 0, 1] as Vec3 });
-const chairHand = (side: FSide) => (J: import('@/front-rig.ts').FrontJoints): Vec3 => [
+const chairHand = (side: FSide) => (J: import('@/rig/front.ts').FrontJoints): Vec3 => [
   J.hip_l[0] * sign(side) / Math.max(1, Math.abs(J.hip_l[0])), 122, 18,
 ];
 

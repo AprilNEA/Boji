@@ -2,7 +2,7 @@
 // The front knee bends and the back leg stays straight from hip to grounded heel.
 // The torso leans as one line toward the wall without a rounded back.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { A, G } from '@/exercises/common.ts';
 import { stretchTL, wall } from './_stretch-lower-2.ts';
 

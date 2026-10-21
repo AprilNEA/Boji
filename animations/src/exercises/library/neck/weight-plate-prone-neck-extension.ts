@@ -2,8 +2,9 @@
 // Lower the head in a small yes-motion, then extend it back in line with the fixed torso while both hands secure the plate.
 // The plate stays on the back of the head; the bench contact, torso, hips, and straight legs do not move.
 import type { SideExercise } from '@/exercise.ts';
-import { add, dir, lerp, mul, timeline, type Vec2 } from '@/math.ts';
-import { BODY, rotateLocal, type Joints } from '@/rig.ts';
+import { add, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import { BODY, rotateLocal, type Joints } from '@/rig/side.ts';
 import { flatBench, heldPlate } from '@/exercises/equipment/index.ts';
 
 const tl = timeline([

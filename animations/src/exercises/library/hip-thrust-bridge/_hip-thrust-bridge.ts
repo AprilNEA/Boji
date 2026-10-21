@@ -1,7 +1,7 @@
 // Shared side-view poses for supine bridges and upper-back-supported hip thrusts.
 // The planted feet use fixed floor targets. The bridge neck base or thrust upper back stays at its support point.
-import type { Joints, LimbPair, Pose } from '@/rig.ts';
-import { add, dir, lerp, mul, type Vec2 } from '@/math.ts';
+import type { Joints, LimbPair, Pose } from '@/rig/side.ts';
+import { add, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
 import { A, FLOOR } from '@/exercises/common.ts';
 import { workTL } from '@/exercises/equipment/index.ts';
 

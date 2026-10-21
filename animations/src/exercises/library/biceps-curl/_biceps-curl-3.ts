@@ -1,8 +1,9 @@
 // Reusable side-view curl poses for the biceps-curl-3 work list.
 // Each builder fixes the upper arm at the specified support point and moves only the forearm.
 import type { MovingPart, SideExercise } from '@/exercise.ts';
-import { lerp, timeline, type Vec2 } from '@/math.ts';
-import type { Joints } from '@/rig.ts';
+import { lerp, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import type { Joints } from '@/rig/side.ts';
 import { A, G, standLegs } from '@/exercises/common.ts';
 import {
   BALL, cableColumn, cableLine, dumbbell, flatBench, inclineBench, preacherBench,

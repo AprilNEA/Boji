@@ -1,10 +1,12 @@
 // Private builders for horizontal-press-1. Presses start at lockout, then retain their bench, floor, ball, or foot contacts.
 // The side view keeps the bar or handles readable. Variants change support, elbow path, grip posture, or assistance equipment.
 import type { FrontExercise, Props, SideExercise } from '@/exercise.ts';
-import { add, ang, bendFor, dir, ik2, lerp, mul, sub, timeline, type Vec2 } from '@/math.ts';
-import { add3 } from '@/math3.ts';
-import { project, type FrontJoints } from '@/front-rig.ts';
-import { BODY, type Joints, type Pose } from '@/rig.ts';
+import { add, ang, dir, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { bendFor, ik2 } from '@/rig/ik.ts';
+import { timeline } from '@/math/timeline.ts';
+import { add3 } from '@/math/vec3.ts';
+import { project, type FrontJoints } from '@/rig/front.ts';
+import { BODY, type Joints, type Pose } from '@/rig/side.ts';
 import { A, G, GRIP_IN_HAND, standLegs } from '@/exercises/common.ts';
 import { BALL, bandLine, barbell, cableColumn, cableHandle, cableLine, declineBench, flatBench, gripAt, inclineBench, stabilityBall, towardCable } from '@/exercises/equipment/index.ts';
 

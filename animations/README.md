@@ -1,6 +1,6 @@
 # Boji 动作动画
 
-本目录生成 1,588 个动作的 Lottie 动画。四门课程的 16 个动作在 `lottie/`，随源码提交，应用只打包这个目录。其余 1,572 个动作属于动作库，生成到 `lottie-library/`。Git 忽略这个目录，动作库只提交源码，全量动画通过资源域名发布，见「发布到资源域名」一节。每个动作有浅色和深色两个版本。动画由 TypeScript 程序生成，不含第三方素材。许可范围见仓库根目录 `README.md` 的「许可证」一节。文件名就是动作 ID。课程动作的 ID 与 iOS `Exercise.id` 和 Android `Workout.kt` 一致，应用按 ID 加载。
+本目录生成 1,583 个动作的 Lottie 动画。四门课程的 16 个动作在 `lottie/`，随源码提交，应用只打包这个目录。其余 1,567 个动作属于动作库，生成到 `lottie-library/`。Git 忽略这个目录，动作库只提交源码，全量动画通过资源域名发布，见「发布到资源域名」一节。每个动作有浅色和深色两个版本。动画由 TypeScript 程序生成，不含第三方素材。许可范围见仓库根目录 `README.md` 的「许可证」一节。文件名就是动作 ID。课程动作的 ID 与 iOS `Exercise.id` 和 Android `Workout.kt` 一致，应用按 ID 加载。
 
 课程动作的关键帧总览见 [浅色总览图](docs/contact-sheet-light.jpg) 和 [深色总览图](docs/contact-sheet-dark.jpg)。每行是一个动作。前 4 列分别是循环的 0%、25%、50% 和 75% 处，第 5 列虚线框中是代表帧。动作库按动作组用 `scripts/family.ts` 审查，不进总览图。
 
@@ -23,9 +23,9 @@
 
 动画不是从 After Effects 导出的。生成器用代码描述每个动作，再直接写出 Lottie JSON：
 
-1. 侧视动作用 `src/rig.ts` 的二维骨骼，包括骨盆、两段脊柱、颈、头和四肢。左右方向的动作，例如侧平举和开合跳，用 `src/front-rig.ts` 的三维骨骼，从正面投影到画布。
+1. 侧视动作用 `src/rig/side.ts` 的二维骨骼，包括骨盆、两段脊柱、颈、头和四肢。左右方向的动作，例如侧平举和开合跳，用 `src/rig/front.ts` 的三维骨骼，从正面投影到画布。
 2. 每个动作脚本提供姿态函数 `pose(t)`。脚本给出髋部位置、脊柱角度和手脚的目标点，骨骼用两段式反向运动学（IK）求出关节角度。
-3. `src/compose.ts` 按视角选择合成器，以 60 fps 逐帧求解姿态，再把逐帧结果压缩成线性关键帧。位置误差上限为 0.2 px，旋转误差上限为 0.2°。
+3. `src/compose/index.ts` 按视角选择合成器，以 60 fps 逐帧求解姿态，再把逐帧结果压缩成线性关键帧。位置误差上限为 0.2 px，旋转误差上限为 0.2°。
 4. 躯干轮廓逐帧变形。肌肉高亮的不透明度跟随发力曲线变化。器械的把手、横杆、钢索、弹力带、踏板、配重片和哑铃跟随手脚运动。
 5. 合成器按人物和器械在整个循环中的范围自动缩放和居中，使画面不出界。
 
@@ -36,11 +36,12 @@
 | 路径 | 内容 | 是否提交 |
 | --- | --- | --- |
 | `lottie/` | 课程动作的动画：`light/` 和 `dark/` 各 16 个 JSON，以及 `index.json` | 提交，应用直接引用 |
-| `lottie-library/` | 动作库的动画：`light/` 和 `dark/` 各 1,572 个 JSON，以及 `index.json`。由 `pnpm build` 生成 | 不提交，应用不打包 |
+| `lottie-library/` | 动作库的动画：`light/` 和 `dark/` 各 1,567 个 JSON，以及 `index.json`。由 `pnpm build` 生成 | 不提交，应用不打包 |
 | `src/` | 生成器源码 | 提交 |
-| `src/exercises/` | 课程动作和最早的 9 个动作库动作，每个动作一个脚本。`common.ts` 是共享姿态 | 提交 |
+| `src/exercises/common.ts` | 共享的地面高度和基础姿态，例如高平板支撑 `HIGH_PLANK` | 提交 |
+| `src/exercises/course/` | 16 个课程动作，每个动作一个脚本 | 提交 |
 | `src/exercises/equipment/` | 共享器械：自由重量、训练凳、引体杆、双杠、绳索、小器械和固定器械部件 | 提交 |
-| `src/exercises/library/` | 动作库的其余 1,563 个动作，按 44 个动作组分目录。编写规则见目录中的 `AGENTS.md` | 提交 |
+| `src/exercises/library/` | 动作库的 1,567 个动作，按 44 个动作组分目录。编写规则见目录中的 `AGENTS.md` | 提交 |
 | `scripts/` | 校验、预览、审查和渲染脚本 | 提交 |
 | `docs/` | 课程动作的关键帧总览图和接入说明 | 提交 |
 | `preview/index.html` | 离线预览页 | 提交 |
@@ -52,21 +53,26 @@
 
 | 文件 | 职责 |
 | --- | --- |
-| `math.ts` | 二维向量、缓动、插值、关键帧取值、IK 和时间轴 |
-| `math3.ts` | 三维向量、旋转和三维 IK |
-| `lottie.ts` | Lottie 形状、路径、颜色和关键帧压缩 |
-| `rig.ts` | 侧视骨骼求解、人物形象和肌肉区域 |
-| `front-rig.ts` | 正视三维骨骼求解、投影和肌肉区域 |
-| `palettes.ts` | 浅色和深色配色 |
 | `exercise.ts` | 动作脚本的类型契约，包括侧视和正视两种动作 |
-| `compose.ts` | 按视角把一个动作和一套配色合成为一个 Lottie 动画 |
-| `compose-shared.ts` | 两种视角共用的合成逻辑：自动缩放、器械范围和地面 |
-| `front-compose.ts` | 正视动作的合成器 |
-| `poster.ts` | 选择代表帧 |
-| `generate.ts` | 写出 `lottie/`、`lottie-library/`、发布目录和各自的 `index.json` |
-| `build.ts` | `pnpm build` 的命令行入口 |
-| `build-assets.ts` | `pnpm build:assets` 的命令行入口 |
 | `courses.ts` | 课程和动作库的注册表。课程中的动作顺序与应用一致 |
+| `math/vec2.ts` | 二维向量、角度、插值和 `clamp` |
+| `math/vec3.ts` | 三维向量、旋转和身体坐标系 |
+| `math/timeline.ts` | 缓动、关键帧取值和分阶段时间轴 |
+| `draw/lottie.ts` | Lottie 形状、路径、颜色和关键帧压缩 |
+| `draw/palettes.ts` | 浅色和深色配色 |
+| `rig/ik.ts` | 二维和三维的两段式 IK |
+| `rig/side.ts` | 侧视骨骼求解、人物形象和肌肉区域 |
+| `rig/front.ts` | 正视三维骨骼求解、投影和肌肉区域 |
+| `compose/index.ts` | 按视角把一个动作和一套配色合成为一个 Lottie 动画 |
+| `compose/side.ts` | 侧视动作的合成器 |
+| `compose/front.ts` | 正视动作的合成器 |
+| `compose/shared.ts` | 两种视角共用的合成逻辑：自动缩放、器械范围和地面 |
+| `build/poster.ts` | 选择代表帧 |
+| `build/generate.ts` | 写出 `lottie/`、`lottie-library/`、发布目录和各自的 `index.json` |
+| `build/cli.ts` | `pnpm build` 的命令行入口 |
+| `build/assets.ts` | `pnpm build:assets` 的命令行入口 |
+
+模块只按 `math/` → `draw/` → `rig/` → `compose/` → `build/` 的方向导入。动作脚本只导入 `math/`、`draw/`、`rig/`、`exercise.ts`、`exercises/common.ts` 和 `exercises/equipment/`，不导入 `compose/` 或 `build/`。
 
 ## 命令
 
@@ -89,22 +95,22 @@
 
 ## 修改动作
 
-1. 编辑动作脚本。课程动作和最早的 9 个动作库动作在 `src/exercises/<动作 ID>.ts`，其余动作库动作在 `src/exercises/library/<动作组>/<动作 ID>.ts`。每个脚本默认导出一个动作对象，包含时间轴 `tl`、姿态函数 `pose(t)` 和高亮肌群 `muscles`。器械动作还包含固定器械 `props` 和活动部件 `dynamic`。类型定义在 `src/exercise.ts` 中。
-2. 如果要改身体比例、部件形状或肌肉区域，编辑 `src/rig.ts` 或 `src/front-rig.ts`。如果要改颜色，编辑 `src/palettes.ts`。这些文件的修改会影响全部动作。
+1. 编辑动作脚本。课程动作在 `src/exercises/course/<动作 ID>.ts`，动作库动作在 `src/exercises/library/<动作组>/<动作 ID>.ts`。每个脚本默认导出一个动作对象，包含时间轴 `tl`、姿态函数 `pose(t)` 和高亮肌群 `muscles`。器械动作还包含固定器械 `props` 和活动部件 `dynamic`。类型定义在 `src/exercise.ts` 中。
+2. 如果要改身体比例、部件形状或肌肉区域，编辑 `src/rig/side.ts` 或 `src/rig/front.ts`。如果要改颜色，编辑 `src/draw/palettes.ts`。这些文件的修改会影响全部动作。
 3. 运行 `pnpm build`。如果某一帧的手脚够不到目标点，输出中会出现 `WARN`，退出码为 1。
 4. 课程动作运行 `pnpm sheets` 和 `pnpm preview`，动作库动作运行 `pnpm family`，检查画面。
 5. 运行 `pnpm typecheck` 和 `pnpm check`，然后把源码、`lottie/` 和总览图一起提交。不要提交 `lottie-library/`。
 
 新增动作时，新建脚本，再注册：
 
-- 应用课程已经使用的动作，在 `src/exercises/` 中新建脚本，按课程顺序加入 `src/courses.ts` 的 `COURSES`。动作 ID 必须与应用中的 `Exercise.id` 一致。
+- 应用课程已经使用的动作，在 `src/exercises/course/` 中新建脚本，按课程顺序加入 `src/courses.ts` 的 `COURSES`。动作 ID 必须与应用中的 `Exercise.id` 一致。
 - 尚未编入课程的动作，放进 `src/exercises/library/` 中对应的动作组。生成器自动发现动作组中的脚本，不需要注册。
 - 应用课程开始使用动作库中的某个动作时，在 `src/courses.ts` 中导入它的脚本，加入 `COURSES`，再运行 `pnpm build`。`LIBRARY` 自动排除课程动作，所以它的动画文件会从 `lottie-library/` 移到 `lottie/`。
 - 动作 ID 在全部动作中必须唯一。ID 重复时，生成器报错并停止。
 
 ## 动作清单
 
-课程动作和最早的 9 个动作库动作：
+16 个课程动作：
 
 | 课程 | 动作 | `id` | 循环时长 | 高亮肌群 | 演示要点 |
 | --- | --- | --- | --- | --- | --- |
@@ -124,24 +130,15 @@
 | 舒缓拉伸 | 猫牛式 | `cat-cow` | 5.0 秒 | 腹直肌、竖脊肌 | 脊柱在拱背和塌腰之间交替，双手不动 |
 | 舒缓拉伸 | 髋屈肌拉伸 | `hip-flexor-stretch` | 5.8 秒 | 髂腰肌、股四头肌 | 骨盆缓慢前移，后侧腿的髋屈肌发亮 |
 | 舒缓拉伸 | 开胸拉伸 | `chest-stretch` | 5.4 秒 | 胸大肌、三角肌 | 双臂向后打开，胸部前挺 |
-| 动作库 | 标准俯卧撑 | `push-up` | 3.4 秒 | 胸大肌、肱三头肌、腹直肌、三角肌 | 脚尖着地，身体保持直线，以脚尖为支点下放，双手固定 |
-| 动作库 | 登山者 | `mountain-climber` | 2.8 秒 | 腹直肌、髂腰肌、三角肌 | 高平板支撑，左右膝交替提向胸口。髋部只小幅抬起，肩膀基本保持在手腕上方 |
-| 动作库 | 卷腹 | `crunch` | 3.5 秒 | 腹直肌 | 仰卧屈膝，上背卷起，腰部贴地。演示双手沿大腿伸向膝盖的版本，不是双手扶耳 |
-| 动作库 | 提踵 | `calf-raise` | 3.3 秒 | 小腿三头肌 | 双手叉腰，脚跟抬起，前脚掌着地，全身随之上移 |
-| 动作库 | 罗马尼亚硬拉 | `romanian-deadlift` | 3.9 秒 | 腘绳肌、臀大肌、竖脊肌 | 双手持哑铃，膝盖微屈固定，髋部后移，背部平直，哑铃贴腿下放到膝盖下方 |
-| 动作库 | 坐姿哑铃推举 | `dumbbell-shoulder-press` | 3.4 秒 | 三角肌、肱三头肌 | 坐在直立靠背凳上对握，哑铃从肩高推到头顶，手臂伸直但不锁死 |
-| 动作库 | 哑铃弯举 | `biceps-curl` | 3.4 秒 | 肱二头肌、三角肌 | 反握，上臂贴住身体，只有前臂弯起。接近顶点时肘部略微前移 |
-| 动作库 | 高脚杯深蹲 | `goblet-squat` | 3.7 秒 | 股四头肌、臀大肌、腹直肌 | 双手竖握哑铃贴在胸前。躯干比徒手深蹲更直立，下蹲更深 |
-| 动作库 | 婴儿式 | `childs-pose` | 7.6 秒 | 竖脊肌、背阔肌 | 从四点跪姿后坐到脚跟，双手不动，手臂随之前伸。额头贴垫后保持两次缓慢呼吸 |
 
-动作库的其余 1,563 个动作来自两份公开动作数据集的文字说明和分类，去重后由本仓库原创绘制，不使用数据集的图片。动作按动作组分目录，例如 `push-up`、`squat`、`core-flexion`。每个脚本的 `meta.sources` 记录它对应的数据集条目。完整清单以 `lottie-library/index.json` 或发布目录的 `index.json` 为准。
+动作库的 1,567 个动作来自两份公开动作数据集的文字说明和分类，去重后由本仓库原创绘制，不使用数据集的图片。动作按动作组分目录，例如 `push-up`、`squat`、`core-flexion`。每个脚本的 `meta.sources` 记录它对应的数据集条目。完整清单以 `lottie-library/index.json` 或发布目录的 `index.json` 为准。
 
 ## 应用接入契约
 
 应用只引用 `lottie/` 目录，不复制文件。`lottie-library/` 只用于预览和评审，禁止打包进应用。以下约定保持稳定：
 
 - 动画路径为 `lottie/<主题>/<动作 ID>.json`，主题为 `light` 或 `dark`。两个主题的文件同名，打包时必须保留子目录。
-- `index.json` 是一个数组。每项包含 `id`、`name`、`course`、`seconds`、`frames`、`posterFrame`、`fps`、`muscles` 和 `files`，类型定义见 `src/generate.ts` 中的 `IndexEntry`。
+- `index.json` 是一个数组。每项包含 `id`、`name`、`course`、`seconds`、`frames`、`posterFrame`、`fps`、`muscles` 和 `files`，类型定义见 `src/build/generate.ts` 中的 `IndexEntry`。
 - `lottie/index.json` 中的 `course` 总是课程 ID。`lottie-library/index.json` 中的 `course` 为 `null`。
 - `posterFrame` 是代表帧的帧号，从 0 开始，小于 `frames`。系统关闭动画或开启「减少动态效果」时，应用应该显示这一帧，不显示第 0 帧。
 - 代表帧默认取一个循环中肌群发力总和最大的时段的中点，例如深蹲的最低点。动作脚本可以用 `poster` 字段指定其他位置。
@@ -153,7 +150,7 @@ iOS 和 Android 的示例代码见 [接入说明](docs/integration.md)。
 
 ## 发布到资源域名
 
-`pnpm build:assets` 把全部 1,588 个动作写到仓库根目录的 `assets/public/animations/exercises/v1/`。资源域名按原路径提供 `assets/public/` 中的文件，所以发布后的地址如下：
+`pnpm build:assets` 把全部 1,583 个动作写到仓库根目录的 `assets/public/animations/exercises/v1/`。资源域名按原路径提供 `assets/public/` 中的文件，所以发布后的地址如下：
 
 | 文件 | 地址 |
 | --- | --- |
@@ -187,7 +184,7 @@ pnpm build:assets               # 写出 ../assets/public/animations/exercises/v
 | Lottie 格式版本 | 5.7.4 |
 | 单个文件 | 32 KB～446 KB |
 | `lottie/` 单个主题合计 | 16 个文件，原始 1,714 KB，逐个文件 gzip 后合计 236 KB |
-| `lottie-library/` 单个主题合计 | 1,572 个文件，原始约 166 MB，逐个文件 gzip 后合计约 20 MB |
+| `lottie-library/` 单个主题合计 | 1,567 个文件，原始约 173 MB，逐个文件 gzip 后合计约 21 MB |
 | 图层类型 | 只用形状图层：路径、椭圆、矩形、填充和描边 |
 | 未使用的特性 | 图片、表达式、蒙版、父子图层、文字 |
 | 高亮色 | 与 `BojiTheme.accent` 一致：浅色 `#C7401F`，深色 `#FF7A4D` |
@@ -202,6 +199,7 @@ pnpm build:assets               # 写出 ../assets/public/animations/exercises/v
 
 - `pnpm typecheck` 没有类型错误。`pnpm check` 确认 `lottie/` 的 33 个文件与源码一致。
 - 改用数学库和 `@/` 别名后，全部 3,177 个输出文件逐帧比对：2,449 个逐字节一致，其余 728 个的逐帧差异都在关键帧压缩的误差范围内。最大差异为旋转 0.20°、路径 0.10 px、位置 0.01 px。
+- `src/` 按 `math/`、`draw/`、`rig/`、`compose/`、`build/` 和 `exercises/` 重新分目录后，全量生成的 3,176 个动画文件与整理前逐字节一致，`lottie/index.json` 没有变化。
 - 课程动作的两张总览图由 lottie-web 5.13.0 在 Chromium 无头内核中渲染，16 个动作的姿态经过人工查看。
 - 课程动作的 `lottie/index.json` 在人物形象更新后没有变化，动画文件只有画面变化。
 

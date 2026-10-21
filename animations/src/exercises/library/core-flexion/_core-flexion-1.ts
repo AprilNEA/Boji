@@ -1,8 +1,9 @@
 // Private pose builders for core-flexion-1. Each builder keeps the contact points fixed and changes only the joints that
 // define the exercise. Floor bodies use the existing course-animation heights so the mat, knees and head stay visible.
 import type { LibraryMeta, SideExercise } from '@/exercise.ts';
-import { add, ang, clamp, dir, lerp, mul, smooth, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import type { Joints, Pose } from '@/rig.ts';
+import { add, ang, clamp, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline, type Timeline } from '@/math/timeline.ts';
+import type { Joints, Pose } from '@/rig/side.ts';
 import { A, FLOOR } from '@/exercises/common.ts';
 import { bandLine, barbell, declineBench, flatBench, gripAt, workTL } from '@/exercises/equipment/index.ts';
 

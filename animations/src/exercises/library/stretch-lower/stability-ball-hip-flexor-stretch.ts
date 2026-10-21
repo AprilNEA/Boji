@@ -2,7 +2,7 @@
 // The rear leg extends behind the pelvis as the hips travel gently forward.
 // The torso stays tall and both hands remain on the hips.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { G, handOnHip } from '@/exercises/common.ts';
 import { BALL, stabilityBall } from '@/exercises/equipment/index.ts';
 import { stretchTL } from './_stretch-lower-2.ts';

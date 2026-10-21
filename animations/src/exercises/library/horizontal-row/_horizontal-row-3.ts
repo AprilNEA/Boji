@@ -1,8 +1,9 @@
 // Private builders for the horizontal-row-3 work list. Each builder keeps the torso
 // fixed when a row needs a stable hinge or seat, and makes the implement follow the hands.
 import type { EquipmentTag, Props, SideExercise } from '@/exercise.ts';
-import { add, lerp, lerpV, smooth, timeline, type Vec2 } from '@/math.ts';
-import type { Joints, Pose } from '@/rig.ts';
+import { add, lerp, lerpV, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline } from '@/math/timeline.ts';
+import type { Joints, Pose } from '@/rig/side.ts';
 import { ARM_STRAIGHT, G, GRIP_IN_HAND, hipForShoulder, standLegs } from '@/exercises/common.ts';
 import { pullUpBar } from '@/exercises/equipment/index.ts';
 

@@ -2,8 +2,8 @@
 // Rotate and flex the torso so one elbow travels toward the opposite hip.
 // Keep both feet planted and alternate the controlled diagonal crunch.
 import type { SideExercise } from '@/exercise.ts';
-import { add, lerp, lerpV } from '@/math.ts';
-import { BODY } from '@/rig.ts';
+import { add, lerp, lerpV } from '@/math/vec2.ts';
+import { BODY } from '@/rig/side.ts';
 import { A, G, standLegs } from '@/exercises/common.ts';
 import { bandCurve } from '@/exercises/equipment/index.ts';
 import { alternatingTL, alternate } from './_core-rotation-1.ts';

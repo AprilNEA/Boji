@@ -2,8 +2,8 @@
 // Keep the knees nearly still, rotate both hips internally, and move the feet outward.
 // The torso and hands stay fixed while the ankles return slowly to the start.
 import type { FrontExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
-import { project } from '@/front-rig.ts';
+import { lerp } from '@/math/vec2.ts';
+import { project } from '@/rig/front.ts';
 import { bandCurve, miniBandPoints, workTL } from '@/exercises/equipment/index.ts';
 
 const tl = workTL(0.35);

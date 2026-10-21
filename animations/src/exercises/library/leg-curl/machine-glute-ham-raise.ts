@@ -2,7 +2,7 @@
 // Start from the lowered position with the knees nearly straight, then flex the knees until the torso is upright.
 // The body stays straight from hips through shoulders; the knee pad, footplate, shins, and crossed hands remain fixed.
 import type { SideExercise } from '@/exercise.ts';
-import { add, dir, lerp, mul, type Vec2 } from '@/math.ts';
+import { add, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
 import { baseRail, footPlate, pad, rollerEnd, tube, workTL } from '@/exercises/equipment/index.ts';
 
 const tl = workTL(0.45);

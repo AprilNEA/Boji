@@ -1,8 +1,9 @@
 // Shared pose builders for the core-rotation-1 library exercises.
 // This file keeps repeated supine geometry and alternating timing consistent.
 import type { EquipmentTag, SideExercise } from '@/exercise.ts';
-import { add, ang, dir, lerp, lerpV, mul, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import { BODY, type LimbSpec, type Pose } from '@/rig.ts';
+import { add, ang, dir, lerp, lerpV, mul, type Vec2 } from '@/math/vec2.ts';
+import { timeline, type Timeline } from '@/math/timeline.ts';
+import { BODY, type LimbSpec, type Pose } from '@/rig/side.ts';
 import { A, FLOOR } from '@/exercises/common.ts';
 import { bandCurve, bandLine } from '@/exercises/equipment/index.ts';
 

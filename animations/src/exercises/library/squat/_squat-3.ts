@@ -1,8 +1,9 @@
 // Private builders for the squat-3 work list. They keep the squat range, planted feet, and machine geometry consistent.
 // The factories keep every exercise file small while each file declares its distinct instructions and source metadata.
 import type { PropShape, RigidPart, SideExercise } from '@/exercise.ts';
-import { add, ang, dir, lerp, mul, sub, timeline, type Vec2 } from '@/math.ts';
-import { solve, type Joints, type LimbSpec, type Pose } from '@/rig.ts';
+import { add, ang, dir, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import { solve, type Joints, type LimbSpec, type Pose } from '@/rig/side.ts';
 import { A, G, GRIP_IN_HAND, hipForShoulder, standLegs } from '@/exercises/common.ts';
 import {
   backrestAt, barbell, baseRail, footPlate, heldPlate, landmine, pad, seatPad, smithRails, tube, weightStack, workTL,

@@ -2,7 +2,7 @@
 // Lift the straight body sideways until the torso and legs form one horizontal line.
 // Both hands stay fixed to the pole throughout the controlled raise and lower.
 import type { SideExercise } from '@/exercise.ts';
-import { timeline } from '@/math.ts';
+import { timeline } from '@/math/timeline.ts';
 import { humanFlagPose } from './_core-stability-1.ts';
 
 const tl = timeline([

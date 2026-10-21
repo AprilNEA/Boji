@@ -1,10 +1,10 @@
 // Private builders for the plyometric-2 work list. They keep each exercise file focused on its source-specific metadata.
 // Side-view pose values put contacts on the floor or box top and reserve the airborne phase for free limbs.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp, timeline, type Vec2 } from '@/math.ts';
-import type { LimbPair, Pose } from '@/rig.ts';
-import { A, G } from '@/exercises/common.ts';
-import { HIGH_PLANK } from '@/exercises/push-up.ts';
+import { lerp, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import type { LimbPair, Pose } from '@/rig/side.ts';
+import { A, G, HIGH_PLANK } from '@/exercises/common.ts';
 import { barbell, dumbbell, flatBench, gobletDumbbell, medicineBall, plyoBox, smithRails } from '@/exercises/equipment/index.ts';
 
 type BoxKind = 'jump' | 'rebound' | 'stabilize' | 'push-off' | 'stride' | 'skip';

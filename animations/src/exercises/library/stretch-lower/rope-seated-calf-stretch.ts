@@ -3,7 +3,7 @@
 // The far leg remains extended to make the seated position stable and clear.
 import type { SideExercise } from '@/exercise.ts';
 import { FLOOR } from '@/exercises/common.ts';
-import type { Joints } from '@/rig.ts';
+import type { Joints } from '@/rig/side.ts';
 import { loopedStrap, stretchTL } from './_stretch-lower-2.ts';
 
 const tl = stretchTL;

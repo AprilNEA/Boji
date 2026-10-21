@@ -2,7 +2,7 @@
 // Both heels slide inward from nearly straight knees to a tight curl while the soles stay in contact with the floor.
 // The pelvis stays elevated and level; the arms lie beside the body for balance.
 import type { SideExercise } from '@/exercise.ts';
-import { add, dir, lerp, mul, type Vec2 } from '@/math.ts';
+import { add, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
 import { A, FLOOR } from '@/exercises/common.ts';
 import { workTL } from '@/exercises/equipment/index.ts';
 

@@ -1,8 +1,8 @@
 // Begin in a high plank with straight arms and a neutral line from head to heels.
 // Perform a full push-up, then actively push the floor away to protract the shoulder blades at the top.
 import type { SideExercise } from '@/exercise.ts';
-import { addScaled } from '@/math.ts';
-import { solve } from '@/rig.ts';
+import { addScaled } from '@/math/vec2.ts';
+import { solve } from '@/rig/side.ts';
 import { floorPose, PUSH_TL, pushMuscles } from './_push-up-2.ts';
 
 /** Thorax rise at the top, in px. */

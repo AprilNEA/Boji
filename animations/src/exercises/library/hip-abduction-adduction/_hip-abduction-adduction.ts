@@ -1,8 +1,8 @@
 // Private front-view pose utilities for the hip-abduction-adduction family.
 // These keep the torso quiet while the legs move in the frontal plane.
-import type { FLimbSpec, FrontPose } from '@/front-rig.ts';
-import { add3, type Vec3 } from '@/math3.ts';
-import { BODY } from '@/rig.ts';
+import type { FLimbSpec, FrontPose } from '@/rig/front.ts';
+import { add3, type Vec3 } from '@/math/vec3.ts';
+import { BODY } from '@/rig/side.ts';
 
 // This height gives a standing foot a knee angle of about 175° rather than a squat.
 export const STAND_PELVIS: Vec3 = [0, BODY.ankleH + 183.5, 0];

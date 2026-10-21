@@ -2,9 +2,10 @@
 // Each pose keeps the stated floor contacts fixed while the roller travels under the named tissue.
 // Individual wrappers provide the catalog names, source records, and the specific release position.
 import type { FrontExercise, LibraryMeta, RigidPart, SideExercise } from '@/exercise.ts';
-import { add, ang, dir, lerp, lerpV, mul, timeline, type Vec2 } from '@/math.ts';
-import { BODY, type Joints, type LimbPair, type Pose } from '@/rig.ts';
-import { toeDir, type FrontJoints, type FrontPose } from '@/front-rig.ts';
+import { add, ang, dir, lerp, lerpV, mul, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import { BODY, type Joints, type LimbPair, type Pose } from '@/rig/side.ts';
+import { toeDir, type FrontJoints, type FrontPose } from '@/rig/front.ts';
 import { A, FLOOR, G } from '@/exercises/common.ts';
 import { foamRoller } from '@/exercises/equipment/index.ts';
 

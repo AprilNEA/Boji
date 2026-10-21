@@ -2,7 +2,7 @@
 // Hold a compact plate close to the chest and rotate the torso while keeping the hips facing forward.
 // The ball remains under the pelvis, the feet stay grounded, and both hands keep the load stable.
 import type { FrontExercise } from '@/exercise.ts';
-import { GROUND } from '@/rig.ts';
+import { GROUND } from '@/rig/side.ts';
 import { BALL, heldPlate, stabilityBall } from '@/exercises/equipment/index.ts';
 import { meanGrip, pairedHands, seated } from './_core-rotation-2.ts';
 

@@ -1,6 +1,6 @@
 // Shared floor levels and base poses for exercise scripts.
-import { add, ang, clamp, D2R, len, mul, sub, type Vec2 } from '@/math.ts';
-import { BODY, GROUND, solve, type Joints, type LimbPair, type LimbSpec } from '@/rig.ts';
+import { add, ang, clamp, D2R, dir, len, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { BODY, GROUND, solve, type Joints, type LimbPair, type LimbSpec, type Pose } from '@/rig/side.ts';
 
 export const G = GROUND;
 export const FLOOR = G - 6; // top of the exercise mat
@@ -59,3 +59,34 @@ export const QUAD = (() => {
 export const kneelLeg = (hipPt: Vec2): LimbSpec => ({ a1: ang(sub(QUAD.K, hipPt)), a2: 178, foot: 180 });
 /** Straight-ish supporting arm with the wrist planted at W. */
 export const plantedArm = (W: Vec2): LimbSpec => ({ target: W, side: [-1, 0], hand: 0 });
+
+/**
+ * High plank on the toes, shared by the push-up, the mountain climber and their variants.
+ * body(th) gives the pose without arms; th is the direction from the ankle to the hip, in degrees.
+ * top and bottom are the th values at arm's length and with the chest a fist above the mat.
+ */
+export const HIGH_PLANK = (() => {
+  const WRIST_Y = FLOOR - 7;
+  // Toes on the mat with the heel up, as in the plank: 40 sin(85°) + 13 cos(85°) ≈ 41.
+  const FOOT = 85;
+  const ankle: Vec2 = [120, FLOOR - 41];
+  const body = (th: number): Omit<Pose, 'arms'> => ({
+    hip: add(ankle, mul(dir(th), BODY.thigh + BODY.shin - 3)),
+    farHip: 0, farShoulder: 0,
+    spine: { lumbar: th, thoracic: th - 1 },
+    neck: th - 4, head: th + 2,
+    legs: {
+      near: { target: ankle, side: [0, 1], foot: FOOT },
+      far: { target: add(ankle, [-2, 0]), side: [0, 1], foot: FOOT },
+    },
+  });
+  const probeArms = { near: { a1: 90, a2: 90 }, far: { a1: 90, a2: 90 } };
+  const shoulderAt = (th: number): Vec2 => solve({ ...body(th), arms: probeArms }).S;
+  // Top: the arm is almost straight above the wrist. Bottom: the chest is a fist above the mat.
+  let top = 0;
+  for (let i = 0; i < 160 && shoulderAt(top)[1] > WRIST_Y - 121; i++) top -= 0.25;
+  let bottom = top;
+  for (let i = 0; i < 160 && shoulderAt(bottom)[1] < WRIST_Y - 50; i++) bottom += 0.25;
+  const wrist: Vec2 = [shoulderAt(top)[0] + 6, WRIST_Y];
+  return { ankle, body, top, bottom, wrist, wristFar: add(wrist, [-3, 0]) as Vec2 };
+})();

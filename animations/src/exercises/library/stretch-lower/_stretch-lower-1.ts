@@ -1,9 +1,10 @@
 // Private lower-stretch builders for stretch-lower-1. Each pose preserves floor, bench, or hand contacts.
 // Static stretches ease into the visible end range, hold it, then return to the exact initial pose.
 import type { LibraryMeta, MuscleSpec, PropShape, SideExercise } from '@/exercise.ts';
-import { add, lerp, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import type { Palette } from '@/palettes.ts';
-import type { Joints, Pose } from '@/rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { timeline, type Timeline } from '@/math/timeline.ts';
+import type { Palette } from '@/draw/palettes.ts';
+import type { Joints, Pose } from '@/rig/side.ts';
 import { A, FLOOR, G, QUAD, hipForShoulder, plantedArm } from '@/exercises/common.ts';
 
 export const stretchTL: Timeline = timeline([

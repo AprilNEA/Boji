@@ -1,12 +1,12 @@
 // Private builders for triceps-extension-1. Each builder keeps the prescribed support and upper-arm position fixed.
 // The moving segment is the elbow: the forearm opens to a straight lockout, then returns with controlled timing.
 import type { EquipmentTag, FrontExercise, Props, SideExercise } from '@/exercise.ts';
-import { add, lerp, sub, timeline, type Vec2 } from '@/math.ts';
-import { add3, type Vec3 } from '@/math3.ts';
-import { project, type FrontJoints } from '@/front-rig.ts';
-import type { Joints, LimbPair, Pose } from '@/rig.ts';
-import { A, FLOOR, G, GRIP_IN_HAND, plantedArm, standLegs } from '@/exercises/common.ts';
-import { HIGH_PLANK } from '@/exercises/push-up.ts';
+import { add, lerp, sub, type Vec2 } from '@/math/vec2.ts';
+import { timeline } from '@/math/timeline.ts';
+import { add3, type Vec3 } from '@/math/vec3.ts';
+import { project, type FrontJoints } from '@/rig/front.ts';
+import type { Joints, LimbPair, Pose } from '@/rig/side.ts';
+import { A, FLOOR, G, GRIP_IN_HAND, plantedArm, standLegs, HIGH_PLANK } from '@/exercises/common.ts';
 import { bandLine, barbell, cableColumn, cableHandle, cableLine, declineBench, dumbbell, flatBench, gripAt, inclineBench, towardCable, workTL } from '@/exercises/equipment/index.ts';
 
 const REP = workTL(0.35);

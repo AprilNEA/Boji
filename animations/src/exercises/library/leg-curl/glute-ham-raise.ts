@@ -2,7 +2,7 @@
 // The trunk starts lowered under control, then extends at the hips until head, torso, hips, and feet form one line.
 // The feet, knees, hip pad, and crossed hands stay fixed while only the torso angle changes.
 import type { SideExercise } from '@/exercise.ts';
-import { add, lerp, mul, type Vec2 } from '@/math.ts';
+import { add, lerp, mul, type Vec2 } from '@/math/vec2.ts';
 import { baseRail, footPlate, pad, rollerEnd, tube, workTL } from '@/exercises/equipment/index.ts';
 
 const tl = workTL(0.45);

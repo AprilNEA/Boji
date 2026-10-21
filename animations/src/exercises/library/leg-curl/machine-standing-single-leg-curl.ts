@@ -2,7 +2,7 @@
 // The working thigh stays pressed onto the thigh pad while its lower leg curls from straight to about 70°.
 // The support foot remains flat, and the lever roller follows the working lower leg without lifting the thigh pad contact.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp, type Vec2 } from '@/math.ts';
+import { lerp, type Vec2 } from '@/math/vec2.ts';
 import { baseRail, hub, leverArm, pad, rollerEnd, tube, weightStack, workTL } from '@/exercises/equipment/index.ts';
 
 const tl = workTL(0.4);

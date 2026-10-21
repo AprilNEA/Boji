@@ -2,7 +2,7 @@
 // The active arm starts below the shoulder and opens to the side at shoulder height, then the other side repeats.
 // The feet and back angle remain fixed, and the low-pulley handle stays connected to the active hand.
 import type { FrontExercise } from '@/exercise.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { cableColumn, cableHandle, cableLine, frontGripAt, towardCable } from '@/exercises/equipment/index.ts';
 import { flyArm, hingePose, rearDeltTL, sideSign } from './_rear-delt-1.ts';
 

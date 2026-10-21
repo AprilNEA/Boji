@@ -1,7 +1,7 @@
 // Bodyweight sissy squat, side view. The knees advance while the straight torso and hips lean back as one unit.
 // The heels rise while the toes stay down, the arms counterbalance in front, and the knees extend to a tall start.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { A, G, toesDown } from '@/exercises/common.ts';
 import { squatTL, X0 } from './_squat-2.ts';
 

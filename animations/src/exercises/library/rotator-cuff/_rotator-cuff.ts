@@ -1,13 +1,12 @@
 // Family-local builders keep repeated shoulder-rotation geometry consistent.
 // Front poses use the visible frontal arc while preserving the fixed elbow or fixed standing base.
 import type { FrontExercise, SideExercise } from '@/exercise.ts';
-import { add, addScaled, dir, lerp, mul } from '@/math.ts';
-import { add3 } from '@/math3.ts';
-import { BODY, GROUND, solve, type Joints, type Pose } from '@/rig.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import { add, addScaled, dir, lerp, mul } from '@/math/vec2.ts';
+import { add3 } from '@/math/vec3.ts';
+import { BODY, GROUND, solve, type Joints, type Pose } from '@/rig/side.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { cableColumn, cableHandle, cableLine, frontDumbbell, frontGripAt, heldPlate, towardCable, workTL, bandLine, barbell, dumbbell, flatBench, inclineBench, pullUpBar, smithRails, gripAt } from '@/exercises/equipment/index.ts';
-import { A, G, hipForShoulder, plantedArm, standLegs } from '@/exercises/common.ts';
-import { HIGH_PLANK } from '@/exercises/push-up.ts';
+import { A, G, hipForShoulder, plantedArm, standLegs, HIGH_PLANK } from '@/exercises/common.ts';
 import { inclinePose, inclineStep } from '@/exercises/library/push-up/_push-up-1.ts';
 
 const STAND_Y = BODY.ankleH + BODY.thigh + BODY.shin;

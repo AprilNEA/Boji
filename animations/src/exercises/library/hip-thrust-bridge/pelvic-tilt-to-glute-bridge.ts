@@ -2,7 +2,7 @@
 // First curl only the tailbone upward, then continue into a full glute bridge.
 // The neck and both feet stay grounded for the full sequence.
 import type { SideExercise } from '@/exercise.ts';
-import { timeline } from '@/math.ts';
+import { timeline } from '@/math/timeline.ts';
 import { bridgePose } from './_hip-thrust-bridge.ts';
 
 const tl = timeline([

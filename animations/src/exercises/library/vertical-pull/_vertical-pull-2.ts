@@ -1,8 +1,9 @@
 // Private builders for the vertical-pull-2 catalog. Hand targets stay fixed on the bar or rope.
 // The poses use a compact hanging body where needed, so the full movement remains visible.
 import type { LibraryMeta, PropShape, SideExercise } from '@/exercise.ts';
-import { add, dir, lerp, mul, smooth, sub, timeline, type Vec2 } from '@/math.ts';
-import { type Joints, type LimbPair, type Pose } from '@/rig.ts';
+import { add, dir, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline } from '@/math/timeline.ts';
+import { type Joints, type LimbPair, type Pose } from '@/rig/side.ts';
 import { ARM_STRAIGHT, G, GRIP_IN_HAND, hipForShoulder } from '@/exercises/common.ts';
 import { heldPlate, pullUpBar, workTL } from '@/exercises/equipment/index.ts';
 

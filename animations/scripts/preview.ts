@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
-import { readIndexes } from '@/generate.ts';
+import { readIndexes } from '@/build/generate.ts';
 
 const root = path.resolve(import.meta.dirname, '..');
 const outDir = path.join(root, 'preview');

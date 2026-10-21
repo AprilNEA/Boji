@@ -2,7 +2,7 @@
 // The bar begins beneath the chest, then comes toward the upper chest as the elbows flare at shoulder height.
 // The trunk and feet stay fixed, and the bar stays level throughout the controlled row.
 import type { FrontExercise } from '@/exercise.ts';
-import { add3 } from '@/math3.ts';
+import { add3 } from '@/math/vec3.ts';
 import { barbell } from '@/exercises/equipment/index.ts';
 import { hingePose, rearDeltMuscles, rearDeltTL, ropeGrip, sideSign } from './_rear-delt-1.ts';
 

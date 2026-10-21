@@ -2,7 +2,7 @@
 // Raise the rigid body into a horizontal front lever while the elbows stay locked.
 // Lower through the same controlled arc until the legs hang below the shoulders again.
 import type { SideExercise } from '@/exercise.ts';
-import { timeline } from '@/math.ts';
+import { timeline } from '@/math/timeline.ts';
 import { pullUpBar } from '@/exercises/equipment/index.ts';
 import { frontLeverRaisePose, LEVER_BAR } from './_core-stability-2.ts';
 

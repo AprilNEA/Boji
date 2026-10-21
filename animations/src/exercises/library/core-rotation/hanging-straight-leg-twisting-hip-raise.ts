@@ -2,7 +2,7 @@
 // Raise the straight legs toward parallel while rotating the pelvis to alternate sides.
 // The bar grip stays fixed and the knees remain almost fully extended at the top.
 import type { FrontExercise } from '@/exercise.ts';
-import { GROUND } from '@/rig.ts';
+import { GROUND } from '@/rig/side.ts';
 import { pullUpBar } from '@/exercises/equipment/index.ts';
 
 const BAR_Y = 30, BAR_H = GROUND - BAR_Y;

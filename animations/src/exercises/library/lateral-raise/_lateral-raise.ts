@@ -2,11 +2,12 @@
 // Every raise uses a constant shoulder-to-wrist reach, so elbows stay softly bent without IK stretch.
 // Cables, bands, machine grips and landmine bars follow the hand that holds them.
 import type { FrontExercise, Props } from '@/exercise.ts';
-import { D2R, lerp, smooth, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import { add3, dot3, lerp3, mul3, norm3, sub3, type Vec3 } from '@/math3.ts';
-import { FB, project, type FSide, type FrontJoints } from '@/front-rig.ts';
-import type { Palette } from '@/palettes.ts';
-import { BODY, GROUND } from '@/rig.ts';
+import { D2R, lerp, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline, type Timeline } from '@/math/timeline.ts';
+import { add3, dot3, lerp3, mul3, norm3, sub3, type Vec3 } from '@/math/vec3.ts';
+import { FB, project, type FSide, type FrontJoints } from '@/rig/front.ts';
+import type { Palette } from '@/draw/palettes.ts';
+import { BODY, GROUND } from '@/rig/side.ts';
 import {
   bandLine, cableColumn, cableHandle, cableLine, flatBench, frontDumbbell, frontGripAt, inclineBench, landmine, towardCable, workTL,
 } from '@/exercises/equipment/index.ts';

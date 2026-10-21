@@ -1,10 +1,11 @@
 // Shared front-view bases for core-rotation-2. The builders keep feet or the seated base stable.
 // Each implement follows a hand grip. Torso yaw and the handle path make the rotation visible.
 import type { FrontExercise, Props } from '@/exercise.ts';
-import { lerp, smooth } from '@/math.ts';
-import { lerp3, type Vec3 } from '@/math3.ts';
-import { FB, project, toeDir, type FrontPose } from '@/front-rig.ts';
-import { BODY, GROUND } from '@/rig.ts';
+import { lerp } from '@/math/vec2.ts';
+import { smooth } from '@/math/timeline.ts';
+import { lerp3, type Vec3 } from '@/math/vec3.ts';
+import { FB, project, toeDir, type FrontPose } from '@/rig/front.ts';
+import { BODY, GROUND } from '@/rig/side.ts';
 import { cableColumn, cableHandle, cableLine, frontGripAt, towardCable, workTL } from '@/exercises/equipment/index.ts';
 
 export const FLOOR_Y = BODY.ankleH;

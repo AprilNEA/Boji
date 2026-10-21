@@ -2,8 +2,8 @@
 // The straight working leg abducts about 40° in the frontal plane.
 // The support foot, pelvis and held anchor stay fixed; the band stays under tension.
 import type { FrontExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
-import { project } from '@/front-rig.ts';
+import { lerp } from '@/math/vec2.ts';
+import { project } from '@/rig/front.ts';
 import { bandLine, workTL } from '@/exercises/equipment/index.ts';
 import { standingPose } from './_hip-abduction-adduction.ts';
 

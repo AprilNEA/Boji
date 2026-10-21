@@ -1,8 +1,8 @@
 // Private builders for horizontal-row-1 exercises.
 // Each builder keeps the fixed support point stable and moves the grip through a controlled row.
 import type { SideExercise } from '@/exercise.ts';
-import { add, lerp, type Vec2 } from '@/math.ts';
-import type { LimbPair } from '@/rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import type { LimbPair } from '@/rig/side.ts';
 import { G, A, GRIP_IN_HAND, standLegs } from '@/exercises/common.ts';
 import {
   bandLine, barbell, cableColumn, cableHandle, cableLine, dumbbell, flatBench, gripAt, inclineBench,

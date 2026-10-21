@@ -1,8 +1,9 @@
 // Private pose and timing utilities for the core-stability-2 exercises.
 // The helpers use fixed contacts and intentionally keep the support limbs inside IK reach.
-import { add, ang, dir, lerp, lerpV, mul, smooth, sub, type Vec2 } from '@/math.ts';
+import { add, ang, dir, lerp, lerpV, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { smooth } from '@/math/timeline.ts';
 import type { RigidPart } from '@/exercise.ts';
-import { BODY, solve, type Joints, type LimbSpec, type Pose } from '@/rig.ts';
+import { BODY, solve, type Joints, type LimbSpec, type Pose } from '@/rig/side.ts';
 import { ARM_STRAIGHT, FLOOR, G, GRIP_IN_HAND, handOnHip, hipForShoulder, plantedArm, standLegs } from '@/exercises/common.ts';
 
 /** A slow, controlled effort cycle for a balance hold. */

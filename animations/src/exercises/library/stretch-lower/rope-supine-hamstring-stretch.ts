@@ -2,9 +2,9 @@
 // The other leg remains extended on the mat to keep the pelvis stable.
 // Both hands hold a taut rope that loops over the ball of the foot.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { FLOOR } from '@/exercises/common.ts';
-import type { Joints } from '@/rig.ts';
+import type { Joints } from '@/rig/side.ts';
 import { loopedStrap, stretchTL } from './_stretch-lower-2.ts';
 
 const tl = stretchTL;

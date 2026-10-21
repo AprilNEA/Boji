@@ -2,7 +2,7 @@
 // The moving knee flexes from nearly straight to a compact curl without lifting the heel from the floor.
 // One loop shows the near leg, then the far leg, and both towels return to the extended start at the seam.
 import type { SideExercise } from '@/exercise.ts';
-import { add, dir, lerp, mul, type Vec2 } from '@/math.ts';
+import { add, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
 import { A, FLOOR } from '@/exercises/common.ts';
 import { workTL } from '@/exercises/equipment/index.ts';
 

@@ -2,7 +2,7 @@
 // The free knee stays lifted while the arms open slightly to help maintain balance.
 // The planted foot remains on the deck during the small controlled sway.
 import type { FrontExercise } from '@/exercise.ts';
-import { add3 } from '@/math3.ts';
+import { add3 } from '@/math/vec3.ts';
 
 const TAU = Math.PI * 2;
 

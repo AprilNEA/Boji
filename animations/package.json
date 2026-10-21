@@ -9,8 +9,8 @@
     "pnpm": ">=12"
   },
   "scripts": {
-    "build": "tsx src/build.ts",
-    "build:assets": "tsx src/build-assets.ts",
+    "build": "tsx src/build/cli.ts",
+    "build:assets": "tsx src/build/assets.ts",
     "check": "tsx scripts/check.ts",
     "typecheck": "tsc --noEmit",
     "preview": "tsx scripts/preview.ts",

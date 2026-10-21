@@ -2,7 +2,7 @@
 // Begin upright, then lower one straight line from knees through shoulders until the hands can brace on the floor.
 // The hips do not fold; the ankle anchor and knee contact remain fixed during the controlled return.
 import type { SideExercise } from '@/exercise.ts';
-import { add, dir, lerp, mul, type Vec2 } from '@/math.ts';
+import { add, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
 import { FLOOR } from '@/exercises/common.ts';
 import { workTL } from '@/exercises/equipment/index.ts';
 

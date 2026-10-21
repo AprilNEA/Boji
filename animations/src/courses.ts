@@ -1,31 +1,22 @@
 // Course registry. Course IDs, exercise IDs and their order mirror the app course definitions:
 // ios/Boji/Models/BojiStore.swift and android/.../core/model/Workout.kt.
 import type { Exercise } from './exercise.ts';
-import bodyweightSquat from '@/exercises/bodyweight-squat.ts';
-import wallPushUp from '@/exercises/wall-push-up.ts';
-import gluteBridge from '@/exercises/glute-bridge.ts';
-import birdDog from '@/exercises/bird-dog.ts';
-import reverseLunge from '@/exercises/reverse-lunge.ts';
-import kneePushUp from '@/exercises/knee-push-up.ts';
-import deadBug from '@/exercises/dead-bug.ts';
-import wallSit from '@/exercises/wall-sit.ts';
-import plank from '@/exercises/plank.ts';
-import chestPress from '@/exercises/chest-press.ts';
-import seatedRow from '@/exercises/seated-row.ts';
-import legPress from '@/exercises/leg-press.ts';
-import latPulldown from '@/exercises/lat-pulldown.ts';
-import catCow from '@/exercises/cat-cow.ts';
-import hipFlexorStretch from '@/exercises/hip-flexor-stretch.ts';
-import chestStretch from '@/exercises/chest-stretch.ts';
-import pushUp from '@/exercises/push-up.ts';
-import mountainClimber from '@/exercises/mountain-climber.ts';
-import crunch from '@/exercises/crunch.ts';
-import calfRaise from '@/exercises/calf-raise.ts';
-import romanianDeadlift from '@/exercises/romanian-deadlift.ts';
-import dumbbellShoulderPress from '@/exercises/dumbbell-shoulder-press.ts';
-import bicepsCurl from '@/exercises/biceps-curl.ts';
-import gobletSquat from '@/exercises/goblet-squat.ts';
-import childsPose from '@/exercises/childs-pose.ts';
+import bodyweightSquat from '@/exercises/course/bodyweight-squat.ts';
+import wallPushUp from '@/exercises/course/wall-push-up.ts';
+import gluteBridge from '@/exercises/course/glute-bridge.ts';
+import birdDog from '@/exercises/course/bird-dog.ts';
+import reverseLunge from '@/exercises/course/reverse-lunge.ts';
+import kneePushUp from '@/exercises/course/knee-push-up.ts';
+import deadBug from '@/exercises/course/dead-bug.ts';
+import wallSit from '@/exercises/course/wall-sit.ts';
+import plank from '@/exercises/course/plank.ts';
+import chestPress from '@/exercises/course/chest-press.ts';
+import seatedRow from '@/exercises/course/seated-row.ts';
+import legPress from '@/exercises/course/leg-press.ts';
+import latPulldown from '@/exercises/course/lat-pulldown.ts';
+import catCow from '@/exercises/course/cat-cow.ts';
+import hipFlexorStretch from '@/exercises/course/hip-flexor-stretch.ts';
+import chestStretch from '@/exercises/course/chest-stretch.ts';
 import { LIBRARY_FAMILIES } from '@/exercises/library/index.ts';
 
 export type CourseId = 'home-beginner' | 'home-intermediate' | 'gym-beginner' | 'mobility';
@@ -38,17 +29,12 @@ export const COURSES: { id: CourseId; exercises: Exercise[] }[] = [
 ];
 
 /**
- * Exercises with animations that no app course uses yet. They go to lottie-library/, which no app bundles.
- * The first nine predate the catalog; the rest come from the families in src/exercises/library.
- * A family exercise that a course imports leaves the library, so its files move to lottie/.
+ * Exercises with animations that no app course uses yet: every exercise of the families in src/exercises/library.
+ * They go to lottie-library/, which no app bundles. A library exercise that a course imports leaves the library,
+ * so its files move to lottie/.
  */
 const courseIds = new Set(COURSES.flatMap((c) => c.exercises.map((ex) => ex.id)));
-export const LIBRARY: Exercise[] = [
-  pushUp, mountainClimber, crunch, calfRaise, romanianDeadlift,
-  dumbbellShoulderPress, bicepsCurl, gobletSquat, childsPose,
-  ...Object.values(LIBRARY_FAMILIES).flat(),
-].filter((ex) => !courseIds.has(ex.id));
-
+export const LIBRARY: Exercise[] = Object.values(LIBRARY_FAMILIES).flat().filter((ex) => !courseIds.has(ex.id));
 export type CourseExercise = Exercise & {
   course: CourseId | null;
 };

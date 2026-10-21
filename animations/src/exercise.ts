@@ -1,10 +1,11 @@
 // Contract for exercise scripts: pose over time, highlighted muscles, static props and moving equipment.
-// Side-view scripts (src/exercises, the default) use the 2D rig in rig.ts; compose.ts turns them into Lottie.
-// Front-view scripts (`view: 'front'`) use the 3D rig in front-rig.ts; front-compose.ts turns them into Lottie.
-import type { Phase, Vec2 } from './math.ts';
-import type { Palette } from './palettes.ts';
-import type { Joints, MuscleKey, MuscleRegion, Pose } from './rig.ts';
-import type { FrontJoints, FrontLayerKey, FrontPose, FrontRegion } from './front-rig.ts';
+// Side-view scripts (the default) use the 2D rig in rig/side.ts; compose/side.ts turns them into Lottie.
+// Front-view scripts (`view: 'front'`) use the 3D rig in rig/front.ts; compose/front.ts turns them into Lottie.
+import type { Phase } from '@/math/timeline.ts';
+import type { Vec2 } from '@/math/vec2.ts';
+import type { Palette } from '@/draw/palettes.ts';
+import type { Joints, MuscleKey, MuscleRegion, Pose } from '@/rig/side.ts';
+import type { FrontJoints, FrontLayerKey, FrontPose, FrontRegion } from '@/rig/front.ts';
 
 /** Equipment shape. Screen coordinates for static props, layer coordinates for moving parts. */
 export type PropShape =
@@ -120,7 +121,7 @@ export interface FrontExercise extends ExerciseBase {
   dynamic?: MovingPart<FrontJoints>[];
   /** Rig pose at loop time t in [0, 1). */
   pose(t: number): FrontPose;
-  /** Full draw order, back to front. Default: FRONT_ORDER in front-rig.ts. Must list every key once. */
+  /** Full draw order, back to front. Default: FRONT_ORDER in rig/front.ts. Must list every key once. */
   order?: FrontLayerKey[];
 }
 

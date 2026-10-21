@@ -1,10 +1,11 @@
 // Private builders for kettlebell-ballistic. The side poses keep the feet planted and use a hip hinge for the backswing.
 // Clean, jerk and snatch variants attach each bell to the hand that controls it. Front poses reserve the overhead arm at lockout.
 import type { FrontExercise, MuscleSpec, SideExercise } from '@/exercise.ts';
-import { add, lerp, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import { add3 } from '@/math3.ts';
-import { type FrontJoints } from '@/front-rig.ts';
-import { type Joints, type LimbSpec, type Pose } from '@/rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { timeline, type Timeline } from '@/math/timeline.ts';
+import { add3 } from '@/math/vec3.ts';
+import { type FrontJoints } from '@/rig/front.ts';
+import { type Joints, type LimbSpec, type Pose } from '@/rig/side.ts';
 import { handOnHip, standLegs } from '@/exercises/common.ts';
 import { frontGripAt, gripAt, kettlebell } from '@/exercises/equipment/index.ts';
 

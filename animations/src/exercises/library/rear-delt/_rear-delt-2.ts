@@ -2,10 +2,10 @@
 // Front views show a bilateral fly path. Side views make the hip hinge, bench contact, and seat contact readable.
 // Dumbbells, ropes, and machine handles stay attached to the closed hands throughout each repetition.
 import type { FrontExercise, Props, RigidPart, SideExercise } from '@/exercise.ts';
-import { add, lerp, type Vec2 } from '@/math.ts';
-import { add3, mul3, norm3, type Vec3 } from '@/math3.ts';
-import { type FSide, type FrontJoints, type FrontPose } from '@/front-rig.ts';
-import { BODY, GROUND, type Joints } from '@/rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { add3, mul3, norm3, type Vec3 } from '@/math/vec3.ts';
+import { type FSide, type FrontJoints, type FrontPose } from '@/rig/front.ts';
+import { BODY, GROUND, type Joints } from '@/rig/side.ts';
 import { dumbbell, flatBench, frontDumbbell, frontGripAt, inclineBench, workTL } from '@/exercises/equipment/index.ts';
 
 const G = GROUND;

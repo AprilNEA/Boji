@@ -2,8 +2,8 @@
 // ankle moves. Standing versions rise as a whole with straight knees; seated and leg-press versions keep the knees
 // fixed. The machine drawings show the support point that makes each variation recognizable.
 import type { MovingPart, Props } from '@/exercise.ts';
-import { add, dir, lerp, mul, type Vec2 } from '@/math.ts';
-import { BODY, solve, type Joints, type LimbPair, type Pose } from '@/rig.ts';
+import { add, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
+import { BODY, solve, type Joints, type LimbPair, type Pose } from '@/rig/side.ts';
 import { A, G } from '@/exercises/common.ts';
 import {
   aerobicStep, backrestAt, baseRail, barbell, dumbbell, footPlate, gripAt, pad, seatPad, smithRails,

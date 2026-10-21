@@ -2,7 +2,7 @@
 // Lift the elbows wide and pull until the hands approach the ears, then lower while the torso stays motionless.
 // The feet remain planted and the cable remains taut from the low pulley to the rope.
 import type { FrontExercise } from '@/exercise.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { cableColumn, cableHandle, cableLine, flatBench, towardCable } from '@/exercises/equipment/index.ts';
 import { facePullArm, rearDeltMuscles, rearDeltTL, ropeGrip, seatPose } from './_rear-delt-1.ts';
 

@@ -2,10 +2,11 @@
 // Each arm keeps a soft, fixed elbow bend by travelling on a constant-radius arc from the shoulder.
 // Cable grips are always bound to their handles, while both feet remain planted throughout the standing variants.
 import type { FrontExercise, Props } from '@/exercise.ts';
-import { timeline, type Timeline, type Vec2 } from '@/math.ts';
-import { add3, lerp3, mul3, norm3, type Vec3 } from '@/math3.ts';
-import { FB, type FSide, type FrontJoints } from '@/front-rig.ts';
-import { BODY, GROUND } from '@/rig.ts';
+import { timeline, type Timeline } from '@/math/timeline.ts';
+import { type Vec2 } from '@/math/vec2.ts';
+import { add3, lerp3, mul3, norm3, type Vec3 } from '@/math/vec3.ts';
+import { FB, type FSide, type FrontJoints } from '@/rig/front.ts';
+import { BODY, GROUND } from '@/rig/side.ts';
 import {
   bandLine, cableColumn, cableHandle, cableLine, frontGripAt, towardCable, workTL,
   stabilityBall,

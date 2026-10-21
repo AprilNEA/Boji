@@ -3,7 +3,7 @@
 // Both hands remain fixed on the bar throughout the movement.
 import type { FrontExercise } from '@/exercise.ts';
 import { pullUpBar } from '@/exercises/equipment/index.ts';
-import { GROUND } from '@/rig.ts';
+import { GROUND } from '@/rig/side.ts';
 
 const BAR_Y = 30, BAR_H = GROUND - BAR_Y;
 const bar = pullUpBar({ view: 'front', y: BAR_Y, width: 248 });

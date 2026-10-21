@@ -1,10 +1,11 @@
 // Private builders for the front-raise family. Standing, seated, bench and kneeling bases keep their feet, knees or support pads fixed.
 // Arm targets move through a controlled shoulder-flexion arc with a soft elbow. Equipment follows each hand or shared grip.
 import type { FrontExercise, LibraryMeta, SideExercise } from '@/exercise.ts';
-import { add, dir, lerp, mul, smooth, sub, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import { add3, type Vec3 } from '@/math3.ts';
-import { BODY, type Joints, type LimbPair, type LimbSpec, type Pose } from '@/rig.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import { add, dir, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline, type Timeline } from '@/math/timeline.ts';
+import { add3, type Vec3 } from '@/math/vec3.ts';
+import { BODY, type Joints, type LimbPair, type LimbSpec, type Pose } from '@/rig/side.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { A, G, handOnHip, standLegs } from '@/exercises/common.ts';
 import {
   BALL, bandLine, barbell, cableColumn, cableHandle, cableLine, dumbbell, flatBench, frontDumbbell,

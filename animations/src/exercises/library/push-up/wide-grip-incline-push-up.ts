@@ -1,7 +1,7 @@
 // Start in a straight inclined plank with a visibly broad hand position on the fixed elevated bar.
 // Lower the chest toward the bar with the torso rigid, then press through the palms to straight arms.
 import type { Props, SideExercise } from '@/exercise.ts';
-import type { Palette } from '@/palettes.ts';
+import type { Palette } from '@/draw/palettes.ts';
 import { raisedSupport, supportPush } from './_push-up-2.ts';
 
 const S = raisedSupport([402, 360]);

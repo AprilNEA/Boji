@@ -2,10 +2,11 @@
 // Bench variants support the torso or upper arm before the forearm flexes. Bands stay anchored at the specified foot.
 // Each top position uses roughly 45° of elbow flexion and each bottom position stays short of a locked elbow.
 import type { FrontExercise, LibraryMeta, Props, SideExercise } from '@/exercise.ts';
-import { add, lerp, smooth, timeline, type Timeline, type Vec2 } from '@/math.ts';
-import { add3, lerp3, type Vec3 } from '@/math3.ts';
-import { BODY, type Joints, type LimbPair, type Pose } from '@/rig.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { smooth, timeline, type Timeline } from '@/math/timeline.ts';
+import { add3, lerp3, type Vec3 } from '@/math/vec3.ts';
+import { BODY, type Joints, type LimbPair, type Pose } from '@/rig/side.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { A, G, standLegs } from '@/exercises/common.ts';
 import {
   bandLine, barbell, cableColumn, cableHandle, cableLine, dumbbell, flatBench, frontDumbbell, frontGripAt,

@@ -1,7 +1,7 @@
 // Reverse-band power squat, side view. The high-back bar connects to an overhead band while the stance stays wide.
 // The hips sit back past parallel under control, and both heels remain rooted as the athlete drives upward.
 import type { SideExercise } from '@/exercise.ts';
-import { add } from '@/math.ts';
+import { add } from '@/math/vec2.ts';
 import { bandLine, barbell } from '@/exercises/equipment/index.ts';
 import { backBarAt, backRackArms, squatPose, squatTL, X0 } from './_squat-2.ts';
 

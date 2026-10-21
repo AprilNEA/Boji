@@ -2,7 +2,7 @@
 // The lower legs begin in line with the thighs, then flex upward until the knees are near 90°.
 // The knee pad, torso, hips, upper legs, and hands stay fixed as the roller lever follows the lower legs.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { baseRail, hub, leverArm, pad, rollerEnd, tube, weightStack, workTL } from '@/exercises/equipment/index.ts';
 
 const tl = workTL(0.4);

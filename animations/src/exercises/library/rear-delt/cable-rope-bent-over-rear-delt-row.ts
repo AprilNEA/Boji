@@ -2,7 +2,7 @@
 // Pull from extended arms to the upper chest with flared elbows and a brief shoulder-blade squeeze.
 // The feet and spine remain fixed while the rope and cable travel with the hands.
 import type { FrontExercise } from '@/exercise.ts';
-import type { FrontJoints } from '@/front-rig.ts';
+import type { FrontJoints } from '@/rig/front.ts';
 import { cableColumn, cableHandle, cableLine, towardCable } from '@/exercises/equipment/index.ts';
 import { hingePose, rearDeltMuscles, rearDeltTL, ropeGrip, rowArm } from './_rear-delt-1.ts';
 

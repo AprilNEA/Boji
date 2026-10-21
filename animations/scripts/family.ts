@@ -14,11 +14,11 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
-import { compose } from '@/compose.ts';
+import { compose } from '@/compose/index.ts';
 import type { Exercise } from '@/exercise.ts';
-import { posterFrame } from '@/poster.ts';
+import { posterFrame } from '@/build/poster.ts';
 import { loadFamily } from '@/exercises/library/load.ts';
-import type { PaletteName } from '@/palettes.ts';
+import type { PaletteName } from '@/draw/palettes.ts';
 import { launch } from './browser.ts';
 import { renderGrid, type GridRow } from './grid.ts';
 
@@ -68,11 +68,11 @@ try {
 }
 
 // 2. Load and validate. IDs must be unique across the whole repository: compare with the file names of the
-// other families and of src/exercises, without importing them.
+// other families and of src/exercises/course, without importing them.
 let exercises: Exercise[] = [];
 try { exercises = await loadFamily(family, only); } catch (e) { fail(String((e as Error).message)); }
 const taken = new Map<string, string>();
-for (const f of fs.readdirSync(path.join(root, 'src/exercises'))) if (f.endsWith('.ts')) taken.set(f.slice(0, -3), 'src/exercises');
+for (const f of fs.readdirSync(path.join(root, 'src/exercises/course'))) if (f.endsWith('.ts')) taken.set(f.slice(0, -3), 'src/exercises/course');
 for (const d of fs.readdirSync(path.join(root, 'src/exercises/library'), { withFileTypes: true })) {
   if (!d.isDirectory() || d.name === family) continue;
   for (const f of fs.readdirSync(path.join(root, 'src/exercises/library', d.name))) if (f.endsWith('.ts') && !f.startsWith('_')) taken.set(f.slice(0, -3), `library/${d.name}`);

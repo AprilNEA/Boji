@@ -2,7 +2,7 @@
 // The body leans forward while both heels stay visibly planted behind the hips.
 // Knees remain long, so the posture reads as a bilateral calf stretch.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp } from '@/math.ts';
+import { lerp } from '@/math/vec2.ts';
 import { A, G } from '@/exercises/common.ts';
 import { stretchTL, wall } from './_stretch-lower-2.ts';
 
