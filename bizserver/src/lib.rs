@@ -13,6 +13,7 @@ pub mod entities;
 pub mod mail;
 pub mod migrations;
 pub mod rpc;
+pub mod telemetry;
 pub mod wallet;
 
 /// Generated business messages, services and ConnectRPC bindings.

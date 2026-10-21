@@ -18,6 +18,7 @@ Do not reimplement Connect framing or password and session algorithms. Use `app:
 | `src/entities/` | SeaORM business entities |
 | `src/migrations*` | Versioned PostgreSQL migrations |
 | `src/rpc*` | ConnectRPC adapters: errors, resource names, page tokens, filters and conversions |
+| `src/telemetry.rs` | Optional Sentry error reporting: settings, the tracing layer, request tags and path redaction |
 | `proto/boji/v1/` | Canonical owner API: system, membership, activity and Wallet contracts, and `ErrorReason` |
 | `proto/boji/admin/v1/` | Canonical operations API: entitlement catalog and membership administration |
 | `tests/` | Contract and database integration tests |
@@ -121,3 +122,14 @@ Read the Rust coding skill. Use domain types, documented public items, and typed
 Clients treat membership numbers as opaque strings. Keep allocation details inside the server. Do not modify client directories or their working changes as part of a backend-only task.
 
 Keep `Cargo.lock` tracked. Do not commit without permission. Follow the root Git and attribution rules.
+
+## Error reporting
+
+Sentry starts only when `SENTRY_DSN` is set. `main.rs` starts it before the Tokio runtime and keeps the guard until the process exits. `app::router` adds `NewSentryLayer` as the outermost layer, so each request reports on its own hub. `request_metadata` calls `telemetry::describe_request`.
+
+- Keep `send_default_pii(false)`. Do not enable the `http` feature of `sentry-tower`, because it attaches request headers and query strings.
+- Do not enable performance tracing. The outer router cannot see route templates, so a transaction would contain raw paths such as password-reset tokens.
+- When you add a route whose path holds a credential, add the parent segment to `SECRET_PARENTS` in `src/telemetry.rs` and add a test.
+- Log errors with an `event` field and no user data. The Sentry layer uses `event` as the title of an `ERROR` event and turns `INFO` and `WARN` events into breadcrumbs.
+- Keep the `sentry` features minimal and on `ureq` with `rustls`, which uses `ring` like the other dependencies. Do not enable the default features, because they add `reqwest` with `native-tls`.
+- See `../docs/sentry.md` for the data that each event holds.

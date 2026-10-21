@@ -3,6 +3,7 @@
 use crate::{
     auth::{self, Auth},
     rpc::{self, Capabilities},
+    telemetry,
 };
 use anyhow::Result;
 use axum::{
@@ -15,6 +16,7 @@ use axum::{
     routing::get,
 };
 use sea_orm::DatabaseConnection;
+use sentry::integrations::tower::NewSentryLayer;
 use std::{sync::Arc, time::Instant};
 use tower_http::cors::CorsLayer;
 use uuid::Uuid;
@@ -79,7 +81,9 @@ pub fn router(
         )
         .fallback_service(connect)
         .layer(cors)
-        .layer(middleware::from_fn(request_metadata)))
+        .layer(middleware::from_fn(request_metadata))
+        // Outermost, so that each request reports on its own Sentry hub.
+        .layer(NewSentryLayer::<Request>::new_from_top()))
 }
 
 async fn ready(State(db): State<DatabaseConnection>) -> (StatusCode, Json<serde_json::Value>) {
@@ -97,6 +101,7 @@ async fn request_metadata(request: Request<Body>, next: Next) -> Response {
     let started = Instant::now();
     let method = request.method().clone();
     let request_id = Uuid::new_v4().to_string();
+    telemetry::describe_request(&request_id, &method, request.uri().path());
     let mut response = next.run(request).await;
     if let Ok(value) = HeaderValue::from_str(&request_id) {
         response.headers_mut().insert("x-request-id", value);

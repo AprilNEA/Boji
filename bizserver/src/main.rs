@@ -1,11 +1,11 @@
 use anyhow::{Context, Result, bail};
-use boji_bizserver::{app, auth, config::Config, migrations, rpc};
+use boji_bizserver::{app, auth, config::Config, migrations, rpc, telemetry};
 use sea_orm::{ConnectOptions, Database};
 use std::{process::ExitCode, sync::Arc, time::Duration};
+use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
 
-#[tokio::main]
-async fn main() -> ExitCode {
-    match run().await {
+fn main() -> ExitCode {
+    match start() {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {
             // Boundary errors are sanitized; never print their database source chains.
@@ -15,20 +15,40 @@ async fn main() -> ExitCode {
     }
 }
 
-async fn run() -> Result<()> {
+/// Load `.env`, start error reporting, then run the command.
+///
+/// Sentry starts before the async runtime, so that every worker thread sees
+/// the client. The runtime drops before the Sentry guard flushes.
+fn start() -> Result<()> {
     if let Err(error) = dotenvy::dotenv()
         && !error.not_found()
     {
         bail!("Cannot load .env file");
     }
+    let sentry = telemetry::SentryConfig::from_env()?.map(telemetry::init);
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .context("Cannot start the async runtime")?;
+    let result = runtime.block_on(run(sentry.is_some()));
+    if let Err(error) = &result {
+        telemetry::report_exit(error);
+    }
+    result
+}
+
+/// Check the command, load the configuration and start logging, then migrate
+/// or serve. `sentry` adds the Sentry layer to the log subscriber.
+async fn run(sentry: bool) -> Result<()> {
     let command = std::env::args().nth(1).unwrap_or_else(|| "serve".into());
     if !matches!(command.as_str(), "serve" | "migrate") {
         bail!("Usage: boji-bizserver [serve|migrate]");
     }
     let config = Config::load()?;
-    tracing_subscriber::fmt()
-        .json()
-        .with_env_filter(tracing_subscriber::EnvFilter::new(&config.log_filter))
+    tracing_subscriber::registry()
+        .with(EnvFilter::new(&config.log_filter))
+        .with(tracing_subscriber::fmt::layer().json())
+        .with(sentry.then(telemetry::tracing_layer))
         .init();
     let mut options = ConnectOptions::new(config.database_url);
     options
