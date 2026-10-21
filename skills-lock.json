@@ -1,11 +1,41 @@
 {
   "version": 1,
   "skills": {
+    "axiom-uikit": {
+      "source": "CharlesWiltgen/Axiom",
+      "sourceType": "github",
+      "skillPath": ".claude-plugin/plugins/axiom/skills/axiom-uikit/SKILL.md",
+      "computedHash": "caa71f8ec6063d8b6525dc0137a7fb84e6a103c3c87163b0ce7a05e521d22630"
+    },
     "baoyu-translate": {
       "source": "jimliu/baoyu-skills",
       "sourceType": "github",
       "skillPath": "skills/baoyu-translate/SKILL.md",
       "computedHash": "d3bffacb1bb184ba41cbafa0ab0e70d23bf350f875f32d5b5326f40e80247487"
+    },
+    "swift-concurrency": {
+      "source": "AvdLee/Swift-Concurrency-Agent-Skill",
+      "sourceType": "github",
+      "skillPath": "skills/swift-concurrency/SKILL.md",
+      "computedHash": "49e4df69412710a0ca320c21a9d26cf4abb6d2c553960cffaceea5a09e3be792"
+    },
+    "swiftui-expert-skill": {
+      "source": "AvdLee/SwiftUI-Agent-Skill",
+      "sourceType": "github",
+      "skillPath": "skills/swiftui-expert-skill/SKILL.md",
+      "computedHash": "5388cd2368b525d2906798ac313c70415e971da35670e571e98baf8a7140505f"
+    },
+    "swiftui-performance-audit": {
+      "source": "Dimillian/Skills",
+      "sourceType": "github",
+      "skillPath": "swiftui-performance-audit/SKILL.md",
+      "computedHash": "4c153a7401d4d878fad3b7b83ca3d29f43245f8404dd34b7beb400cdfcab46f7"
+    },
+    "swiftui-uikit-interop": {
+      "source": "dpearson2699/swift-ios-skills",
+      "sourceType": "github",
+      "skillPath": "skills/swiftui-uikit-interop/SKILL.md",
+      "computedHash": "35915265a8056369b657d45319dfea3da05a2fc1cf185b966f33bdb016773c28"
     }
   }
 }
