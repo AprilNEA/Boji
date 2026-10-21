@@ -1858,22 +1858,22 @@
         }
       }
     },
-    "当前尚无 App 内账号注销入口。公开发布前需补齐账号删除与正式隐私政策。" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The app has no account deletion option yet. Account deletion and a formal privacy policy must be added before the public release."
-          }
-        }
-      }
-    },
     "当前版本尚未连接会员服务。基础训练和记录仍可使用。" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "This version isn’t connected to the member service. Basic workouts and tracking still work."
+          }
+        }
+      }
+    },
+    "当前版本的 App 还不能在 App 内注销账号。要注销账号，用账号的邮箱发邮件到 privacy@leanmuscle.club。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This version of the app can't delete your account yet. To delete your account, email privacy@leanmuscle.club from the email address of your account."
           }
         }
       }
@@ -3166,6 +3166,16 @@
         }
       }
     },
+    "用户协议" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terms of Use"
+          }
+        }
+      }
+    },
     "用时" : {
       "localizations" : {
         "en" : {
@@ -4134,6 +4144,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Read the Full Guidelines and Data Notice"
+          }
+        }
+      }
+    },
+    "隐私政策" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy Policy"
           }
         }
       }

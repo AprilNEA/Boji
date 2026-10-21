@@ -85,6 +85,18 @@ final class BojiUITests: XCTestCase {
         tapVisible(app.buttons["完成"])
     }
 
+    /// App Review requires an easily accessible privacy policy link inside the app.
+    func testSettingsLinkToLegalPages() {
+        onboard()
+        tapVisible(app.buttons["设置"])
+        for identifier in ["privacy-policy", "terms-of-use"] {
+            let link = app.buttons[identifier]
+            for _ in 0..<8 where !link.isHittable { app.swipeUp() }
+            XCTAssertTrue(link.isHittable, identifier)
+        }
+        capture("settings-legal-links")
+    }
+
     func testDarkAppearance() {
         onboard()
         tapVisible(app.buttons["设置"])

@@ -138,6 +138,7 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - A Release build must use an HTTPS `BOJI_API_BASE_URL`. If the value is not set, keep online membership features disabled.
 - Show HealthKit samples in memory only. Do not save them, upload them or let them overwrite manual records.
 - Widgets and the watch app show only today's check-in state. Do not share health samples or account data with them. Sharing is off by default.
+- The About section of Settings links to the privacy policy and the terms of use on the website, as App Review guideline 5.1.1(i) requires. Build the URLs only with `LegalDocument` in `Boji/Models/LegalDocument.swift`. Chinese locales open the Chinese pages, and other locales open the English pages under `/en/`.
 
 ### Crash reporting
 

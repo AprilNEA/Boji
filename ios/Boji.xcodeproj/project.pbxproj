@@ -60,12 +60,14 @@
 		C4DAE2AD6AE64A6575BB8A40 /* MembershipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D0E927BAEA70844A0A902F8 /* MembershipView.swift */; };
 		CB10FCBE961A16770B5CF502 /* BojiStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4840C3365DFE332E18C11C /* BojiStore.swift */; };
 		CC1037D29706935C780AE46D /* Shared.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D9FCBE76E0C8017D6AB44D93 /* Shared.xcstrings */; };
+		CDB72F7C2DBE92403FC9DB0B /* LegalDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9E35155AD090D46105762 /* LegalDocument.swift */; };
 		CDE9CB1C2BD58BCD11ED7F57 /* EntrySheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8402B1E44C2D1E89E8CF0193 /* EntrySheets.swift */; };
 		D0F6D9A8C5D1050791CD739C /* BojiHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A437255836A3D9A03C3465FA /* BojiHTTPClient.swift */; };
 		D2A3381C29D34E1D66969FA1 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 8F064198CCCD2086E644CCE1 /* Sentry */; };
 		D59A37A44FF3779D8398C8C3 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 15BEB5076A2624AF34BB855E /* InfoPlist.xcstrings */; };
 		D72965E47D11C8E3E7288F5C /* BetterAuthClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5603FBE9B60558248690ABBC /* BetterAuthClient.swift */; };
 		D99888DFBB36DCC7E56CD4F3 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 559E32ADE93BAC9FEFAF3107 /* AppIcon.icon */; };
+		E32A200EE0CEDFEF2DC9E6FF /* LegalDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BEFC24EA81BB69F3C8B0B39 /* LegalDocumentTests.swift */; };
 		EA6A7C05B55EE8EAC01B30E9 /* CrashReportingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B37D16693B56D0C5C393052 /* CrashReportingTests.swift */; };
 		EA839609A4BF2A3352AFBC3A /* MembershipBoundaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26ED9E884634733D489F5BD6 /* MembershipBoundaryTests.swift */; };
 		ECC0752898E65CD0B3F38B60 /* HealthModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B15C9B68AF3F3BA6693740F2 /* HealthModelsTests.swift */; };
@@ -144,6 +146,7 @@
 		173E777AF2BC99681E5CA429 /* BojiTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BojiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		19368F1E87C44FF35C2129F7 /* MembershipModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipModels.swift; sourceTree = "<group>"; };
 		1AAF1AB2D0AE96C9E8BFC6AB /* HealthModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthModels.swift; sourceTree = "<group>"; };
+		1BC9E35155AD090D46105762 /* LegalDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalDocument.swift; sourceTree = "<group>"; };
 		20B01B3D23C54B54A44BED01 /* BetterAuthClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetterAuthClientTests.swift; sourceTree = "<group>"; };
 		211607BD7F6AC18DAEDF5277 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		21905AB8E7B0CE32504579D7 /* HealthDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthDataStore.swift; sourceTree = "<group>"; };
@@ -172,6 +175,7 @@
 		64E2BDA8BA4453BF2D000EFF /* HealthDataStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthDataStoreTests.swift; sourceTree = "<group>"; };
 		661AE16B78FF2F30E57965DC /* BojiWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BojiWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		695BD58AC8435E8F125079AF /* BojiWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = BojiWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		6BEFC24EA81BB69F3C8B0B39 /* LegalDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalDocumentTests.swift; sourceTree = "<group>"; };
 		736340937938B43AC99C0B3C /* MembershipEnrollmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipEnrollmentView.swift; sourceTree = "<group>"; };
 		741CEA2B76902756BAC5F5F0 /* Boji.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Boji.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		76F4EEA7892D89748155D924 /* BojiUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojiUITests.swift; sourceTree = "<group>"; };
@@ -270,6 +274,7 @@
 				4503BF115AA156DB157E50DF /* ExerciseAnimationCatalog.swift */,
 				21905AB8E7B0CE32504579D7 /* HealthDataStore.swift */,
 				1AAF1AB2D0AE96C9E8BFC6AB /* HealthModels.swift */,
+				1BC9E35155AD090D46105762 /* LegalDocument.swift */,
 				491E8393498E63062E9C40F4 /* MembershipAPI.swift */,
 				19368F1E87C44FF35C2129F7 /* MembershipModels.swift */,
 				43252989887EE4615826FA3F /* MembershipPresentation.swift */,
@@ -378,6 +383,7 @@
 				CF7CD40F329AE5313C544681 /* ExerciseAnimationNativeTests.swift */,
 				64E2BDA8BA4453BF2D000EFF /* HealthDataStoreTests.swift */,
 				B15C9B68AF3F3BA6693740F2 /* HealthModelsTests.swift */,
+				6BEFC24EA81BB69F3C8B0B39 /* LegalDocumentTests.swift */,
 				26ED9E884634733D489F5BD6 /* MembershipBoundaryTests.swift */,
 				C8C48E60EA9F78C658B0715F /* MembershipEntitlementTests.swift */,
 				222CF8D8C8A70FCD67F93991 /* MembershipPresentationTests.swift */,
@@ -605,6 +611,7 @@
 				23F17C6EAD5963B6F33821DA /* ExerciseAnimationNativeTests.swift in Sources */,
 				BC9FCC9D20F279F305021487 /* HealthDataStoreTests.swift in Sources */,
 				ECC0752898E65CD0B3F38B60 /* HealthModelsTests.swift in Sources */,
+				E32A200EE0CEDFEF2DC9E6FF /* LegalDocumentTests.swift in Sources */,
 				EA839609A4BF2A3352AFBC3A /* MembershipBoundaryTests.swift in Sources */,
 				52D821C4FFA537D6BA2D7277 /* MembershipEntitlementTests.swift in Sources */,
 				07BFAABA6BD1ECF2781F8220 /* MembershipPresentationTests.swift in Sources */,
@@ -636,6 +643,7 @@
 				2D3C6DD55721463172DA1E0D /* HealthConnectionView.swift in Sources */,
 				27FE2609C62109FE7A50DE17 /* HealthDataStore.swift in Sources */,
 				20413095BB3990CBB995A2E2 /* HealthModels.swift in Sources */,
+				CDB72F7C2DBE92403FC9DB0B /* LegalDocument.swift in Sources */,
 				F6B7625E452F04C099BB12D7 /* MembershipAPI.swift in Sources */,
 				54672DA0B79BD336B41FFC31 /* MembershipAuthenticationView.swift in Sources */,
 				18E47C03BDD0D0DDB4DD4F67 /* MembershipCardDesign.swift in Sources */,

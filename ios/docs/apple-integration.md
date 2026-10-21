@@ -82,7 +82,7 @@ xcodebuild -project Boji.xcodeproj -scheme Boji \
 
 验证结果见[Apple 生态验证记录](apple-integration-verification.md)。自动测试使用隔离提供器，不读取真实健康数据。界面测试使用空健康数据，不打开真实 Apple 登录。
 
-当前还未实现 HealthKit 写入、Watch 独立登录或快捷指令。账号删除与 Apple 授权撤销仍需在上架前完善。还需发布隐私政策，并完成真机签名和 App Store 审核。
+当前还未实现 HealthKit 写入、Watch 独立登录或快捷指令。账号删除与 Apple 授权撤销仍需在上架前完善。「设置」的「关于」一节已链接网站上的隐私政策和用户协议，中文界面打开中文版，其他语言打开英文版。还需部署这两个页面，并完成真机签名和 App Store 审核。
 
 健康数据不能用于广告画像或出售。后续若增加云端健康功能，必须先设计独立同意和删除机制，不能沿用会员授权。[5]
 

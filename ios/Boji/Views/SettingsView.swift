@@ -15,6 +15,7 @@ struct SettingsView: View {
     @Environment(HealthDataStore.self) private var health
     @Environment(CompanionSharingStore.self) private var companion
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.locale) private var locale
     @AppStorage("appearance") private var appearance = "system"
     @State private var confirmDelete = false
     @State private var exporting = false
@@ -94,6 +95,14 @@ struct SettingsView: View {
                 }
                 Section {
                     LabeledContent("版本", value: appVersion)
+                    Link(destination: LegalDocument.privacyPolicy.url(for: locale)) {
+                        Label("隐私政策", systemImage: "hand.raised")
+                    }
+                    .accessibilityIdentifier("privacy-policy")
+                    Link(destination: LegalDocument.termsOfUse.url(for: locale)) {
+                        Label("用户协议", systemImage: "doc.text")
+                    }
+                    .accessibilityIdentifier("terms-of-use")
                 } header: {
                     Text(.Shared.settingsAbout)
                 } footer: {
