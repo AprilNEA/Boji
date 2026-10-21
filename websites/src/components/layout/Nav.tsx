@@ -11,15 +11,20 @@ import { EASE_APPLE } from "@/lib/motion";
 type Panel = null | "bag" | "search" | "menu";
 
 const QUICK_LINKS = [
+  { href: "/#features", label: "了解薄肌俱乐部 App" },
+  { href: "/keynote/", label: "观看 2026 秋季发布会" },
   { href: "/pro/", label: "了解薄肌" },
   { href: "/store/", label: "查询预计交付日期" },
   { href: "/compare/", label: "比较厚肌、饿瘦与薄肌" },
   { href: "/theory/", label: "阅读薄肌理论" },
-  { href: "/join/", label: "入会宣誓，领取会员卡" },
 ];
 
 /** Pages whose first screen is white get Apple's light glass nav; everything else stays dark. */
 const LIGHT_ROUTES = ["/pro", "/compare", "/store", "/calculator", "/founders", "/join"];
+
+/** The home link "/" is a prefix of every path, so it only matches exactly. */
+const isActive = (pathname: string | null, href: string) =>
+  href === "/" ? pathname === "/" : !!pathname?.startsWith(href.replace(/\/$/, ""));
 
 export function Nav() {
   const pathname = usePathname();
@@ -27,7 +32,7 @@ export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const { scrollY } = useScroll();
   useMotionValueEvent(scrollY, "change", (y) => setScrolled(y > 8));
-  const light = LIGHT_ROUTES.some((r) => pathname?.startsWith(r));
+  const light = pathname === "/" || LIGHT_ROUTES.some((r) => pathname?.startsWith(r));
 
   useEffect(() => setPanel(null), [pathname]);
 
@@ -54,7 +59,7 @@ export function Nav() {
 
           <ul className="hidden h-full flex-1 items-center justify-center gap-[clamp(18px,3.4vw,40px)] md:flex">
             {NAV_LINKS.map((l) => {
-              const active = pathname?.startsWith(l.href.replace(/\/$/, ""));
+              const active = isActive(pathname, l.href);
               return (
                 <li key={l.href}>
                   <Link
@@ -251,11 +256,6 @@ function SearchPanel() {
 function MenuPanel() {
   return (
     <motion.ul variants={stagger} initial="hidden" animate="show" className="space-y-3">
-      <motion.li variants={item}>
-        <Link href="/" className="nav-link text-[28px] font-semibold tracking-[-0.02em] text-[var(--nav-strong)]">
-          发布会
-        </Link>
-      </motion.li>
       {NAV_LINKS.map((l) => (
         <motion.li variants={item} key={l.href}>
           <Link href={l.href} className="nav-link text-[28px] font-semibold tracking-[-0.02em] text-[var(--nav-strong)]">

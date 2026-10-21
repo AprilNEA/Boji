@@ -1,18 +1,31 @@
+"use client";
+
 import Link from "next/link";
-import { CONTACT_EMAIL, DISCUSSIONS_URL, FOOTNOTES, NAV_LINKS } from "@/lib/content";
+import { usePathname } from "next/navigation";
+import { APP_FOOTNOTES } from "@/lib/app";
+import { CONTACT_EMAIL, DISCUSSIONS_URL, FOOTNOTES } from "@/lib/content";
 import { GitHubIcon } from "@/components/ui/GitHubIcon";
 import { Logo } from "@/components/ui/Logo";
 import { RegionPicker } from "@/components/layout/RegionPicker";
 
 const COLUMNS = [
   {
-    title: "探索",
+    title: "App",
     links: [
-      { href: "/", label: "2026 秋季发布会" },
+      { href: "/", label: "薄肌俱乐部 App" },
+      { href: "/#features", label: "功能" },
+      { href: "/docs/guide/", label: "用户指南" },
+      { href: "/support/", label: "支持" },
+    ],
+  },
+  {
+    title: "俱乐部",
+    links: [
+      { href: "/keynote/", label: "2026 秋季发布会" },
       { href: "/theory/", label: "薄肌理论" },
       { href: "/pro/", label: "薄肌" },
       { href: "/compare/", label: "比较型号" },
-      { href: "/docs/", label: "文档" },
+      { href: "/founders/", label: "领导层" },
     ],
   },
   {
@@ -23,23 +36,23 @@ const COLUMNS = [
       { href: "/store/#accessories", label: "配件" },
     ],
   },
-  {
-    title: "关于俱乐部",
-    links: [
-      { href: "/founders/", label: "领导层" },
-      { href: "/join/", label: "入会宣誓" },
-      { href: "/theory/", label: "黄毛理论" },
-      { href: "/compare/", label: "孙宇晨 · 薄肌版" },
-    ],
-  },
 ];
 
+const LEGAL_LINKS = [
+  { href: "/privacy/", label: "隐私政策" },
+  { href: "/terms/", label: "用户协议" },
+  { href: "/third-parties/", label: "第三方信息共享" },
+  { href: "/docs/developers/", label: "开发者" },
+] as const;
+
 export function Footer() {
+  // 首页介绍 App，只需要 App 的声明；其他页面是发布会恶搞，沿用原来的声明。
+  const notes = usePathname() === "/" ? APP_FOOTNOTES : FOOTNOTES;
   return (
     <footer className="bg-mist text-[12px] leading-[1.34] text-ash">
       <div className="container-apple pb-5 pt-10">
         <ol className="space-y-3 border-b border-black/10 pb-5">
-          {FOOTNOTES.map((note, i) => (
+          {notes.map((note, i) => (
             <li key={i} className="flex gap-1.5">
               <span className="t-num">{i + 1}.</span>
               <span>{note}</span>
@@ -104,7 +117,7 @@ export function Footer() {
             <span>Copyright © 2026 薄肌俱乐部。保留所有线条。</span>
           </div>
           <ul className="flex flex-wrap gap-x-3 gap-y-1">
-            {NAV_LINKS.map((l, i) => (
+            {LEGAL_LINKS.map((l, i) => (
               <li key={l.href} className="flex items-center gap-3">
                 {i > 0 && <span className="text-black/20">|</span>}
                 <Link href={l.href} className="footer-link">

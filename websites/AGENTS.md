@@ -1,6 +1,6 @@
 # websites/
 
-This directory holds the 薄肌俱乐部 promotional website and the Boji docs site under `/docs`. It is a Next.js 16 App Router project with a static export (`output: "export"`), Tailwind CSS 4, Motion and Lenis. The docs use Fumadocs. Read `README.md` for the page list and `docs/` for the original plan, TODO list and research notes.
+This directory holds the 薄肌俱乐部 website and the Boji docs site under `/docs`. The home page `/` introduces the Boji app. The parody keynote is at `/keynote/`, and the other parody pages (`/theory/`, `/pro/`, `/compare/`, `/store/`, `/founders/`, `/join/`) link from it. It is a Next.js 16 App Router project with a static export (`output: "export"`), Tailwind CSS 4, Motion and Lenis. The docs use Fumadocs. Read `README.md` for the page list and `docs/` for the original plan, TODO list and research notes.
 
 ## Toolchain
 
@@ -19,10 +19,11 @@ This directory holds the 薄肌俱乐部 promotional website and the Boji docs s
 | `src/app/global-not-found.tsx` | 404 page for the whole site |
 | `src/app/globals.css`, `src/app/docs.css` | Website styles and docs styles |
 | `src/instrumentation-client.ts` | Optional Sentry error reporting. Next.js runs it in the browser before hydration |
-| `src/components/` | Page components, grouped by page, plus `layout/` and `ui/` |
+| `src/components/` | Page components, grouped by page, plus `layout/` and `ui/`. `home/` is the app home page, and `keynote/` is the parody keynote |
 | `src/components/docs/mdx.tsx` | Components that docs MDX can use |
 | `src/components/docs/StandalonePage.tsx` | Renders a standalone page of `../docs/sites/` in a given language, without a sidebar |
-| `src/lib/content.ts` | Copy, data tables and asset paths (`IMG`, `LAUNCH_FILM`) |
+| `src/lib/content.ts` | Copy, data tables and asset paths (`IMG`, `LAUNCH_FILM`) of the parody pages, the navigation links and the footer notes |
+| `src/lib/app.ts` | Copy and data of the app home page: the App Store URL, the screenshot and exercise image URLs on the asset host, the courses and the home page footer notes |
 | `src/lib/colors.ts` | Color values that JavaScript needs (Motion animations, SVG attributes) |
 | `src/lib/source.ts` | Fumadocs content source for `../docs/` and `../docs/sites/`, the languages, and the page tree and params of the docs section |
 | `src/lib/docs.tsx` | Navigation options of the docs section and the standalone pages, `PageLinks`, and the Chinese UI strings of Fumadocs |
@@ -49,10 +50,12 @@ Run these commands in this directory:
 
 - The site is self-hosted as static files. Do not add runtime requests to Manus or other third-party services, and do not add Manus proxy hosts to `next.config.ts`. The site must not read `app.config.ts` or `public/manus-routes.json`.
 - Sentry is the only exception. `src/instrumentation-client.ts` loads `@sentry/browser` only when the build sets `NEXT_PUBLIC_SENTRY_DSN`. A build without it must not load the Sentry chunk or send a request. Keep the `BrowserSession` integration removed, keep `dataCollection` off, and do not add tracing or Session Replay. See `../docs/sentry.md`.
-- Keep the files that only this site uses in `public/` and reference them by local path. Use the asset host `https://assets.leanmuscle.club` only for the generic files in the repository-level `assets/public/`, such as the app icon.
+- Keep the files that only this site uses in `public/` and reference them by local path. Use the asset host `https://assets.leanmuscle.club` only for the generic files in the repository-level `assets/public/`, such as the app icon, the app screenshots and the exercise images. `src/lib/app.ts` builds these URLs. A new file in `assets/public/` returns 404 until the asset host is deployed.
 - The community channel is GitHub Discussions at `DISCUSSIONS_URL` in `src/lib/content.ts`. The website footer and the docs navigation link to it with `GitHubIcon`. Do not add Discord or other chat links. Account and privacy requests go to `privacy@leanmuscle.club`, not to the public channel.
 - Do not add `/manus-storage/` paths, `files.manuscdn.com` URLs or other hosted storage URLs.
 - Keep the site static. Do not add server actions or other features that `output: "export"` does not support. The only route handler is `src/app/api/search/route.ts`. It exports `staticGET` with `revalidate = false`, so the build writes the search index as a file. Do not add route handlers that need a server.
+- The home page describes the real app. Take its facts from the root `README.md` and the app code, not from the parody pages. Keep its course names and durations equal to `locales/` and `ios/Boji/Models/BojiStore.swift`. Do not add founder portraits, the M13 chip or other parody content to the home page.
+- `Footer` shows `APP_FOOTNOTES` on `/` and `FOOTNOTES` on the parody pages. `APP_STORE_URL` in `src/lib/app.ts` is the App Store link of every download button.
 - The `No.` on the parody member card is a decorative hash of the entered name. It is not a Boji membership number. Do not connect it to the membership API, and do not describe it as a server-issued number.
 
 ## Styling

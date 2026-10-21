@@ -5,7 +5,7 @@ import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } fr
 import { useRef, useState } from "react";
 import { FOUNDERS, type Founder } from "@/lib/content";
 import { EASE_APPLE } from "@/lib/motion";
-import { LaunchFilm, type LaunchFilmHandle } from "@/components/home/LaunchFilm";
+import { LaunchFilm, type LaunchFilmHandle } from "@/components/keynote/LaunchFilm";
 
 export function FoundersHero() {
   const ref = useRef<HTMLDivElement>(null);

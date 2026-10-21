@@ -9,7 +9,7 @@ import { SHARE_DESCRIPTION, SHARE_TITLE } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: {
-    default: "薄肌俱乐部 · 2026 秋季发布会 · Think Thin.",
+    default: "薄肌俱乐部 App · 把薄肌理论落到每一天",
     template: "%s · 薄肌俱乐部",
   },
   description: "薄肌。穿衣显瘦，脱衣有肉。¥0 起，另需戒掉含糖饮料。",

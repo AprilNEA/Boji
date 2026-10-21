@@ -1,46 +1,43 @@
 import type { Metadata } from "next";
-import { FoundersHero } from "@/components/home/FoundersHero";
-import { ProductReveal } from "@/components/home/ProductReveal";
-import { ChipSection } from "@/components/home/ChipSection";
-import { WaterSleepSection } from "@/components/home/WaterSleep";
-import { IntelligenceSection } from "@/components/home/IntelligenceSection";
-import { CompareTeaser, PriceTeaser } from "@/components/home/Teasers";
-import { OneMoreThing } from "@/components/home/OneMoreThing";
-import { SHARE_DESCRIPTION, SHARE_TITLE } from "@/lib/content";
+import { AppHero } from "@/components/home/AppHero";
+import { HabitsSection } from "@/components/home/HabitsSection";
+import { CoursesSection } from "@/components/home/CoursesSection";
+import { ProgressSection } from "@/components/home/ProgressSection";
+import { DownloadSection, PrivacySection } from "@/components/home/Closing";
+import { APP_SHARE_DESCRIPTION, APP_SHARE_TITLE } from "@/lib/content";
 
-/** 搜索结果里的描述：严肃搞怪的新闻稿腔，50–160 字。 */
+/** 首页在搜索结果里的描述，50–160 字。 */
 const HOME_DESCRIPTION =
-  "今天，薄肌俱乐部正式发布薄肌。穿衣显瘦，脱衣有肉：体脂长期低于 13%，每天喝 1700 mL 水，每晚睡 7–9 小时。搭载 M13 意志力芯片，Regardless of how you feel，今天照样去练。薄肌，¥0 起。付款方式：戒掉含糖饮料。";
+  "薄肌俱乐部 App 把薄肌理论落到每一天：训练、饮水、睡眠三项打卡，4 套居家和健身房课程，动作动画标出发力肌群，逐组跟练，记录体重和腰围的变化。支持 iPhone、Apple Watch 和 Android，数据保存在本机，基础记录无需注册。";
 
 export const metadata: Metadata = {
   description: HOME_DESCRIPTION,
-  keywords: ["薄肌", "薄肌理论", "薄肌俱乐部", "薄肌身材", "邵艾伦", "孙宇晨", "体脂率"],
-  // 社交平台分享链接时预加载的卡片：只要一行。
+  keywords: ["薄肌", "薄肌俱乐部", "薄肌理论", "健身 App", "居家健身", "饮水记录", "睡眠记录", "Boji"],
   openGraph: {
-    title: SHARE_TITLE,
-    description: SHARE_DESCRIPTION,
+    title: APP_SHARE_TITLE,
+    description: APP_SHARE_DESCRIPTION,
     siteName: "薄肌俱乐部",
     type: "website",
     locale: "zh_CN",
   },
   twitter: {
     card: "summary",
-    title: SHARE_TITLE,
-    description: SHARE_DESCRIPTION,
+    title: APP_SHARE_TITLE,
+    description: APP_SHARE_DESCRIPTION,
   },
+  // 让 Safari 在页面顶部显示 App Store 横幅。
+  other: { "apple-itunes-app": "app-id=6824964768" },
 };
 
 export default function HomePage() {
   return (
     <>
-      <FoundersHero />
-      <ProductReveal />
-      <ChipSection />
-      <WaterSleepSection />
-      <IntelligenceSection />
-      <CompareTeaser />
-      <PriceTeaser />
-      <OneMoreThing />
+      <AppHero />
+      <HabitsSection />
+      <CoursesSection />
+      <ProgressSection />
+      <PrivacySection />
+      <DownloadSection />
     </>
   );
 }

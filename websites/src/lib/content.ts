@@ -24,13 +24,14 @@ export const LAUNCH_FILM = {
 export const CONTACT_EMAIL = "thinmuscle-club@proton.me";
 export const DISCUSSIONS_URL = "https://github.com/AprilNEA/Boji/discussions";
 
+/** 顶栏链接。首页是 App 介绍，发布会和选购是俱乐部的恶搞页面。 */
 export const NAV_LINKS = [
+  { href: "/", label: "App" },
+  { href: "/keynote/", label: "发布会" },
   { href: "/theory/", label: "理论" },
-  { href: "/pro/", label: "薄肌" },
-  { href: "/compare/", label: "对比" },
-  { href: "/founders/", label: "创始人" },
   { href: "/store/", label: "选购" },
-  { href: "/join/", label: "入会" },
+  { href: "/docs/guide/", label: "指南" },
+  { href: "/support/", label: "支持" },
 ] as const;
 
 export type Founder = {
@@ -262,4 +263,7 @@ export const FOOTNOTES = [
 
 /** 社交平台分享链接时的预览卡片：标题 + 一行描述。 */
 export const SHARE_TITLE = "薄肌俱乐部 · Think Thin.";
+/** 首页分享卡片。 */
+export const APP_SHARE_TITLE = "薄肌俱乐部 App";
+export const APP_SHARE_DESCRIPTION = "训练、饮水、睡眠，每天三件事。";
 export const SHARE_DESCRIPTION = "今天，我们重新发明了薄肌。";

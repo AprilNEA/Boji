@@ -18,7 +18,7 @@ export default function GlobalNotFound() {
           <h1 className="t-title mt-6">该页面体脂超标，已被移除。</h1>
           <p className="t-body-lg mt-4 text-ash">我们正在帮它减脂。预计 3–6 个月后恢复。</p>
           <Link href="/" className="link-apple on-dark mt-10 text-[19px]">
-            <span>返回发布会</span>
+            <span>返回首页</span>
             <span className="chev">›</span>
           </Link>
         </section>

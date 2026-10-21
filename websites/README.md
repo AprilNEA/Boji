@@ -1,6 +1,6 @@
 # 薄肌俱乐部网站
 
-本目录是薄肌俱乐部的粉丝向宣传网站，原项目为 `bojiclub`（版本 `827ca94`）。网站使用 Next.js 16 静态导出，样式用 Tailwind CSS 4，动画用 Motion 和 Lenis。`/docs` 下是 Boji 的文档站，使用 Fumadocs，和官网一起构建和部署。
+本目录是薄肌俱乐部的网站。首页介绍 Boji App，粉丝向恶搞发布会在 `/keynote/` 和其他子页面，原项目为 `bojiclub`（版本 `827ca94`）。网站使用 Next.js 16 静态导出，样式用 Tailwind CSS 4，动画用 Motion 和 Lenis。`/docs` 下是 Boji 的文档站，使用 Fumadocs，和官网一起构建和部署。
 
 ## 本地运行
 
@@ -16,7 +16,7 @@ pnpm build      # 静态构建，产物在 out/
 
 ## 独立托管
 
-网站不依赖 Manus 或其他后端服务。`pnpm build` 生成的 `out/` 是纯静态文件，可以放到任意静态服务器或 CDN 上。站点专用的图片、视频和字体都在 `out/` 内，页面运行时只请求本站资源。GitHub Discussions 链接是唯一的外部链接，在官网页脚和文档侧边栏中出现，只在用户点击时打开。
+网站不依赖 Manus 或其他后端服务。`pnpm build` 生成的 `out/` 是纯静态文件，可以放到任意静态服务器或 CDN 上。站点专用的图片、视频和字体都在 `out/` 内。首页的 App 图标、截图和动作图来自仓库根目录的 `assets/public/`，运行时从 `https://assets.leanmuscle.club` 加载。除此之外，页面只请求本站资源。外部链接只有两个：App Store 下载链接，以及官网页脚和文档侧边栏中的 GitHub Discussions 链接，都只在用户点击时打开。
 
 构建时设置了 `NEXT_PUBLIC_SENTRY_DSN`，网站才会把未捕获的错误上报到 Sentry，这是唯一的例外。默认构建不加载 Sentry，也不向 Sentry 发出请求。启用方式和上报字段见 [Sentry 错误上报](../docs/sentry.md)。
 
@@ -42,7 +42,8 @@ Python 自带的服务器不会返回 `404.html`，所以用它预览时看不�
 
 | 路由 | 页面 |
 | --- | --- |
-| `/` | 发布会首页 |
+| `/` | 首页：介绍 Boji App，提供 App Store 下载链接 |
+| `/keynote/` | 2026 秋季发布会：原来的恶搞首页 |
 | `/theory/` | 薄肌理论 |
 | `/pro/` | 薄肌产品页 |
 | `/compare/` | 型号对比 |
