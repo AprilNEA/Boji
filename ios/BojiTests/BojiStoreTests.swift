@@ -4,7 +4,7 @@ import XCTest
 
 @MainActor
 final class BojiStoreTests: XCTestCase {
-    func testPersistenceReloadsState() throws {
+    func testPersistenceReloadsState() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let url = directory.appendingPathComponent("state.json")
@@ -18,6 +18,7 @@ final class BojiStoreTests: XCTestCase {
         firstStore.setSleep(7.5)
         firstStore.completeWorkout(WorkoutLibrary.gym)
         firstStore.addBodyEntry(weight: 68.2, waist: 78.0)
+        await firstStore.flush()
 
         let reloadedStore = BojiStore(storageURL: url)
 
@@ -100,7 +101,7 @@ final class BojiStoreTests: XCTestCase {
         XCTAssertEqual(store.today.waterML, 0)
     }
 
-    func testCorruptFileIsNotOverwritten() throws {
+    func testCorruptFileIsNotOverwritten() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let url = directory.appendingPathComponent("state.json")
@@ -112,18 +113,20 @@ final class BojiStoreTests: XCTestCase {
 
         store.displayName = "不应写入"
         store.addWater(500)
+        await store.flush()
 
         XCTAssertEqual(try Data(contentsOf: url), corruptData)
         XCTAssertNotNil(store.storageError)
     }
 
-    func testExplicitResetClearsCorruptFile() throws {
+    func testExplicitResetClearsCorruptFile() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let url = directory.appendingPathComponent("state.json")
         try Data("private corrupted data".utf8).write(to: url)
         let store = BojiStore(storageURL: url)
         store.resetAll()
+        await store.flush()
         let reloaded = BojiStore(storageURL: url)
         XCTAssertNil(reloaded.storageError)
         XCTAssertTrue(reloaded.records.isEmpty)

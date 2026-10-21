@@ -71,6 +71,13 @@ struct RootView: View {
                 companion.update(companionProgress, force: true)
                 if membership.account != nil { Task { await membership.refresh() } }
                 Task { await health.refresh() }
+            } else if phase == .background {
+                // Ask for background time, so iOS does not suspend the app before the last write finishes.
+                let task = UIApplication.shared.beginBackgroundTask(withName: "Save local data")
+                Task {
+                    await store.flush()
+                    UIApplication.shared.endBackgroundTask(task)
+                }
             }
         }
         .task {

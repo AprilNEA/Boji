@@ -305,18 +305,43 @@ struct BodyEntry: Codable, Identifiable, Equatable {
     }
 }
 
+private struct StoredState: Codable, Sendable {
+    var selectedPlan: PlanKind
+    var hasOnboarded: Bool
+    var displayName: String
+    var joinedChallenge: Bool
+    var records: [DailyRecord]
+    var bodyEntries: [BodyEntry]
+
+    static func makeEncoder() -> JSONEncoder {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.dateEncodingStrategy = .iso8601
+        return encoder
+    }
+}
+
+/// Encodes and writes the state file off the main actor.
+private actor StateFile {
+    nonisolated let url: URL
+    private let encoder = StoredState.makeEncoder()
+
+    init(url: URL) { self.url = url }
+
+    func write(_ state: StoredState) throws {
+        let data = try encoder.encode(state)
+        try FileManager.default.createDirectory(
+            at: url.deletingLastPathComponent(),
+            withIntermediateDirectories: true,
+            attributes: nil
+        )
+        try data.write(to: url, options: .atomic)
+    }
+}
+
 @MainActor
 @Observable
 final class BojiStore {
-    private struct StoredState: Codable {
-        var selectedPlan: PlanKind
-        var hasOnboarded: Bool
-        var displayName: String
-        var joinedChallenge: Bool
-        var records: [DailyRecord]
-        var bodyEntries: [BodyEntry]
-    }
-
     /// The nickname of a new or reset state, in the display language of that moment.
     private static var defaultDisplayName: String { String(localized: .Shared.defaultDisplayName) }
     private static let maximumWaterChangeML = 10_000
@@ -365,8 +390,10 @@ final class BojiStore {
         }
     }
 
-    private let storageURL: URL?
+    private let stateFile: StateFile?
     private let inMemory: Bool
+    @ObservationIgnored private var pendingWrite: Task<Void, Never>?
+    @ObservationIgnored private var writeGeneration = 0
     @ObservationIgnored private var isLoading = false
     @ObservationIgnored private var writesBlockedByCorruptFile = false
 
@@ -374,9 +401,9 @@ final class BojiStore {
         self.inMemory = inMemory
 
         if inMemory {
-            self.storageURL = nil
+            stateFile = nil
         } else if let storageURL {
-            self.storageURL = storageURL
+            stateFile = StateFile(url: storageURL)
         } else {
             do {
                 let applicationSupport = try FileManager.default.url(
@@ -385,11 +412,11 @@ final class BojiStore {
                     appropriateFor: nil,
                     create: true
                 )
-                self.storageURL = applicationSupport
+                stateFile = StateFile(url: applicationSupport
                     .appendingPathComponent("Boji", isDirectory: true)
-                    .appendingPathComponent("state.json", isDirectory: false)
+                    .appendingPathComponent("state.json", isDirectory: false))
             } catch {
-                self.storageURL = nil
+                stateFile = nil
                 self.storageError = String(localized: "无法确定本地存储位置：\(error.localizedDescription)")
             }
         }
@@ -459,14 +486,7 @@ final class BojiStore {
     }
 
     func resetAll() {
-        if !inMemory, let storageURL, FileManager.default.fileExists(atPath: storageURL.path) {
-            do {
-                try FileManager.default.removeItem(at: storageURL)
-            } catch {
-                storageError = String(localized: .Shared.storageDeleteFailed(detail: error.localizedDescription))
-                return
-            }
-        }
+        // The atomic write of the default state below replaces the old file, including a corrupt one.
         writesBlockedByCorruptFile = false
         storageError = nil
         isLoading = true
@@ -481,10 +501,7 @@ final class BojiStore {
     }
 
     func exportJSON() throws -> Data {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        encoder.dateEncodingStrategy = .iso8601
-        return try encoder.encode(currentState)
+        try StoredState.makeEncoder().encode(currentState)
     }
 
     func refreshDay() {
@@ -503,11 +520,10 @@ final class BojiStore {
     }
 
     private func loadFromDiskIfAvailable() {
-        guard !inMemory, let storageURL else { return }
-        guard FileManager.default.fileExists(atPath: storageURL.path) else { return }
+        guard let url = stateFile?.url, FileManager.default.fileExists(atPath: url.path) else { return }
 
         do {
-            let data = try Data(contentsOf: storageURL)
+            let data = try Data(contentsOf: url)
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
             let state = try decoder.decode(StoredState.self, from: data)
@@ -529,29 +545,34 @@ final class BojiStore {
 
     private func persistIfNeeded() {
         guard !inMemory, !isLoading, !writesBlockedByCorruptFile else { return }
-        guard let storageURL else {
+        guard let stateFile else {
             if storageError == nil {
                 storageError = String(localized: "本地存储位置不可用。")
             }
             return
         }
 
-        do {
-            let directory = storageURL.deletingLastPathComponent()
-            try FileManager.default.createDirectory(
-                at: directory,
-                withIntermediateDirectories: true,
-                attributes: nil
-            )
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-            encoder.dateEncodingStrategy = .iso8601
-            let data = try encoder.encode(currentState)
-            try data.write(to: storageURL, options: .atomic)
-            storageError = nil
-        } catch {
-            storageError = String(localized: .Shared.storageWriteFailed(detail: error.localizedDescription))
+        writeGeneration += 1
+        let generation = writeGeneration
+        let state = currentState
+        let previousWrite = pendingWrite
+        // Each write waits for the previous one, so the file always ends with the latest state.
+        pendingWrite = Task {
+            await previousWrite?.value
+            // A newer state is queued behind this one, so only that state needs to reach the disk.
+            guard generation == writeGeneration else { return }
+            do {
+                try await stateFile.write(state)
+                storageError = nil
+            } catch {
+                storageError = String(localized: .Shared.storageWriteFailed(detail: error.localizedDescription))
+            }
         }
+    }
+
+    /// Waits until every scheduled write has finished.
+    func flush() async {
+        await pendingWrite?.value
     }
 
     private func record(on day: Date, calendar: Calendar) -> DailyRecord? {
