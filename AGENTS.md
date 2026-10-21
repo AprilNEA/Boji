@@ -138,13 +138,17 @@ This rule applies to both clients and to all documentation in this repository.
 
 Three places use the same exercise IDs: `Exercise.id` in `ios/Boji/Models/BojiStore.swift`, the Android course model (`Workout.kt`), and `COURSES` in `animations/src/courses.ts`. Keep the IDs equal. If you rename or add a course exercise, update all three places and regenerate `animations/lottie/`.
 
+The text of a course and its exercises is in `locales/`, groups `course` and `exercise`. The keys contain the ID with `_` for `-`: `course_<id>_title`, `course_<id>_subtitle`, `exercise_<id>_name` and `exercise_<id>_tip`. If you rename or add a course or an exercise, rename or add these keys too and run `cargo locales generate` in `crates/`. Article keys use a name instead of the numeric article ID, for example `article_first_workout_title`.
+
 `LIBRARY` in `animations/src/courses.ts` holds animated exercises that no app course uses yet. Their files are in `animations/lottie-library/`, which no app bundles. When an app course adopts one, move it from `LIBRARY` to `COURSES` and regenerate.
 
 ### Shared copy
 
 Copy that both clients show lives in `locales/`. `crates/locales/` generates `strings_shared.xml` in the `values*` directories of `android/app/src/main/res/` and `ios/Shared/Shared.xcstrings`. Do not edit the generated files. Edit `locales/`, run `cargo locales generate` in `crates/` and commit the source and the generated files together.
 
-Keep the keys and argument names of `locales/meta/` stable, because both clients reference them in code. Copy that only one client shows stays in that client: `android/app/src/main/res/values/strings.xml` or the Swift code of `ios/`. When a client starts to show the same copy, move it into `locales/`.
+Keep the keys and argument names of `locales/meta/` stable, because both clients reference them in code. Copy that only one client shows stays in that client: `android/app/src/main/res/values/strings.xml` and `values-b+zh+Hans/strings.xml`, or the `Localizable.xcstrings` catalogs of `ios/`. When a client starts to show the same copy, move it into `locales/`.
+
+Both clients ship Simplified Chinese and English, and English is the fallback language. Give every new piece of copy both languages. The app name is 薄肌 in Chinese and Lean Muscle in English.
 
 `locales/locales.yaml` lists the targets that read generated files: `android` and `ios`. Xcode generates Swift symbols for `ios/Shared/Shared.xcstrings`, such as `.Shared.tabToday`. `cargo locales check` also compiles the iOS catalog with `xcstringstool`. See `ios/AGENTS.md` for the Swift usage.
 
