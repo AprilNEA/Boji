@@ -8,7 +8,7 @@ export function ProgressSection() {
     <>
       <section className="bg-mist section-pad text-ink">
         <div className="container-wide grid items-center gap-16 md:grid-cols-[minmax(0,360px)_1fr] md:gap-20">
-          <Reveal className="order-2 mx-auto w-[min(78vw,340px)] md:order-1 md:w-full">
+          <Reveal y={0} className="order-2 mx-auto w-[min(78vw,340px)] md:order-1 md:w-full">
             <PhoneFrame {...SCREENS.progress} />
           </Reveal>
           <div className="order-1 md:order-2">

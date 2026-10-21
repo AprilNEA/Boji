@@ -101,11 +101,11 @@ export function CoursesSection() {
           </div>
 
           <div className="flex items-start justify-center gap-[clamp(14px,2.4vw,28px)]">
-            <Reveal className="w-[46%] max-w-[300px]">
-              <PhoneFrame {...SCREENS.exercise} className="!bg-smoke" />
+            <Reveal y={0} className="w-[46%] max-w-[300px]">
+              <PhoneFrame {...SCREENS.exercise} />
             </Reveal>
-            <Reveal delay={0.12} className="mt-[12%] w-[46%] max-w-[300px]">
-              <PhoneFrame {...SCREENS.session} className="!bg-smoke" />
+            <Reveal y={0} delay={0.12} className="mt-[12%] w-[46%] max-w-[300px]">
+              <PhoneFrame {...SCREENS.session} />
             </Reveal>
           </div>
         </div>

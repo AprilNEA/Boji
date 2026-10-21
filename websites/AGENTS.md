@@ -31,6 +31,7 @@ This directory holds the 薄肌俱乐部 website and the Boji docs site under `/
 | `../docs/sites/` | MDX files of the standalone pages and their `.en.mdx` English versions. See `../docs/sites/AGENTS.md` |
 | `public/media/` | Generated images and the launch film, downloaded from the former Manus storage |
 | `public/images/portraits/` | Processed public portraits |
+| `public/frames/iphone.webp` | The iPhone Product Bezel of `../ios/app-store/screenshots/public/frames/iphone-portrait.png`, scaled to 735 × 1500. `src/components/ui/PhoneFrame.tsx` draws the app screenshots in it |
 | `scripts/` | Python helpers: `copy_sweep.py` checks the copy, `portraits.py` processes portraits |
 | `docs/` | Internal Chinese documents: the planning documents from the original project, and `privacy-support.md` for the support, privacy and terms pages. The docs site does not publish them |
 | `app.config.ts`, `public/manus-routes.json` | Manus hosting metadata. The site does not read them. `logoUrl` points to the Boji app icon on the asset host |
@@ -55,6 +56,7 @@ Run these commands in this directory:
 - Do not add `/manus-storage/` paths, `files.manuscdn.com` URLs or other hosted storage URLs.
 - Keep the site static. Do not add server actions or other features that `output: "export"` does not support. The only route handler is `src/app/api/search/route.ts`. It exports `staticGET` with `revalidate = false`, so the build writes the search index as a file. Do not add route handlers that need a server.
 - The home page describes the real app. Take its facts from the root `README.md` and the app code, not from the parody pages. Keep its course names and durations equal to `locales/` and `ios/Boji/Models/BojiStore.swift`. Do not add founder portraits, the M13 chip or other parody content to the home page.
+- `PhoneFrame` shows an Apple Product Bezel, so the [App Store marketing guidelines](https://developer.apple.com/app-store/marketing/guidelines/) apply. Use the bezel as is: do not crop, cover, tilt or move it, and do not add shadows or reflections. Fade it in only, for example with `Reveal y={0}`. Show it at least 200 pixels high, and show phones side by side at the same size. Use it only for iPhone screenshots, never for Android.
 - `Footer` shows `APP_FOOTNOTES` on `/` and `FOOTNOTES` on the parody pages. `APP_STORE_URL` in `src/lib/app.ts` is the App Store link of every download button.
 - The `No.` on the parody member card is a decorative hash of the entered name. It is not a Boji membership number. Do not connect it to the membership API, and do not describe it as a server-issued number.
 
