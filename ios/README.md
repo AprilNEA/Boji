@@ -98,7 +98,9 @@ Debug 默认连接 `http://localhost:3000`。正式配置通过构建设置 `BOJ
 
 ## 设计与发布边界
 
-[设计说明](docs/design.md)记录了材质分层和辅助功能策略。[验证记录](docs/verification.md)列出实际测试结果，[界面改造验证](docs/ui-refresh-verification.md)记录本轮 HIG 改造的范围和结果。
+- [设计说明](docs/design.md)：材质分层和辅助功能策略。
+- [验证记录](docs/verification.md)：实际测试结果。
+- [界面改造验证](docs/ui-refresh-verification.md)：本轮 HIG 改造的范围和结果。
 
 Liquid Glass 只用于标签栏、导航栏、工具栏和底部操作栏。内容卡片使用实色，不使用玻璃。界面支持深色模式、高对比度和 Dynamic Type，iPad 上标签栏可以切换为侧边栏。
 

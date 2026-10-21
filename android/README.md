@@ -127,7 +127,22 @@ AGP 9.4.1 的内置 Kotlin 默认依赖 KGP 2.2.10。根目录的 `build.gradle.
 
 `BojiStore` 对外提供 `StateFlow<BojiSnapshot?>`。读取 `state.json` 完成前，值为 `null`。写入通过 DataStore 的 `updateData` 依次执行。保存失败时，所有页面顶部显示错误提示，与 iOS 版一致。
 
-单元测试位于 `app/src/test/`，覆盖 `BojiStore`、训练状态机、导航目的地、动作动画资源、身体趋势图数据、服务地址校验、领卡规则、会员卡模型、加密序列化器、`MembershipRepository`、健康样本规则、`HealthRepository`、小组件状态、路由解析和手表同步 `WearCompanionSync`。`shared/src/test/` 用 iOS 格式的 JSON 测试快照契约，`wear/src/test/` 测试手表的 `WatchCompanionRepository`，`wear/src/androidTest/` 测试手表界面。`MembershipRepository` 的测试用 MockWebServer 模拟 Better Auth 和 Connect 接口。界面测试位于 `app/src/androidTest/`，覆盖引导、标签切换、记录、训练、动作动画、身体趋势图、挑战、数据删除、会员中心、Keystore 加密、健康数据页面、Health Connect 的清单声明、小组件内容、共享开关、小组件路由和手表连接状态。界面测试用 Hilt 替换数据和账户文件的位置，每个测试使用新目录。界面测试也用 Hilt 把 Health Connect 换成假数据源，不读取设备上的健康数据；把 Data Layer 换成 `TestWatchLinkModule`，不连接真实手表。
+测试分布在以下目录：
+
+| 目录 | 类型 | 覆盖范围 |
+| --- | --- | --- |
+| `app/src/test/` | 单元测试 | `BojiStore`、训练状态机、导航目的地、动作动画资源、身体趋势图数据、服务地址校验、领卡规则、会员卡模型、加密序列化器、`MembershipRepository`、健康样本规则、`HealthRepository`、小组件状态、路由解析、手表同步 `WearCompanionSync` |
+| `app/src/androidTest/` | 界面测试 | 引导、标签切换、记录、训练、动作动画、身体趋势图、挑战、数据删除、会员中心、Keystore 加密、健康数据页面、Health Connect 的清单声明、小组件内容、共享开关、小组件路由、手表连接状态 |
+| `shared/src/test/` | 单元测试 | 用 iOS 格式的 JSON 测试快照契约 |
+| `wear/src/test/` | 单元测试 | 手表的 `WatchCompanionRepository` |
+| `wear/src/androidTest/` | 界面测试 | 手表界面 |
+
+测试替换了以下依赖，不访问真实服务、设备数据或手表：
+
+- `MembershipRepository` 的测试用 MockWebServer 模拟 Better Auth 和 Connect 接口。
+- 界面测试用 Hilt 替换数据和账户文件的位置，每个测试使用新目录。
+- 界面测试用 Hilt 把 Health Connect 换成假数据源，不读取设备上的健康数据。
+- 界面测试把 Data Layer 换成 `TestWatchLinkModule`，不连接真实手表。
 
 ## 动作动画
 
@@ -145,7 +160,14 @@ AGP 9.4.1 的内置 Kotlin 默认依赖 KGP 2.2.10。根目录的 `build.gradle.
 
 `ExerciseAnimationIndex` 在第一次使用时读取 `index.json` 并缓存结果。它只读取 `id`、`frames` 和 `posterFrame`，并忽略其他字段。因此 `animations/` 新增字段时，应用不需要修改。
 
-`ExerciseAnimationAssetsTest` 检查以下内容：`index.json` 的条目与课程动作一一对应；每个条目的 `course` 是包含该动作的课程 ID；`posterFrame` 在 `[0, frames)` 内；浅色和深色文件都存在。界面测试 `ExerciseAnimationTest` 还会从安装包中读取 `index.json`，确认每个课程动作都有有效的代表帧。
+`ExerciseAnimationAssetsTest` 检查以下内容：
+
+- `index.json` 的条目与课程动作一一对应。
+- 每个条目的 `course` 是包含该动作的课程 ID。
+- `posterFrame` 在 `[0, frames)` 内。
+- 浅色和深色文件都存在。
+
+界面测试 `ExerciseAnimationTest` 还会从安装包中读取 `index.json`，确认每个课程动作都有有效的代表帧。
 
 下面的体积按 16 个课程动作计算，共 32 个动画文件和 1 个 `index.json`。Release 安装包从 1,846,795 字节增至 2,622,007 字节，增加 775,212 字节。其中动画文件压缩后占 459,232 字节，原始大小为 3,174,813 字节；`index.json` 压缩后占 1,087 字节。其余增量来自 Lottie 及其依赖的 `appcompat`。Debug 安装包从 13,379,094 字节增至 15,278,222 字节。
 
