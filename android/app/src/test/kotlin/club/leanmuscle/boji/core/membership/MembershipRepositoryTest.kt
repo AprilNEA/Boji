@@ -2,6 +2,7 @@ package club.leanmuscle.boji.core.membership
 
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.CHANGE_PASSWORD
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.CREATE_MEMBERSHIP
+import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.DELETE_USER
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.GET_SESSION
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.LIST_MEMBERSHIPS
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.SIGN_IN
@@ -401,6 +402,64 @@ class MembershipRepositoryTest {
         assertEquals(AccountMessage.PasswordChangedSignInAgain, h.repository.changePassword("password1", "password2"))
         assertEquals(AccountState.SignedOut, h.repository.state.value)
         assertNull(h.sessions.current())
+        h.close()
+    }
+
+    @Test
+    fun requestingAccountDeletionSendsAnEmptyBodyAndKeepsTheSession() = runTest {
+        serveSignedInAccount(membership())
+        server.on(DELETE_USER) { json("""{"success":true,"message":"Verification email sent"}""") }
+        val h = harness()
+        h.seed(h.storedSession(), card = h.cardOf(membership()))
+        h.awaitRestore()
+
+        assertEquals(AccountMessage.DeletionCodeSent, h.repository.requestAccountDeletion())
+
+        val request = server.requests(DELETE_USER).single()
+        assertEquals("Bearer tok-1", request.headers["Authorization"])
+        assertTrue(request.jsonBody().isEmpty())
+        assertEquals("tok-1", h.sessions.current()?.token)
+        assertEquals("000042", signedIn(h.repository.state.value).card?.memberNumber)
+        h.close()
+    }
+
+    @Test
+    fun deletingTheAccountSendsThePastedCodeAndClearsLocalData() = runTest {
+        serveSignedInAccount(membership())
+        server.on(DELETE_USER) { json("""{"success":true,"message":"User deleted"}""") }
+        val h = harness()
+        h.seed(h.storedSession(), card = h.cardOf(membership()))
+        h.awaitRestore()
+
+        assertEquals(AccountMessage.AccountDeleted, h.repository.deleteAccount("  7fb0fa42\n7383450f "))
+
+        val request = server.requests(DELETE_USER).single()
+        assertEquals("Bearer tok-1", request.headers["Authorization"])
+        assertEquals("7fb0fa427383450f", request.jsonBody()["token"]!!.jsonPrimitive.content)
+        assertEquals(AccountState.SignedOut, h.repository.state.value)
+        assertNull(h.sessions.current())
+        assertEquals(0L, h.cacheFile.length())
+        h.close()
+    }
+
+    @Test
+    fun wrongOrMissingDeletionCodeKeepsTheAccount() = runTest {
+        serveSignedInAccount(membership())
+        server.on(DELETE_USER) { json("""{"code":"INVALID_TOKEN","message":"Invalid token"}""", code = 404) }
+        val h = harness()
+        h.seed(h.storedSession(), card = h.cardOf(membership()))
+        h.awaitRestore()
+
+        assertEquals(AccountMessage.DeletionCodeRequired, h.repository.deleteAccount(" \n "))
+        assertTrue(server.requests(DELETE_USER).isEmpty())
+
+        assertEquals(AccountMessage.InvalidDeletionCode, h.repository.deleteAccount("000000"))
+        assertEquals("tok-1", h.sessions.current()?.token)
+        assertEquals("000042", signedIn(h.repository.state.value).card?.memberNumber)
+
+        server.on(DELETE_USER) { json("""{"code":"UNAUTHORIZED","message":"Unauthorized"}""", code = 401) }
+        assertEquals(AccountMessage.SessionExpired, h.repository.deleteAccount("000000"))
+        assertEquals(AccountState.SignedOut, h.repository.state.value)
         h.close()
     }
 

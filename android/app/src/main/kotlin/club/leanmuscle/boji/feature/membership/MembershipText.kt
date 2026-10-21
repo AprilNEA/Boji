@@ -25,6 +25,11 @@ fun accountMessageText(message: AccountMessage): String {
         AccountMessage.PasswordChanged -> stringResource(R.string.msg_password_changed)
         AccountMessage.PasswordChangedSignInAgain -> stringResource(R.string.msg_password_changed_sign_in)
         AccountMessage.OtherSessionsRevoked -> stringResource(R.string.msg_other_sessions_revoked)
+        AccountMessage.DeletionCodeSent -> stringResource(R.string.msg_deletion_code_sent)
+        AccountMessage.AccountDeleted -> stringResource(R.string.msg_account_deleted)
+        AccountMessage.DeletionCodeRequired -> stringResource(R.string.msg_deletion_code_required)
+        AccountMessage.InvalidDeletionCode -> stringResource(R.string.msg_invalid_deletion_code)
+        AccountMessage.AccountDeletedClearFailed -> stringResource(R.string.msg_account_deleted_clear_failed)
         AccountMessage.NotConfigured -> stringResource(R.string.msg_not_configured)
         AccountMessage.EmailAndPasswordRequired -> stringResource(R.string.msg_email_password_required)
         AccountMessage.RegistrationIncomplete -> stringResource(R.string.msg_registration_incomplete, min, max)
@@ -65,6 +70,8 @@ private fun networkMessage(action: AccountAction): Int = when (action) {
     AccountAction.REFRESH_SESSION -> R.string.msg_network_session
     AccountAction.CHANGE_PASSWORD -> R.string.msg_network_password
     AccountAction.REVOKE_OTHER_SESSIONS -> R.string.msg_network_revoke
+    AccountAction.REQUEST_ACCOUNT_DELETION -> R.string.msg_network_deletion_code
+    AccountAction.DELETE_ACCOUNT -> R.string.msg_network_delete_account
 }
 
 @StringRes
@@ -78,6 +85,8 @@ private fun failureMessage(action: AccountAction): Int = when (action) {
     AccountAction.REFRESH_SESSION -> R.string.msg_failed_session
     AccountAction.CHANGE_PASSWORD -> R.string.msg_failed_password
     AccountAction.REVOKE_OTHER_SESSIONS -> R.string.msg_failed_revoke
+    AccountAction.REQUEST_ACCOUNT_DELETION -> R.string.msg_failed_deletion_code
+    AccountAction.DELETE_ACCOUNT -> R.string.msg_failed_delete_account
 }
 
 @Composable

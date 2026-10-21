@@ -89,6 +89,18 @@ class BetterAuthClient(
         if (status != true) throw MemberApiError.InvalidResponse
     }
 
+    /** Emails a confirmation code for deleting the account of [token]. */
+    suspend fun requestAccountDeletion(token: String) {
+        val success = call { api.requestAccountDeletion(bearer(token), EmptyRequest) }.body()?.success
+        if (success != true) throw MemberApiError.InvalidResponse
+    }
+
+    /** Deletes the account of [token]. The server ends every session of the account. */
+    suspend fun deleteAccount(code: String, token: String) {
+        val success = call { api.deleteAccount(bearer(token), DeleteAccountRequest(code)) }.body()?.success
+        if (success != true) throw MemberApiError.InvalidResponse
+    }
+
     private suspend fun <T> call(request: suspend () -> Response<T>): Response<T> {
         val response = try {
             request()

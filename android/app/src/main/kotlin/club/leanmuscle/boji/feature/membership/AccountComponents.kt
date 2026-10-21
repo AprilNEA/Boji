@@ -69,6 +69,9 @@ enum class FieldKind(val contentType: ContentType?, val keyboardType: KeyboardTy
     PASSWORD(ContentType.Password, KeyboardType.Password),
     NEW_PASSWORD(ContentType.NewPassword, KeyboardType.Password),
     NICKNAME(null, KeyboardType.Text),
+
+    /** A confirmation code pasted from an email. */
+    CODE(null, KeyboardType.Ascii),
 }
 
 /** Text field with the autofill type, so password managers can fill and save it. */
@@ -101,7 +104,7 @@ fun AccountField(
         keyboardOptions = KeyboardOptions(
             keyboardType = kind.keyboardType,
             imeAction = imeAction,
-            autoCorrectEnabled = !secret && kind != FieldKind.EMAIL,
+            autoCorrectEnabled = !secret && kind != FieldKind.EMAIL && kind != FieldKind.CODE,
         ),
         keyboardActions = KeyboardActions(onDone = { onDone() }),
     )

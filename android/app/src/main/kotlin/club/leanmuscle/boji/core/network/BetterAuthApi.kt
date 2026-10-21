@@ -47,6 +47,22 @@ interface BetterAuthApi {
         @Header("Authorization") authorization: String,
         @Body body: EmptyRequest,
     ): Response<StatusResponse>
+
+    /**
+     * Account deletion has two steps with the same session. `{}` emails a confirmation code to the
+     * account; `{"token":"<code>"}` deletes the account. See bizserver/docs/migration-auth.md.
+     */
+    @POST("api/auth/delete-user")
+    suspend fun requestAccountDeletion(
+        @Header("Authorization") authorization: String,
+        @Body body: EmptyRequest,
+    ): Response<SuccessResponse>
+
+    @POST("api/auth/delete-user")
+    suspend fun deleteAccount(
+        @Header("Authorization") authorization: String,
+        @Body body: DeleteAccountRequest,
+    ): Response<SuccessResponse>
 }
 
 @Serializable
@@ -72,6 +88,13 @@ data object EmptyRequest
 
 @Serializable
 data class StatusResponse(val status: Boolean)
+
+/** [token] is the confirmation code from the deletion email. */
+@Serializable
+data class DeleteAccountRequest(val token: String)
+
+@Serializable
+data class SuccessResponse(val success: Boolean)
 
 @Serializable
 data class SessionResponse(val session: SessionBody, val user: UserBody)

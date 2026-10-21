@@ -58,6 +58,8 @@ enum class AccountAction {
     REFRESH_SESSION,
     CHANGE_PASSWORD,
     REVOKE_OTHER_SESSIONS,
+    REQUEST_ACCOUNT_DELETION,
+    DELETE_ACCOUNT,
 }
 
 /**
@@ -85,6 +87,8 @@ sealed interface AccountMessage {
     data object PasswordChanged : Notice
     data object PasswordChangedSignInAgain : Notice
     data object OtherSessionsRevoked : Notice
+    data object DeletionCodeSent : Notice
+    data object AccountDeleted : Notice
 
     data object NotConfigured : Problem
     data object EmailAndPasswordRequired : Problem
@@ -99,6 +103,11 @@ sealed interface AccountMessage {
     data object PasswordRules : Problem
     data object SamePassword : Problem
     data object PasswordChangedStorageFailed : Problem
+    data object DeletionCodeRequired : Problem
+    data object InvalidDeletionCode : Problem
+
+    /** The server deleted the account, but a local file could not be cleared. */
+    data object AccountDeletedClearFailed : Problem
     data object TermsRequired : Problem
     data class InvalidNickname(val problem: MembershipRules.NicknameProblem) : Problem
     data object NicknameRejected : Problem

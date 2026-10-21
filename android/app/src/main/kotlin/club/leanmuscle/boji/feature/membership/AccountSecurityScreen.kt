@@ -3,8 +3,11 @@ package club.leanmuscle.boji.feature.membership
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -35,6 +38,7 @@ import club.leanmuscle.boji.ui.components.SectionHeading
 import kotlinx.coroutines.launch
 
 const val SECURITY_SCREEN_TAG = "account_security_screen"
+const val DELETE_ACCOUNT_TAG = "delete_account"
 
 @Composable
 fun AccountSecurityScreen(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: SecurityViewModel = hiltViewModel()) {
@@ -89,6 +93,14 @@ fun AccountSecurityScreen(onBack: () -> Unit, modifier: Modifier = Modifier, vie
             }
             RevokeOthersButton(busy = busy, onConfirm = viewModel::revokeOtherSessions)
             FootNote(stringResource(R.string.security_note))
+
+            SectionHeading(stringResource(R.string.security_delete_section), null)
+            DeleteAccountForm(
+                email = account.email,
+                busy = busy,
+                onRequestCode = viewModel::requestAccountDeletion,
+                onDelete = viewModel::deleteAccount,
+            )
             FootNote(stringResource(R.string.security_footer), icon = R.drawable.ic_lock)
         }
     }
@@ -173,6 +185,90 @@ private fun RevokeOthersButton(busy: Boolean, onConfirm: () -> Unit) {
                 }) { Text(stringResource(R.string.security_revoke_action)) }
             },
             dismissButton = { TextButton(onClick = { confirming = false }) { Text(stringResource(R.string.action_cancel)) } },
+        )
+    }
+}
+
+/**
+ * Account deletion in two steps, as bizserver requires: the server emails a confirmation code, and
+ * the user pastes it here. Each step asks for confirmation first.
+ */
+@Composable
+private fun DeleteAccountForm(
+    email: String,
+    busy: Boolean,
+    onRequestCode: (onSent: () -> Unit) -> Unit,
+    onDelete: (code: String) -> Unit,
+) {
+    // The code stays out of the saved instance state, like the passwords.
+    var code by remember { mutableStateOf("") }
+    var codeSent by rememberSaveable { mutableStateOf(false) }
+    var confirmingRequest by rememberSaveable { mutableStateOf(false) }
+    var confirmingDelete by rememberSaveable { mutableStateOf(false) }
+    val destructive = ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.error,
+        contentColor = MaterialTheme.colorScheme.onError,
+    )
+
+    BojiCard(modifier = Modifier.testTag(DELETE_ACCOUNT_TAG)) {
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text(stringResource(R.string.security_delete_text), style = MaterialTheme.typography.bodyMedium)
+            if (!codeSent) {
+                OutlinedButton(
+                    onClick = { confirmingRequest = true },
+                    enabled = !busy,
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text(stringResource(R.string.security_delete_start), color = MaterialTheme.colorScheme.error) }
+            } else {
+                Text(stringResource(R.string.security_delete_code_hint, email), style = MaterialTheme.typography.bodyMedium)
+                AccountField(
+                    value = code,
+                    onValueChange = { code = it },
+                    label = stringResource(R.string.security_delete_code),
+                    kind = FieldKind.CODE,
+                    enabled = !busy,
+                    imeAction = ImeAction.Done,
+                )
+                Button(
+                    onClick = { confirmingDelete = true },
+                    enabled = !busy && code.isNotBlank(),
+                    colors = destructive,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+                ) { Text(stringResource(R.string.security_delete_confirm_action), style = MaterialTheme.typography.titleMedium) }
+                TextButton(
+                    onClick = { onRequestCode {} },
+                    enabled = !busy,
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text(stringResource(R.string.security_delete_resend)) }
+            }
+        }
+    }
+    if (confirmingRequest) {
+        AlertDialog(
+            onDismissRequest = { confirmingRequest = false },
+            title = { Text(stringResource(R.string.security_delete_request_title)) },
+            text = { Text(stringResource(R.string.security_delete_request_text, email)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmingRequest = false
+                    onRequestCode { codeSent = true }
+                }) { Text(stringResource(R.string.security_delete_request_action)) }
+            },
+            dismissButton = { TextButton(onClick = { confirmingRequest = false }) { Text(stringResource(R.string.action_cancel)) } },
+        )
+    }
+    if (confirmingDelete) {
+        AlertDialog(
+            onDismissRequest = { confirmingDelete = false },
+            title = { Text(stringResource(R.string.security_delete_confirm_title)) },
+            text = { Text(stringResource(R.string.security_delete_confirm_text)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmingDelete = false
+                    onDelete(code)
+                }) { Text(stringResource(R.string.security_delete_confirm_action), color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = { TextButton(onClick = { confirmingDelete = false }) { Text(stringResource(R.string.action_cancel)) } },
         )
     }
 }

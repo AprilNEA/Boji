@@ -93,6 +93,15 @@ class MembershipRepository @Inject constructor(
 
     suspend fun revokeOtherSessions(): AccountMessage? = operation { revokeOtherSessionsNow() }
 
+    /** Asks the server to email a confirmation code for deleting the account. */
+    suspend fun requestAccountDeletion(): AccountMessage? = operation { requestAccountDeletionNow() }
+
+    /**
+     * Deletes the account on the server with the emailed [code], then clears the session and the
+     * card cache. Local records stay, as after a sign-out.
+     */
+    suspend fun deleteAccount(code: String): AccountMessage? = operation { deleteAccountNow(code) }
+
     /** Signs out on the server when possible, and always clears the session and the card cache. */
     suspend fun signOut(): AccountMessage? = operation { signOutNow() }
 
@@ -294,6 +303,32 @@ class MembershipRepository @Inject constructor(
         } catch (e: MemberApiError) {
             handle(e, AccountAction.REVOKE_OTHER_SESSIONS)
         }
+    }
+
+    private suspend fun requestAccountDeletionNow(): AccountMessage {
+        if (origin == null) return AccountMessage.NotConfigured
+        val stored = readSession() ?: return AccountMessage.SignInRequired
+        return try {
+            service.auth().requestAccountDeletion(stored.token)
+            AccountMessage.DeletionCodeSent
+        } catch (e: MemberApiError) {
+            handle(e, AccountAction.REQUEST_ACCOUNT_DELETION)
+        }
+    }
+
+    private suspend fun deleteAccountNow(rawCode: String): AccountMessage {
+        // The code is pasted from an email, so drop the spaces and line breaks that come with it.
+        val code = rawCode.filterNot(Char::isWhitespace)
+        if (code.isEmpty()) return AccountMessage.DeletionCodeRequired
+        if (origin == null) return AccountMessage.NotConfigured
+        val stored = readSession() ?: return AccountMessage.SignInRequired
+        try {
+            service.auth().deleteAccount(code, stored.token)
+        } catch (e: MemberApiError) {
+            if (e.serverCode == "INVALID_TOKEN") return AccountMessage.InvalidDeletionCode
+            return handle(e, AccountAction.DELETE_ACCOUNT)
+        }
+        return if (clearLocal()) AccountMessage.AccountDeleted else AccountMessage.AccountDeletedClearFailed
     }
 
     private suspend fun signOutNow(): AccountMessage {

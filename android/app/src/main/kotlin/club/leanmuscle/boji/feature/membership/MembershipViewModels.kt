@@ -143,4 +143,9 @@ class SecurityViewModel @Inject constructor(repository: MembershipRepository) : 
         launchAction({ repository.changePassword(currentPassword, newPassword) }) { if (!it.isError) onChanged() }
 
     fun revokeOtherSessions() = launchAction(repository::revokeOtherSessions)
+
+    fun requestAccountDeletion(onSent: () -> Unit) =
+        launchAction(repository::requestAccountDeletion) { if (!it.isError) onSent() }
+
+    fun deleteAccount(code: String) = launchAction({ repository.deleteAccount(code) })
 }

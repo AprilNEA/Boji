@@ -59,6 +59,7 @@ class FakeMemberServer : Closeable {
         const val SIGN_OUT = "/api/auth/sign-out"
         const val GET_SESSION = "/api/auth/get-session"
         const val CHANGE_PASSWORD = "/api/auth/change-password"
+        const val DELETE_USER = "/api/auth/delete-user"
         const val LIST_MEMBERSHIPS = "/boji.v1.MembershipService/ListMemberships"
         const val CREATE_MEMBERSHIP = "/boji.v1.MembershipService/CreateMembership"
 
