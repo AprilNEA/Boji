@@ -34,6 +34,7 @@
 		54672DA0B79BD336B41FFC31 /* MembershipAuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA90D104250EADC353989B5 /* MembershipAuthenticationView.swift */; };
 		5F4B361E84F5BB9CBCD33F13 /* MembershipStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544A88E9634042791CE6BBA0 /* MembershipStore.swift */; };
 		60987045AF5F5E131593E45B /* BetterAuthSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532250876ED85B6BDAAA301C /* BetterAuthSession.swift */; };
+		612D6F52AC64C1F976F8291C /* StoreScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670551344EB1A3043C1C22E4 /* StoreScreenshotTests.swift */; };
 		7055CB37DA9468F8256E9218 /* MembershipWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22C5C88414598B9A653BD08 /* MembershipWalletView.swift */; };
 		70DFD9ED3418E6CA8812A330 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 211607BD7F6AC18DAEDF5277 /* PrivacyInfo.xcprivacy */; };
 		71AA5771B94005956B486FCA /* MembershipPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43252989887EE4615826FA3F /* MembershipPresentation.swift */; };
@@ -174,6 +175,7 @@
 		5E83A1EEADA038A229812FF6 /* MembershipSharingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipSharingView.swift; sourceTree = "<group>"; };
 		64E2BDA8BA4453BF2D000EFF /* HealthDataStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthDataStoreTests.swift; sourceTree = "<group>"; };
 		661AE16B78FF2F30E57965DC /* BojiWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BojiWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		670551344EB1A3043C1C22E4 /* StoreScreenshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreScreenshotTests.swift; sourceTree = "<group>"; };
 		695BD58AC8435E8F125079AF /* BojiWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = BojiWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BEFC24EA81BB69F3C8B0B39 /* LegalDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalDocumentTests.swift; sourceTree = "<group>"; };
 		736340937938B43AC99C0B3C /* MembershipEnrollmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipEnrollmentView.swift; sourceTree = "<group>"; };
@@ -290,6 +292,7 @@
 				76F4EEA7892D89748155D924 /* BojiUITests.swift */,
 				869CDAF665EE691311722733 /* ExerciseAnimationUITests.swift */,
 				40F9A36CC425B538B13A453D /* MembershipUITests.swift */,
+				670551344EB1A3043C1C22E4 /* StoreScreenshotTests.swift */,
 			);
 			path = BojiUITests;
 			sourceTree = "<group>";
@@ -669,6 +672,7 @@
 				3B0A9512235FB99171894270 /* BojiUITests.swift in Sources */,
 				A223C81D56AEBA7B0D1C0BED /* ExerciseAnimationUITests.swift in Sources */,
 				A9D5A072E50915E5CEA7CD43 /* MembershipUITests.swift in Sources */,
+				612D6F52AC64C1F976F8291C /* StoreScreenshotTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

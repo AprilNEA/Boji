@@ -1,0 +1,373 @@
+{
+  "status": "layout-draft",
+  "readyForSubmission": false,
+  "note": "Real simulator captures with isolated test data. English exercise muscle labels and the iPhone daily rhythm layout still need correction. Final release recapture required.",
+  "images": [
+    {
+      "file": "public/screenshots/apple/iphone/zh-Hans/01-training.png",
+      "sha256": "2fbdf4e77f7543d5b3c567c2d0044470d847cd24cc184cb03b3f7b3b03b4a8f6",
+      "capture": "training-tab_0_F31B1D32-F5FE-4850-8883-7DD2D17C9CD8.png",
+      "device": "iPhone 17",
+      "capturedAt": "2026-10-20T23:17:11.501000+08:00",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "source": "XCTest isolation fixture",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/iphone/zh-Hans/02-exercise.png",
+      "sha256": "ab469543b678b366f65e28d14e41f82da8ba54d08b09b1ba9ecd089a91ce79e1",
+      "capture": "exercise-dark-poster_0_F71C9965-58BD-4019-8644-9D766294B4E3.png",
+      "device": "iPhone 17",
+      "capturedAt": "2026-10-20T23:19:46.391000+08:00",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "source": "XCTest isolation fixture",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/iphone/zh-Hans/03-session.png",
+      "sha256": "49e61cd7c1e9c866b8bcda001d5b16f715ffb1797b3a75bc0670d7a91da865b3",
+      "capture": "workout-session_0_ED45D2A5-F640-4D05-A2AC-BF42FB44A155.png",
+      "device": "iPhone 17",
+      "capturedAt": "2026-10-20T23:17:18.990000+08:00",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "source": "XCTest isolation fixture",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/iphone/zh-Hans/04-habits.png",
+      "sha256": "f58c2ad194c7a22854c880eaedab3576b6510db16fdc7241245959dce47e0e63",
+      "capture": "today-habits_0_7AAF9712-234C-4F69-BB16-9DB7AFCC0142.png",
+      "device": "iPhone 17",
+      "capturedAt": "2026-10-20T23:18:40.746000+08:00",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "source": "XCTest isolation fixture",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/iphone/zh-Hans/05-progress.png",
+      "sha256": "8e9af87a9bbb842c729439aee9bfab10a129afbecab224061fad266e8e45227a",
+      "capture": "progress-record_0_057FBD30-0D08-4F0A-93D6-698C19E153F8.png",
+      "device": "iPhone 17",
+      "capturedAt": "2026-10-20T23:16:57.990000+08:00",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "source": "XCTest isolation fixture",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/iphone/zh-Hans/06-local.png",
+      "sha256": "9097889f59d8f0b7db0e2a8289b74c30f89102b1c70add29df3d4a764c118962",
+      "capture": "settings_0_7B3E0BC4-68FE-43DD-B42D-0FF4752CB7BF.png",
+      "device": "iPhone 17",
+      "capturedAt": "2026-10-20T23:17:57.889000+08:00",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "source": "XCTest isolation fixture",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/iphone/en-US/06-local.png",
+      "sha256": "7d8d0825d44d4aae4b39b3b224123c1eb30051b59a3370bf966e2bbbc61467a5",
+      "capture": "store-en-US-06-settings_0_CF62B069-BA86-4A10-9931-2553B5548307.png",
+      "device": "iPhone 17",
+      "deviceUDID": "002CE487-401A-4B4B-82A1-B19AE5D7BE2F",
+      "capturedAt": "2026-10-20T18:59:14.208000+00:00",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/iphone/en-US/05-progress.png",
+      "sha256": "445c6f06f3965ba6e1e260dcf0fa542aa535b0c3a11f21369f4ed47513decc30",
+      "capture": "store-en-US-05-progress_0_18DF44FF-3644-497A-92BF-67AEEC80673B.png",
+      "device": "iPhone 17",
+      "deviceUDID": "002CE487-401A-4B4B-82A1-B19AE5D7BE2F",
+      "capturedAt": "2026-10-20T18:59:08.943000+00:00",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/iphone/en-US/04-habits.png",
+      "sha256": "daa0ede2d03c6d6ea5e984a4f6313494218a79b206909697fbf4e4d736df4c30",
+      "capture": "store-en-US-04-today_0_23F4CEF1-C2CE-47CF-B304-9085D9730252.png",
+      "device": "iPhone 17",
+      "deviceUDID": "002CE487-401A-4B4B-82A1-B19AE5D7BE2F",
+      "capturedAt": "2026-10-20T18:58:48.042000+00:00",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/iphone/en-US/03-session.png",
+      "sha256": "df76b859a4a5010ee5e620a460c2e8b393f2e67ab5c38801b49f39387d0a9a71",
+      "capture": "store-en-US-03-session_0_24ADFB40-319B-401B-977A-6CBF56C4A3EB.png",
+      "device": "iPhone 17",
+      "deviceUDID": "002CE487-401A-4B4B-82A1-B19AE5D7BE2F",
+      "capturedAt": "2026-10-20T18:58:25.375000+00:00",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/iphone/en-US/02-exercise.png",
+      "sha256": "1aa0e2b839e67df1149b232438140363a6b8cf9883441ac19e758854bfd9d337",
+      "capture": "store-en-US-02-exercise_0_5E4A01ED-3192-44FC-B76D-8255F0294E59.png",
+      "device": "iPhone 17",
+      "deviceUDID": "002CE487-401A-4B4B-82A1-B19AE5D7BE2F",
+      "capturedAt": "2026-10-20T18:58:16.673000+00:00",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/iphone/en-US/01-training.png",
+      "sha256": "ffcf1a6813ea5769d6147529af0a8c0f0a41b55e3ab6c1da29f69023b81576c4",
+      "capture": "store-en-US-01-training_0_9194E635-E4DC-4871-9BC3-B7E303C450E8.png",
+      "device": "iPhone 17",
+      "deviceUDID": "002CE487-401A-4B4B-82A1-B19AE5D7BE2F",
+      "capturedAt": "2026-10-20T18:58:06.953000+00:00",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/ipad/zh-Hans/06-local.png",
+      "sha256": "423f544ff1d72690160cf39528b8ad0dd9fa24a03d849131e5f5f0185aa5f508",
+      "capture": "store-zh-Hans-06-settings_0_D0AE45EA-482F-4D29-B82F-25CC51E448D6.png",
+      "device": "iPad Pro 13-inch (M5)",
+      "deviceUDID": "B6C8B40D-1649-4C83-B89A-754BCD4AE2A4",
+      "capturedAt": "2026-10-20T19:06:46.398000+00:00",
+      "pixels": [
+        2064,
+        2752
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/ipad/zh-Hans/05-progress.png",
+      "sha256": "e16875e87b575ca54030fc9eaa41feaa2a9ef4d0f245f092c9644b70b0d31872",
+      "capture": "store-zh-Hans-05-progress_0_827659DC-86E3-4B55-AA6F-B25E5F32FAF4.png",
+      "device": "iPad Pro 13-inch (M5)",
+      "deviceUDID": "B6C8B40D-1649-4C83-B89A-754BCD4AE2A4",
+      "capturedAt": "2026-10-20T19:06:39.197000+00:00",
+      "pixels": [
+        2064,
+        2752
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/ipad/zh-Hans/04-habits.png",
+      "sha256": "bfa00bac51938b602790ed67471f698d2a2e61291053ecd0c24b91f7fc7c3c7c",
+      "capture": "store-zh-Hans-04-today_0_519C2F48-CFC4-469D-A737-EC8FCF353A73.png",
+      "device": "iPad Pro 13-inch (M5)",
+      "deviceUDID": "B6C8B40D-1649-4C83-B89A-754BCD4AE2A4",
+      "capturedAt": "2026-10-20T19:06:16.145000+00:00",
+      "pixels": [
+        2064,
+        2752
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/ipad/zh-Hans/03-session.png",
+      "sha256": "5e71fb546aed8c01b4e3108a2fb7c19e879edda6eac740fcaad9248ef2ee9465",
+      "capture": "store-zh-Hans-03-session_0_805F32D4-C947-469E-B9AE-074880069055.png",
+      "device": "iPad Pro 13-inch (M5)",
+      "deviceUDID": "B6C8B40D-1649-4C83-B89A-754BCD4AE2A4",
+      "capturedAt": "2026-10-20T19:05:48.778000+00:00",
+      "pixels": [
+        2064,
+        2752
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/ipad/zh-Hans/02-exercise.png",
+      "sha256": "b1e45509b8c52485b6d2ac7e1dde253aa612cc4b233b1cbfc4bef3dc5210f192",
+      "capture": "store-zh-Hans-02-exercise_0_5CF2E01D-AF02-42F6-A073-90B2C9972F13.png",
+      "device": "iPad Pro 13-inch (M5)",
+      "deviceUDID": "B6C8B40D-1649-4C83-B89A-754BCD4AE2A4",
+      "capturedAt": "2026-10-20T19:05:39.604000+00:00",
+      "pixels": [
+        2064,
+        2752
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/ipad/zh-Hans/01-training.png",
+      "sha256": "131d7d8a9bdc77ee80fa54f42ba309737deec32142565aff14bc4abe1bb230e5",
+      "capture": "store-zh-Hans-01-training_0_EA5C29E5-EE26-44DB-82C9-6D515FF2B48B.png",
+      "device": "iPad Pro 13-inch (M5)",
+      "deviceUDID": "B6C8B40D-1649-4C83-B89A-754BCD4AE2A4",
+      "capturedAt": "2026-10-20T19:05:29.898000+00:00",
+      "pixels": [
+        2064,
+        2752
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/ipad/en-US/06-local.png",
+      "sha256": "ac9c30a683497447b5d3cb26de3baa52271fb1b850521514dfc4fb54970991d7",
+      "capture": "store-en-US-06-settings_0_9CE62C49-1C16-4E2C-8B76-340B79D68AA9.png",
+      "device": "iPad Pro 13-inch (M5)",
+      "deviceUDID": "B6C8B40D-1649-4C83-B89A-754BCD4AE2A4",
+      "capturedAt": "2026-10-20T19:08:15.470000+00:00",
+      "pixels": [
+        2064,
+        2752
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/ipad/en-US/05-progress.png",
+      "sha256": "6ccb9af4e213e38dac06af3c9eb1354a98b0f8fbc3c1c175fe30490d87ebf4a6",
+      "capture": "store-en-US-05-progress_0_735C0660-F563-4BD1-AB88-ADB2D01F661C.png",
+      "device": "iPad Pro 13-inch (M5)",
+      "deviceUDID": "B6C8B40D-1649-4C83-B89A-754BCD4AE2A4",
+      "capturedAt": "2026-10-20T19:08:10.155000+00:00",
+      "pixels": [
+        2064,
+        2752
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/ipad/en-US/04-habits.png",
+      "sha256": "f05b29ac52134d08c71e55641370708825f2dfd8f8478e22f8801fe5c03dd546",
+      "capture": "store-en-US-04-today_0_440937BF-A4E8-4DD6-871F-0AEE45D8F81C.png",
+      "device": "iPad Pro 13-inch (M5)",
+      "deviceUDID": "B6C8B40D-1649-4C83-B89A-754BCD4AE2A4",
+      "capturedAt": "2026-10-20T19:07:47.524000+00:00",
+      "pixels": [
+        2064,
+        2752
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/ipad/en-US/03-session.png",
+      "sha256": "6a5b361287c83660f88859429b80c6ad9ecce5308548f814b32497cfa561191e",
+      "capture": "store-en-US-03-session_0_B4B0213D-3830-4A8D-8C7A-4E8A6B91A8A9.png",
+      "device": "iPad Pro 13-inch (M5)",
+      "deviceUDID": "B6C8B40D-1649-4C83-B89A-754BCD4AE2A4",
+      "capturedAt": "2026-10-20T19:07:22.080000+00:00",
+      "pixels": [
+        2064,
+        2752
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/ipad/en-US/02-exercise.png",
+      "sha256": "f0332b6126a3c2720de7a86746493a010b643be3fe7913e24b5a5fbca6a52140",
+      "capture": "store-en-US-02-exercise_0_2AEF1CC8-1D8D-409F-8A5E-5101DFF7A1CF.png",
+      "device": "iPad Pro 13-inch (M5)",
+      "deviceUDID": "B6C8B40D-1649-4C83-B89A-754BCD4AE2A4",
+      "capturedAt": "2026-10-20T19:07:11.819000+00:00",
+      "pixels": [
+        2064,
+        2752
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    },
+    {
+      "file": "public/screenshots/apple/ipad/en-US/01-training.png",
+      "sha256": "bf5b97027143937aba09c3e94e8730e6b5607cc7908f607310203a04a43251e7",
+      "capture": "store-en-US-01-training_0_B60BD814-E9A1-48EC-8C84-50D8C22EA88B.png",
+      "device": "iPad Pro 13-inch (M5)",
+      "deviceUDID": "B6C8B40D-1649-4C83-B89A-754BCD4AE2A4",
+      "capturedAt": "2026-10-20T19:07:00.785000+00:00",
+      "pixels": [
+        2064,
+        2752
+      ],
+      "source": "XCTest isolated in-memory store",
+      "build": "0.7.0 (7)",
+      "configuration": "Debug",
+      "uiRetouched": false
+    }
+  ]
+}

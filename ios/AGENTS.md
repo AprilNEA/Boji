@@ -19,6 +19,7 @@ This directory holds the native iOS app, its watchOS app and its widgets. The pr
 | `BojiAPI/` | Local Swift package with the generated messages and Connect clients of the `boji.v1` API |
 | `docs/` | Design notes, integration notes and verification records |
 | `app-store/` | Public App Store copy, pinned asc tooling and offline checks |
+| `app-store/screenshots/` | Local-only screenshot editor and source captures; see its `AGENTS.md` |
 | `ci/` | Pinned CI tools, signing validation, release provenance and offline tests; see `docs/ci-cd.md` |
 
 ## Commands
@@ -82,6 +83,7 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - Treat store copy as a draft until names, claims, URLs and release requirements are approved. Never guess the App Store numeric ID.
 - The wrapper only installs, validates, reads and previews. Real uploads, review submissions and releases require separate authorization.
 - Keep keys, review credentials and contacts out of public metadata. Keep downloads and preview artifacts under the root `.work/boji-asc/`.
+- Keep screenshot editing separate from asc credentials. Use real, isolated app captures and record their provenance; never fabricate UI or upload drafts automatically.
 
 ### Project and build
 
@@ -121,7 +123,6 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - Give VoiceOver the full word when the visible label is shortened. The accessory widgets show 训, 饮 and 眠, or T, W and S in English, and read `name`.
 - Do not localize the test fixtures in the `#if DEBUG` part of `Models/MembershipAPI.swift` or the `DecodingError` debug descriptions.
 - Muscle names in `ExerciseAnimationCatalog` come from `../animations/` and are in Chinese only. They are not localized yet.
-
 
 ### Tests
 

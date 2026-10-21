@@ -226,7 +226,7 @@ I have read the CLA Document and I hereby sign the CLA
 | App 图标 | `ios/Boji/Resources/AppIcon.icon`、`assets/public/boji-icon.png`、`assets/public/boji-icon-dark.png`、`bizserver/assets/wallet/icon*.png` |
 | 网站媒体 | `websites/public/media/` |
 | 人像照片 | `websites/public/images/portraits/` |
-| App 截图 | `assets/public/screenshots/` |
+| App 截图 | `ios/app-store/screenshots/`、`assets/public/screenshots/` |
 | 动作库 | `animations/src/exercises/library/`、`assets/public/previews/library/` |
 | Apple Root CA 证书 | `bizserver/assets/wallet/apple-root-ca.crt` |
 | 第三方依赖与字体 | — |

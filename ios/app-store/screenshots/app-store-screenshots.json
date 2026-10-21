@@ -1,0 +1,1236 @@
+{
+  "schemaVersion": 3,
+  "appName": "薄肌俱乐部",
+  "themeId": "warm-editorial",
+  "fontId": "system-sans",
+  "connectedCanvas": true,
+  "locales": [
+    "zh-Hans",
+    "en-US"
+  ],
+  "locale": "en-US",
+  "device": "ipad",
+  "orientation": "portrait",
+  "appIcon": "/app-icon.png",
+  "slidesByDevice": {
+    "iphone": [
+      {
+        "id": "01-training",
+        "layout": "hero",
+        "label": {
+          "zh-Hans": "薄肌俱乐部",
+          "en-US": "LEAN MUSCLE CLUB"
+        },
+        "headline": {
+          "zh-Hans": "练一点，\n日子轻一点。",
+          "en-US": "A little movement.\nA lighter day."
+        },
+        "screenshot": "/screenshots/apple/iphone/{locale}/01-training.png",
+        "inverted": false,
+        "backgroundColor": "#F5F1EB",
+        "typography": {
+          "labelScale": 1.2,
+          "headlineScale": 1.18
+        },
+        "transforms": {
+          "caption": {
+            "x": 100,
+            "y": 120,
+            "width": 1120,
+            "height": 440,
+            "rotation": 0,
+            "zIndex": 4
+          },
+          "device": {
+            "x": 160,
+            "y": 775,
+            "width": 1000,
+            "height": 2100,
+            "rotation": 0,
+            "zIndex": 3
+          }
+        },
+        "textElements": [
+          {
+            "id": "detail",
+            "text": {
+              "zh-Hans": "从适合自己的课程开始",
+              "en-US": "Start with a workout that fits your day."
+            },
+            "transform": {
+              "x": 100,
+              "y": 610,
+              "width": 1120,
+              "height": 75,
+              "zIndex": 5
+            },
+            "fontSize": 42,
+            "fontWeight": 450,
+            "color": "#6B6F62",
+            "align": "center"
+          }
+        ]
+      },
+      {
+        "id": "02-exercise",
+        "layout": "device-top",
+        "label": {
+          "zh-Hans": "动作演示",
+          "en-US": "EXERCISE GUIDE"
+        },
+        "headline": {
+          "zh-Hans": "看清动作，\n再慢慢练。",
+          "en-US": "See the move.\nTake your time."
+        },
+        "screenshot": "/screenshots/apple/iphone/{locale}/02-exercise.png",
+        "inverted": true,
+        "backgroundColor": "#191C19",
+        "typography": {
+          "labelScale": 1.2,
+          "headlineScale": 1.18
+        },
+        "transforms": {
+          "caption": {
+            "x": 100,
+            "y": 2300,
+            "width": 1120,
+            "height": 440,
+            "rotation": 0,
+            "zIndex": 4
+          },
+          "device": {
+            "x": 175,
+            "y": 110,
+            "width": 970,
+            "height": 2037,
+            "rotation": 0,
+            "zIndex": 3
+          }
+        },
+        "textElements": [
+          {
+            "id": "detail",
+            "text": {
+              "zh-Hans": "循环 · 慢速 · 代表姿势",
+              "en-US": "Clear exercise illustrations."
+            },
+            "transform": {
+              "x": 100,
+              "y": 2720,
+              "width": 1120,
+              "height": 75,
+              "zIndex": 5
+            },
+            "fontSize": 42,
+            "fontWeight": 450,
+            "color": "#CECBBE",
+            "align": "center"
+          }
+        ]
+      },
+      {
+        "id": "03-session",
+        "layout": "device-bottom",
+        "label": {
+          "zh-Hans": "逐组训练",
+          "en-US": "ONE SET AT A TIME"
+        },
+        "headline": {
+          "zh-Hans": "按自己的\n节奏练。",
+          "en-US": "Find your\nown pace."
+        },
+        "screenshot": "/screenshots/apple/iphone/{locale}/03-session.png",
+        "inverted": false,
+        "backgroundColor": "#E8EFE9",
+        "typography": {
+          "labelScale": 1.2,
+          "headlineScale": 1.18
+        },
+        "transforms": {
+          "caption": {
+            "x": 100,
+            "y": 120,
+            "width": 1120,
+            "height": 440,
+            "rotation": 0,
+            "zIndex": 4
+          },
+          "device": {
+            "x": 160,
+            "y": 775,
+            "width": 1000,
+            "height": 2100,
+            "rotation": 0,
+            "zIndex": 3
+          }
+        },
+        "textElements": [
+          {
+            "id": "detail",
+            "text": {
+              "zh-Hans": "动作要点与休息计时，随时查看",
+              "en-US": "Exercise tips and rest timers, in reach."
+            },
+            "transform": {
+              "x": 100,
+              "y": 610,
+              "width": 1120,
+              "height": 75,
+              "zIndex": 5
+            },
+            "fontSize": 42,
+            "fontWeight": 450,
+            "color": "#6B6F62",
+            "align": "center"
+          }
+        ]
+      },
+      {
+        "id": "04-habits",
+        "layout": "hero",
+        "label": {
+          "zh-Hans": "日常习惯",
+          "en-US": "DAILY HABITS"
+        },
+        "headline": {
+          "zh-Hans": "喝水睡觉，\n都值得记录。",
+          "en-US": "Water. Sleep.\nLittle wins."
+        },
+        "screenshot": "/screenshots/apple/iphone/{locale}/04-habits.png",
+        "inverted": false,
+        "backgroundColor": "#F4E9DD",
+        "typography": {
+          "labelScale": 1.2,
+          "headlineScale": 1.18
+        },
+        "transforms": {
+          "caption": {
+            "x": 100,
+            "y": 120,
+            "width": 1120,
+            "height": 440,
+            "rotation": 0,
+            "zIndex": 4
+          },
+          "device": {
+            "x": 160,
+            "y": 775,
+            "width": 1000,
+            "height": 2100,
+            "rotation": 0,
+            "zIndex": 3
+          }
+        },
+        "textElements": [
+          {
+            "id": "detail",
+            "text": {
+              "zh-Hans": "照顾自己，从小事开始",
+              "en-US": "Small ways to care for yourself."
+            },
+            "transform": {
+              "x": 100,
+              "y": 610,
+              "width": 1120,
+              "height": 75,
+              "zIndex": 5
+            },
+            "fontSize": 42,
+            "fontWeight": 450,
+            "color": "#6B6F62",
+            "align": "center"
+          }
+        ]
+      },
+      {
+        "id": "05-progress",
+        "layout": "device-top",
+        "label": {
+          "zh-Hans": "身体足迹",
+          "en-US": "YOUR JOURNEY"
+        },
+        "headline": {
+          "zh-Hans": "只看自己的\n小小变化。",
+          "en-US": "Follow your\nown progress."
+        },
+        "screenshot": "/screenshots/apple/iphone/{locale}/05-progress.png",
+        "inverted": false,
+        "backgroundColor": "#EBEEE7",
+        "typography": {
+          "labelScale": 1.2,
+          "headlineScale": 1.18
+        },
+        "transforms": {
+          "caption": {
+            "x": 100,
+            "y": 2300,
+            "width": 1120,
+            "height": 440,
+            "rotation": 0,
+            "zIndex": 4
+          },
+          "device": {
+            "x": 175,
+            "y": 110,
+            "width": 970,
+            "height": 2037,
+            "rotation": 0,
+            "zIndex": 3
+          }
+        },
+        "textElements": [
+          {
+            "id": "detail",
+            "text": {
+              "zh-Hans": "记录体重与腰围，不与别人比较",
+              "en-US": "Track weight and waist, not other people."
+            },
+            "transform": {
+              "x": 100,
+              "y": 2720,
+              "width": 1120,
+              "height": 75,
+              "zIndex": 5
+            },
+            "fontSize": 42,
+            "fontWeight": 450,
+            "color": "#6B6F62",
+            "align": "center"
+          }
+        ]
+      },
+      {
+        "id": "06-local",
+        "layout": "device-bottom",
+        "label": {
+          "zh-Hans": "本地优先",
+          "en-US": "LOCAL FIRST"
+        },
+        "headline": {
+          "zh-Hans": "先开始，\n不必先登录。",
+          "en-US": "Start moving.\nSkip the sign-up."
+        },
+        "screenshot": "/screenshots/apple/iphone/{locale}/06-local.png",
+        "inverted": false,
+        "backgroundColor": "#F5F1EB",
+        "typography": {
+          "labelScale": 1.2,
+          "headlineScale": 1.18
+        },
+        "transforms": {
+          "caption": {
+            "x": 100,
+            "y": 120,
+            "width": 1120,
+            "height": 440,
+            "rotation": 0,
+            "zIndex": 4
+          },
+          "device": {
+            "x": 160,
+            "y": 775,
+            "width": 1000,
+            "height": 2100,
+            "rotation": 0,
+            "zIndex": 3
+          }
+        },
+        "textElements": [
+          {
+            "id": "detail",
+            "text": {
+              "zh-Hans": "基础记录无需账号，数据保存在本机",
+              "en-US": "Basic tracking works without an account."
+            },
+            "transform": {
+              "x": 100,
+              "y": 610,
+              "width": 1120,
+              "height": 75,
+              "zIndex": 5
+            },
+            "fontSize": 42,
+            "fontWeight": 450,
+            "color": "#6B6F62",
+            "align": "center"
+          }
+        ]
+      }
+    ],
+    "android": [
+      {
+        "id": "s_mvgyhwob_5",
+        "layout": "hero",
+        "label": {
+          "en": "MEET YOUR APP"
+        },
+        "headline": {
+          "en": "Sell one\nidea per slide."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_6",
+        "layout": "device-bottom",
+        "label": {
+          "en": "FEATURE 01"
+        },
+        "headline": {
+          "en": "Your headline\nlives here."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_7",
+        "layout": "two-devices",
+        "label": {
+          "en": "FEATURE 02"
+        },
+        "headline": {
+          "en": "Show two\nscreens at once."
+        },
+        "screenshot": "",
+        "screenshotSecondary": ""
+      },
+      {
+        "id": "s_mvgyhwob_8",
+        "layout": "device-top",
+        "label": {
+          "en": "FEATURE 03"
+        },
+        "headline": {
+          "en": "Flip the contrast\nfor visual rhythm."
+        },
+        "screenshot": "",
+        "inverted": true
+      },
+      {
+        "id": "s_mvgyhwob_9",
+        "layout": "no-device",
+        "label": {
+          "en": "MORE"
+        },
+        "headline": {
+          "en": "And so\nmuch more."
+        },
+        "screenshot": ""
+      }
+    ],
+    "ipad": [
+      {
+        "id": "01-training",
+        "layout": "hero",
+        "label": {
+          "zh-Hans": "薄肌俱乐部",
+          "en-US": "LEAN MUSCLE CLUB"
+        },
+        "headline": {
+          "zh-Hans": "练一点，\n日子轻一点。",
+          "en-US": "A little movement.\nA lighter day."
+        },
+        "screenshot": "/screenshots/apple/ipad/{locale}/01-training.png",
+        "inverted": false,
+        "backgroundColor": "#F5F1EB",
+        "typography": {
+          "headlineScale": 0.93
+        },
+        "transforms": {
+          "caption": {
+            "x": 120,
+            "y": 100,
+            "width": 1824,
+            "height": 420,
+            "zIndex": 4
+          },
+          "device": {
+            "x": 280,
+            "y": 665,
+            "width": 1504,
+            "height": 2040,
+            "zIndex": 3
+          }
+        },
+        "textElements": [
+          {
+            "id": "detail",
+            "text": {
+              "zh-Hans": "从适合自己的课程开始",
+              "en-US": "Start with a workout that fits your day."
+            },
+            "transform": {
+              "x": 120,
+              "y": 600,
+              "width": 1824,
+              "height": 75,
+              "zIndex": 5
+            },
+            "fontSize": 46,
+            "fontWeight": 450,
+            "color": "#6B6F62",
+            "align": "center"
+          }
+        ]
+      },
+      {
+        "id": "02-exercise",
+        "layout": "hero",
+        "label": {
+          "zh-Hans": "动作演示",
+          "en-US": "EXERCISE GUIDE"
+        },
+        "headline": {
+          "zh-Hans": "看清动作，\n再慢慢练。",
+          "en-US": "See the move.\nTake your time."
+        },
+        "screenshot": "/screenshots/apple/ipad/{locale}/02-exercise.png",
+        "inverted": true,
+        "backgroundColor": "#191C19",
+        "typography": {
+          "headlineScale": 0.93
+        },
+        "transforms": {
+          "caption": {
+            "x": 120,
+            "y": 100,
+            "width": 1824,
+            "height": 420,
+            "zIndex": 4
+          },
+          "device": {
+            "x": 280,
+            "y": 665,
+            "width": 1504,
+            "height": 2040,
+            "zIndex": 3
+          }
+        },
+        "textElements": [
+          {
+            "id": "detail",
+            "text": {
+              "zh-Hans": "循环 · 慢速 · 代表姿势",
+              "en-US": "Clear exercise illustrations."
+            },
+            "transform": {
+              "x": 120,
+              "y": 600,
+              "width": 1824,
+              "height": 75,
+              "zIndex": 5
+            },
+            "fontSize": 46,
+            "fontWeight": 450,
+            "color": "#CECBBE",
+            "align": "center"
+          }
+        ]
+      },
+      {
+        "id": "03-session",
+        "layout": "hero",
+        "label": {
+          "zh-Hans": "逐组训练",
+          "en-US": "ONE SET AT A TIME"
+        },
+        "headline": {
+          "zh-Hans": "按自己的\n节奏练。",
+          "en-US": "Find your\nown pace."
+        },
+        "screenshot": "/screenshots/apple/ipad/{locale}/03-session.png",
+        "inverted": false,
+        "backgroundColor": "#E8EFE9",
+        "typography": {
+          "headlineScale": 0.93
+        },
+        "transforms": {
+          "caption": {
+            "x": 120,
+            "y": 100,
+            "width": 1824,
+            "height": 420,
+            "zIndex": 4
+          },
+          "device": {
+            "x": 280,
+            "y": 665,
+            "width": 1504,
+            "height": 2040,
+            "zIndex": 3
+          }
+        },
+        "textElements": [
+          {
+            "id": "detail",
+            "text": {
+              "zh-Hans": "动作要点与休息计时，随时查看",
+              "en-US": "Exercise tips and rest timers, in reach."
+            },
+            "transform": {
+              "x": 120,
+              "y": 600,
+              "width": 1824,
+              "height": 75,
+              "zIndex": 5
+            },
+            "fontSize": 46,
+            "fontWeight": 450,
+            "color": "#6B6F62",
+            "align": "center"
+          }
+        ]
+      },
+      {
+        "id": "04-habits",
+        "layout": "hero",
+        "label": {
+          "zh-Hans": "日常习惯",
+          "en-US": "DAILY HABITS"
+        },
+        "headline": {
+          "zh-Hans": "喝水睡觉，\n都值得记录。",
+          "en-US": "Water. Sleep.\nLittle wins."
+        },
+        "screenshot": "/screenshots/apple/ipad/{locale}/04-habits.png",
+        "inverted": false,
+        "backgroundColor": "#F4E9DD",
+        "typography": {
+          "headlineScale": 0.93
+        },
+        "transforms": {
+          "caption": {
+            "x": 120,
+            "y": 100,
+            "width": 1824,
+            "height": 420,
+            "zIndex": 4
+          },
+          "device": {
+            "x": 280,
+            "y": 665,
+            "width": 1504,
+            "height": 2040,
+            "zIndex": 3
+          }
+        },
+        "textElements": [
+          {
+            "id": "detail",
+            "text": {
+              "zh-Hans": "照顾自己，从小事开始",
+              "en-US": "Small ways to care for yourself."
+            },
+            "transform": {
+              "x": 120,
+              "y": 600,
+              "width": 1824,
+              "height": 75,
+              "zIndex": 5
+            },
+            "fontSize": 46,
+            "fontWeight": 450,
+            "color": "#6B6F62",
+            "align": "center"
+          }
+        ]
+      },
+      {
+        "id": "05-progress",
+        "layout": "hero",
+        "label": {
+          "zh-Hans": "身体足迹",
+          "en-US": "YOUR JOURNEY"
+        },
+        "headline": {
+          "zh-Hans": "只看自己的\n小小变化。",
+          "en-US": "Follow your\nown progress."
+        },
+        "screenshot": "/screenshots/apple/ipad/{locale}/05-progress.png",
+        "inverted": false,
+        "backgroundColor": "#EBEEE7",
+        "typography": {
+          "headlineScale": 0.93
+        },
+        "transforms": {
+          "caption": {
+            "x": 120,
+            "y": 100,
+            "width": 1824,
+            "height": 420,
+            "zIndex": 4
+          },
+          "device": {
+            "x": 280,
+            "y": 665,
+            "width": 1504,
+            "height": 2040,
+            "zIndex": 3
+          }
+        },
+        "textElements": [
+          {
+            "id": "detail",
+            "text": {
+              "zh-Hans": "记录体重与腰围，不与别人比较",
+              "en-US": "Track weight and waist, not other people."
+            },
+            "transform": {
+              "x": 120,
+              "y": 600,
+              "width": 1824,
+              "height": 75,
+              "zIndex": 5
+            },
+            "fontSize": 46,
+            "fontWeight": 450,
+            "color": "#6B6F62",
+            "align": "center"
+          }
+        ]
+      },
+      {
+        "id": "06-local",
+        "layout": "hero",
+        "label": {
+          "zh-Hans": "本地优先",
+          "en-US": "LOCAL FIRST"
+        },
+        "headline": {
+          "zh-Hans": "先开始，\n不必先登录。",
+          "en-US": "Start moving.\nSkip the sign-up."
+        },
+        "screenshot": "/screenshots/apple/ipad/{locale}/06-local.png",
+        "inverted": false,
+        "backgroundColor": "#F5F1EB",
+        "typography": {
+          "headlineScale": 0.93
+        },
+        "transforms": {
+          "caption": {
+            "x": 120,
+            "y": 100,
+            "width": 1824,
+            "height": 420,
+            "zIndex": 4
+          },
+          "device": {
+            "x": 280,
+            "y": 665,
+            "width": 1504,
+            "height": 2040,
+            "zIndex": 3
+          }
+        },
+        "textElements": [
+          {
+            "id": "detail",
+            "text": {
+              "zh-Hans": "基础记录无需账号，数据保存在本机",
+              "en-US": "Basic tracking works without an account."
+            },
+            "transform": {
+              "x": 120,
+              "y": 600,
+              "width": 1824,
+              "height": 75,
+              "zIndex": 5
+            },
+            "fontSize": 46,
+            "fontWeight": 450,
+            "color": "#6B6F62",
+            "align": "center"
+          }
+        ]
+      }
+    ],
+    "tvos": [
+      {
+        "id": "s_mvgyhwob_d",
+        "layout": "hero",
+        "label": {
+          "en": "MEET YOUR APP"
+        },
+        "headline": {
+          "en": "Made for\nthe living room."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_e",
+        "layout": "split-landscape",
+        "label": {
+          "en": "FEATURE 01"
+        },
+        "headline": {
+          "en": "One idea\nper screen."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_f",
+        "layout": "device-top",
+        "label": {
+          "en": "FEATURE 02"
+        },
+        "headline": {
+          "en": "Flip the contrast."
+        },
+        "screenshot": "",
+        "inverted": true
+      },
+      {
+        "id": "s_mvgyhwob_g",
+        "layout": "no-device",
+        "label": {
+          "en": "MORE"
+        },
+        "headline": {
+          "en": "And so\nmuch more."
+        },
+        "screenshot": ""
+      }
+    ],
+    "watchos": [
+      {
+        "id": "s_mvgyhwob_h",
+        "layout": "hero",
+        "label": {
+          "en": "MEET YOUR APP"
+        },
+        "headline": {
+          "en": "On your\nwrist."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_i",
+        "layout": "device-bottom",
+        "label": {
+          "en": "FEATURE 01"
+        },
+        "headline": {
+          "en": "One glance.\nDone."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_j",
+        "layout": "device-top",
+        "label": {
+          "en": "FEATURE 02"
+        },
+        "headline": {
+          "en": "Always\nwith you."
+        },
+        "screenshot": "",
+        "inverted": true
+      }
+    ],
+    "carplay": [
+      {
+        "id": "s_mvgyhwob_k",
+        "layout": "split-landscape",
+        "label": {
+          "en": "CARPLAY"
+        },
+        "headline": {
+          "en": "Eyes on\nthe road."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_l",
+        "layout": "device-bottom",
+        "label": {
+          "en": "FEATURE 01"
+        },
+        "headline": {
+          "en": "Everything, one tap away."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_m",
+        "layout": "device-top",
+        "label": {
+          "en": "FEATURE 02"
+        },
+        "headline": {
+          "en": "Made for every drive."
+        },
+        "screenshot": "",
+        "inverted": true
+      }
+    ],
+    "mac": [
+      {
+        "id": "s_mvgyhwob_n",
+        "layout": "hero",
+        "label": {
+          "en": "MEET YOUR APP"
+        },
+        "headline": {
+          "en": "Made for\nyour Mac."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_o",
+        "layout": "split-landscape",
+        "label": {
+          "en": "FEATURE 01"
+        },
+        "headline": {
+          "en": "Everything in\none window."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_p",
+        "layout": "device-top",
+        "label": {
+          "en": "FEATURE 02"
+        },
+        "headline": {
+          "en": "One shortcut away."
+        },
+        "screenshot": "",
+        "inverted": true
+      },
+      {
+        "id": "s_mvgyhwob_q",
+        "layout": "two-devices",
+        "label": {
+          "en": "FEATURE 03"
+        },
+        "headline": {
+          "en": "Work across windows."
+        },
+        "screenshot": "",
+        "screenshotSecondary": ""
+      },
+      {
+        "id": "s_mvgyhwob_r",
+        "layout": "no-device",
+        "label": {
+          "en": "MORE"
+        },
+        "headline": {
+          "en": "And so\nmuch more."
+        },
+        "screenshot": ""
+      }
+    ],
+    "android-7": [
+      {
+        "id": "s_mvgyhwob_s",
+        "layout": "hero",
+        "label": {
+          "en": "MEET YOUR APP"
+        },
+        "headline": {
+          "en": "Pocket-sized\npower."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_t",
+        "layout": "split-landscape",
+        "label": {
+          "en": "FEATURE 01"
+        },
+        "headline": {
+          "en": "Wide canvas,\nbigger ideas."
+        },
+        "screenshot": ""
+      }
+    ],
+    "android-10": [
+      {
+        "id": "s_mvgyhwob_u",
+        "layout": "hero",
+        "label": {
+          "en": "MEET YOUR APP"
+        },
+        "headline": {
+          "en": "Made for\nthe big screen."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_v",
+        "layout": "split-landscape",
+        "label": {
+          "en": "FEATURE 01"
+        },
+        "headline": {
+          "en": "Wide canvas,\nbigger ideas."
+        },
+        "screenshot": ""
+      }
+    ],
+    "feature-graphic": [
+      {
+        "id": "s_mvgyhwob_w",
+        "layout": "feature-graphic",
+        "label": {},
+        "headline": {
+          "en": "Your tagline goes here."
+        },
+        "screenshot": ""
+      }
+    ],
+    "duo-outer": [
+      {
+        "id": "s_mvgyhwob_x",
+        "layout": "hero",
+        "label": {
+          "en": "MEET YOUR APP"
+        },
+        "headline": {
+          "en": "Everything,\none hand."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_y",
+        "layout": "device-bottom",
+        "label": {
+          "en": "FEATURE 01"
+        },
+        "headline": {
+          "en": "One idea\nper screen."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_z",
+        "layout": "two-devices",
+        "label": {
+          "en": "OPEN IT"
+        },
+        "headline": {
+          "en": "Open it for\nthe full view."
+        },
+        "screenshot": "",
+        "screenshotSecondary": ""
+      },
+      {
+        "id": "s_mvgyhwob_10",
+        "layout": "device-top",
+        "label": {
+          "en": "FEATURE 02"
+        },
+        "headline": {
+          "en": "Flip the contrast."
+        },
+        "screenshot": "",
+        "inverted": true
+      },
+      {
+        "id": "s_mvgyhwob_11",
+        "layout": "no-device",
+        "label": {
+          "en": "MORE"
+        },
+        "headline": {
+          "en": "And so\nmuch more."
+        },
+        "screenshot": ""
+      }
+    ],
+    "duo-outer-landscape": [
+      {
+        "id": "s_mvgyhwob_12",
+        "layout": "hero",
+        "label": {
+          "en": "TURN IT"
+        },
+        "headline": {
+          "en": "Made for the wide view."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_13",
+        "layout": "split-landscape",
+        "label": {
+          "en": "FEATURE 01"
+        },
+        "headline": {
+          "en": "One idea\nper screen."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_14",
+        "layout": "device-top",
+        "label": {
+          "en": "FEATURE 02"
+        },
+        "headline": {
+          "en": "Flip the contrast."
+        },
+        "screenshot": "",
+        "inverted": true
+      }
+    ],
+    "duo-inner": [
+      {
+        "id": "s_mvgyhwob_15",
+        "layout": "hero",
+        "label": {
+          "en": "UNFOLD IT"
+        },
+        "headline": {
+          "en": "Room for\nthe whole view."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_16",
+        "layout": "device-bottom",
+        "label": {
+          "en": "FEATURE 01"
+        },
+        "headline": {
+          "en": "One idea\nper screen."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_17",
+        "layout": "two-devices",
+        "label": {
+          "en": "FOLDED + OPEN"
+        },
+        "headline": {
+          "en": "Turn it, open it,\nkeep going."
+        },
+        "screenshot": "",
+        "screenshotSecondary": ""
+      },
+      {
+        "id": "s_mvgyhwob_18",
+        "layout": "device-top",
+        "label": {
+          "en": "FEATURE 02"
+        },
+        "headline": {
+          "en": "Flip the contrast."
+        },
+        "screenshot": "",
+        "inverted": true
+      }
+    ],
+    "duo-inner-landscape": [
+      {
+        "id": "s_mvgyhwob_19",
+        "layout": "hero",
+        "label": {
+          "en": "UNFOLD IT"
+        },
+        "headline": {
+          "en": "Lead with the two-pane view."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_1a",
+        "layout": "two-devices",
+        "label": {
+          "en": "FOLDED + OPEN"
+        },
+        "headline": {
+          "en": "Same moment, closed and open."
+        },
+        "screenshot": "",
+        "screenshotSecondary": ""
+      },
+      {
+        "id": "s_mvgyhwob_1b",
+        "layout": "split-landscape",
+        "label": {
+          "en": "FEATURE 02"
+        },
+        "headline": {
+          "en": "One idea\nper screen."
+        },
+        "screenshot": ""
+      },
+      {
+        "id": "s_mvgyhwob_1c",
+        "layout": "device-top",
+        "label": {
+          "en": "FEATURE 03"
+        },
+        "headline": {
+          "en": "Show what only the wide screen can."
+        },
+        "screenshot": "",
+        "inverted": true
+      },
+      {
+        "id": "s_mvgyhwob_1d",
+        "layout": "no-device",
+        "label": {
+          "en": "MORE"
+        },
+        "headline": {
+          "en": "And so much more."
+        },
+        "screenshot": ""
+      }
+    ],
+    "creative-universal": [
+      {
+        "id": "s_mvgyhwob_1e",
+        "layout": "split-landscape",
+        "label": {
+          "en": "NEW"
+        },
+        "headline": {
+          "en": "Your app,\nat a glance."
+        },
+        "screenshot": ""
+      }
+    ],
+    "creative-header": [
+      {
+        "id": "s_mvgyhwob_1f",
+        "layout": "split-landscape",
+        "label": {
+          "en": "NEW"
+        },
+        "headline": {
+          "en": "Your app,\nat a glance."
+        },
+        "screenshot": ""
+      }
+    ],
+    "creative-search": [
+      {
+        "id": "s_mvgyhwob_1g",
+        "layout": "split-landscape",
+        "label": {
+          "en": "NEW"
+        },
+        "headline": {
+          "en": "Your app,\nat a glance."
+        },
+        "screenshot": ""
+      }
+    ]
+  },
+  "scene": {
+    "backdrop": "gradient",
+    "span": true,
+    "decoration": "none",
+    "shadow": 28,
+    "glow": 12,
+    "tilt": 0,
+    "headlineWeight": 800,
+    "headlineScale": 1,
+    "headlineCase": "as-typed",
+    "captionAlign": "center"
+  }
+}
