@@ -13,7 +13,7 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 | `websites/` | 薄肌俱乐部 promotional website and the Fumadocs docs site under `/docs`: Next.js static export, Tailwind CSS and Motion | `websites/AGENTS.md` |
 | `locales/` | Copy that more than one client shows: ICU MessageFormat in YAML, one directory per language | `locales/README.md` |
 | `crates/` | Rust tools for the repository, in their own Cargo workspace. `crates/locales/` generates the client string resources from `locales/` | `crates/AGENTS.md` |
-| `docs/` | Documents shared by both clients. `docs/DEVELOPMENT.md` is the developer guide: the repository layout, the toolchain and how to run each component. The root `README.md` links to it and does not repeat it. `docs/membership.md` is the membership contract. `docs/ACCESSIBILITY.md` is the accessibility statement. The `.mdx` pages and `meta.json` files of `docs/` are the docs section that `websites/` publishes under `/docs/`. `docs/sites/` holds the standalone pages that `websites/` publishes: the support page, and the privacy policy, terms of use and third-party data sharing list, with English versions in `.en.mdx` files. The `.md` files of `docs/` are internal and are not published | this file, `docs/sites/AGENTS.md` |
+| `docs/` | Documents shared by both clients. `docs/DEVELOPMENT.md` is the developer guide: the repository layout, the toolchain and how to run each component. The root `README.md` links to it and does not repeat it. `docs/membership.md` is the membership contract. `docs/ACCESSIBILITY.md` is the accessibility statement. `docs/sentry.md` describes Sentry error reporting in every project. The `.mdx` pages and `meta.json` files of `docs/` are the docs section that `websites/` publishes under `/docs/`. `docs/sites/` holds the standalone pages that `websites/` publishes: the support page, and the privacy policy, terms of use and third-party data sharing list, with English versions in `.en.mdx` files. The `.md` files of `docs/` are internal and are not published | this file, `docs/sites/AGENTS.md` |
 | `assets/public/` | Generic static files for `https://assets.leanmuscle.club`, such as the app icon images, the app screenshots and the exercise images that the root `README.md` shows | this file |
 | `LICENSE.md` | The PolyForm Noncommercial License 1.0.0 with the `Required Notice:` line | this file |
 | `.github/` | GitHub files: `.github/CLA.md` is the contributor license agreement, `.github/workflows/cla.yml` runs the CLA check on pull requests, and `.github/workflows/image.yml` publishes the `bizserver/` image to GHCR for each `bizserver/v*` tag. `workflows/ios.yml` runs iOS CI, manual TestFlight uploads and manual App Store review; see `ios/docs/ci-cd.md` | this file, `bizserver/AGENTS.md` |
@@ -167,6 +167,14 @@ If you change the terms of `.github/CLA.md`, raise its version number and set `C
 `docs/ACCESSIBILITY.md` is the accessibility statement. GitHub shows it as the Accessibility tab of the repository. It lists the status of iOS, Android and the website for each App Store Accessibility Nutrition Label. Keep only one copy, because GitHub reads `.github/ACCESSIBILITY.md` before `docs/ACCESSIBILITY.md`.
 
 When you change accessibility behavior, update the affected status and the review date in the same change. Set a status to 已验证 only after a recorded check. Record the date, the environment and the result in the verification document of that directory, and write only the result in `docs/ACCESSIBILITY.md`. Keep development rules in the guide or design document of each directory, not in the statement.
+
+### Error reporting
+
+`bizserver/`, `ios/`, `android/` and `websites/` report errors to Sentry. `docs/sentry.md` lists the settings, the data that each project sends and the open release tasks. Keep it current when you change Sentry code or options.
+
+- Sentry stays off when the DSN is empty. Keep that default in every build and in tests. Do not commit a real DSN.
+- Do not send training, body or HealthKit records, membership numbers, account identity, email addresses, auth tokens, request headers, request bodies, URL query strings, screenshots or the view hierarchy.
+- Performance tracing and Session Replay stay off. Turn one on only after you update `docs/sentry.md` and the privacy declarations of the affected app.
 
 ### Documentation language
 
