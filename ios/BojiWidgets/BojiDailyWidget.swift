@@ -26,22 +26,22 @@ private enum BojiDailyState {
     var title: String {
         switch self {
         case .disabled:
-            return "未开启记录共享"
+            return String(localized: "未开启记录共享")
         case .stale:
-            return "记录待同步"
+            return String(localized: "记录待同步")
         case .current:
-            return "今日记录"
+            return String(localized: "今日记录")
         }
     }
 
     var detail: String {
         switch self {
         case .disabled:
-            return "请到 App 设置开启"
+            return String(localized: "请到 App 设置开启")
         case .stale:
-            return "请打开 App 同步"
+            return String(localized: "请打开 App 同步")
         case .current:
-            return "手动记录状态"
+            return String(localized: "手动记录状态")
         }
     }
 
@@ -59,14 +59,14 @@ private enum BojiDailyState {
     var accessibilityLabel: String {
         switch self {
         case .disabled:
-            return "未开启记录共享。请到 App 设置开启。"
+            return String(localized: "未开启记录共享。请到 App 设置开启。")
         case .stale:
-            return "记录待同步。请打开 App 同步。"
+            return String(localized: "记录待同步。请打开 App 同步。")
         case let .current(training, water, sleep):
-            let trainingText = training ? "已记录" : "待记录"
-            let waterText = water ? "已记录" : "待记录"
-            let sleepText = sleep ? "已记录" : "待记录"
-            return "今日记录。训练\(trainingText)。饮水\(waterText)。睡眠\(sleepText)。"
+            let trainingText = training ? String(localized: "已记录") : String(localized: "待记录")
+            let waterText = water ? String(localized: "已记录") : String(localized: "待记录")
+            let sleepText = sleep ? String(localized: "已记录") : String(localized: "待记录")
+            return String(localized: "今日记录。训练\(trainingText)。饮水\(waterText)。睡眠\(sleepText)。")
         }
     }
 }
@@ -158,9 +158,9 @@ private struct BojiDailyWidgetView: View {
             switch entry.state {
             case let .current(training, water, sleep):
                 VStack(alignment: .leading, spacing: 7) {
-                    BojiRecordRow(title: "训练", symbol: "dumbbell.fill", isLogged: training)
-                    BojiRecordRow(title: "饮水", symbol: "drop.fill", isLogged: water)
-                    BojiRecordRow(title: "睡眠", symbol: "bed.double.fill", isLogged: sleep)
+                    BojiRecordRow(title: String(localized: "训练"), symbol: "dumbbell.fill", isLogged: training)
+                    BojiRecordRow(title: String(localized: "饮水"), symbol: "drop.fill", isLogged: water)
+                    BojiRecordRow(title: String(localized: "睡眠"), symbol: "bed.double.fill", isLogged: sleep)
                 }
             case .disabled, .stale:
                 unavailableMessage
@@ -185,13 +185,13 @@ private struct BojiDailyWidgetView: View {
             case let .current(training, water, sleep):
                 HStack(spacing: 9) {
                     Link(destination: CompanionRoute.training.url) {
-                        BojiRecordTile(title: "训练", symbol: "dumbbell.fill", isLogged: training)
+                        BojiRecordTile(title: String(localized: "训练"), symbol: "dumbbell.fill", isLogged: training)
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel("训练\(training ? "已记录" : "待记录")。打开训练。")
+                    .accessibilityLabel(training ? Text("训练已记录。打开训练。") : Text("训练待记录。打开训练。"))
 
-                    BojiRecordTile(title: "饮水", symbol: "drop.fill", isLogged: water)
-                    BojiRecordTile(title: "睡眠", symbol: "bed.double.fill", isLogged: sleep)
+                    BojiRecordTile(title: String(localized: "饮水"), symbol: "drop.fill", isLogged: water)
+                    BojiRecordTile(title: String(localized: "睡眠"), symbol: "bed.double.fill", isLogged: sleep)
                 }
             case .disabled, .stale:
                 unavailableMessage
@@ -209,9 +209,9 @@ private struct BojiDailyWidgetView: View {
             switch entry.state {
             case let .current(training, water, sleep):
                 HStack(spacing: 7) {
-                    BojiCompactStatus(title: "训", isLogged: training)
-                    BojiCompactStatus(title: "饮", isLogged: water)
-                    BojiCompactStatus(title: "眠", isLogged: sleep)
+                    BojiCompactStatus(title: String(localized: "训"), name: String(localized: "训练"), isLogged: training)
+                    BojiCompactStatus(title: String(localized: "饮"), name: String(localized: "饮水"), isLogged: water)
+                    BojiCompactStatus(title: String(localized: "眠"), name: String(localized: "睡眠"), isLogged: sleep)
                 }
             case .disabled, .stale:
                 Text(entry.state.detail)
@@ -229,9 +229,9 @@ private struct BojiDailyWidgetView: View {
             switch entry.state {
             case let .current(training, water, sleep):
                 HStack(spacing: 1) {
-                    BojiCircularStatus(title: "训", isLogged: training)
-                    BojiCircularStatus(title: "饮", isLogged: water)
-                    BojiCircularStatus(title: "眠", isLogged: sleep)
+                    BojiCircularStatus(title: String(localized: "训"), name: String(localized: "训练"), isLogged: training)
+                    BojiCircularStatus(title: String(localized: "饮"), name: String(localized: "饮水"), isLogged: water)
+                    BojiCircularStatus(title: String(localized: "眠"), name: String(localized: "睡眠"), isLogged: sleep)
                 }
             case .disabled, .stale:
                 Image(systemName: entry.state.symbolName)
@@ -281,7 +281,7 @@ private struct BojiRecordRow: View {
         }
         .font(.caption)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(title)\(isLogged ? "已记录" : "待记录")")
+        .accessibilityLabel(isLogged ? Text("\(title)已记录") : Text("\(title)待记录"))
     }
 }
 
@@ -304,12 +304,15 @@ private struct BojiRecordTile: View {
         }
         .frame(minWidth: 34)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(title)\(isLogged ? "已记录" : "待记录")")
+        .accessibilityLabel(isLogged ? Text("\(title)已记录") : Text("\(title)待记录"))
     }
 }
 
 private struct BojiCompactStatus: View {
+    /// One character that fits the accessory widget.
     let title: String
+    /// The full habit name that VoiceOver reads.
+    let name: String
     let isLogged: Bool
 
     var body: some View {
@@ -319,19 +322,22 @@ private struct BojiCompactStatus: View {
         }
         .font(.caption2)
         .foregroundStyle(isLogged ? BojiWidgetPalette.green : .secondary)
-        .accessibilityLabel("\(title)\(isLogged ? "已记录" : "待记录")")
+        .accessibilityLabel(isLogged ? Text("\(name)已记录") : Text("\(name)待记录"))
     }
 }
 
 private struct BojiCircularStatus: View {
+    /// One character that fits the accessory widget.
     let title: String
+    /// The full habit name that VoiceOver reads.
+    let name: String
     let isLogged: Bool
 
     var body: some View {
         Text(title)
             .font(.caption2.weight(.bold))
             .foregroundStyle(isLogged ? BojiWidgetPalette.green : .secondary)
-            .accessibilityLabel("\(title)\(isLogged ? "已记录" : "待记录")")
+            .accessibilityLabel(isLogged ? Text("\(name)已记录") : Text("\(name)待记录"))
     }
 }
 

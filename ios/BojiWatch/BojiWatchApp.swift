@@ -95,9 +95,9 @@ private struct WatchCompanionView: View {
                 }
             }
 
-            ProgressRow(title: "手动训练", isRecorded: snapshot.trainingCompleted)
-            ProgressRow(title: "饮水", isRecorded: snapshot.waterLogged)
-            ProgressRow(title: "睡眠", isRecorded: snapshot.sleepLogged)
+            ProgressRow(title: String(localized: "手动训练"), isRecorded: snapshot.trainingCompleted)
+            ProgressRow(title: String(localized: "饮水"), isRecorded: snapshot.waterLogged)
+            ProgressRow(title: String(localized: "睡眠"), isRecorded: snapshot.sleepLogged)
 
             Text("同步于 \(snapshot.generatedAt.formatted(date: .omitted, time: .shortened))")
                 .font(.caption2)

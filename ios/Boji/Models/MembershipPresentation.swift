@@ -9,20 +9,20 @@ struct MembershipPledge: Identifiable, Sendable {
     static let all: [MembershipPledge] = [
         MembershipPledge(
             id: "belonging",
-            title: "人人都有位置",
-            detail: "不以身材、体重或体脂决定是否可以加入。",
+            title: String(localized: "人人都有位置"),
+            detail: String(localized: "不以身材、体重或体脂决定是否可以加入。"),
             symbol: "person.2"
         ),
         MembershipPledge(
             id: "pace",
-            title: "尊重自己的节奏",
-            detail: "不排名，不鼓励极端减脂；不舒服时停止训练。",
+            title: String(localized: "尊重自己的节奏"),
+            detail: String(localized: "不排名，不鼓励极端减脂；不舒服时停止训练。"),
             symbol: "figure.walk"
         ),
         MembershipPledge(
             id: "privacy",
-            title: "尊重他人与隐私",
-            detail: "不冒用他人身份，不在昵称中包含他人隐私。",
+            title: String(localized: "尊重他人与隐私"),
+            detail: String(localized: "不冒用他人身份，不在昵称中包含他人隐私。"),
             symbol: "hand.raised"
         )
     ]
@@ -39,13 +39,13 @@ struct MembershipEnrollmentDraft: Equatable {
 
     var nameError: String? {
         if normalizedName.isEmpty {
-            return "请输入昵称。"
+            return String(localized: "请输入昵称。")
         }
         if normalizedName.count > 24 {
-            return "昵称不能超过 24 个字符。"
+            return String(localized: "昵称不能超过 24 个字符。")
         }
         if name.unicodeScalars.contains(where: { $0.properties.generalCategory == .control || CharacterSet.newlines.contains($0) }) {
-            return "昵称不能包含控制字符或换行。"
+            return String(localized: "昵称不能包含控制字符或换行。")
         }
         return nil
     }
@@ -76,11 +76,11 @@ enum MembershipCardAppearance: String, CaseIterable, Identifiable, Codable, Send
     var title: String {
         switch self {
         case .forest:
-            "松林"
+            String(localized: "松林")
         case .chalk:
-            "月白"
+            String(localized: "月白")
         case .ink:
-            "曜石"
+            String(localized: "曜石")
         }
     }
 }
@@ -117,30 +117,30 @@ enum MembershipCardCondition: String, Equatable, Sendable {
     var title: String {
         switch self {
         case .active:
-            "已加入俱乐部"
+            String(localized: "已加入俱乐部")
         case .offline:
-            "离线副本"
+            String(localized: "离线副本")
         case .suspended:
-            "会员卡已暂停"
+            String(localized: "会员卡已暂停")
         case .expired:
-            "会员卡已到期"
+            String(localized: "会员卡已到期")
         case .unavailable:
-            "会员卡当前不可用"
+            String(localized: "会员卡当前不可用")
         }
     }
 
     var detail: String {
         switch self {
         case .active:
-            "会员状态已确认。本地功能不受影响。"
+            String(localized: "会员状态已确认。本地功能不受影响。")
         case .offline:
-            "离线时不能确认会员状态。本地功能不受影响。"
+            String(localized: "离线时不能确认会员状态。本地功能不受影响。")
         case .suspended:
-            "会员卡当前已暂停。本地功能不受影响。"
+            String(localized: "会员卡当前已暂停。本地功能不受影响。")
         case .expired:
-            "会员卡已到期。本地功能不受影响。"
+            String(localized: "会员卡已到期。本地功能不受影响。")
         case .unavailable:
-            "会员状态暂不可用。本地功能不受影响。"
+            String(localized: "会员状态暂不可用。本地功能不受影响。")
         }
     }
 

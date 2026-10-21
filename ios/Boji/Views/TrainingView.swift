@@ -25,17 +25,17 @@ struct TrainingView: View {
                     }
                 }
                 VStack(alignment: .leading, spacing: 12) {
-                    SectionHeading(title: "更多课程")
+                    SectionHeading(title: String(localized: "更多课程"))
                     GroupedRows {
                         courseLink(WorkoutLibrary.homeIntermediate) {
                             NavigationRowLabel(title: WorkoutLibrary.homeIntermediate.title,
-                                               detail: "准备好了，再进一步 · \(WorkoutLibrary.homeIntermediate.minutes) 分钟",
+                                               detail: String(localized: "准备好了，再进一步 · \(WorkoutLibrary.homeIntermediate.minutes) 分钟"),
                                                symbol: "figure.strengthtraining.traditional")
                         }
                         .buttonStyle(RowButtonStyle())
                         courseLink(WorkoutLibrary.mobility) {
                             NavigationRowLabel(title: WorkoutLibrary.mobility.title,
-                                               detail: "给身体一点余地 · \(WorkoutLibrary.mobility.minutes) 分钟",
+                                               detail: String(localized: "给身体一点余地 · \(WorkoutLibrary.mobility.minutes) 分钟"),
                                                symbol: "figure.flexibility", color: BojiTheme.green)
                         }
                         .buttonStyle(RowButtonStyle())
@@ -110,7 +110,7 @@ struct WorkoutDetailView: View {
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 4) {
                 Text(exercise.name).font(.body.weight(.semibold)).foregroundStyle(.primary)
-                Text(.Shared.detailExerciseSets(sets: exercise.sets, reps: exercise.reps)).font(.subheadline).foregroundStyle(BojiTheme.accent)
+                Text(.Shared.detailExerciseSets(sets: exercise.sets, reps: exercise.reps.text)).font(.subheadline).foregroundStyle(BojiTheme.accent)
                 Text(exercise.tip).font(.footnote).foregroundStyle(.secondary)
             }
             Spacer(minLength: 8)
@@ -219,7 +219,7 @@ struct WorkoutSessionView: View {
                 .background(BojiTheme.card, in: .rect(cornerRadius: BojiTheme.cardRadius))
             VStack(spacing: 6) {
                 Text(exercise.name).font(.largeTitle.bold()).multilineTextAlignment(.center)
-                Text(.Shared.sessionSet(current: currentSet, total: exercise.sets, reps: exercise.reps))
+                Text(.Shared.sessionSet(current: currentSet, total: exercise.sets, reps: exercise.reps.text))
                     .font(.title3.weight(.semibold)).foregroundStyle(BojiTheme.accent)
                     .contentTransition(.numericText())
             }
@@ -255,9 +255,9 @@ struct WorkoutSessionView: View {
             }
             Surface(padding: 16) {
                 AdaptiveStack(spacing: 8) {
-                    summaryMetric(Duration.seconds(elapsed).formatted(.time(pattern: .minuteSecond)), "用时")
+                    summaryMetric(Duration.seconds(elapsed).formatted(.time(pattern: .minuteSecond)), String(localized: "用时"))
                     summaryMetric("\(workout.exercises.count)", String(localized: .Shared.detailExercises))
-                    summaryMetric("\(totalSets)", "组")
+                    summaryMetric("\(totalSets)", String(localized: "组"))
                 }
             }
             Text(.Shared.sessionFinishedRest).font(.subheadline).foregroundStyle(.secondary)

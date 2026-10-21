@@ -35,11 +35,34 @@ enum PlanKind: String, Codable, CaseIterable, Identifiable {
     }
 }
 
+/// The amount of one set: repetitions or seconds, once or on each side.
+/// Matches `Reps` in the Android `Workout.kt`. The text is in the `exercise` group of `locales/`.
+enum Reps: Hashable, Codable {
+    case count(Int)
+    case countRange(Int, Int)
+    case countPerSide(Int)
+    case seconds(Int)
+    case secondsRange(Int, Int)
+    case secondsPerSide(Int)
+
+    /// The amount in the display language, such as 8～10 次 or 每侧 20 秒.
+    var text: String {
+        switch self {
+        case .count(let count): String(localized: .Shared.exerciseRepsCount(count: count))
+        case .countRange(let min, let max): String(localized: .Shared.exerciseRepsCountRange(min: min, max: max))
+        case .countPerSide(let count): String(localized: .Shared.exerciseRepsCountPerSide(count: count))
+        case .seconds(let seconds): String(localized: .Shared.exerciseRepsSeconds(seconds: seconds))
+        case .secondsRange(let min, let max): String(localized: .Shared.exerciseRepsSecondsRange(min: min, max: max))
+        case .secondsPerSide(let seconds): String(localized: .Shared.exerciseRepsSecondsPerSide(seconds: seconds))
+        }
+    }
+}
+
 struct Exercise: Identifiable, Codable, Hashable {
     let id: String
     let name: String
     let sets: Int
-    let reps: String
+    let reps: Reps
     let tip: String
     let symbol: String
 }
@@ -53,44 +76,47 @@ struct Workout: Identifiable, Codable, Hashable {
     let exercises: [Exercise]
 }
 
+/// Built-in courses. Structure and IDs match `WorkoutLibrary` in the Android `Workout.kt`.
+/// The text is in the `course` and `exercise` groups of `locales/`. iOS restarts the app when
+/// the user changes its language, so resolving the strings once is safe.
 enum WorkoutLibrary {
     static let home = Workout(
         id: "home-beginner",
-        title: "居家基础训练",
-        subtitle: "无需器械的全身入门",
+        title: String(localized: .Shared.courseHomeBeginnerTitle),
+        subtitle: String(localized: .Shared.courseHomeBeginnerSubtitle),
         minutes: 20,
-        level: "新手",
+        level: String(localized: .Shared.courseLevelBeginner),
         exercises: [
             Exercise(
                 id: "bodyweight-squat",
-                name: "徒手深蹲",
+                name: String(localized: .Shared.exerciseBodyweightSquatName),
                 sets: 3,
-                reps: "8–10 次",
-                tip: "膝盖朝脚尖方向，缓慢起身。",
+                reps: .countRange(8, 10),
+                tip: String(localized: .Shared.exerciseBodyweightSquatTip),
                 symbol: "figure.strengthtraining.traditional"
             ),
             Exercise(
                 id: "wall-push-up",
-                name: "墙壁俯卧撑",
+                name: String(localized: .Shared.exerciseWallPushUpName),
                 sets: 3,
-                reps: "8–10 次",
-                tip: "身体保持直线，双手稳稳撑墙。",
+                reps: .countRange(8, 10),
+                tip: String(localized: .Shared.exerciseWallPushUpTip),
                 symbol: "figure.walk"
             ),
             Exercise(
                 id: "glute-bridge",
-                name: "臀桥",
+                name: String(localized: .Shared.exerciseGluteBridgeName),
                 sets: 3,
-                reps: "10–12 次",
-                tip: "脚掌踩稳，抬起时不要耸肩。",
+                reps: .countRange(10, 12),
+                tip: String(localized: .Shared.exerciseGluteBridgeTip),
                 symbol: "figure.core.training"
             ),
             Exercise(
                 id: "bird-dog",
-                name: "鸟狗式",
+                name: String(localized: .Shared.exerciseBirdDogName),
                 sets: 2,
-                reps: "每侧 8 次",
-                tip: "动作放慢，保持躯干稳定。",
+                reps: .countPerSide(8),
+                tip: String(localized: .Shared.exerciseBirdDogTip),
                 symbol: "figure.cooldown"
             )
         ]
@@ -98,49 +124,49 @@ enum WorkoutLibrary {
 
     static let homeIntermediate = Workout(
         id: "home-intermediate",
-        title: "居家进阶训练",
-        subtitle: "基础训练之后的下一步",
+        title: String(localized: .Shared.courseHomeIntermediateTitle),
+        subtitle: String(localized: .Shared.courseHomeIntermediateSubtitle),
         minutes: 25,
-        level: "进阶",
+        level: String(localized: .Shared.courseLevelIntermediate),
         exercises: [
             Exercise(
                 id: "reverse-lunge",
-                name: "后撤步弓步蹲",
+                name: String(localized: .Shared.exerciseReverseLungeName),
                 sets: 3,
-                reps: "每侧 8 次",
-                tip: "后撤一步再下蹲，前膝对准脚尖。",
+                reps: .countPerSide(8),
+                tip: String(localized: .Shared.exerciseReverseLungeTip),
                 symbol: "figure.lunge"
             ),
             Exercise(
                 id: "knee-push-up",
-                name: "跪姿俯卧撑",
+                name: String(localized: .Shared.exerciseKneePushUpName),
                 sets: 3,
-                reps: "8–10 次",
-                tip: "膝盖到头保持一条直线，胸口慢慢下放。",
+                reps: .countRange(8, 10),
+                tip: String(localized: .Shared.exerciseKneePushUpTip),
                 symbol: "figure.strengthtraining.traditional"
             ),
             Exercise(
                 id: "dead-bug",
-                name: "死虫式",
+                name: String(localized: .Shared.exerciseDeadBugName),
                 sets: 3,
-                reps: "每侧 6 次",
-                tip: "腰背贴住地面，对侧手脚慢慢伸出。",
+                reps: .countPerSide(6),
+                tip: String(localized: .Shared.exerciseDeadBugTip),
                 symbol: "figure.core.training"
             ),
             Exercise(
                 id: "wall-sit",
-                name: "靠墙静蹲",
+                name: String(localized: .Shared.exerciseWallSitName),
                 sets: 3,
-                reps: "20–30 秒",
-                tip: "背部贴墙，大腿与地面平行。",
+                reps: .secondsRange(20, 30),
+                tip: String(localized: .Shared.exerciseWallSitTip),
                 symbol: "figure.strengthtraining.traditional"
             ),
             Exercise(
                 id: "plank",
-                name: "平板支撑",
+                name: String(localized: .Shared.exercisePlankName),
                 sets: 3,
-                reps: "20–30 秒",
-                tip: "肘在肩正下方，身体保持一条直线。",
+                reps: .secondsRange(20, 30),
+                tip: String(localized: .Shared.exercisePlankTip),
                 symbol: "figure.core.training"
             )
         ]
@@ -148,41 +174,41 @@ enum WorkoutLibrary {
 
     static let gym = Workout(
         id: "gym-beginner",
-        title: "器械基础训练",
-        subtitle: "轻重量熟悉常用器械",
+        title: String(localized: .Shared.courseGymBeginnerTitle),
+        subtitle: String(localized: .Shared.courseGymBeginnerSubtitle),
         minutes: 30,
-        level: "新手",
+        level: String(localized: .Shared.courseLevelBeginner),
         exercises: [
             Exercise(
                 id: "chest-press",
-                name: "坐姿推胸",
+                name: String(localized: .Shared.exerciseChestPressName),
                 sets: 3,
-                reps: "8–10 次",
-                tip: "选择轻重量，背部贴稳靠垫。",
+                reps: .countRange(8, 10),
+                tip: String(localized: .Shared.exerciseChestPressTip),
                 symbol: "dumbbell.fill"
             ),
             Exercise(
                 id: "seated-row",
-                name: "坐姿划船",
+                name: String(localized: .Shared.exerciseSeatedRowName),
                 sets: 3,
-                reps: "8–10 次",
-                tip: "拉向身体时保持肩部放松。",
+                reps: .countRange(8, 10),
+                tip: String(localized: .Shared.exerciseSeatedRowTip),
                 symbol: "arrow.left.and.right"
             ),
             Exercise(
                 id: "leg-press",
-                name: "坐姿腿举",
+                name: String(localized: .Shared.exerciseLegPressName),
                 sets: 3,
-                reps: "10 次",
-                tip: "使用可控重量，膝盖不要锁死。",
+                reps: .count(10),
+                tip: String(localized: .Shared.exerciseLegPressTip),
                 symbol: "figure.strengthtraining.traditional"
             ),
             Exercise(
                 id: "lat-pulldown",
-                name: "高位下拉",
+                name: String(localized: .Shared.exerciseLatPulldownName),
                 sets: 3,
-                reps: "8–10 次",
-                tip: "轻拉横杆，避免身体后仰。",
+                reps: .countRange(8, 10),
+                tip: String(localized: .Shared.exerciseLatPulldownTip),
                 symbol: "arrow.down"
             )
         ]
@@ -190,33 +216,33 @@ enum WorkoutLibrary {
 
     static let mobility = Workout(
         id: "mobility",
-        title: "舒缓拉伸",
-        subtitle: "训练前后都可进行",
+        title: String(localized: .Shared.courseMobilityTitle),
+        subtitle: String(localized: .Shared.courseMobilitySubtitle),
         minutes: 10,
-        level: "轻松",
+        level: String(localized: .Shared.courseLevelGentle),
         exercises: [
             Exercise(
                 id: "cat-cow",
-                name: "猫牛式",
+                name: String(localized: .Shared.exerciseCatCowName),
                 sets: 2,
-                reps: "8 次",
-                tip: "配合呼吸，动作保持柔和。",
+                reps: .count(8),
+                tip: String(localized: .Shared.exerciseCatCowTip),
                 symbol: "figure.flexibility"
             ),
             Exercise(
                 id: "hip-flexor-stretch",
-                name: "髋屈肌拉伸",
+                name: String(localized: .Shared.exerciseHipFlexorStretchName),
                 sets: 2,
-                reps: "每侧 20 秒",
-                tip: "骨盆保持平稳，不要弹震。",
+                reps: .secondsPerSide(20),
+                tip: String(localized: .Shared.exerciseHipFlexorStretchTip),
                 symbol: "figure.lunge"
             ),
             Exercise(
                 id: "chest-stretch",
-                name: "开胸拉伸",
+                name: String(localized: .Shared.exerciseChestStretchName),
                 sets: 2,
-                reps: "20 秒",
-                tip: "轻轻打开胸部，肩膀自然下沉。",
+                reps: .seconds(20),
+                tip: String(localized: .Shared.exerciseChestStretchTip),
                 symbol: "figure.arms.open"
             )
         ]
@@ -291,7 +317,8 @@ final class BojiStore {
         var bodyEntries: [BodyEntry]
     }
 
-    private static let defaultDisplayName = "薄肌同学"
+    /// The nickname of a new or reset state, in the display language of that moment.
+    private static var defaultDisplayName: String { String(localized: .Shared.defaultDisplayName) }
     private static let maximumWaterChangeML = 10_000
     private static let maximumDailyWaterML = 20_000
 
@@ -363,7 +390,7 @@ final class BojiStore {
                     .appendingPathComponent("state.json", isDirectory: false)
             } catch {
                 self.storageURL = nil
-                self.storageError = "无法确定本地存储位置：\(error.localizedDescription)"
+                self.storageError = String(localized: "无法确定本地存储位置：\(error.localizedDescription)")
             }
         }
 
@@ -504,7 +531,7 @@ final class BojiStore {
         guard !inMemory, !isLoading, !writesBlockedByCorruptFile else { return }
         guard let storageURL else {
             if storageError == nil {
-                storageError = "本地存储位置不可用。"
+                storageError = String(localized: "本地存储位置不可用。")
             }
             return
         }

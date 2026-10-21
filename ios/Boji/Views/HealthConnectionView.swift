@@ -56,13 +56,13 @@ struct HealthConnectionView: View {
                 Section("最近睡眠日") {
                     ForEach(0..<7, id: \.self) { offset in
                         if let date = Calendar.current.date(byAdding: .day, value: -offset, to: Date()) {
-                            LabeledContent(date.formatted(.dateTime.month().day()), value: health.snapshot.sleepHours(endingOn: date).map { "\($0.formatted(.number.precision(.fractionLength(1)))) \(String(localized: .Shared.unitHours))" } ?? "暂无可读取数据")
+                            LabeledContent(date.formatted(.dateTime.month().day()), value: health.snapshot.sleepHours(endingOn: date).map { "\($0.formatted(.number.precision(.fractionLength(1)))) \(String(localized: .Shared.unitHours))" } ?? String(localized: "暂无可读取数据"))
                         }
                     }
                     Text("每个睡眠日为前日 18:00 至当日 18:00。只统计睡眠区间，重叠来源不重复相加，不把卧床当作睡眠。")
                         .font(.footnote).foregroundStyle(.secondary)
                     let sources = Set(health.snapshot.sleepSamples.map(\.sourceName)).sorted()
-                    if !sources.isEmpty { Text("来源：\(sources.joined(separator: "、"))").font(.caption).foregroundStyle(.secondary) }
+                    if !sources.isEmpty { Text("来源：\(sources, format: .list(type: .and))").font(.caption).foregroundStyle(.secondary) }
                 }
                 Section {
                     Button("断开健康数据查询", role: .destructive) { confirmDisconnect = true }
@@ -118,13 +118,13 @@ private struct HealthValuesView: View {
         VStack(alignment: .leading, spacing: 12) {
             ForEach([HealthMetric.weight, .waist], id: \.rawValue) { metric in
                 VStack(alignment: .leading, spacing: 3) {
-                    LabeledContent(metric == .weight ? "最近体重" : "最近腰围", value: health.snapshot.latest(metric).map { "\($0.value.formatted(.number.precision(.fractionLength(1)))) \(String(localized: metric == .weight ? .Shared.unitKg : .Shared.unitCm))" } ?? "暂无可读取数据")
+                    LabeledContent(metric == .weight ? "最近体重" : "最近腰围", value: health.snapshot.latest(metric).map { "\($0.value.formatted(.number.precision(.fractionLength(1)))) \(String(localized: metric == .weight ? .Shared.unitKg : .Shared.unitCm))" } ?? String(localized: "暂无可读取数据"))
                     if let sample = health.snapshot.latest(metric) {
                         Text("\(sample.sourceName) · \(sample.date.formatted(.dateTime.month().day()))").font(.footnote).foregroundStyle(.secondary)
                     }
                 }
             }
-            LabeledContent("最近睡眠日", value: health.snapshot.sleepHours(endingOn: Date()).map { "\($0.formatted(.number.precision(.fractionLength(1)))) \(String(localized: .Shared.unitHours))" } ?? "暂无可读取数据")
+            LabeledContent("最近睡眠日", value: health.snapshot.sleepHours(endingOn: Date()).map { "\($0.formatted(.number.precision(.fractionLength(1)))) \(String(localized: .Shared.unitHours))" } ?? String(localized: "暂无可读取数据"))
         }.font(.subheadline)
     }
 }

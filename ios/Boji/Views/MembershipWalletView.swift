@@ -20,7 +20,7 @@ struct MembershipWalletView: View {
                     .font(.caption).foregroundStyle(.secondary)
             } else {
                 Label("Apple 钱包暂不可用", systemImage: "wallet.pass").font(.subheadline).foregroundStyle(.secondary)
-                Text(membership.capabilitiesError ?? (passType.isEmpty ? "此版本尚未配置钱包凭证类型。" : membership.capabilities?.walletPass != true ? "服务尚未启用正式凭证签发。" : "此设备暂不支持添加钱包凭证。"))
+                Text(membership.capabilitiesError ?? (passType.isEmpty ? String(localized: "此版本尚未配置钱包凭证类型。") : membership.capabilities?.walletPass != true ? String(localized: "服务尚未启用正式凭证签发。") : String(localized: "此设备暂不支持添加钱包凭证。")))
                     .font(.caption).foregroundStyle(.secondary)
             }
             if let errorMessage { Text(errorMessage).font(.footnote).foregroundStyle(.red) }
@@ -39,15 +39,15 @@ struct MembershipWalletView: View {
         do {
             let pass = try PKPass(data: data)
             guard pass.passTypeIdentifier == passType, pass.serialNumber == expectedCard.id else {
-                errorMessage = "钱包凭证与当前会员卡不匹配，请重新获取。"
+                errorMessage = String(localized: "钱包凭证与当前会员卡不匹配，请重新获取。")
                 return
             }
             guard let controller = PKAddPassesViewController(pass: pass) else {
-                errorMessage = "系统无法展示此钱包凭证。"
+                errorMessage = String(localized: "系统无法展示此钱包凭证。")
                 return
             }
             presentation = WalletPresentation(controller: controller)
-        } catch { errorMessage = "钱包凭证无效或签名不可用，请稍后重试。" }
+        } catch { errorMessage = String(localized: "钱包凭证无效或签名不可用，请稍后重试。") }
     }
 }
 

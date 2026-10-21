@@ -9,9 +9,9 @@ This directory holds the native iOS app, its watchOS app and its widgets. The pr
 | `project.yml` | XcodeGen spec. It generates `Boji.xcodeproj` |
 | `Boji/Models/` | Local store, HTTP and auth clients, membership and health models |
 | `Boji/Views/` | SwiftUI screens and the design system (`DesignSystem.swift`) |
-| `Boji/Resources/` | Icon Composer document (`AppIcon.icon`) and privacy manifest |
-| `BojiWatch/` | watchOS app |
-| `BojiWidgets/` | WidgetKit extension |
+| `Boji/Resources/` | Icon Composer document (`AppIcon.icon`), privacy manifest, `Localizable.xcstrings` for the copy that only the app shows, and `InfoPlist.xcstrings` |
+| `BojiWatch/` | watchOS app, with its own `Localizable.xcstrings` and `InfoPlist.xcstrings` |
+| `BojiWidgets/` | WidgetKit extension, with its own `Localizable.xcstrings` |
 | `Shared/` | Code that the `Boji`, `BojiWidgets` and `BojiWatch` targets compile |
 | `Shared/Shared.xcstrings` | Generated String Catalog of the copy that Android also shows. All three targets bundle it |
 | `BojiTests/` | Unit tests |
@@ -45,6 +45,13 @@ xcodebuild -project Boji.xcodeproj -scheme Boji \
 # Regenerate the API client code, then compile the package.
 (cd BojiAPI && buf generate)
 (cd BojiAPI && swift build --scratch-path ../../.work/boji-ios/BojiAPI-build)
+
+# After a command-line build, add the new keys of the app to its String Catalog.
+# For the widgets, use BojiWidgets.build and BojiWidgets/Localizable.xcstrings.
+# For the watch app, use Debug-watchsimulator/BojiWatch.build and BojiWatch/Localizable.xcstrings.
+OBJ=../.work/boji-ios/DerivedData/Build/Intermediates.noindex/Boji.build/Debug-iphonesimulator/Boji.build/Objects-normal/arm64
+xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
+  --stringsdata $(ls "$OBJ"/*.stringsdata | grep -v -e GeneratedStringSymbols_ -e ExtractedAppShortcuts)
 ```
 
 ## Rules
@@ -97,11 +104,29 @@ xcodebuild -project Boji.xcodeproj -scheme Boji \
 - When a parameter has the type `String`, such as `PrimaryButton(title:)` or a model property, resolve the symbol with `String(localized: .Shared.welcomeStart)`.
 - In a ternary, name the type in the first branch: `running ? LocalizedStringResource.Shared.sessionPause : .Shared.sessionResume`.
 - Set the SwiftUI locale only through `Locale.bojiDisplay` in `BojiApp.swift`. SwiftUI looks up strings with the environment locale, so a fixed locale such as `zh_Hans_CN` keeps every `Text` in one language.
-- Copy that only iOS shows stays in Swift code. When Android starts to show the same copy, move it into `../locales/`.
+- `ImageRenderer` renders outside the app's view hierarchy and does not inherit its environment. Pass `.environment(\.locale, .bojiDisplay)` to the rendered view, as `MembershipSharingView` does. Format a date in a view with `.locale(locale)` from `@Environment(\.locale)`.
+- `WorkoutLibrary` and `ClubArticle.all` resolve their text with `String(localized:)` from the `course`, `exercise` and `article` groups. iOS restarts the app when the user changes its language, so the static values stay correct. Show reps with `Reps.text`, never with a literal such as `8–10 次`.
+- `BojiStore.defaultDisplayName` reads `.Shared.defaultDisplayName` on every access, so a new or reset state gets the name in the current language. Existing nicknames stay as the user saved them.
+- Copy that only iOS shows stays in the String Catalogs of the targets. When Android starts to show the same copy, move it into `../locales/`.
+
+### Copy that only iOS shows
+
+- Each target has its own `Localizable.xcstrings`: `Boji/Resources/`, `BojiWidgets/` and `BojiWatch/`. `InfoPlist.xcstrings` in `Boji/Resources/` and `BojiWatch/` holds the display name and the usage descriptions. The display name is 薄肌 in Simplified Chinese and Lean Muscle in English.
+- The key is the Simplified Chinese text in the Swift code. English is the fallback language: each `Info.plist` sets `CFBundleDevelopmentRegion` to `en`. A key without an English value shows the Chinese key to every user who does not read Chinese. Give each new key an English value with the state `translated`.
+- Reuse the English of the Android resource that has the same Chinese text, so that both clients use the same words.
+- `SWIFT_EMIT_LOC_STRINGS` in `project.yml` makes the compiler extract the literals of `Text`, `Button`, `LocalizedStringKey`, `LocalizedStringResource` and `String(localized:)`. The compiler does not extract a literal of the type `String`: a `String` property or parameter, a ternary of two `String` values, or the `value:` of `LabeledContent`. Wrap such a literal in `String(localized:)`.
+- Do not nest a literal in an interpolation, such as `Text("训练\(done ? "已记录" : "待记录")")`. The compiler extracts only the outer string. Write one full sentence for each case, as `dayLabel` in `Views/ProgressView.swift` does.
+- Format a list or a date inside the `Text` interpolation, for example `Text("来源：\(sources, format: .list(type: .and))")`. Do not join a list with `、`.
+- A count needs English plural variations (`one` and `other`) in the catalog, for example `剩余 %lld 秒`. A plural variation must contain the number.
+- Give VoiceOver the full word when the visible label is shortened. The accessory widgets show 训, 饮 and 眠, or T, W and S in English, and read `name`.
+- Do not localize the test fixtures in the `#if DEBUG` part of `Models/MembershipAPI.swift` or the `DecodingError` debug descriptions.
+- Muscle names in `ExerciseAnimationCatalog` come from `../animations/` and are in Chinese only. They are not localized yet.
+
 
 ### Tests
 
 - UI tests launch the app with `--uitesting`. This argument selects the in-memory store and the test membership service.
+- Tests assert the Simplified Chinese copy. The `Boji` scheme runs tests with `language: zh-Hans` and `region: CN`, and UI tests also pass `-AppleLanguages (zh-Hans)`. Without them, a simulator in another language shows English.
 - UI tests must not use the real backend, real HealthKit data or the user's records.
 - Membership UI tests can add `--membership-fixture=long-number`, `suspended`, or `offline`. These fixtures require the Debug `--uitesting` entry point.
 - Animation UI tests can add `--animation-reduce-motion` or `--animation-missing-asset`. These flags require Debug and `--uitesting`.

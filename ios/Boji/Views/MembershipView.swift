@@ -11,9 +11,9 @@ struct MembershipEntryView: View {
             if let card = membership.card {
                 MembershipCardFace(card: card, isTest: membership.isTestEnvironment, isOffline: membership.isOffline)
             } else {
-                MembershipCardSurface(name: "给自己，一个位置。", number: nil, joinedAt: nil, badge: "免费领取",
-                                      annotation: "没有身材门槛，按自己的节奏来。",
-                                      numberPlaceholder: "领取后显示会员卡号")
+                MembershipCardSurface(name: String(localized: "给自己，一个位置。"), number: nil, joinedAt: nil, badge: String(localized: "免费领取"),
+                                      annotation: String(localized: "没有身材门槛，按自己的节奏来。"),
+                                      numberPlaceholder: String(localized: "领取后显示会员卡号"))
             }
         }
         .buttonStyle(PressableCardStyle())
@@ -93,7 +93,7 @@ struct MembershipCenterView: View {
 
     private var unissuedContent: some View {
         VStack(alignment: .leading, spacing: 24) {
-            PageHeading(eyebrow: "YOUR PLACE IN THE CLUB", title: "不必达标，\n也能加入。", subtitle: "一张属于你的身份卡，记录一起开始的这一天。")
+            PageHeading(eyebrow: "YOUR PLACE IN THE CLUB", title: String(localized: "不必达标，\n也能加入。"), subtitle: String(localized: "一张属于你的身份卡，记录一起开始的这一天。"))
             Surface {
                 VStack(alignment: .leading, spacing: 16) {
                     HStack(spacing: 12) {
@@ -113,7 +113,7 @@ struct MembershipCenterView: View {
                         if account.emailVerified {
                             Label("邮箱已验证，可以领取", systemImage: "checkmark.circle.fill")
                                 .font(.subheadline).foregroundStyle(BojiTheme.green)
-                            CardButton(title: "领取免费身份卡", symbol: "person.crop.rectangle.badge.plus") { showEnrollment = true }
+                            CardButton(title: String(localized: "领取免费身份卡"), symbol: "person.crop.rectangle.badge.plus") { showEnrollment = true }
                                 .accessibilityIdentifier("membership-enroll-start")
                                 .disabled(membership.isBusy || membership.isOffline)
                         } else {
@@ -126,15 +126,15 @@ struct MembershipCenterView: View {
                         }
                         .font(.subheadline).buttonStyle(.borderless).frame(minHeight: 44).disabled(membership.isBusy)
                     } else {
-                        CardButton(title: "登录或注册领取", symbol: "person.crop.circle") { showAuthentication = true }
+                        CardButton(title: String(localized: "登录或注册领取"), symbol: "person.crop.circle") { showAuthentication = true }
                             .accessibilityIdentifier("membership-auth-start").disabled(membership.isBusy)
                     }
                 }
             }
             GroupedRows {
-                InfoRow(text: "不需要提供身体照片或体脂数据", symbol: "hand.raised")
-                InfoRow(text: "分享前可以隐藏会员卡号", symbol: "eye.slash")
-                InfoRow(text: "训练和身体记录不会随领卡上传", symbol: "iphone")
+                InfoRow(text: String(localized: "不需要提供身体照片或体脂数据"), symbol: "hand.raised")
+                InfoRow(text: String(localized: "分享前可以隐藏会员卡号"), symbol: "eye.slash")
+                InfoRow(text: String(localized: "训练和身体记录不会随领卡上传"), symbol: "iphone")
             }
         }
     }
@@ -151,7 +151,7 @@ struct MembershipCenterView: View {
                         .symbolEffect(.rotate, isActive: membership.isBusy)
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(membership.isBusy ? "正在核对会员状态" : condition.title).font(.headline)
+                        Text(membership.isBusy ? String(localized: "正在核对会员状态") : condition.title).font(.headline)
                             .accessibilityIdentifier("membership-status")
                         Text(condition.detail).font(.footnote).foregroundStyle(.secondary)
                         if let date = membership.lastSyncedAt {
@@ -168,7 +168,7 @@ struct MembershipCenterView: View {
             }
             if condition == .active || condition == .offline {
                 VStack(alignment: .leading, spacing: 12) {
-                    CardButton(title: "制作会员分享卡", symbol: "square.and.arrow.up") { showShare = true }
+                    CardButton(title: String(localized: "制作会员分享卡"), symbol: "square.and.arrow.up") { showShare = true }
                         .accessibilityIdentifier("membership-share").disabled(membership.isBusy)
                     MembershipWalletView()
                 }
@@ -200,11 +200,11 @@ struct MembershipCenterView: View {
                 .font(.headline).tint(.primary).accessibilityIdentifier("membership-details")
             }
             VStack(alignment: .leading, spacing: 12) {
-                SectionHeading(title: "你的社区权益", detail: "没有订阅费用")
+                SectionHeading(title: String(localized: "你的社区权益"), detail: String(localized: "没有订阅费用"))
                 GroupedRows {
-                    entitlement("local_tracking", title: "日常记录", detail: "训练、饮水与睡眠，按自己的节奏。", symbol: "checkmark.circle", card: card, date: date)
-                    entitlement("training_library", title: "基础训练库", detail: "居家与健身房课程，逐组完成。", symbol: "figure.strengthtraining.traditional", card: card, date: date)
-                    entitlement("progress_history", title: "成长足迹", detail: "查看训练历史与身体数据趋势。", symbol: "chart.xyaxis.line", card: card, date: date)
+                    entitlement("local_tracking", title: String(localized: "日常记录"), detail: String(localized: "训练、饮水与睡眠，按自己的节奏。"), symbol: "checkmark.circle", card: card, date: date)
+                    entitlement("training_library", title: String(localized: "基础训练库"), detail: String(localized: "居家与健身房课程，逐组完成。"), symbol: "figure.strengthtraining.traditional", card: card, date: date)
+                    entitlement("progress_history", title: String(localized: "成长足迹"), detail: String(localized: "查看训练历史与身体数据趋势。"), symbol: "chart.xyaxis.line", card: card, date: date)
                 }
                 Text("以上基础功能也可免登录使用。付费会员尚未开放，本版不会收取费用。")
                     .font(.footnote).foregroundStyle(.secondary)
@@ -214,7 +214,7 @@ struct MembershipCenterView: View {
 
     private func accountSection(_ account: MembershipAccount) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            SectionHeading(title: "当前账号")
+            SectionHeading(title: String(localized: "当前账号"))
             GroupedRows {
                 Label { Text(verbatim: account.email).textSelection(.enabled) } icon: {
                     Image(systemName: "person.crop.circle").foregroundStyle(BojiTheme.accent)
@@ -222,7 +222,7 @@ struct MembershipCenterView: View {
                 .padding(.horizontal, 16).padding(.vertical, 14)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Button { showSecurity = true } label: {
-                    NavigationRowLabel(title: "账号安全", symbol: "lock.shield")
+                    NavigationRowLabel(title: String(localized: "账号安全"), symbol: "lock.shield")
                 }
                 .buttonStyle(RowButtonStyle())
                 Button("退出账号", role: .destructive) { confirmSignOut = true }

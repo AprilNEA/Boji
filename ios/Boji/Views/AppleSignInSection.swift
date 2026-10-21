@@ -32,7 +32,7 @@ struct AppleSignInSection: View {
                               credential.state == expectedState,
                               let tokenData = credential.identityToken,
                               let token = String(data: tokenData, encoding: .utf8), let usedNonce else {
-                            membership.errorMessage = "Apple 登录校验失败，请重新尝试。"
+                            membership.errorMessage = String(localized: "Apple 登录校验失败，请重新尝试。")
                             return
                         }
                         let identity = AppleIdentity(token: token, nonce: usedNonce.rawValue, firstName: credential.fullName?.givenName, lastName: credential.fullName?.familyName)
@@ -42,7 +42,7 @@ struct AppleSignInSection: View {
                         }
                     case .failure(let error):
                         if (error as? ASAuthorizationError)?.code != .canceled {
-                            membership.errorMessage = "Apple 登录未完成，请稍后重试。"
+                            membership.errorMessage = String(localized: "Apple 登录未完成，请稍后重试。")
                         }
                     }
                 }
@@ -55,7 +55,7 @@ struct AppleSignInSection: View {
             } else {
                 Label(membership.isLoadingCapabilities ? "正在确认 Apple 登录能力…" : "Apple 登录尚未开放", systemImage: "apple.logo")
                     .foregroundStyle(.secondary)
-                Text(membership.capabilitiesError ?? "需要完成 App 签名能力和服务端 Apple 配置。你仍可使用邮箱登录。")
+                Text(membership.capabilitiesError ?? String(localized: "需要完成 App 签名能力和服务端 Apple 配置。你仍可使用邮箱登录。"))
                     .font(.caption).foregroundStyle(.secondary)
                 Button("重新检查") { Task { await membership.loadCapabilities() } }
                     .disabled(membership.isLoadingCapabilities)
@@ -68,6 +68,6 @@ struct AppleSignInSection: View {
     private func prepareNonce() {
         state = UUID().uuidString
         do { nonce = try AppleSignInNonce() }
-        catch { nonce = nil; membership.errorMessage = "无法创建安全登录请求，请稍后重试。" }
+        catch { nonce = nil; membership.errorMessage = String(localized: "无法创建安全登录请求，请稍后重试。") }
     }
 }

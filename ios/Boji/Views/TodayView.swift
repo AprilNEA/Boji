@@ -66,9 +66,9 @@ struct TodayView: View {
                 .accessibilityLabel("已完成 \(taskCount) 项，共 3 项")
             }
             AdaptiveStack(spacing: 8) {
-                StatusTile(title: "训练", symbol: "figure.strengthtraining.traditional", color: BojiTheme.accent, done: trained)
-                StatusTile(title: "饮水", symbol: "drop.fill", color: BojiTheme.blue, done: watered)
-                StatusTile(title: "睡眠", symbol: "moon.stars.fill", color: BojiTheme.purple, done: slept)
+                StatusTile(title: String(localized: "训练"), symbol: "figure.strengthtraining.traditional", color: BojiTheme.accent, done: trained)
+                StatusTile(title: String(localized: "饮水"), symbol: "drop.fill", color: BojiTheme.blue, done: watered)
+                StatusTile(title: String(localized: "睡眠"), symbol: "moon.stars.fill", color: BojiTheme.purple, done: slept)
             }
         }
         .padding(20)

@@ -91,7 +91,7 @@ final class HealthDataStore {
     /// can still return no samples, so a successful request only enables queries.
     func connect() async {
         guard isAvailable else {
-            errorMessage = "此设备不支持 Apple 健康。"
+            errorMessage = String(localized: "此设备不支持 Apple 健康。")
             return
         }
         guard !isConnecting, !isLoading else { return }
@@ -115,7 +115,7 @@ final class HealthDataStore {
         } catch {
             guard isCurrent(generation) else { return }
             clearSamples()
-            errorMessage = "无法连接 Apple 健康：\(error.localizedDescription)"
+            errorMessage = String(localized: "无法连接 Apple 健康：\(error.localizedDescription)")
         }
     }
 
@@ -160,7 +160,7 @@ final class HealthDataStore {
         } catch {
             guard activeRefreshID == refreshID, isCurrent(generation) else { return }
             clearSamples()
-            errorMessage = "无法读取 Apple 健康数据：\(error.localizedDescription)"
+            errorMessage = String(localized: "无法读取 Apple 健康数据：\(error.localizedDescription)")
         }
     }
 

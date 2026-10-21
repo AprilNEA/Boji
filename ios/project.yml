@@ -16,6 +16,9 @@ settings:
     GENERATE_INFOPLIST_FILE: YES
     SWIFT_STRICT_CONCURRENCY: complete
     STRING_CATALOG_GENERATE_SYMBOLS: YES
+    # The compiler writes the localizable literals to .stringsdata, so Xcode can sync Localizable.xcstrings.
+    SWIFT_EMIT_LOC_STRINGS: YES
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     BOJI_API_BASE_URL: ''
     BOJI_APPLE_SIGN_IN_ENABLED: 'YES'
     BOJI_WALLET_PASS_TYPE_IDENTIFIER: pass.club.leanmuscle.boji.membership
@@ -104,6 +107,10 @@ schemes:
         BojiTests: [test]
         BojiUITests: [test]
     test:
+      # The tests assert Simplified Chinese copy. English is the fallback language, so
+      # a simulator in another language would show English without these settings.
+      language: zh-Hans
+      region: CN
       targets:
         - BojiTests
         - BojiUITests

@@ -15,7 +15,7 @@ final class CompanionSharingStore: NSObject {
     private var session: WCSession?
     private(set) var isEnabled: Bool
     private(set) var errorMessage: String?
-    private(set) var watchStatus = "尚未连接手表"
+    private(set) var watchStatus = String(localized: "尚未连接手表")
 
     init(isTesting: Bool = false) {
         self.isTesting = isTesting
@@ -58,7 +58,7 @@ final class CompanionSharingStore: NSObject {
         errorMessage = nil
         if !isTesting {
             do { try storage.save(currentSnapshot) }
-            catch { errorMessage = "共享容器暂不可用，请检查 App Group 签名配置。" }
+            catch { errorMessage = String(localized: "共享容器暂不可用，请检查 App Group 签名配置。") }
             WidgetCenter.shared.reloadTimelines(ofKind: CompanionIdentifiers.widgetKind)
         }
         sendSnapshot()
@@ -66,12 +66,12 @@ final class CompanionSharingStore: NSObject {
 
     private func sendSnapshot() {
         guard let session, session.activationState == .activated else { return }
-        guard session.isPaired else { watchStatus = "尚未配对 Apple Watch"; return }
-        guard session.isWatchAppInstalled else { watchStatus = "请先在 Apple Watch 安装薄肌"; return }
+        guard session.isPaired else { watchStatus = String(localized: "尚未配对 Apple Watch"); return }
+        guard session.isWatchAppInstalled else { watchStatus = String(localized: "请先在 Apple Watch 安装薄肌"); return }
         do {
             try session.updateApplicationContext([CompanionIdentifiers.snapshotKey: try currentSnapshot.encoded()])
-            watchStatus = session.isReachable ? "已连接手表" : "等待手表连接后同步"
-        } catch { watchStatus = "暂时无法同步手表，请稍后重试" }
+            watchStatus = session.isReachable ? String(localized: "已连接手表") : String(localized: "等待手表连接后同步")
+        } catch { watchStatus = String(localized: "暂时无法同步手表，请稍后重试") }
     }
 }
 
@@ -80,7 +80,7 @@ extension CompanionSharingStore: WCSessionDelegate {
         let failed = error != nil
         Task { @MainActor [weak self] in
             guard let self else { return }
-            if failed { watchStatus = "手表连接未完成" }
+            if failed { watchStatus = String(localized: "手表连接未完成") }
             else { sendSnapshot() }
         }
     }

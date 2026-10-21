@@ -42,10 +42,10 @@ struct ExercisePreviewView: View {
                     }
                     Surface {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text(.Shared.detailExerciseSets(sets: exercise.sets, reps: exercise.reps)).font(.headline)
+                            Text(.Shared.detailExerciseSets(sets: exercise.sets, reps: exercise.reps.text)).font(.headline)
                             Text(exercise.tip)
                             if let entry {
-                                Text("主要肌群：\(entry.muscles.map(\.name).joined(separator: "、"))")
+                                Text("主要肌群：\(entry.muscles.map(\.name), format: .list(type: .and))")
                                     .font(.subheadline).foregroundStyle(.secondary)
                             }
                         }

@@ -93,7 +93,7 @@ final class BojiStoreTests: XCTestCase {
 
         XCTAssertEqual(store.selectedPlan, .home)
         XCTAssertFalse(store.hasOnboarded)
-        XCTAssertEqual(store.displayName, "薄肌同学")
+        XCTAssertEqual(store.displayName, String(localized: .Shared.defaultDisplayName))
         XCTAssertFalse(store.joinedChallenge)
         XCTAssertTrue(store.records.isEmpty)
         XCTAssertTrue(store.bodyEntries.isEmpty)
@@ -127,7 +127,7 @@ final class BojiStoreTests: XCTestCase {
         let reloaded = BojiStore(storageURL: url)
         XCTAssertNil(reloaded.storageError)
         XCTAssertTrue(reloaded.records.isEmpty)
-        XCTAssertEqual(reloaded.displayName, "薄肌同学")
+        XCTAssertEqual(reloaded.displayName, String(localized: .Shared.defaultDisplayName))
     }
 
     func testHabitDaysAndRollingWeek() {

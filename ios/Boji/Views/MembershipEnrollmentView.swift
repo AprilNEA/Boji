@@ -9,7 +9,7 @@ struct MembershipEnrollmentView: View {
     @State private var showRules = false
     @FocusState private var nameFocused: Bool
 
-    private let titles = ["写下昵称", "确认守则", "核对并领取"]
+    private let titles = [String(localized: "写下昵称"), String(localized: "确认守则"), String(localized: "核对并领取")]
 
     var body: some View {
         NavigationStack {
@@ -72,7 +72,7 @@ struct MembershipEnrollmentView: View {
 
     private var nameStep: some View {
         VStack(alignment: .leading, spacing: 20) {
-            PageHeading(eyebrow: "MAKE IT YOURS", title: "给自己，\n一个位置。", subtitle: "不必达到某种身材，今天就可以开始。")
+            PageHeading(eyebrow: "MAKE IT YOURS", title: String(localized: "给自己，\n一个位置。"), subtitle: String(localized: "不必达到某种身材，今天就可以开始。"))
             Surface {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("卡面昵称").font(.headline)
@@ -92,17 +92,17 @@ struct MembershipEnrollmentView: View {
                     }
                 }
             }
-            MembershipCardSurface(name: draft.nameError == nil ? draft.normalizedName : "你的昵称",
-                                  number: nil, joinedAt: nil, badge: "卡面预览",
-                                  annotation: "尚未领取 · 预览不代表已加入",
-                                  numberPlaceholder: "领取后显示会员卡号")
+            MembershipCardSurface(name: draft.nameError == nil ? draft.normalizedName : String(localized: "你的昵称"),
+                                  number: nil, joinedAt: nil, badge: String(localized: "卡面预览"),
+                                  annotation: String(localized: "尚未领取 · 预览不代表已加入"),
+                                  numberPlaceholder: String(localized: "领取后显示会员卡号"))
                 .accessibilityIdentifier("membership-card-preview")
         }
     }
 
     private var pledgeStep: some View {
         VStack(alignment: .leading, spacing: 20) {
-            PageHeading(eyebrow: "OUR COMMON GROUND", title: "三条共识，\n一起开始。", subtitle: "没有身材门槛，也不需要跟别人比较。")
+            PageHeading(eyebrow: "OUR COMMON GROUND", title: String(localized: "三条共识，\n一起开始。"), subtitle: String(localized: "没有身材门槛，也不需要跟别人比较。"))
             ForEach(MembershipPledge.all) { pledge in
                 Surface {
                     Toggle(isOn: Binding(
@@ -126,7 +126,7 @@ struct MembershipEnrollmentView: View {
 
     private var reviewStep: some View {
         VStack(alignment: .leading, spacing: 20) {
-            PageHeading(eyebrow: "READY WHEN YOU ARE", title: "以这个名字，\n加入俱乐部。")
+            PageHeading(eyebrow: "READY WHEN YOU ARE", title: String(localized: "以这个名字，\n加入俱乐部。"))
             Surface {
                 VStack(alignment: .leading, spacing: 14) {
                     Text(verbatim: draft.normalizedName).font(.title2.bold())
@@ -156,8 +156,8 @@ struct MembershipEnrollmentView: View {
     private func receipt(_ card: ClubMember) -> some View {
         VStack(alignment: .leading, spacing: 22) {
             PageHeading(eyebrow: "YOUR PLACE IN THE CLUB",
-                        title: card.isActive ? "欢迎加入。\n按你的节奏来。" : "会员卡已同步。",
-                        subtitle: card.isActive ? "照顾自己，就是今天的开始。" : "会员信息以当前服务结果为准。")
+                        title: card.isActive ? String(localized: "欢迎加入。\n按你的节奏来。") : String(localized: "会员卡已同步。"),
+                        subtitle: card.isActive ? String(localized: "照顾自己，就是今天的开始。") : String(localized: "会员信息以当前服务结果为准。"))
                 .accessibilityIdentifier("membership-enrollment-receipt")
             MembershipCardFace(card: card, isTest: membership.isTestEnvironment, isOffline: membership.isOffline)
             Text("在会员中心可以查看身份详情、制作分享卡和了解免费权益。")
@@ -168,7 +168,7 @@ struct MembershipEnrollmentView: View {
     private var footer: some View {
         VStack(alignment: .leading, spacing: 12) {
             if step == 3 {
-                PrimaryButton(title: "查看我的会员卡", symbol: "person.crop.rectangle") { dismiss() }
+                PrimaryButton(title: String(localized: "查看我的会员卡"), symbol: "person.crop.rectangle") { dismiss() }
                     .accessibilityIdentifier("membership-enrollment-done")
             } else {
                 MembershipMessages()
@@ -185,7 +185,7 @@ struct MembershipEnrollmentView: View {
                             .disabled(membership.isBusy)
                             .accessibilityIdentifier("membership-enroll-back")
                     }
-                    PrimaryButton(title: membership.isBusy ? "正在确认…" : step == 2 ? "确认免费领卡" : "继续", symbol: step == 2 ? "checkmark" : "arrow.right") {
+                    PrimaryButton(title: membership.isBusy ? String(localized: "正在确认…") : step == 2 ? String(localized: "确认免费领卡") : String(localized: "继续"), symbol: step == 2 ? "checkmark" : "arrow.right") {
                         nameFocused = false
                         if step < 2 { step += 1 }
                         else { Task { await membership.enroll(displayName: draft.normalizedName, acceptedTerms: draft.canSubmit) } }

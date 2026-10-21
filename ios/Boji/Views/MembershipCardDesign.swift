@@ -22,8 +22,9 @@ struct MembershipCardSurface: View {
     let joinedAt: Date?
     let badge: String
     let annotation: String
-    var numberPlaceholder = "卡号已隐藏"
+    var numberPlaceholder = String(localized: "卡号已隐藏")
     var appearance: MembershipCardAppearance = .forest
+    @Environment(\.locale) private var locale
 
     var body: some View {
         VStack(alignment: .leading, spacing: 26) {
@@ -49,7 +50,7 @@ struct MembershipCardSurface: View {
             Rectangle().fill(appearance.foreground.opacity(0.23)).frame(height: 1).accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 7) {
                 if let joinedAt {
-                    Text("加入于 \(joinedAt.formatted(.dateTime.year().month().day().locale(Locale(identifier: "zh_Hans_CN"))))")
+                    Text("加入于 \(joinedAt.formatted(.dateTime.year().month().day().locale(locale)))")
                         .font(.caption).monospacedDigit()
                 } else {
                     Text("入会日期将在领取后显示").font(.caption)
@@ -79,7 +80,7 @@ struct MembershipCardSurface: View {
         VStack(alignment: .leading, spacing: 3) {
             Text("boji").font(.system(.largeTitle, design: .rounded, weight: .heavy))
             Text("A CLUB FOR EVERY BODY").font(.caption2.weight(.semibold)).tracking(1.2)
-        }.accessibilityElement(children: .ignore).accessibilityLabel("Boji 薄肌俱乐部")
+        }.accessibilityElement(children: .ignore).accessibilityLabel("薄肌俱乐部")
     }
 
     private var badgeLabel: some View {
@@ -98,8 +99,8 @@ struct MembershipCardFace: View {
         let condition = MembershipCardCondition.resolve(card: card, isOffline: isOffline)
         MembershipCardSurface(
             name: card.displayName, number: card.memberNumber, joinedAt: card.joinedAt,
-            badge: isTest ? "测试卡" : condition.title,
-            annotation: isTest ? (isOffline ? "测试卡 · 离线副本 · 非真实会员" : "测试卡 · 非真实会员") : isOffline ? "离线副本 · 状态待同步" : "免费俱乐部身份卡"
+            badge: isTest ? String(localized: "测试卡") : condition.title,
+            annotation: isTest ? (isOffline ? String(localized: "测试卡 · 离线副本 · 非真实会员") : String(localized: "测试卡 · 非真实会员")) : isOffline ? String(localized: "离线副本 · 状态待同步") : String(localized: "免费俱乐部身份卡")
         )
     }
 }

@@ -39,7 +39,7 @@ struct MembershipSharingView: View {
                             .clipShape(.rect(cornerRadius: BojiTheme.cardRadius))
                             .shadow(color: .black.opacity(0.12), radius: 16, y: 6)
                             .frame(maxHeight: 360).frame(maxWidth: .infinity)
-                            .accessibilityLabel("会员分享图片预览，\(options.showsMemberNumber ? "包含完整卡号" : "卡号已隐藏")")
+                            .accessibilityLabel(options.showsMemberNumber ? Text("会员分享图片预览，包含完整卡号") : Text("会员分享图片预览，卡号已隐藏"))
                             .accessibilityIdentifier("membership-share-image")
                     } else if membership.isBusy {
                         ProgressView("正在核对会员状态…").frame(maxWidth: .infinity, minHeight: 120)
@@ -52,7 +52,7 @@ struct MembershipSharingView: View {
             .pageBackground().navigationTitle("分享预览").navigationBarTitleDisplayMode(.inline)
             .safeAreaBar(edge: .bottom) {
                 if let image, let card = membership.card, card.id == cardID, card.isActive, !membership.isBusy {
-                    ShareLink(item: Image(uiImage: image), preview: SharePreview("我的 Boji 会员纪念卡", image: Image(uiImage: image))) {
+                    ShareLink(item: Image(uiImage: image), preview: SharePreview("我的薄肌会员纪念卡", image: Image(uiImage: image))) {
                         Label("分享图片", systemImage: "square.and.arrow.up").font(.headline).frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.glassProminent).controlSize(.extraLarge)
@@ -86,19 +86,21 @@ struct MembershipSharingView: View {
                                                isOffline: membership.isOffline,
                                                isTest: membership.isTestEnvironment)
         let renderer = ImageRenderer(content: MembershipSharePoster(snapshot: snapshot, appearance: options.appearance)
-            .environment(\.locale, Locale(identifier: "zh_Hans_CN"))
+            // ImageRenderer renders outside the app's view hierarchy, so pass the display locale again.
+            .environment(\.locale, .bojiDisplay)
             .environment(\.colorScheme, .light)
             .environment(\.dynamicTypeSize, .medium))
         renderer.scale = 3
         renderer.isOpaque = true
         image = renderer.uiImage
-        if image == nil { error = "无法生成分享图片，请更换配色后重试。" }
+        if image == nil { error = String(localized: "无法生成分享图片，请更换配色后重试。") }
     }
 }
 
 struct MembershipSharePoster: View {
     let snapshot: MembershipShareSnapshot
     let appearance: MembershipCardAppearance
+    @Environment(\.locale) private var locale
 
     var body: some View {
         VStack(spacing: 22) {
@@ -108,11 +110,11 @@ struct MembershipSharePoster: View {
             }.foregroundStyle(Color(red: 0.12, green: 0.22, blue: 0.18))
             MembershipCardSurface(name: snapshot.displayName, number: snapshot.memberNumber,
                                   joinedAt: snapshot.joinedAt,
-                                  badge: snapshot.isTest ? "测试卡" : "会员纪念卡",
-                                  annotation: snapshot.isTest ? (snapshot.isOffline ? "测试卡 · 离线副本 · 非真实会员" : "测试卡 · 非真实会员") : snapshot.isOffline ? "离线副本 · 状态待同步" : "免费俱乐部身份记录",
+                                  badge: snapshot.isTest ? String(localized: "测试卡") : String(localized: "会员纪念卡"),
+                                  annotation: snapshot.isTest ? (snapshot.isOffline ? String(localized: "测试卡 · 离线副本 · 非真实会员") : String(localized: "测试卡 · 非真实会员")) : snapshot.isOffline ? String(localized: "离线副本 · 状态待同步") : String(localized: "免费俱乐部身份记录"),
                                   appearance: appearance)
             VStack(spacing: 5) {
-                Text("生成于 \(snapshot.generatedAt.formatted(.dateTime.year().month().day().locale(Locale(identifier: "zh_Hans_CN"))))")
+                Text("生成于 \(snapshot.generatedAt.formatted(.dateTime.year().month().day().locale(locale)))")
                 Text("会员状态以 App 同步结果为准\n非支付或核销凭证")
             }.font(.caption2).foregroundStyle(Color(red: 0.30, green: 0.34, blue: 0.31))
                 .multilineTextAlignment(.center)

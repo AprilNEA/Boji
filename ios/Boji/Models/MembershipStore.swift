@@ -116,7 +116,7 @@ final class MembershipStore {
         defer { finishOperation(operation) }
 
         guard isConfigured else {
-            errorMessage = "会员服务尚未配置。"
+            errorMessage = String(localized: "会员服务尚未配置。")
             return
         }
         guard let token else {
@@ -131,12 +131,12 @@ final class MembershipStore {
     /// 立即从服务器重新读取账户和会员卡。
     func refresh() async {
         guard isConfigured else {
-            errorMessage = "会员服务尚未配置。"
+            errorMessage = String(localized: "会员服务尚未配置。")
             return
         }
         guard let token = tokenStore.loadToken() else {
             removeCachedIdentity()
-            errorMessage = "请先登录后再刷新会员信息。"
+            errorMessage = String(localized: "请先登录后再刷新会员信息。")
             return
         }
         guard let operation = beginOperation() else { return }
@@ -147,11 +147,11 @@ final class MembershipStore {
     func signIn(email: String, password: String) async {
         let email = normalized(email)
         guard !email.isEmpty, !password.isEmpty else {
-            errorMessage = "请输入邮箱和密码。"
+            errorMessage = String(localized: "请输入邮箱和密码。")
             return
         }
         guard isConfigured else {
-            errorMessage = "会员服务尚未配置。"
+            errorMessage = String(localized: "会员服务尚未配置。")
             return
         }
         guard let operation = beginOperation() else { return }
@@ -162,7 +162,7 @@ final class MembershipStore {
             await completeAuthentication(token: token, operation: operation, action: .signIn)
         } catch {
             if case MembershipAPIError.server(let status, _) = error, status == 401 {
-                if isCurrent(operation) { errorMessage = "邮箱或密码不正确，请检查后重试。" }
+                if isCurrent(operation) { errorMessage = String(localized: "邮箱或密码不正确，请检查后重试。") }
                 return
             }
             handle(error, action: .signIn, operation: operation)
@@ -175,16 +175,16 @@ final class MembershipStore {
         capabilitiesError = nil
         defer { isLoadingCapabilities = false }
         do { capabilities = try await api.capabilities() }
-        catch { capabilities = nil; capabilitiesError = "暂时无法确认 Apple 服务能力。" }
+        catch { capabilities = nil; capabilitiesError = String(localized: "暂时无法确认 Apple 服务能力。") }
     }
 
     func signInWithApple(_ identity: AppleIdentity) async {
         guard capabilities?.appleSignIn == true, isConfigured else {
-            errorMessage = "Apple 登录尚未配置或暂不可用。"
+            errorMessage = String(localized: "Apple 登录尚未配置或暂不可用。")
             return
         }
         guard !identity.token.isEmpty, !identity.nonce.isEmpty else {
-            errorMessage = "Apple 登录凭据不完整，请重试。"
+            errorMessage = String(localized: "Apple 登录凭据不完整，请重试。")
             return
         }
         guard let operation = beginOperation() else { return }
@@ -197,11 +197,11 @@ final class MembershipStore {
 
     func walletPassData() async -> Data? {
         guard capabilities?.walletPass == true else {
-            errorMessage = "Wallet 签发服务尚未配置。"
+            errorMessage = String(localized: "Wallet 签发服务尚未配置。")
             return nil
         }
         guard let token = tokenStore.loadToken(), let card, card.isActive, !isOffline else {
-            errorMessage = "请先刷新有效会员卡，再添加到钱包。"
+            errorMessage = String(localized: "请先刷新有效会员卡，再添加到钱包。")
             return nil
         }
         guard let operation = beginOperation() else { return nil }
@@ -216,17 +216,17 @@ final class MembershipStore {
     private func completeAuthentication(token: String, operation: UUID, action: Action) async {
         guard isCurrent(operation) else { return }
         do { try tokenStore.saveToken(token) }
-        catch { errorMessage = "无法安全保存登录状态，请稍后重试。"; return }
+        catch { errorMessage = String(localized: "无法安全保存登录状态，请稍后重试。"); return }
         do { try cacheStore.delete() }
         catch {
             try? tokenStore.deleteToken()
             clearPublishedIdentity()
-            errorMessage = "无法安全切换登录账户，请稍后重试。"
+            errorMessage = String(localized: "无法安全切换登录账户，请稍后重试。")
             return
         }
         clearPublishedIdentity()
         if await synchronize(token: token, operation: operation, action: action), isCurrent(operation) {
-            notice = "登录成功。"
+            notice = String(localized: "登录成功。")
         }
     }
 
@@ -235,11 +235,11 @@ final class MembershipStore {
         let name = normalized(name)
         let email = normalized(email)
         guard !name.isEmpty, !email.isEmpty, !password.isEmpty else {
-            errorMessage = "请完整填写姓名、邮箱和密码。"
+            errorMessage = String(localized: "请完整填写姓名、邮箱和密码。")
             return
         }
         guard isConfigured else {
-            errorMessage = "会员服务尚未配置。"
+            errorMessage = String(localized: "会员服务尚未配置。")
             return
         }
         guard let operation = beginOperation() else { return }
@@ -250,7 +250,7 @@ final class MembershipStore {
             guard isCurrent(operation) else { return }
             requiresEmailVerification = true
             isOffline = false
-            notice = "注册成功，请在邮箱完成验证后登录。"
+            notice = String(localized: "注册成功，请在邮箱完成验证后登录。")
         } catch {
             handle(error, action: .register, operation: operation)
         }
@@ -259,11 +259,11 @@ final class MembershipStore {
     func sendVerification(email: String) async {
         let email = normalized(email)
         guard !email.isEmpty else {
-            errorMessage = "请输入需要验证的邮箱。"
+            errorMessage = String(localized: "请输入需要验证的邮箱。")
             return
         }
         guard isConfigured else {
-            errorMessage = "会员服务尚未配置。"
+            errorMessage = String(localized: "会员服务尚未配置。")
             return
         }
         guard let operation = beginOperation() else { return }
@@ -274,7 +274,7 @@ final class MembershipStore {
             guard isCurrent(operation) else { return }
             requiresEmailVerification = true
             isOffline = false
-            notice = "已提交验证邮件请求，请检查收件箱。"
+            notice = String(localized: "已提交验证邮件请求，请检查收件箱。")
         } catch {
             handle(error, action: .verification, operation: operation)
         }
@@ -283,11 +283,11 @@ final class MembershipStore {
     func requestPasswordReset(email: String) async {
         let email = normalized(email)
         guard !email.isEmpty else {
-            errorMessage = "请输入需要重置密码的邮箱。"
+            errorMessage = String(localized: "请输入需要重置密码的邮箱。")
             return
         }
         guard isConfigured else {
-            errorMessage = "会员服务尚未配置。"
+            errorMessage = String(localized: "会员服务尚未配置。")
             return
         }
         guard let operation = beginOperation() else { return }
@@ -297,7 +297,7 @@ final class MembershipStore {
             try await api.requestPasswordReset(email: email)
             guard isCurrent(operation) else { return }
             isOffline = false
-            notice = "已提交重置请求。若邮箱可用，请检查收件箱。"
+            notice = String(localized: "已提交重置请求。若邮箱可用，请检查收件箱。")
         } catch {
             handle(error, action: .passwordReset, operation: operation)
         }
@@ -306,7 +306,7 @@ final class MembershipStore {
     func refreshAuthSession() async {
         guard let token = tokenStore.loadToken(), isConfigured else {
             authSession = nil
-            errorMessage = "请先登录后再查看账号安全。"
+            errorMessage = String(localized: "请先登录后再查看账号安全。")
             return
         }
         guard let operation = beginOperation() else { return }
@@ -321,7 +321,7 @@ final class MembershipStore {
             guard account?.id == nil || account?.id == session.user.id else {
                 _ = clearLocalSessionStorage()
                 clearPublishedIdentity()
-                errorMessage = "账号状态不一致，请重新登录。"
+                errorMessage = String(localized: "账号状态不一致，请重新登录。")
                 return
             }
             authSession = session
@@ -332,15 +332,15 @@ final class MembershipStore {
 
     func changePassword(currentPassword: String, newPassword: String) async -> Bool {
         guard !currentPassword.isEmpty, (8...128).contains(newPassword.count) else {
-            errorMessage = "请输入当前密码，新密码需为 8 至 128 个字符。"
+            errorMessage = String(localized: "请输入当前密码，新密码需为 8 至 128 个字符。")
             return false
         }
         guard currentPassword != newPassword else {
-            errorMessage = "新密码不能与当前密码相同。"
+            errorMessage = String(localized: "新密码不能与当前密码相同。")
             return false
         }
         guard isConfigured, let token = tokenStore.loadToken(), let account else {
-            errorMessage = "请先登录后再修改密码。"
+            errorMessage = String(localized: "请先登录后再修改密码。")
             return false
         }
         guard let operation = beginOperation() else { return false }
@@ -352,14 +352,14 @@ final class MembershipStore {
             guard let newToken else {
                 _ = clearLocalSessionStorage()
                 clearPublishedIdentity()
-                notice = "密码已修改，请使用新密码重新登录。"
+                notice = String(localized: "密码已修改，请使用新密码重新登录。")
                 return true
             }
             do { try tokenStore.saveToken(newToken) }
             catch {
                 _ = clearLocalSessionStorage()
                 clearPublishedIdentity()
-                errorMessage = "密码已修改，但登录状态无法安全保存。请重新登录。"
+                errorMessage = String(localized: "密码已修改，但登录状态无法安全保存。请重新登录。")
                 return true
             }
             do {
@@ -368,15 +368,15 @@ final class MembershipStore {
                 guard let session, session.user.id == account.id else {
                     _ = clearLocalSessionStorage()
                     clearPublishedIdentity()
-                    notice = "密码已修改，请重新登录以确认会话。"
+                    notice = String(localized: "密码已修改，请重新登录以确认会话。")
                     return true
                 }
                 authSession = session
                 self.account = session.user
-                notice = "密码已修改，其他会话已退出。"
+                notice = String(localized: "密码已修改，其他会话已退出。")
             } catch {
                 handle(error, action: .security, operation: operation)
-                if isCurrent(operation) { notice = "密码已修改。请刷新确认当前登录状态。" }
+                if isCurrent(operation) { notice = String(localized: "密码已修改。请刷新确认当前登录状态。") }
             }
             return true
         } catch {
@@ -387,7 +387,7 @@ final class MembershipStore {
 
     func revokeOtherSessions() async -> Bool {
         guard isConfigured, let token = tokenStore.loadToken(), account != nil else {
-            errorMessage = "请先登录后再管理会话。"
+            errorMessage = String(localized: "请先登录后再管理会话。")
             return false
         }
         guard let operation = beginOperation() else { return false }
@@ -395,7 +395,7 @@ final class MembershipStore {
         do {
             try await api.revokeOtherSessions(token: token)
             guard isCurrent(operation) else { return false }
-            notice = "其他登录会话已退出，当前会话保留。"
+            notice = String(localized: "其他登录会话已退出，当前会话保留。")
             return true
         } catch {
             handle(error, action: .revokeOtherSessions, operation: operation)
@@ -406,7 +406,7 @@ final class MembershipStore {
     func enroll(displayName: String, acceptedTerms: Bool) async {
         let displayName = normalized(displayName)
         guard acceptedTerms else {
-            errorMessage = "请先同意社区会员条款。"
+            errorMessage = String(localized: "请先同意社区会员条款。")
             return
         }
         var draft = MembershipEnrollmentDraft()
@@ -416,16 +416,16 @@ final class MembershipStore {
             return
         }
         guard isConfigured else {
-            errorMessage = "会员服务尚未配置。"
+            errorMessage = String(localized: "会员服务尚未配置。")
             return
         }
         guard let token = tokenStore.loadToken(), let account else {
-            errorMessage = "请先登录后再领取会员卡。"
+            errorMessage = String(localized: "请先登录后再领取会员卡。")
             return
         }
         guard account.emailVerified else {
             requiresEmailVerification = true
-            errorMessage = "邮箱尚未验证，请先完成验证。"
+            errorMessage = String(localized: "邮箱尚未验证，请先完成验证。")
             return
         }
         guard let operation = beginOperation() else { return }
@@ -438,7 +438,7 @@ final class MembershipStore {
                 card = nil
                 lastSyncedAt = nil
                 try? cacheStore.delete()
-                errorMessage = "会员数据校验失败，请重新登录后重试。"
+                errorMessage = String(localized: "会员数据校验失败，请重新登录后重试。")
                 return
             }
 
@@ -446,7 +446,7 @@ final class MembershipStore {
             lastSyncedAt = Date()
             isOffline = false
             saveCacheIfPossible()
-            notice = "会员卡已更新。"
+            notice = String(localized: "会员卡已更新。")
         } catch {
             handle(error, action: .enroll, operation: operation)
         }
@@ -479,14 +479,14 @@ final class MembershipStore {
         activeOperation = nil
 
         if !cleared {
-            errorMessage = "无法完全清除本机登录状态。"
+            errorMessage = String(localized: "无法完全清除本机登录状态。")
         }
         if serverConfirmed {
-            notice = "已退出登录。"
+            notice = String(localized: "已退出登录。")
         } else if isConfigured, token != nil {
-            notice = "已清除本机登录状态；服务器退出未确认。"
+            notice = String(localized: "已清除本机登录状态；服务器退出未确认。")
         } else {
-            notice = "已清除本机登录状态。"
+            notice = String(localized: "已清除本机登录状态。")
         }
     }
 
@@ -498,7 +498,7 @@ final class MembershipStore {
         clearPublishedIdentity()
         hasRestored = true
         notice = nil
-        errorMessage = cleared ? nil : "无法完全清除本机登录状态。"
+        errorMessage = cleared ? nil : String(localized: "无法完全清除本机登录状态。")
     }
 
     private func synchronize(token: String, operation: UUID, action: Action) async -> Bool {
@@ -518,7 +518,7 @@ final class MembershipStore {
                 card = nil
                 lastSyncedAt = nil
                 try? cacheStore.delete()
-                errorMessage = "邮箱尚未验证，请先完成验证。"
+                errorMessage = String(localized: "邮箱尚未验证，请先完成验证。")
                 return false
             }
 
@@ -528,7 +528,7 @@ final class MembershipStore {
                 card = nil
                 lastSyncedAt = nil
                 try? cacheStore.delete()
-                errorMessage = "会员数据校验失败，请重新登录后重试。"
+                errorMessage = String(localized: "会员数据校验失败，请重新登录后重试。")
                 return false
             }
 
@@ -585,7 +585,7 @@ final class MembershipStore {
             )
         } catch {
             if errorMessage == nil {
-                errorMessage = "无法保存会员缓存。"
+                errorMessage = String(localized: "无法保存会员缓存。")
             }
         }
     }
@@ -599,19 +599,19 @@ final class MembershipStore {
 
         if case .server(let statusCode, let code) = apiError {
             if statusCode == 429 {
-                errorMessage = "操作过于频繁，请稍后再试。"
+                errorMessage = String(localized: "操作过于频繁，请稍后再试。")
                 return
             }
             if action == .changePassword, code == "INVALID_PASSWORD" || code == "INVALID_CURRENT_PASSWORD" {
-                errorMessage = "当前密码不正确，请重新输入。"
+                errorMessage = String(localized: "当前密码不正确，请重新输入。")
                 return
             }
             if action == .changePassword, code == "PASSWORD_NOT_FOUND" || code == "CREDENTIAL_ACCOUNT_NOT_FOUND" {
-                errorMessage = "此账号尚未设置邮箱密码，请使用原登录方式。"
+                errorMessage = String(localized: "此账号尚未设置邮箱密码，请使用原登录方式。")
                 return
             }
             if code == "SESSION_NOT_FRESH" {
-                errorMessage = "此操作需要重新登录后再试。"
+                errorMessage = String(localized: "此操作需要重新登录后再试。")
                 return
             }
         }
@@ -620,7 +620,7 @@ final class MembershipStore {
             _ = clearLocalSessionStorage()
             clearPublishedIdentity()
             hasRestored = true
-            errorMessage = "登录已失效，请重新登录。"
+            errorMessage = String(localized: "登录已失效，请重新登录。")
             return
         }
 
@@ -631,14 +631,14 @@ final class MembershipStore {
             card = nil
             lastSyncedAt = nil
             try? cacheStore.delete()
-            errorMessage = "邮箱尚未验证，请先完成验证。"
+            errorMessage = String(localized: "邮箱尚未验证，请先完成验证。")
             return
         }
 
         if case .network = apiError {
             isOffline = true
             if action == .refresh, card != nil {
-                errorMessage = "网络不可用，正在显示本地会员卡。"
+                errorMessage = String(localized: "网络不可用，正在显示本地会员卡。")
             } else {
                 errorMessage = networkMessage(for: action)
             }
@@ -646,7 +646,7 @@ final class MembershipStore {
         }
 
         if case .notConfigured = apiError {
-            errorMessage = "会员服务尚未配置。"
+            errorMessage = String(localized: "会员服务尚未配置。")
             return
         }
 
@@ -654,7 +654,7 @@ final class MembershipStore {
             card = nil
             lastSyncedAt = nil
             try? cacheStore.delete()
-            errorMessage = "当前账户没有执行此操作的权限。"
+            errorMessage = String(localized: "当前账户没有执行此操作的权限。")
             return
         }
 
@@ -719,54 +719,54 @@ final class MembershipStore {
     private func networkMessage(for action: Action) -> String {
         switch action {
         case .refresh:
-            return "无法连接会员服务，请稍后重试。"
+            return String(localized: "无法连接会员服务，请稍后重试。")
         case .signIn:
-            return "无法连接会员服务，暂时无法登录。"
+            return String(localized: "无法连接会员服务，暂时无法登录。")
         case .register:
-            return "无法连接会员服务，暂时无法注册。"
+            return String(localized: "无法连接会员服务，暂时无法注册。")
         case .verification:
-            return "无法连接会员服务，暂时无法发送验证邮件。"
+            return String(localized: "无法连接会员服务，暂时无法发送验证邮件。")
         case .passwordReset:
-            return "无法连接会员服务，暂时无法发送重置邮件。"
+            return String(localized: "无法连接会员服务，暂时无法发送重置邮件。")
         case .enroll:
-            return "无法连接会员服务，暂时无法领取会员卡。"
+            return String(localized: "无法连接会员服务，暂时无法领取会员卡。")
         case .appleSignIn:
-            return "无法连接会员服务，Apple 登录未完成。"
+            return String(localized: "无法连接会员服务，Apple 登录未完成。")
         case .wallet:
-            return "无法连接会员服务，暂时无法取得钱包凭证。"
+            return String(localized: "无法连接会员服务，暂时无法取得钱包凭证。")
         case .security:
-            return "无法连接认证服务，暂时无法确认会话。"
+            return String(localized: "无法连接认证服务，暂时无法确认会话。")
         case .changePassword:
-            return "密码修改结果未确认。请检查网络，必要时使用密码找回。"
+            return String(localized: "密码修改结果未确认。请检查网络，必要时使用密码找回。")
         case .revokeOtherSessions:
-            return "其他会话的退出结果未确认，请稍后重试。"
+            return String(localized: "其他会话的退出结果未确认，请稍后重试。")
         }
     }
 
     private func failureMessage(for action: Action) -> String {
         switch action {
         case .refresh:
-            return "无法更新会员信息，请稍后重试。"
+            return String(localized: "无法更新会员信息，请稍后重试。")
         case .signIn:
-            return "登录失败，请检查邮箱和密码。"
+            return String(localized: "登录失败，请检查邮箱和密码。")
         case .register:
-            return "注册失败，请检查信息后重试。"
+            return String(localized: "注册失败，请检查信息后重试。")
         case .verification:
-            return "验证邮件发送失败，请稍后重试。"
+            return String(localized: "验证邮件发送失败，请稍后重试。")
         case .passwordReset:
-            return "密码重置邮件发送失败，请稍后重试。"
+            return String(localized: "密码重置邮件发送失败，请稍后重试。")
         case .enroll:
-            return "领卡失败，请稍后重试。"
+            return String(localized: "领卡失败，请稍后重试。")
         case .appleSignIn:
-            return "Apple 登录失败。若已有邮箱账号，请先使用原方式登录。"
+            return String(localized: "Apple 登录失败。若已有邮箱账号，请先使用原方式登录。")
         case .wallet:
-            return "钱包凭证获取失败，签发服务可能尚未配置。"
+            return String(localized: "钱包凭证获取失败，签发服务可能尚未配置。")
         case .security:
-            return "无法确认当前登录会话，请刷新后重试。"
+            return String(localized: "无法确认当前登录会话，请刷新后重试。")
         case .changePassword:
-            return "密码修改未确认，请检查当前密码或使用密码找回。"
+            return String(localized: "密码修改未确认，请检查当前密码或使用密码找回。")
         case .revokeOtherSessions:
-            return "暂时无法退出其他登录会话。"
+            return String(localized: "暂时无法退出其他登录会话。")
         }
     }
 }

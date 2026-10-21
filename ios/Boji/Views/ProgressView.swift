@@ -7,7 +7,10 @@ struct ProgressViewScreen: View {
     @State private var metric = BodyMetric.weight
     private var sortedEntries: [BodyEntry] { store.bodyEntries.sorted { $0.date < $1.date } }
     private var shareText: String {
-        String(localized: .Shared.progressShareText(workouts: store.totalWorkouts, activeDays: store.activeDays))
+        String(localized: .Shared.progressShareText(
+            workouts: String(localized: .Shared.progressShareWorkouts(count: store.totalWorkouts)),
+            activeDays: String(localized: .Shared.progressShareDays(count: store.activeDays))
+        ))
     }
 
     var body: some View {
@@ -16,7 +19,7 @@ struct ProgressViewScreen: View {
                 AdaptiveStack {
                     stat(value: store.totalWorkouts, title: String(localized: .Shared.progressTotalWorkouts), unit: String(localized: .Shared.unitTimes),
                          symbol: "figure.strengthtraining.traditional", color: BojiTheme.accent)
-                    stat(value: store.activeDays, title: "留下足迹", unit: String(localized: .Shared.unitDays), symbol: "leaf.fill", color: BojiTheme.green)
+                    stat(value: store.activeDays, title: String(localized: "留下足迹"), unit: String(localized: .Shared.unitDays), symbol: "leaf.fill", color: BojiTheme.green)
                 }
                 weekCard
                 HealthSummaryView()
@@ -25,7 +28,7 @@ struct ProgressViewScreen: View {
             .navigationTitle(.Shared.tabProgress)
             .navigationSubtitle(.Shared.progressSubtitle)
             .profileToolbar {
-                ShareLink(item: shareText, subject: Text("我的 Boji 足迹"), message: Text(.Shared.progressShareSubtitle)) {
+                ShareLink(item: shareText, subject: Text("我的薄肌足迹"), message: Text(.Shared.progressShareSubtitle)) {
                     Label(.Shared.progressShareA11Y, systemImage: "square.and.arrow.up")
                 }
             }
@@ -36,7 +39,7 @@ struct ProgressViewScreen: View {
     private var weekCard: some View {
         Surface {
             VStack(alignment: .leading, spacing: 16) {
-                SectionHeading(title: String(localized: .Shared.progressWeekTitle), detail: "训练、饮水或睡眠")
+                SectionHeading(title: String(localized: .Shared.progressWeekTitle), detail: String(localized: "训练、饮水或睡眠"))
                 HStack(spacing: 0) {
                     ForEach(store.weekRecords) { record in
                         let active = record.waterML > 0 || record.sleepHours != nil || !record.completedWorkoutIDs.isEmpty
@@ -58,7 +61,7 @@ struct ProgressViewScreen: View {
                         }
                         .frame(maxWidth: .infinity)
                         .accessibilityElement(children: .ignore)
-                        .accessibilityLabel("\(record.date.formatted(date: .abbreviated, time: .omitted))\(isToday ? "，今天" : "")，\(active ? "有记录" : "暂无记录")")
+                        .accessibilityLabel(dayLabel(record.date, isToday: isToday, active: active))
                     }
                 }
                 Text(.Shared.progressWeekNote).font(.footnote).foregroundStyle(.secondary)
@@ -128,6 +131,18 @@ struct ProgressViewScreen: View {
                 }
                 Text("长按一条记录可以删除。").font(.footnote).foregroundStyle(.secondary)
             }
+        }
+    }
+
+    /// The VoiceOver label of one day in the week card. Each case is one full sentence, so that
+    /// translators see the whole text.
+    private func dayLabel(_ date: Date, isToday: Bool, active: Bool) -> Text {
+        let style = Date.FormatStyle(date: .abbreviated, time: .omitted)
+        switch (isToday, active) {
+        case (true, true): return Text("\(date, format: style)，今天，有记录")
+        case (true, false): return Text("\(date, format: style)，今天，暂无记录")
+        case (false, true): return Text("\(date, format: style)，有记录")
+        case (false, false): return Text("\(date, format: style)，暂无记录")
         }
     }
 

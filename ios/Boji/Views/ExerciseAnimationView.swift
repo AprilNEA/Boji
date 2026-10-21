@@ -154,8 +154,9 @@ final class ExerciseAnimationHost: UIView {
     }
     override var accessibilityValue: String? {
         get {
-            let state = mode == .poster ? "静态姿势" : animationView.isAnimationPlaying ? "正在播放" : "已暂停"
-            return "\(state)，\(theme == .dark ? "深色" : "浅色")"
+            let state = mode == .poster ? String(localized: "静态姿势") : animationView.isAnimationPlaying ? String(localized: "正在播放") : String(localized: "已暂停")
+            let themeName = theme == .dark ? String(localized: "深色") : String(localized: "浅色")
+            return String(localized: "\(state)，\(themeName)")
         }
         set { }
     }
@@ -173,7 +174,7 @@ final class ExerciseAnimationHost: UIView {
         }
         self.mode = mode
         self.theme = theme
-        accessibilityLabel = "\(name)动作演示"
+        accessibilityLabel = String(localized: "\(name)动作演示")
         if animationView.animationSpeed != CGFloat(speed) {
             animationView.animationSpeed = CGFloat(speed)
         }

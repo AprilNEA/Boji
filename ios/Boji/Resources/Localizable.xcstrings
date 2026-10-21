@@ -1,0 +1,4243 @@
+{
+  "sourceLanguage" : "zh-Hans",
+  "strings" : {
+    "%@ %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      }
+    },
+    "%@ · %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "%@动作演示" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ demo"
+          }
+        }
+      }
+    },
+    "%@已记录" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ logged"
+          }
+        }
+      }
+    },
+    "%@，%@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@，%2$@"
+          }
+        }
+      }
+    },
+    "%@，今天，暂无记录" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, today, nothing logged"
+          }
+        }
+      }
+    },
+    "%@，今天，有记录" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, today, logged"
+          }
+        }
+      }
+    },
+    "%@，暂无记录" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, nothing logged"
+          }
+        }
+      }
+    },
+    "%@，有记录" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, logged"
+          }
+        }
+      }
+    },
+    "%@：%@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@：%2$@"
+          }
+        }
+      }
+    },
+    "%lld" : {},
+    "%lld / %lld 已确认" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld / %lld confirmed"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld / %2$lld 已确认"
+          }
+        }
+      }
+    },
+    "%lld / 3 · %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld / 3 · %2$@"
+          }
+        }
+      }
+    },
+    "%lld/24" : {},
+    "0" : {},
+    "16" : {},
+    "1～24 个字符" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1–24 characters"
+          }
+        }
+      }
+    },
+    "A CLUB FOR EVERY BODY" : {},
+    "Apple 健康" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Health"
+          }
+        }
+      }
+    },
+    "Apple 将提供你选择分享的账号信息，用于创建或恢复俱乐部身份。已有邮箱账号不会自动合并。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple shares the account details you choose, to create or restore your club identity. An existing email account isn’t merged automatically."
+          }
+        }
+      }
+    },
+    "Apple 登录凭据不完整，请重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Sign in with Apple credential is incomplete. Try again."
+          }
+        }
+      }
+    },
+    "Apple 登录失败。若已有邮箱账号，请先使用原方式登录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in with Apple failed. If you already have an email account, sign in with it first."
+          }
+        }
+      }
+    },
+    "Apple 登录尚未开放" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in with Apple Isn’t Available Yet"
+          }
+        }
+      }
+    },
+    "Apple 登录尚未配置或暂不可用。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in with Apple isn’t configured or isn’t available right now."
+          }
+        }
+      }
+    },
+    "Apple 登录未完成，请稍后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in with Apple didn’t finish. Try again later."
+          }
+        }
+      }
+    },
+    "Apple 登录校验失败，请重新尝试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in with Apple couldn’t be verified. Try again."
+          }
+        }
+      }
+    },
+    "Apple 账号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Account"
+          }
+        }
+      }
+    },
+    "Apple 钱包暂不可用" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Wallet Isn’t Available"
+          }
+        }
+      }
+    },
+    "MY BODY. MY PACE." : {},
+    "Wallet 签发服务尚未配置。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Wallet pass service isn’t configured."
+          }
+        }
+      }
+    },
+    "boji" : {},
+    "一张属于你的身份卡，记录一起开始的这一天。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A card of your own, marking the day you started with us."
+          }
+        }
+      }
+    },
+    "三条共识，\n一起开始。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Three pledges.\nWe start together."
+          }
+        }
+      }
+    },
+    "上一步" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
+          }
+        }
+      }
+    },
+    "上次同步 %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last synced %@"
+          }
+        }
+      }
+    },
+    "上次查询" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last Checked"
+          }
+        }
+      }
+    },
+    "不以身材、体重或体脂决定是否可以加入。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Body shape, weight or body fat never decides who can join."
+          }
+        }
+      }
+    },
+    "不冒用他人身份，不在昵称中包含他人隐私。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Don’t pretend to be someone else, and don’t put other people’s private information in your nickname."
+          }
+        }
+      }
+    },
+    "不影响手动记录，也不修改健康 App 中的原始数据。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This doesn’t affect manual logs or change the original data in the Health app."
+          }
+        }
+      }
+    },
+    "不必完美，也能开始。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No need to be perfect to start."
+          }
+        }
+      }
+    },
+    "不必达到某种身材，今天就可以开始。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You don’t need a certain body. You can start today."
+          }
+        }
+      }
+    },
+    "不必达标，\n也能加入。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No need to be perfect\nto join."
+          }
+        }
+      }
+    },
+    "不排名，不鼓励极端减脂；不舒服时停止训练。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No rankings and no extreme cutting. Stop training when you feel unwell."
+          }
+        }
+      }
+    },
+    "不需要提供身体照片或体脂数据" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No body photos or body fat data needed"
+          }
+        }
+      }
+    },
+    "主要肌群：%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Main muscles: %@"
+          }
+        }
+      }
+    },
+    "人人都有位置" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Everyone Has a Place"
+          }
+        }
+      }
+    },
+    "仅共享训练、饮水、睡眠是否记录，以及训练场景。不共享具体数值、HealthKit 样本或会员信息。关闭后停止共享；离线手表会在下次连接时清除显示，小组件刷新由系统安排。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shares only whether training, water and sleep are logged, plus where you train. It doesn’t share values, HealthKit samples or membership details. Turning it off stops sharing. An offline watch clears its display the next time it connects, and the system decides when widgets refresh."
+          }
+        }
+      }
+    },
+    "今天已记录 %lld mL。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld mL logged today."
+          }
+        }
+      }
+    },
+    "从今天减去 %lld mL" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subtract %lld mL from Today"
+          }
+        }
+      }
+    },
+    "代表姿势" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Key Pose"
+          }
+        }
+      }
+    },
+    "以上基础功能也可免登录使用。付费会员尚未开放，本版不会收取费用。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can use the basic features above without signing in. Paid membership isn’t available, and this version doesn’t charge anything."
+          }
+        }
+      }
+    },
+    "以这个名字，\n加入俱乐部。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Join the club\nunder this name."
+          }
+        }
+      }
+    },
+    "会员信息以当前服务结果为准。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Membership details follow the member service’s current result."
+          }
+        }
+      }
+    },
+    "会员分享图片预览，包含完整卡号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preview of the membership share image, with the full card number"
+          }
+        }
+      }
+    },
+    "会员分享图片预览，卡号已隐藏" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preview of the membership share image, card number hidden"
+          }
+        }
+      }
+    },
+    "会员卡与账号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Membership & Account"
+          }
+        }
+      }
+    },
+    "会员卡号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card Number"
+          }
+        }
+      }
+    },
+    "会员卡号，%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card number, %@"
+          }
+        }
+      }
+    },
+    "会员卡已到期" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card Expired"
+          }
+        }
+      }
+    },
+    "会员卡已到期。本地功能不受影响。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This member card has expired. Local features still work."
+          }
+        }
+      }
+    },
+    "会员卡已同步。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your member card is synced."
+          }
+        }
+      }
+    },
+    "会员卡已暂停" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card Suspended"
+          }
+        }
+      }
+    },
+    "会员卡已更新。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Member card updated."
+          }
+        }
+      }
+    },
+    "会员卡当前不可用" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card Unavailable"
+          }
+        }
+      }
+    },
+    "会员卡当前已暂停。本地功能不受影响。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This member card is suspended. Local features still work."
+          }
+        }
+      }
+    },
+    "会员卡绑定此账号。退出不会删除本机训练记录，也不会注销账号。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The member card belongs to this account. Signing out doesn’t delete the workout records on this device or your account."
+          }
+        }
+      }
+    },
+    "会员数据校验失败，请重新登录后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The membership data couldn’t be verified. Sign in again and retry."
+          }
+        }
+      }
+    },
+    "会员服务尚未配置。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The member service isn’t configured."
+          }
+        }
+      }
+    },
+    "会员权益未授予 · 本地功能不受影响" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No membership benefits granted · Local features still work"
+          }
+        }
+      }
+    },
+    "会员状态以 App 同步结果为准\n非支付或核销凭证" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Membership status follows the app’s latest sync\nNot a payment or entry pass"
+          }
+        }
+      }
+    },
+    "会员状态已确认。本地功能不受影响。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Membership confirmed. Local features still work."
+          }
+        }
+      }
+    },
+    "会员状态暂不可用。本地功能不受影响。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Membership status is unavailable right now. Local features still work."
+          }
+        }
+      }
+    },
+    "会员纪念卡" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keepsake Card"
+          }
+        }
+      }
+    },
+    "会员身份由俱乐部服务保存，日常记录仍留在本机。多人小队和线上社区尚未开放。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The club service stores your membership. Your daily records stay on this device. Group squads and the online community aren’t available yet."
+          }
+        }
+      }
+    },
+    "你仍可使用所有手动记录功能。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can still use all manual logging features."
+          }
+        }
+      }
+    },
+    "你决定分享哪些数据" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You Decide What to Share"
+          }
+        }
+      }
+    },
+    "你可以在健康 App 中管理薄肌的访问权限。断开查询只清除本 App 的显示，不撤销系统授权，也不删除健康 App 的记录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can manage Lean Muscle’s access in the Health app. Disconnecting only clears what this app shows. It doesn’t revoke system permission or delete records in the Health app."
+          }
+        }
+      }
+    },
+    "你的会员卡" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your Member Card"
+          }
+        }
+      }
+    },
+    "你的昵称" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your nickname"
+          }
+        }
+      }
+    },
+    "你的社区权益" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your Community Benefits"
+          }
+        }
+      }
+    },
+    "修改密码" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change Password"
+          }
+        }
+      }
+    },
+    "修改密码会退出其他会话。仅适用于已设置邮箱密码的账号；Apple 登录账号可继续使用 Apple 登录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Changing your password signs out other sessions. This applies only to accounts with an email password. Accounts that use Sign in with Apple can keep using it."
+          }
+        }
+      }
+    },
+    "修改邮箱登录密码" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change Email Password"
+          }
+        }
+      }
+    },
+    "俱乐部守则" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Club Guidelines"
+          }
+        }
+      }
+    },
+    "俱乐部守则与数据说明" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Club Guidelines and Data Notice"
+          }
+        }
+      }
+    },
+    "俱乐部账号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Club Account"
+          }
+        }
+      }
+    },
+    "健康数据与授权" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Data and Permissions"
+          }
+        }
+      }
+    },
+    "先填写邮箱，再选择需要的邮件。验证或重置完成后，返回这里登录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter your email first, then choose the email you need. After you verify or reset, come back here to sign in."
+          }
+        }
+      }
+    },
+    "先热身，再开始。课程是通用入门参考，不是个性化处方。有伤病时先咨询专业人员；出现疼痛、头晕或不适时立即停止。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warm up first. Courses are general starting points, not personal prescriptions. If you have an injury, talk to a professional first. Stop at once if you feel pain, dizziness or discomfort."
+          }
+        }
+      }
+    },
+    "先验证邮箱，再领取会员卡。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verify your email before you claim a member card."
+          }
+        }
+      }
+    },
+    "免费会员卡是俱乐部身份记录，不代表付费权益，也不能用于支付或场馆核销。图片只是纪念副本，会员状态以服务器为准。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The free member card records your club membership. It grants no paid benefits and can’t be used for payment or gym entry. Images are keepsake copies only. The server decides your membership status."
+          }
+        }
+      }
+    },
+    "免费俱乐部身份卡" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Free Club Membership Card"
+          }
+        }
+      }
+    },
+    "免费俱乐部身份记录" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Free club membership record"
+          }
+        }
+      }
+    },
+    "免费社区会员" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Free Community Membership"
+          }
+        }
+      }
+    },
+    "免费领取" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Free"
+          }
+        }
+      }
+    },
+    "入会日期将在领取后显示" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your join date appears after you claim"
+          }
+        }
+      }
+    },
+    "共享容器暂不可用，请检查 App Group 签名配置。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The shared container isn’t available. Check the App Group signing setup."
+          }
+        }
+      }
+    },
+    "共享当天打卡状态" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share Today’s Log Status"
+          }
+        }
+      }
+    },
+    "关闭" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "其他会话的退出结果未确认，请稍后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signing out other sessions isn’t confirmed. Try again later."
+          }
+        }
+      }
+    },
+    "其他登录会话将失效，需要重新登录。当前会话与本地记录保留。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your other sessions will end and must sign in again. This session and your local records stay."
+          }
+        }
+      }
+    },
+    "其他登录会话已退出，当前会话保留。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Other sessions are signed out. This session stays."
+          }
+        }
+      }
+    },
+    "其他设备需要重新登录。如当前会话无法恢复，你也需要使用新密码登录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Other devices must sign in again. If this session can’t be restored, you also need to sign in with the new password."
+          }
+        }
+      }
+    },
+    "再次输入新密码" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repeat new password"
+          }
+        }
+      }
+    },
+    "写下昵称" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nickname"
+          }
+        }
+      }
+    },
+    "写下昵称 · 确认共识 · 领取身份卡" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a nickname · Confirm the pledges · Claim your card"
+          }
+        }
+      }
+    },
+    "准备好了，再进一步 · %lld 分钟" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready for the Next Step · %lld min"
+          }
+        }
+      }
+    },
+    "分享前可以隐藏会员卡号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can hide your card number before you share"
+          }
+        }
+      }
+    },
+    "分享卡配色" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card Color"
+          }
+        }
+      }
+    },
+    "分享后，其他人可以看到你的昵称、完整卡号和入会日期。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After you share, others can see your nickname, full card number and join date."
+          }
+        }
+      }
+    },
+    "分享图片" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share Image"
+          }
+        }
+      }
+    },
+    "分享图片包含昵称和入会日期。卡号默认隐藏，可以在预览中主动开启。确认前，图片不会自动上传或分享。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share images contain your nickname and join date. The card number is hidden by default, and you can turn it on in the preview. Nothing is uploaded or shared until you confirm."
+          }
+        }
+      }
+    },
+    "分享预览" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share Preview"
+          }
+        }
+      }
+    },
+    "创建俱乐部账号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create a Club Account"
+          }
+        }
+      }
+    },
+    "删除本机记录及会员缓存，并断开健康数据查询。不会注销账号、删除服务器会员身份或健康 App 中的数据。此操作无法撤销。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deletes the records and membership cache on this device and disconnects health data. It doesn’t close your account, delete your membership on the server or delete data in the Health app. This can’t be undone."
+          }
+        }
+      }
+    },
+    "到期时间" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expires"
+          }
+        }
+      }
+    },
+    "制作会员分享卡" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Make a Share Card"
+          }
+        }
+      }
+    },
+    "刷新" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh"
+          }
+        }
+      }
+    },
+    "刷新会话" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh Session"
+          }
+        }
+      }
+    },
+    "刷新健康数据" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh Health Data"
+          }
+        }
+      }
+    },
+    "刷新账号与会员卡" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh Account and Card"
+          }
+        }
+      }
+    },
+    "剩余 %lld 秒" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld second left"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld seconds left"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "加入于" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joined"
+          }
+        }
+      }
+    },
+    "加入于 %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joined %@"
+          }
+        }
+      }
+    },
+    "加入俱乐部" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Join the Club"
+          }
+        }
+      }
+    },
+    "动作演示暂不可用" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demo Isn’t Available"
+          }
+        }
+      }
+    },
+    "动画为通用示意，未经过专业动作审核。不要只照动画训练；如有疼痛或不适，请停止。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The animations are general illustrations and haven’t had a professional form review. Don’t train from the animation alone. Stop if you feel pain or discomfort."
+          }
+        }
+      }
+    },
+    "卡号已复制" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card number copied"
+          }
+        }
+      }
+    },
+    "卡号已隐藏" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card number hidden"
+          }
+        }
+      }
+    },
+    "卡片信息由会员服务确认，分享图片仅作纪念。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The member service confirms the card details. Shared images are keepsakes only."
+          }
+        }
+      }
+    },
+    "卡片的边界" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What the Card Is Not"
+          }
+        }
+      }
+    },
+    "卡面昵称" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card Nickname"
+          }
+        }
+      }
+    },
+    "卡面预览" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card Preview"
+          }
+        }
+      }
+    },
+    "发送密码重置邮件" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send Password Reset Email"
+          }
+        }
+      }
+    },
+    "只有你在系统分享窗口确认后，图片才会发出。图片不是支付或核销凭证，也不证明当前会员状态。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The image is sent only after you confirm in the system share sheet. It isn’t a payment or entry pass and doesn’t prove your current membership."
+          }
+        }
+      }
+    },
+    "只读展示 · 与手动记录分开" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read-only · Separate from manual logs"
+          }
+        }
+      }
+    },
+    "只读近 30 天的睡眠、体重和腰围。数据来自 Apple 健康，不会上传到俱乐部，也不会写回健康 App。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reads only sleep, weight and waist from the last 30 days. The data comes from Apple Health. It isn’t uploaded to the club or written back to the Health app."
+          }
+        }
+      }
+    },
+    "可选的只读连接。不上传健康样本，不替代手动记录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An optional read-only connection. It doesn’t upload health samples or replace manual logs."
+          }
+        }
+      }
+    },
+    "在会员中心可以查看身份详情、制作分享卡和了解免费权益。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In the member center, you can see your card details, make a share card and learn about your free benefits."
+          }
+        }
+      }
+    },
+    "在图片中显示完整卡号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show the full card number in the image"
+          }
+        }
+      }
+    },
+    "在系统窗口确认添加。钱包卡仅展示身份，不是支付或核销凭证。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm in the system window. The Wallet pass only shows your identity. It isn’t a payment or admission pass."
+          }
+        }
+      }
+    },
+    "基础训练库" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Basic Training Library"
+          }
+        }
+      }
+    },
+    "基础记录和训练始终可以免登录使用。领卡需要已验证的邮箱账号。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Basic tracking and workouts always work without an account. Claiming a card needs an account with a verified email."
+          }
+        }
+      }
+    },
+    "基础记录无需登录。领取身份卡时才需要账号。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Basic tracking needs no account. You only need one to claim a member card."
+          }
+        }
+      }
+    },
+    "复制完整卡号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy Full Card Number"
+          }
+        }
+      }
+    },
+    "守则与数据说明" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guidelines and Data"
+          }
+        }
+      }
+    },
+    "守则版本：community-v1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guidelines version: community-v1"
+          }
+        }
+      }
+    },
+    "完成授权窗口不代表每项读取权限都已授予。没有可读取的样本时，这里不会把缺失值当成零。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finishing the permission sheet doesn’t mean that every read permission was granted. When no samples are readable, missing values aren’t shown as zero."
+          }
+        }
+      }
+    },
+    "完成输入" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        }
+      }
+    },
+    "完整会员卡号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Full Card Number"
+          }
+        }
+      }
+    },
+    "密码" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Password"
+          }
+        }
+      }
+    },
+    "密码修改未确认，请检查当前密码或使用密码找回。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The password change isn’t confirmed. Check your current password or reset it."
+          }
+        }
+      }
+    },
+    "密码修改结果未确认。请检查网络，必要时使用密码找回。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The password change isn’t confirmed. Check your network, and reset your password if needed."
+          }
+        }
+      }
+    },
+    "密码已修改。请刷新确认当前登录状态。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Password changed. Refresh to confirm your sign-in status."
+          }
+        }
+      }
+    },
+    "密码已修改，但登录状态无法安全保存。请重新登录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Password changed, but the sign-in state can’t be saved securely. Sign in again."
+          }
+        }
+      }
+    },
+    "密码已修改，其他会话已退出。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Password changed. Your other sessions are signed out."
+          }
+        }
+      }
+    },
+    "密码已修改，请使用新密码重新登录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Password changed. Sign in again with the new password."
+          }
+        }
+      }
+    },
+    "密码已修改，请重新登录以确认会话。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Password changed. Sign in again to confirm the session."
+          }
+        }
+      }
+    },
+    "密码重置邮件发送失败，请稍后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t send the password reset email. Try again later."
+          }
+        }
+      }
+    },
+    "密码（8 至 128 个字符）" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Password (8–128 characters)"
+          }
+        }
+      }
+    },
+    "尊重他人与隐私" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respect Others and Their Privacy"
+          }
+        }
+      }
+    },
+    "尊重自己的节奏" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respect Your Own Pace"
+          }
+        }
+      }
+    },
+    "小组件与 Apple Watch" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widgets and Apple Watch"
+          }
+        }
+      }
+    },
+    "尚未连接 Apple 健康" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not Connected to Apple Health"
+          }
+        }
+      }
+    },
+    "尚未连接手表" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watch not connected"
+          }
+        }
+      }
+    },
+    "尚未配对 Apple Watch" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Apple Watch paired"
+          }
+        }
+      }
+    },
+    "尚未领取 · 预览不代表已加入" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not claimed yet · A preview doesn’t mean you’ve joined"
+          }
+        }
+      }
+    },
+    "居家与健身房课程，逐组完成。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home and gym courses, one set at a time."
+          }
+        }
+      }
+    },
+    "已加入俱乐部" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Club Member"
+          }
+        }
+      }
+    },
+    "已包含" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Included"
+          }
+        }
+      }
+    },
+    "已完成 %lld 组，共 %lld 组" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld of %lld sets done"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "已完成 %1$lld 组，共 %2$lld 组"
+          }
+        }
+      }
+    },
+    "已完成 %lld 项，共 3 项" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld of 3 done"
+          }
+        }
+      }
+    },
+    "已开启健康数据查询" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Data Connected"
+          }
+        }
+      }
+    },
+    "已开启减少动态效果，显示代表姿势。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reduce Motion is on, so a key pose is shown."
+          }
+        }
+      }
+    },
+    "已提交重置请求。若邮箱可用，请检查收件箱。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset requested. If the address can receive email, check your inbox."
+          }
+        }
+      }
+    },
+    "已提交验证邮件请求，请检查收件箱。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verification email requested. Check your inbox."
+          }
+        }
+      }
+    },
+    "已暂停" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paused"
+          }
+        }
+      }
+    },
+    "已清除本机登录状态。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign-in data on this device was cleared."
+          }
+        }
+      }
+    },
+    "已清除本机登录状态；服务器退出未确认。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The sign-in state on this device is cleared. The server hasn’t confirmed the sign-out."
+          }
+        }
+      }
+    },
+    "已用时 %lld 分 %lld 秒" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elapsed %lld min %lld sec"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "已用时 %1$lld 分 %2$lld 秒"
+          }
+        }
+      }
+    },
+    "已登录：%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signed in as %@"
+          }
+        }
+      }
+    },
+    "已连接手表" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watch connected"
+          }
+        }
+      }
+    },
+    "已退出登录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signed out."
+          }
+        }
+      }
+    },
+    "已验证邮箱，返回登录" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email Verified, Back to Sign In"
+          }
+        }
+      }
+    },
+    "开发服务：%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Development service: %@"
+          }
+        }
+      }
+    },
+    "当前会话" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current Session"
+          }
+        }
+      }
+    },
+    "当前会话尚未确认，请刷新。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The current session isn’t confirmed yet. Refresh to check."
+          }
+        }
+      }
+    },
+    "当前密码" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current password"
+          }
+        }
+      }
+    },
+    "当前密码不正确，请重新输入。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The current password is incorrect. Enter it again."
+          }
+        }
+      }
+    },
+    "当前尚无 App 内账号注销入口。公开发布前需补齐账号删除与正式隐私政策。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The app has no account deletion option yet. Account deletion and a formal privacy policy must be added before the public release."
+          }
+        }
+      }
+    },
+    "当前版本尚未连接会员服务。基础训练和记录仍可使用。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This version isn’t connected to the member service. Basic workouts and tracking still work."
+          }
+        }
+      }
+    },
+    "当前账号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current Account"
+          }
+        }
+      }
+    },
+    "当前账户没有执行此操作的权限。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This account isn’t allowed to do that."
+          }
+        }
+      }
+    },
+    "待记录" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not logged"
+          }
+        }
+      }
+    },
+    "慢速 0.5×" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slow 0.5×"
+          }
+        }
+      }
+    },
+    "成长足迹" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Progress History"
+          }
+        }
+      }
+    },
+    "我同意将邮箱和昵称用于创建账号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I agree to the use of my email and nickname to create an account"
+          }
+        }
+      }
+    },
+    "我在薄肌俱乐部" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I’m in the Lean Muscle Club"
+          }
+        }
+      }
+    },
+    "我已阅读并同意守则与数据说明" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I’ve read and agree to the guidelines and data notice"
+          }
+        }
+      }
+    },
+    "我的会员卡" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My Member Card"
+          }
+        }
+      }
+    },
+    "我的薄肌会员纪念卡" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My Lean Muscle Club Keepsake Card"
+          }
+        }
+      }
+    },
+    "我的薄肌足迹" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My Lean Muscle Journey"
+          }
+        }
+      }
+    },
+    "手表连接未完成" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watch connection didn’t finish"
+          }
+        }
+      }
+    },
+    "把开始的这一天，留作纪念。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep the day you started as a keepsake."
+          }
+        }
+      }
+    },
+    "授权于 %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Granted %@"
+          }
+        }
+      }
+    },
+    "接下来：%@ · 第 %lld 组" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Up next: %@ · Set %lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "接下来：%1$@ · 第 %2$lld 组"
+          }
+        }
+      }
+    },
+    "播放演示" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Play Demo"
+          }
+        }
+      }
+    },
+    "操作过于频繁，请稍后再试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Too many attempts. Try again later."
+          }
+        }
+      }
+    },
+    "收起键盘" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hide Keyboard"
+          }
+        }
+      }
+    },
+    "断开 Apple 健康查询？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disconnect Apple Health?"
+          }
+        }
+      }
+    },
+    "断开健康数据查询" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disconnect Health Data"
+          }
+        }
+      }
+    },
+    "断开并清除当前显示" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disconnect and Clear Display"
+          }
+        }
+      }
+    },
+    "新密码不能与当前密码相同。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The new password must differ from the current one."
+          }
+        }
+      }
+    },
+    "新密码（8 至 128 个字符）" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New password (8–128 characters)"
+          }
+        }
+      }
+    },
+    "无支付步骤，不会自动续费。卡号与入会日期将在服务确认后显示。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There’s no payment, and nothing renews automatically. Your card number and join date appear after the service confirms them."
+          }
+        }
+      }
+    },
+    "无法保存会员缓存。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t save the membership cache."
+          }
+        }
+      }
+    },
+    "无法创建安全登录请求，请稍后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t create a secure sign-in request. Try again later."
+          }
+        }
+      }
+    },
+    "无法安全保存登录状态，请稍后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t save the sign-in state securely. Try again later."
+          }
+        }
+      }
+    },
+    "无法安全切换登录账户，请稍后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t switch accounts securely. Try again later."
+          }
+        }
+      }
+    },
+    "无法完全清除本机登录状态。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t fully clear the sign-in state on this device."
+          }
+        }
+      }
+    },
+    "无法更新会员信息，请稍后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t update the membership. Try again later."
+          }
+        }
+      }
+    },
+    "无法生成分享图片，请更换配色后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t create the share image. Choose another color and try again."
+          }
+        }
+      }
+    },
+    "无法确定本地存储位置：%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t find the local storage location: %@"
+          }
+        }
+      }
+    },
+    "无法确认当前登录会话，请刷新后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t confirm the current session. Refresh and try again."
+          }
+        }
+      }
+    },
+    "无法读取 Apple 健康数据：%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t read Apple Health data: %@"
+          }
+        }
+      }
+    },
+    "无法连接 Apple 健康：%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t connect to Apple Health: %@"
+          }
+        }
+      }
+    },
+    "无法连接会员服务，Apple 登录未完成。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t reach the member service. Sign in with Apple didn’t finish."
+          }
+        }
+      }
+    },
+    "无法连接会员服务，暂时无法发送重置邮件。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t reach the member service, so the reset email can’t be sent right now."
+          }
+        }
+      }
+    },
+    "无法连接会员服务，暂时无法发送验证邮件。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t reach the member service, so the verification email can’t be sent right now."
+          }
+        }
+      }
+    },
+    "无法连接会员服务，暂时无法取得钱包凭证。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t reach the member service, so the Wallet pass isn’t available right now."
+          }
+        }
+      }
+    },
+    "无法连接会员服务，暂时无法注册。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t reach the member service, so you can’t register right now."
+          }
+        }
+      }
+    },
+    "无法连接会员服务，暂时无法登录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t reach the member service, so you can’t sign in right now."
+          }
+        }
+      }
+    },
+    "无法连接会员服务，暂时无法领取会员卡。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t reach the member service, so you can’t claim a card right now."
+          }
+        }
+      }
+    },
+    "无法连接会员服务，请稍后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t reach the member service. Try again later."
+          }
+        }
+      }
+    },
+    "无法连接认证服务，暂时无法确认会话。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t reach the sign-in service, so the session can’t be confirmed right now."
+          }
+        }
+      }
+    },
+    "日常记录" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily Tracking"
+          }
+        }
+      }
+    },
+    "日期" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date"
+          }
+        }
+      }
+    },
+    "昵称不能包含控制字符或换行。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The nickname can’t contain control characters or line breaks."
+          }
+        }
+      }
+    },
+    "昵称不能超过 24 个字符。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The nickname can’t be longer than 24 characters."
+          }
+        }
+      }
+    },
+    "昵称会出现在卡片上，领卡后本版暂不支持修改。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your nickname appears on the card. This version can’t change it after you claim."
+          }
+        }
+      }
+    },
+    "暂停演示" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause Demo"
+          }
+        }
+      }
+    },
+    "暂无可读取数据" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No readable data"
+          }
+        }
+      }
+    },
+    "暂时无法同步手表，请稍后重试" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t sync the watch right now. Try again later."
+          }
+        }
+      }
+    },
+    "暂时无法在线领卡" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t Claim Cards Online Yet"
+          }
+        }
+      }
+    },
+    "暂时无法确认 Apple 服务能力。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t confirm the Apple service capabilities right now."
+          }
+        }
+      }
+    },
+    "暂时无法退出其他登录会话。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t sign out other sessions right now."
+          }
+        }
+      }
+    },
+    "曜石" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obsidian"
+          }
+        }
+      }
+    },
+    "更多课程" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "More Courses"
+          }
+        }
+      }
+    },
+    "更新后，其他会话会退出。请妥善保存新密码。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After the update, your other sessions sign out. Keep your new password safe."
+          }
+        }
+      }
+    },
+    "更新密码" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update Password"
+          }
+        }
+      }
+    },
+    "更新密码并退出其他会话？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update password and sign out other sessions?"
+          }
+        }
+      }
+    },
+    "最近体重" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latest Weight"
+          }
+        }
+      }
+    },
+    "最近可读取的数据" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latest Readable Data"
+          }
+        }
+      }
+    },
+    "最近睡眠日" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latest Sleep Day"
+          }
+        }
+      }
+    },
+    "最近腰围" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latest Waist"
+          }
+        }
+      }
+    },
+    "月白" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moonlight"
+          }
+        }
+      }
+    },
+    "有效至" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valid Until"
+          }
+        }
+      }
+    },
+    "有效至 %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valid until %@"
+          }
+        }
+      }
+    },
+    "服务尚未启用正式凭证签发。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The service hasn’t turned on official pass issuing yet."
+          }
+        }
+      }
+    },
+    "本周已训练 %lld 天，目标 2 天" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Trained %lld day this week. Goal: 2 days."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Trained %lld days this week. Goal: 2 days."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "本地存储位置不可用。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The local storage location isn’t available."
+          }
+        }
+      }
+    },
+    "本地开发服务会把邮件保存到后端目录，不会发送到真实邮箱。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The local development service saves emails to a backend directory. It doesn’t send them to real inboxes."
+          }
+        }
+      }
+    },
+    "本机登录信息和会员卡缓存会清除。本机训练记录不受影响，此操作不会注销账号。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The sign-in data and the cached member card on this device will be cleared. Workout records on this device stay. This doesn’t delete your account."
+          }
+        }
+      }
+    },
+    "本次会提交昵称和守则版本。训练、饮水、睡眠及身体记录不会随领卡上传。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This sends your nickname and the guidelines version. Workout, water, sleep and body records aren’t uploaded with your claim."
+          }
+        }
+      }
+    },
+    "本次查询未完成，请到健康连接页重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This check didn’t finish. Try again on the Health connection page."
+          }
+        }
+      }
+    },
+    "权益信息待刷新 · 本地功能不受影响" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benefits need a refresh · Local features still work"
+          }
+        }
+      }
+    },
+    "权益状态待同步 · 本地功能不受影响" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benefit status not synced · Local features still work"
+          }
+        }
+      }
+    },
+    "来源：%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sources: %@"
+          }
+        }
+      }
+    },
+    "来自 Apple 健康" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "From Apple Health"
+          }
+        }
+      }
+    },
+    "松林" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pine"
+          }
+        }
+      }
+    },
+    "查看健康数据与来源" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View Health Data and Sources"
+          }
+        }
+      }
+    },
+    "查看动作演示" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View Demo"
+          }
+        }
+      }
+    },
+    "查看守则与数据说明" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View Guidelines and Data Notice"
+          }
+        }
+      }
+    },
+    "查看我的会员卡" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View My Member Card"
+          }
+        }
+      }
+    },
+    "查看指标" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Metric"
+          }
+        }
+      }
+    },
+    "查看训练历史与身体数据趋势。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See your training history and body data trends."
+          }
+        }
+      }
+    },
+    "查看账号与会员数据说明" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account and Membership Data"
+          }
+        }
+      }
+    },
+    "样本只在 App 运行时展示，不写入本地导出文件。手动记录单独保存，不会被健康数据覆盖。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Samples appear only while the app runs and aren’t written to the export file. Manual logs are stored separately, and health data doesn’t overwrite them."
+          }
+        }
+      }
+    },
+    "核对并领取" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review and Claim"
+          }
+        }
+      }
+    },
+    "欢迎加入。\n按你的节奏来。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome.\nGo at your own pace."
+          }
+        }
+      }
+    },
+    "欢迎回来" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome Back"
+          }
+        }
+      }
+    },
+    "正在加载动作…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading Exercise…"
+          }
+        }
+      }
+    },
+    "正在播放" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Playing"
+          }
+        }
+      }
+    },
+    "正在更新…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Updating…"
+          }
+        }
+      }
+    },
+    "正在查询…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking…"
+          }
+        }
+      }
+    },
+    "正在核对会员状态" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking Membership Status"
+          }
+        }
+      }
+    },
+    "正在核对会员状态…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking membership status…"
+          }
+        }
+      }
+    },
+    "正在确认 Apple 登录能力…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking Sign in with Apple…"
+          }
+        }
+      }
+    },
+    "正在确认…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirming…"
+          }
+        }
+      }
+    },
+    "正在连接俱乐部…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecting to the club…"
+          }
+        }
+      }
+    },
+    "正在连接认证服务…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecting to the sign-in service…"
+          }
+        }
+      }
+    },
+    "正常 1×" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Normal 1×"
+          }
+        }
+      }
+    },
+    "此操作需要重新登录后再试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in again, then retry this action."
+          }
+        }
+      }
+    },
+    "此版本尚未配置钱包凭证类型。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This version has no Wallet pass type configured."
+          }
+        }
+      }
+    },
+    "此设备不支持 Apple 健康。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This device doesn’t support Apple Health."
+          }
+        }
+      }
+    },
+    "此设备暂不支持健康数据" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Health Data Isn’t Available on This Device"
+          }
+        }
+      }
+    },
+    "此设备暂不支持添加钱包凭证。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This device can’t add Wallet passes right now."
+          }
+        }
+      }
+    },
+    "此账号尚未设置邮箱密码，请使用原登录方式。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This account has no email password. Use the sign-in method you used before."
+          }
+        }
+      }
+    },
+    "每个睡眠日为前日 18:00 至当日 18:00。只统计睡眠区间，重叠来源不重复相加，不把卧床当作睡眠。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Each sleep day runs from 18:00 the day before to 18:00 that day. Only sleep intervals count. Overlapping sources aren’t added twice, and time in bed doesn’t count as sleep."
+          }
+        }
+      }
+    },
+    "没有订阅费用" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No subscription fee"
+          }
+        }
+      }
+    },
+    "没有身材门槛，也不需要跟别人比较。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No body requirements, and no need to compare yourself with anyone."
+          }
+        }
+      }
+    },
+    "没有身材门槛，按自己的节奏来。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No body requirements. Go at your own pace."
+          }
+        }
+      }
+    },
+    "注册" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Register"
+          }
+        }
+      }
+    },
+    "注册后需要先验证邮箱，再返回 App 登录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After you register, verify your email, then come back to the app to sign in."
+          }
+        }
+      }
+    },
+    "注册失败，请检查信息后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registration failed. Check your details and try again."
+          }
+        }
+      }
+    },
+    "注册并验证邮箱" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Register and Verify Email"
+          }
+        }
+      }
+    },
+    "注册成功，请在邮箱完成验证后登录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registered. Verify your email, then sign in."
+          }
+        }
+      }
+    },
+    "浅色" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Light"
+          }
+        }
+      }
+    },
+    "测试卡" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Test Card"
+          }
+        }
+      }
+    },
+    "测试卡 · 离线副本 · 非真实会员" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Test card · Offline copy · Not a real member"
+          }
+        }
+      }
+    },
+    "测试卡 · 非真实会员" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Test card · Not a real member"
+          }
+        }
+      }
+    },
+    "深色" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dark"
+          }
+        }
+      }
+    },
+    "添加到 Apple 钱包" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add to Apple Wallet"
+          }
+        }
+      }
+    },
+    "演示速度" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demo Speed"
+          }
+        }
+      }
+    },
+    "演示速度仅供观察，不作为训练节拍。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demo speed is for watching only, not a training tempo."
+          }
+        }
+      }
+    },
+    "照顾自己，就是今天的开始。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taking care of yourself is how today starts."
+          }
+        }
+      }
+    },
+    "版本" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version"
+          }
+        }
+      }
+    },
+    "生成于 %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Created %@"
+          }
+        }
+      }
+    },
+    "用时" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time"
+          }
+        }
+      }
+    },
+    "界面测试环境 · 不连接真实账号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "UI test environment · No real account"
+          }
+        }
+      }
+    },
+    "留下足迹" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active Days"
+          }
+        }
+      }
+    },
+    "登录" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign In"
+          }
+        }
+      }
+    },
+    "登录仅用于恢复你的俱乐部身份。训练和身体记录不会上传。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signing in only restores your club membership. Workouts and body records aren’t uploaded."
+          }
+        }
+      }
+    },
+    "登录令牌存入本机 Keychain。退出会清除本机登录信息和会员缓存，但不注销账号或删除服务器会员。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The sign-in token is stored in this device’s Keychain. Signing out clears the sign-in data and membership cache on this device, but doesn’t close your account or delete your membership on the server."
+          }
+        }
+      }
+    },
+    "登录会将邮箱和认证信息发送到俱乐部服务。领卡会提交昵称和守则版本，由服务器保存卡号、入会日期和会员状态。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signing in sends your email and sign-in details to the club service. Claiming a card sends your nickname and the guidelines version. The server stores your card number, join date and membership status."
+          }
+        }
+      }
+    },
+    "登录俱乐部" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign In to the Club"
+          }
+        }
+      }
+    },
+    "登录失败，请检查邮箱和密码。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign-in failed. Check your email and password."
+          }
+        }
+      }
+    },
+    "登录安全" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign-In Security"
+          }
+        }
+      }
+    },
+    "登录已失效，请重新登录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your session expired. Sign in again."
+          }
+        }
+      }
+    },
+    "登录成功。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signed in."
+          }
+        }
+      }
+    },
+    "登录或注册领取" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign In or Register to Claim"
+          }
+        }
+      }
+    },
+    "登录时间" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signed In"
+          }
+        }
+      }
+    },
+    "睡眠" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sleep"
+          }
+        }
+      }
+    },
+    "睡眠时长" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sleep Duration"
+          }
+        }
+      }
+    },
+    "确认免费领卡" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claim My Free Card"
+          }
+        }
+      }
+    },
+    "确认守则" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guidelines"
+          }
+        }
+      }
+    },
+    "确认更新" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update"
+          }
+        }
+      }
+    },
+    "离线副本" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline Copy"
+          }
+        }
+      }
+    },
+    "离线副本 · 状态待同步" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline copy · Status not synced"
+          }
+        }
+      }
+    },
+    "离线时不能确认会员状态。本地功能不受影响。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Membership can’t be confirmed offline. Local features still work."
+          }
+        }
+      }
+    },
+    "等待手表连接后同步" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Syncs when the watch connects"
+          }
+        }
+      }
+    },
+    "管理所需数据授权" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manage Data Permissions"
+          }
+        }
+      }
+    },
+    "系统无法展示此钱包凭证。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The system can’t show this Wallet pass."
+          }
+        }
+      }
+    },
+    "组" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sets"
+          }
+        }
+      }
+    },
+    "结束本次训练？未完成的训练不会记录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "End this workout? An unfinished workout won’t be saved."
+          }
+        }
+      }
+    },
+    "给自己，\n一个位置。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Make room\nfor yourself."
+          }
+        }
+      }
+    },
+    "给自己，一个位置。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Make room for yourself."
+          }
+        }
+      }
+    },
+    "给身体一点余地 · %lld 分钟" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Give Your Body Some Room · %lld min"
+          }
+        }
+      }
+    },
+    "继续" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        }
+      }
+    },
+    "网络不可用，正在显示本地会员卡。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No network. Showing the member card saved on this device."
+          }
+        }
+      }
+    },
+    "薄肌俱乐部" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lean Muscle Club"
+          }
+        }
+      }
+    },
+    "薄肌俱乐部 · 开发预览版。支持免费会员身份，不提供医疗诊断、AI 识餐或付费服务。名称为开发暂用，未完成商标审查。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lean Muscle Club · Developer Preview. Free membership is supported. No medical diagnosis, AI meal recognition or paid services. The name is a working name and has not completed trademark review."
+          }
+        }
+      }
+    },
+    "认证由 Better Auth 管理。本页不会删除账号、会员卡或本地记录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Better Auth manages sign-in. This page doesn’t delete your account, member card or local records."
+          }
+        }
+      }
+    },
+    "让记录少一点，让生活多一点" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Less Logging, More Living"
+          }
+        }
+      }
+    },
+    "训练" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Training"
+          }
+        }
+      }
+    },
+    "训练、饮水、睡眠和身体记录仍只保存在此设备，不随领卡上传。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Workout, water, sleep and body records stay on this device only. Claiming a card doesn’t upload them."
+          }
+        }
+      }
+    },
+    "训练、饮水与睡眠，按自己的节奏。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Training, water and sleep, at your own pace."
+          }
+        }
+      }
+    },
+    "训练、饮水或睡眠" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Training, water or sleep"
+          }
+        }
+      }
+    },
+    "训练和身体记录不会随领卡上传" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Workouts and body records aren’t uploaded when you claim a card"
+          }
+        }
+      }
+    },
+    "训练和身体记录只保存在此设备，不会上传；账号和会员身份由俱乐部服务保存。卸载可能丢失本机记录。导出文件含身体数据，不含登录令牌和会员缓存，请妥善保管。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Training and body records stay on this device and aren’t uploaded. The club service stores your account and membership. Uninstalling may delete the records on this device. The export file contains body data but no sign-in token or membership cache, so keep it safe."
+          }
+        }
+      }
+    },
+    "训练进度" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Training Progress"
+          }
+        }
+      }
+    },
+    "请先刷新有效会员卡，再添加到钱包。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresh to get a valid member card before you add it to Wallet."
+          }
+        }
+      }
+    },
+    "请先同意社区会员条款。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Agree to the community membership terms first."
+          }
+        }
+      }
+    },
+    "请先在 Apple Watch 安装薄肌" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Install Lean Muscle on Apple Watch first"
+          }
+        }
+      }
+    },
+    "请先登录后再修改密码。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in before you change your password."
+          }
+        }
+      }
+    },
+    "请先登录后再刷新会员信息。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in before you refresh your membership details."
+          }
+        }
+      }
+    },
+    "请先登录后再查看账号安全。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in before you view account security."
+          }
+        }
+      }
+    },
+    "请先登录后再管理会话。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in before you manage sessions."
+          }
+        }
+      }
+    },
+    "请先登录后再领取会员卡。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in before you claim a member card."
+          }
+        }
+      }
+    },
+    "请先登录，再管理账号安全。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in first to manage account security."
+          }
+        }
+      }
+    },
+    "请参考下方动作提示" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See the exercise tips below"
+          }
+        }
+      }
+    },
+    "请完整填写姓名、邮箱和密码。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter your name, email and password."
+          }
+        }
+      }
+    },
+    "请稍候……" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please wait…"
+          }
+        }
+      }
+    },
+    "请输入当前密码，新密码需为 8 至 128 个字符。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter your current password. The new password must be 8–128 characters."
+          }
+        }
+      }
+    },
+    "请输入昵称。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter a nickname."
+          }
+        }
+      }
+    },
+    "请输入邮箱和密码。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter your email and password."
+          }
+        }
+      }
+    },
+    "请输入需要重置密码的邮箱。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter the email for the password reset."
+          }
+        }
+      }
+    },
+    "请输入需要验证的邮箱。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter the email to verify."
+          }
+        }
+      }
+    },
+    "调整饮水量" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adjust Water"
+          }
+        }
+      }
+    },
+    "账号与会员数据" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account and Membership Data"
+          }
+        }
+      }
+    },
+    "账号与安全" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account and Security"
+          }
+        }
+      }
+    },
+    "账号安全" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account Security"
+          }
+        }
+      }
+    },
+    "账号操作" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account action"
+          }
+        }
+      }
+    },
+    "账号状态不一致，请重新登录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The account state doesn’t match. Sign in again."
+          }
+        }
+      }
+    },
+    "身份详情" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card Details"
+          }
+        }
+      }
+    },
+    "身体样本 · 近 30 天" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Body Samples · Last 30 Days"
+          }
+        }
+      }
+    },
+    "身体记录趋势，共 %lld 条。下方列出最近的数值。" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Body record trend, %lld entry. The latest values are listed below."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Body record trend, %lld entries. The latest values are listed below."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "这是免费身份卡，不是付费订阅、支付卡或场馆核销凭证。不自动续费。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is a free membership card. It isn’t a paid subscription, a payment card or a gym pass. Nothing renews automatically."
+          }
+        }
+      }
+    },
+    "连接 Apple 健康" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connect Apple Health"
+          }
+        }
+      }
+    },
+    "连接状态" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connection Status"
+          }
+        }
+      }
+    },
+    "退出其他会话" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign Out Others"
+          }
+        }
+      }
+    },
+    "退出其他登录会话" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign Out Other Sessions"
+          }
+        }
+      }
+    },
+    "退出其他登录会话？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign out other sessions?"
+          }
+        }
+      }
+    },
+    "退出此账号？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign out of this account?"
+          }
+        }
+      }
+    },
+    "退出账号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign Out"
+          }
+        }
+      }
+    },
+    "邮箱" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email"
+          }
+        }
+      }
+    },
+    "邮箱与密码帮助" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email and Password Help"
+          }
+        }
+      }
+    },
+    "邮箱和认证信息将提交至俱乐部服务。登录令牌保存在本机 Keychain，不会写入数据导出。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your email and sign-in details go to the club service. The sign-in token is stored in this device’s Keychain and isn’t included in data exports."
+          }
+        }
+      }
+    },
+    "邮箱尚未验证" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email not verified"
+          }
+        }
+      }
+    },
+    "邮箱尚未验证，请先完成验证。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your email isn’t verified. Verify it first."
+          }
+        }
+      }
+    },
+    "邮箱已验证" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email verified"
+          }
+        }
+      }
+    },
+    "邮箱已验证，可以领取" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email verified. You can claim your card."
+          }
+        }
+      }
+    },
+    "邮箱或密码不正确，请检查后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The email or password is incorrect. Check them and try again."
+          }
+        }
+      }
+    },
+    "邮箱登录密码" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email Password"
+          }
+        }
+      }
+    },
+    "配色只改变分享图片，不改变会员身份或权益。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The color only changes the share image. It doesn’t change your membership or benefits."
+          }
+        }
+      }
+    },
+    "重发验证邮件" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resend Verification Email"
+          }
+        }
+      }
+    },
+    "重新发送验证邮件" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resend Verification Email"
+          }
+        }
+      }
+    },
+    "重新检查" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check Again"
+          }
+        }
+      }
+    },
+    "重新连接并确认会员信息" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reconnect and Confirm Membership"
+          }
+        }
+      }
+    },
+    "钱包凭证与当前会员卡不匹配，请重新获取。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Wallet pass doesn’t match your current member card. Get it again."
+          }
+        }
+      }
+    },
+    "钱包凭证无效或签名不可用，请稍后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Wallet pass is invalid or its signature isn’t available. Try again later."
+          }
+        }
+      }
+    },
+    "钱包凭证获取失败，签发服务可能尚未配置。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t get the Wallet pass. The issuing service may not be configured."
+          }
+        }
+      }
+    },
+    "长按一条记录可以删除。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touch and hold an entry to delete it."
+          }
+        }
+      }
+    },
+    "阅读完整守则与数据说明" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read the Full Guidelines and Data Notice"
+          }
+        }
+      }
+    },
+    "需要完成 App 签名能力和服务端 Apple 配置。你仍可使用邮箱登录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This needs the app signing capability and the server’s Apple setup. You can still sign in with email."
+          }
+        }
+      }
+    },
+    "静态姿势" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Still Pose"
+          }
+        }
+      }
+    },
+    "领卡失败，请稍后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t claim the card. Try again later."
+          }
+        }
+      }
+    },
+    "领取免费会员卡" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claim a Free Member Card"
+          }
+        }
+      }
+    },
+    "领取免费身份卡" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claim Your Free Card"
+          }
+        }
+      }
+    },
+    "领取后显示会员卡号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your card number appears after you claim"
+          }
+        }
+      }
+    },
+    "领取进度，第 %lld 步，共 3 步" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claim progress, step %lld of 3"
+          }
+        }
+      }
+    },
+    "饮水" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Water"
+          }
+        }
+      }
+    },
+    "验证邮件发送失败，请稍后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t send the verification email. Try again later."
+          }
+        }
+      }
+    },
+    "默认隐藏卡号。图片仍包含昵称和入会日期。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The card number is hidden by default. The image still shows your nickname and join date."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

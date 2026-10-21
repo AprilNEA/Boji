@@ -41,9 +41,9 @@ struct SettingsView: View {
                     Picker(.Shared.trainingPlanLabel, selection: $store.selectedPlan) { ForEach(PlanKind.allCases) { Text($0.title).tag($0) } }
                 }
                 Section {
-                    Button { showMembership = true } label: { SheetRowLabel(title: "会员卡与账号", symbol: "person.crop.rectangle") }
+                    Button { showMembership = true } label: { SheetRowLabel(title: String(localized: "会员卡与账号"), symbol: "person.crop.rectangle") }
                     if membership.account != nil {
-                        Button { showAccountSecurity = true } label: { SheetRowLabel(title: "账号与安全", symbol: "lock.shield") }
+                        Button { showAccountSecurity = true } label: { SheetRowLabel(title: String(localized: "账号与安全"), symbol: "lock.shield") }
                             .accessibilityIdentifier("account-security")
                     }
                 } header: {
