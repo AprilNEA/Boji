@@ -6,7 +6,7 @@ import { add, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
 import { timeline } from '@/math/timeline.ts';
 import { add3 } from '@/math/vec3.ts';
 import { project, toeDir, type FrontPose } from '@/rig/front.ts';
-import { BODY, solve, type Pose } from '@/rig/side.ts';
+import { BODY, solve, type LimbSpec, type Pose } from '@/rig/side.ts';
 import { A, FLOOR, G } from '@/exercises/common.ts';
 import {
   BALL, barbell, cableColumn, cableHandle, cableLine, frontDumbbell, frontGripAt,
@@ -93,20 +93,28 @@ export function supineObliqueCrunch(spec: { id: string; name: string; en: string
   ]);
   const neck: Vec2 = [145, FLOOR - 18];
   const hip = add(neck, mul(dir(-4), 123.5));
-  const flat = -4;
+  // The spine points from the hip toward the head, so lying flat is 176 degrees, not -4.
+  const flat = 176;
   const ankle: Vec2 = spec.elevatedFeet ? [hip[0] + 105, FLOOR - A - 72] : [hip[0] + 105, FLOOR - A];
+  // Heel touch: the reaching arm goes straight toward its heel just above the mat; the other arm bends back a little.
+  const heelArm = (reach: number, a: number): LimbSpec => ({
+    a1: lerp(lerp(6, 34, a), 18, reach), a2: lerp(lerp(1, 4, a), 18, reach), hand: lerp(lerp(0, 4, a), 16, reach),
+  });
   const pose = (t: number): Pose => {
     const p = tl.at(t).p, a = Math.abs(p);
-    const armNear = spec.heelTouch
-      ? { a1: lerp(6, -17 * p, a), a2: lerp(1, -20 * p, a), hand: lerp(0, -20 * p, a) }
+    const armNear: LimbSpec = spec.heelTouch
+      ? heelArm(Math.max(p, 0), a)
       : { a1: lerp(178, 218, a), a2: lerp(178, 224, a), hand: lerp(180, 224, a) };
+    const armFar: LimbSpec = spec.heelTouch
+      ? heelArm(Math.max(-p, 0), a)
+      : { ...armNear, a1: (armNear.a1 ?? 0) + 2, a2: (armNear.a2 ?? 0) + 1 };
     return {
       hip, spine: { lumbar: flat - 1, thoracic: flat + 30 * a }, neck: lerp(182, 220, a), head: lerp(181, 224, a),
       legs: {
         near: { target: ankle, foot: spec.elevatedFeet ? 12 : 0, side: [0, -1] },
         far: { target: add(ankle, [-5, 0]), foot: spec.elevatedFeet ? 12 : 0, side: [0, -1] },
       },
-      arms: { near: armNear, far: { ...armNear, a1: (armNear.a1 ?? 0) + 2, a2: (armNear.a2 ?? 0) + 1 } },
+      arms: { near: armNear, far: armFar },
     };
   };
   return {

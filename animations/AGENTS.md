@@ -19,7 +19,7 @@ This directory generates the exercise Lottie animations for the iOS and Android 
 | `src/courses.ts` | `COURSES` and `LIBRARY` |
 | `src/math/` | `vec2.ts` (2D vectors, angles, `lerp`, `clamp`), `vec3.ts` (3D vectors and body bases), `timeline.ts` (easing, `keyframes`, `timeline`) |
 | `src/draw/` | `lottie.ts` (Lottie shapes, paths, colors, keyframe reduction) and `palettes.ts` |
-| `src/rig/` | `ik.ts` (`ik2`, `ik3`), `side.ts` (side-view rig and figure), `front.ts` (front-view 3D rig) |
+| `src/rig/` | `ik.ts` (`ik2`, `ik3`), `side.ts` (side-view rig and figure), `front.ts` (front-view 3D rig), `anatomy.ts` (side-view joint direction checks for `scripts/inspect.ts`) |
 | `src/compose/` | `index.ts` (`compose`, which picks the view), `side.ts`, `front.ts` and `shared.ts` (zoom, props, floor, output) |
 | `src/build/` | `generate.ts` (writes `lottie/`, `lottie-library/` and the catalog), `poster.ts`, and the CLIs `cli.ts` (`pnpm build`) and `assets.ts` (`pnpm build:assets`) |
 | `src/exercises/` | `common.ts` (floor levels and shared poses such as `HIGH_PLANK`), `equipment/`, `course/` (one script per course exercise) and `library/` (families) |

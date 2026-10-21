@@ -256,11 +256,15 @@ export function makeBentMachineRow(meta: RowMeta, opts: { chestSupport?: boolean
       back: [
         { kind: 'box', nm: 'machine-base', color: pal.metalDark, c: [316, G - 5], s: [260, 12], r: 4 },
         { kind: 'box', nm: 'machine-column', color: pal.metal, c: [406, G - 132], s: [20, 250], r: 6 },
-        { kind: 'box', nm: 'machine-arm', color: pal.metalDark, c: [360, G - 232], s: [110, 15], r: 6 },
+        // The arm stops in front of the athlete's back so it does not show behind the shoulders.
+        { kind: 'box', nm: 'machine-arm', color: pal.metalDark, c: [380, G - 232], s: [70, 15], r: 6 },
         { kind: 'oval', nm: 'lever-pivot', color: pal.metalDark, c: pivot, s: [27, 27] },
         ...(opts.chestSupport ? [
-          { kind: 'box' as const, nm: 'incline-chest-pad', color: pal.pad, c: [332, G - 220] as Vec2, s: [28, 118] as Vec2, r: 11, rot: -35 },
-          { kind: 'box' as const, nm: 'pad-support', color: pal.metalDark, c: [349, G - 155] as Vec2, s: [14, 174] as Vec2, r: 5, rot: -35 },
+          // bentRowPose holds the torso at -35.5° from hip (244, 260) to shoulder (331, 201). The pad lies along the
+          // torso (rot 54.5 turns the box's long axis onto it), its surface about 20 px in front of the spine line,
+          // with the top edge at the upper chest. The support post stands under the middle of the pad.
+          { kind: 'box' as const, nm: 'incline-chest-pad', color: pal.pad, c: [303.5, 262] as Vec2, s: [28, 100] as Vec2, r: 11, rot: 54.5 },
+          { kind: 'box' as const, nm: 'pad-support', color: pal.metalDark, c: [316, 358] as Vec2, s: [14, 170] as Vec2, r: 5, rot: -3 },
           { kind: 'box' as const, nm: 'foot-platform', color: pal.propDark, c: [267, G - 8] as Vec2, s: [132, 15] as Vec2, r: 4 },
         ] : []),
       ],
@@ -386,7 +390,7 @@ export function makeTuckedInvertedRow(meta: RowMeta): SideExercise {
   const barY = 104;
   const wrist: Vec2 = [254, barY + GRIP_IN_HAND];
   const station = pullUpBar({ view: 'side', x: wrist[0], y: barY });
-  const spine = { lumbar: -120, thoracic: -120 };
+  const spine = { lumbar: -160, thoracic: -160 };
   return {
     ...meta,
     tl: rowTL,
@@ -402,11 +406,11 @@ export function makeTuckedInvertedRow(meta: RowMeta): SideExercise {
       // The bottom uses 0.7 px slack from straight reach. At the top the elbows are about 65°.
       const shoulder = lerpV([wrist[0], wrist[1] + ARM_STRAIGHT - 0.7], [265, 188], q);
       return {
-        hip: hipForShoulder(shoulder, spine), spine, neck: -120, head: -120, farHip: 0,
+        hip: hipForShoulder(shoulder, spine), spine, neck: -160, head: -160, farHip: 0,
         // The knees remain tucked in front of the trunk. The feet approach the upright at the contracted top.
         legs: {
-          near: { a1: -70, a2: -155, foot: -155 },
-          far: { a1: -69, a2: -154, foot: -154 },
+          near: { a1: -155, a2: -70, foot: -155 },
+          far: { a1: -154, a2: -69, foot: -154 },
         },
         arms: {
           near: { target: wrist, side: [-1, 0], hand: -90 },

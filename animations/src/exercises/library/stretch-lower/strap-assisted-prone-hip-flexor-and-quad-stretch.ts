@@ -13,7 +13,7 @@ export default {
   muscles: [{ m: 'quads', side: 'near' }, { m: 'hipFlexor', side: 'near', scale: 0.45 }],
   dynamic: [strap<Joints>((J) => [J.wrist_n, J.ankle_n])],
   pose(t) { const p = tl.at(t).p; return { hip: [160, FLOOR - 28], spine: { lumbar: 1, thoracic: 1 }, neck: 0, head: 0,
-    legs: { near: { a1: -15 * p, a2: 180 + 20 * p, foot: 180 }, far: { a1: 0, a2: 0, foot: 0 } },
+    legs: { near: { a1: 180 + 20 * p, a2: 180 + 185 * p, foot: 180 + 185 * p }, far: { a1: 180, a2: 180, foot: 180 } },
     arms: { near: { a1: 178, a2: 178, hand: 178 }, far: { a1: 175, a2: 175, hand: 175 } },
   }; },
 } satisfies SideExercise;

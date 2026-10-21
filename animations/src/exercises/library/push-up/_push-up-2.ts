@@ -3,7 +3,7 @@
 import type { LibraryMeta, MovingPart, MuscleSpec, Props, SideExercise } from '@/exercise.ts';
 import type { Palette } from '@/draw/palettes.ts';
 import { add, dir, len, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
-import { timeline, type Timeline } from '@/math/timeline.ts';
+import { bump, easeSinOut, timeline, type Timeline } from '@/math/timeline.ts';
 import { BODY, solve, type Joints, type LimbSpec, type Pose } from '@/rig/side.ts';
 import { ARM_STRAIGHT, FLOOR, hipForShoulder, plantedArm, HIGH_PLANK } from '@/exercises/common.ts';
 import { dumbbell, kettlebell, medicineBall, stabilityBall } from '@/exercises/equipment/index.ts';
@@ -262,10 +262,12 @@ const DRIVE = (p: number, side: 'near' | 'far', spider = false): LimbSpec => {
   const da = side === 'far' ? 2 : 0;
   const a1 = 40 + da;
   // In the spider variation the knee tracks down and forward while the shin folds upward below the abdomen.
-  // This gives the foot clear space above the mat, unlike a folded shin that points toward the floor.
-  const a2 = spider ? -130 + da : 186 + da;
+  // Keep 230° on the same angle branch as the resting shin, so interpolation does not swing through the mat.
+  const a2 = spider ? 230 + da : 186 + da;
   const foot = spider ? -85 + da : 48 + da;
-  return { a1: lerp(rest.a1, a1, p), a2: lerp(rest.a2, a2, p), foot: lerp(rest.foot, foot, p) };
+  // Start the spider knee drive ahead of the chest descent, so the lifted knee clears the mat throughout the motion.
+  const progress = spider ? easeSinOut(easeSinOut(p)) : p;
+  return { a1: lerp(rest.a1, a1, progress), a2: lerp(rest.a2, a2, progress), foot: lerp(rest.foot, foot, progress) };
 };
 
 /** Alternate a full push-up with two high-plank knee drives. */
@@ -301,10 +303,12 @@ export function spidermanPush(info: PushInfo): SideExercise {
     id: info.id, name: info.name, tl, mat: true,
     meta: { en: info.en, family: 'push-up', equipment: info.equipment, sources: info.sources },
     muscles: [{ m: 'pecs' }, { m: 'abs', scale: 0.65 }, { m: 'hipFlexor', side: 'both', scale: 0.75 }, { m: 'delts', side: 'near', scale: 0.45 }],
+    // The peak knee drive identifies this variation more clearly than the default resting plank poster.
+    poster: 0.25,
     pose: (t) => {
       const half = t < 0.5 ? 0 : 1;
       const u = (t % 0.5) * 2;
-      const p = Math.sin(Math.PI * u);
+      const p = bump(u);
       const base = FLOOR_SUPPORT.body(lerp(FLOOR_SUPPORT.top, FLOOR_SUPPORT.bottom, p));
       const near = DRIVE(p, 'near', true);
       const far = DRIVE(p, 'far', true);

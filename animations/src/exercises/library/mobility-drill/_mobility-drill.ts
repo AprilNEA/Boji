@@ -2,7 +2,7 @@
 // Front drills keep both feet planted unless the instruction explicitly lifts, swings, or circles one leg.
 import type { FrontExercise, LibraryMeta, MuscleSpec, SideExercise } from '@/exercise.ts';
 import { D2R, add, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
-import { smooth, timeline, type Timeline } from '@/math/timeline.ts';
+import { bump, smooth, timeline, type Timeline } from '@/math/timeline.ts';
 import { add3, type Vec3 } from '@/math/vec3.ts';
 import { BODY, GROUND, type Pose } from '@/rig/side.ts';
 import { FB, toeDir, type FrontJoints, type FrontPose } from '@/rig/front.ts';
@@ -191,14 +191,17 @@ export function sideDrill(meta: DrillMeta, kind: SideKind, muscles: MuscleSpec[]
         if (q < 0.001) return { ...plank, arms: { near: plantedArm(HIGH_PLANK.wrist), far: plantedArm(HIGH_PLANK.wristFar) } };
         const hand = HIGH_PLANK.wrist;
         const plankSpine = plank.spine as { lumbar: number; thoracic: number };
-        const spine = { lumbar: lerp(plankSpine.lumbar, -36, q), thoracic: lerp(plankSpine.thoracic, -34, q) };
+        // A slightly shallower airborne torso raises the forward knees clear of the mat without moving the hands.
+        const airborne = 7 * bump(q);
+        const spine = { lumbar: lerp(plankSpine.lumbar, -36, q) + airborne, thoracic: lerp(plankSpine.thoracic, -34, q) + airborne };
         // Keep both hands planted while the ankles jump forward to either side of them.
         // HIGH_PLANK places the wrist 6 px ahead of the shoulder. Preserve that established contact geometry.
         const hip = hipForShoulder([hand[0] - 6, hand[1] - 121], spine);
         // The feet leave the mat during the jump. The arc prevents an impossible long-leg reach between plank and tuck.
-        const footY = lerp(HIGH_PLANK.ankle[1], G - A, q) - 34 * Math.sin(Math.PI * q);
-        return { hip, spine, neck: lerp(plank.neck, -34, q), head: lerp(plank.head, -20, q), farHip: 0, farShoulder: 0,
-          legs: { near: { target: [lerp(HIGH_PLANK.ankle[0], hand[0] - 100, q), footY], side: [0, -1], foot: lerp(85, 0, q) }, far: { target: [lerp(HIGH_PLANK.ankle[0] - 2, hand[0] - 106, q), footY], side: [0, -1], foot: lerp(85, 0, q) } }, arms: { near: plantedArm(hand), far: plantedArm(HIGH_PLANK.wristFar) } };
+        const footY = lerp(HIGH_PLANK.ankle[1], G - A, q) - 34 * bump(q);
+        // The knees point forward toward the hands. A vertical pole reverses them as the ankles pass the hips.
+        return { hip, spine, neck: lerp(plank.neck, -34, q) + airborne, head: lerp(plank.head, -20, q) + airborne, farHip: 0, farShoulder: 0,
+          legs: { near: { target: [lerp(HIGH_PLANK.ankle[0], hand[0] - 100, q), footY], side: [1, 0], foot: lerp(85, 0, q) }, far: { target: [lerp(HIGH_PLANK.ankle[0] - 2, hand[0] - 106, q), footY], side: [1, 0], foot: lerp(85, 0, q) } }, arms: { near: plantedArm(hand), far: plantedArm(HIGH_PLANK.wristFar) } };
       }
       if (kind === 'half-kneel-arms') {
         const q = p, hip: Vec2 = [246, G - 110];
@@ -216,8 +219,9 @@ export function sideDrill(meta: DrillMeta, kind: SideKind, muscles: MuscleSpec[]
         const hip = hipForShoulder([hand[0] - 6, hand[1] - 121], spine);
         // Legs stay straight as the feet step toward the still-planted hands, then the body lengthens into a plank.
         const feetX = lerp(hand[0] - 45, HIGH_PLANK.ankle[0], q);
+        // The knees point forward throughout the pike-to-plank transition, even when the hip-to-ankle line turns.
         return { hip, spine, neck: lerp(53, plank.neck, q), head: lerp(55, plank.head, q), farHip: 0, farShoulder: 0,
-          legs: { near: { target: [feetX, HIGH_PLANK.ankle[1]], side: [0, -1], foot: 85 }, far: { target: [feetX - 2, HIGH_PLANK.ankle[1]], side: [0, -1], foot: 85 } }, arms: { near: plantedArm(hand), far: plantedArm(HIGH_PLANK.wristFar) } };
+          legs: { near: { target: [feetX, HIGH_PLANK.ankle[1]], side: [1, 0], foot: 85 }, far: { target: [feetX - 2, HIGH_PLANK.ankle[1]], side: [1, 0], foot: 85 } }, arms: { near: plantedArm(hand), far: plantedArm(HIGH_PLANK.wristFar) } };
       }
       if (kind === 'claw') {
         const q = smooth(Math.abs(p)), active = p >= 0;

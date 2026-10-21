@@ -3,6 +3,7 @@
 // Feet remain flat and parallel for the full range.
 import type { SideExercise } from '@/exercise.ts';
 import { lerp } from '@/math/vec2.ts';
+import { G } from '@/exercises/common.ts';
 import { stretchTL } from './_stretch-lower-2.ts';
 
 const tl = stretchTL;
@@ -16,16 +17,17 @@ export default {
   pose(t) {
     const p = tl.at(t).p;
     return {
-      hip: [lerp(266, 270, p), lerp(255, 269, p)],
-      spine: { lumbar: lerp(-90, -8, p), thoracic: lerp(-90, -11, p) },
-      neck: lerp(-90, -13, p), head: lerp(-88, -14, p),
+      // The feet stay planted. The hips move back over the heels and stay high, so the knees only soften.
+      hip: [lerp(266, 238, p), lerp(256, 261, p)],
+      spine: { lumbar: lerp(-90, 15, p), thoracic: lerp(-90, 12, p) },
+      neck: lerp(-90, 16, p), head: lerp(-88, 22, p),
       legs: {
-        near: { a1: lerp(90, 78, p), a2: lerp(90, 60, p), foot: 0 },
-        far: { a1: lerp(90, 120, p), a2: lerp(90, 75, p), foot: 0 },
+        near: { target: [268, G - 13], foot: 0, side: [1, 0] },
+        far: { target: [262, G - 13], foot: 0, side: [1, 0] },
       },
       arms: {
-        near: { a1: lerp(90, 110, p), a2: lerp(90, 110, p), hand: lerp(90, 104, p) },
-        far: { a1: lerp(92, 112, p), a2: lerp(92, 112, p), hand: lerp(92, 106, p) },
+        near: { a1: lerp(90, 112, p), a2: lerp(90, 112, p), hand: lerp(90, 112, p) },
+        far: { a1: lerp(92, 114, p), a2: lerp(92, 114, p), hand: lerp(92, 114, p) },
       },
     };
   },

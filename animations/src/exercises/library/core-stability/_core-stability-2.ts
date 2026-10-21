@@ -320,29 +320,48 @@ export function kneelingWheelRolloutPose(p: number): Pose {
 
 /** A standing setup rolls into an extended wheel-supported plank, then reverses the same line. */
 export function standingWheelRolloutPose(p: number): Pose {
-  const end = HIGH_PLANK_2.body(HIGH_PLANK_2.top);
-  const startHip: Vec2 = [260, FLOOR - 13 - BODY.thigh - BODY.shin + 1];
-  const startAnkle: Vec2 = [260, FLOOR - 13];
-  const endAnkle = HIGH_PLANK_2.ankle;
-  const armDirection = lerp(65, 68, p);
-  // The extended position uses near-full arm reach, with the wheel ahead of the shoulders.
-  const armReach = lerp(118, ARM_STRAIGHT, p);
-  const arm = (far: boolean): LimbSpec => ({
-    target: (J) => add(far ? J.Sf : J.S, mul(dir(armDirection), armReach)),
-    side: [-1, 0], hand: armDirection,
-  });
-  return {
-    hip: lerpV(startHip, end.hip, p),
-    spine: { lumbar: lerp(-90, HIGH_PLANK_2.top, p), thoracic: lerp(-90, HIGH_PLANK_2.top - 1, p) },
-    neck: lerp(-90, HIGH_PLANK_2.top - 4, p), head: lerp(-90, HIGH_PLANK_2.top + 2, p), farHip: 0, farShoulder: 0,
-    legs: {
-      near: { target: lerpV(startAnkle, endAnkle, p), side: [0, 1], foot: lerp(0, 85, p) },
-      far: { target: add(lerpV(startAnkle, endAnkle, p), [-2, 0]), side: [0, 1], foot: lerp(0, 85, p) },
-    },
-    arms: { near: arm(false), far: arm(true) },
+  // Standing ab-wheel rollout. The toes stay on one spot of the mat for the whole rep.
+  // p 0–0.35: hinge from standing (feet flat, soft knees) until the wheel touches the mat ahead of the feet.
+  // p 0.35–1: the wheel rolls forward on the mat. The hips lower and move forward, the heels rise onto the toes,
+  // and the body straightens to about 10° above the floor with the arms reaching overhead.
+  const TOE: Vec2 = [70, FLOOR];
+  const WRIST_ON_MAT = FLOOR - 19 - 9; // wheel radius 19; the wheel centre sits 9 px below the wrist
+  const L = BODY.thigh + BODY.shin - 3;
+  const hinge = Math.min(1, p / 0.35);
+  const roll = Math.max(0, (p - 0.35) / 0.65);
+  // Foot 0° is flat and 85° is on the toes with the heel up, as in HIGH_PLANK (ankle 41 px above the mat).
+  const foot = lerp(0, 85, roll);
+  const d = dir(foot);
+  const ankle = sub(sub(TOE, mul(d, 40)), mul([-d[1], d[0]], 13));
+  // The leg direction from ankle to hip turns forward from upright (slightly behind the ankle in the hinge) to the
+  // plank line. The torso turns the same way, so the path never crosses ±180°.
+  const legAngle = roll > 0 ? lerp(-97, -10, roll) : lerp(-90, -97, hinge);
+  const legLength = roll > 0 ? lerp(L - 8, L, roll) : lerp(L, L - 8, hinge);
+  const hip = add(ankle, mul(dir(legAngle), legLength));
+  const torso = roll > 0 ? lerp(52, -10, roll) : lerp(-90, 52, hinge);
+  // The knee bends toward the front of the leg (the leg direction turned +90°): forward when standing, toward the
+  // mat in the plank. The torso front would point backward in the hinge, so it is not used here.
+  const kneeSide = dir(legAngle + 90);
+  const legs = {
+    near: { target: ankle, side: kneeSide, foot },
+    far: { target: add(ankle, [-2, 0]), side: kneeSide, foot },
   };
+  const body = {
+    hip, spine: { lumbar: torso, thoracic: torso - 1 }, neck: torso - 4, head: torso + 2, farHip: 0, farShoulder: 0, legs,
+  };
+  const probe = solve({ ...body, arms: { near: { a1: 90, a2: 90 }, far: { a1: 90, a2: 90 } } });
+  // Straight-arm angle that puts the wrist (and so the wheel) on the mat from this shoulder.
+  const onMat = (S: Vec2) => Math.asin(Math.min(1, Math.max(-1, (WRIST_ON_MAT - S[1]) / ARM_STRAIGHT))) * 180 / Math.PI;
+  const wristFor = (S: Vec2): Vec2 => {
+    if (roll > 0) return add(S, mul(dir(onMat(S)), ARM_STRAIGHT));
+    // During the hinge the hanging arms swing forward to the touch-down angle; the wheel never goes below the mat.
+    const w = add(S, mul(dir(lerp(80, onMat(S), hinge)), lerp(118, ARM_STRAIGHT, hinge)));
+    return [w[0], Math.min(w[1], WRIST_ON_MAT)];
+  };
+  const wrist = wristFor(probe.S);
+  const arm = (target: Vec2): LimbSpec => ({ target, side: [-1, 0], hand: ang(sub(target, probe.S)) });
+  return { ...body, arms: { near: arm(wrist), far: arm(add(wrist, sub(probe.Sf, probe.S))) } };
 }
-
 /** Stand facing away from the anchor, then extend the straight arms overhead into the suspension fallout. */
 export function suspensionFalloutPose(p: number): Pose {
   const ankle: Vec2 = [220, FLOOR - 13];

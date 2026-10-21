@@ -62,6 +62,7 @@
 | `draw/palettes.ts` | 浅色和深色配色 |
 | `rig/ik.ts` | 二维和三维的两段式 IK |
 | `rig/side.ts` | 侧视骨骼求解、人物形象和肌肉区域 |
+| `rig/anatomy.ts` | 侧视关节方向检查：髋后伸、膝反向、颈部弯折和脊柱折角，供 `scripts/inspect.ts` 使用 |
 | `rig/front.ts` | 正视三维骨骼求解、投影和肌肉区域 |
 | `compose/index.ts` | 按视角把一个动作和一套配色合成为一个 Lottie 动画 |
 | `compose/side.ts` | 侧视动作的合成器 |
@@ -88,7 +89,7 @@
 | `pnpm sheets` | 渲染课程动作的 `docs/contact-sheet-light.jpg` 和 `docs/contact-sheet-dark.jpg` |
 | `pnpm render <文件>` | 把指定的 JSON 文件各渲染成 8 张 PNG，输出到 `.renders/` |
 | `pnpm family <动作组> --out <目录> [<动作 ID>...]` | 检查并生成一个动作组，渲染审查图。用法见 `src/exercises/library/AGENTS.md` |
-| `node --import tsx scripts/inspect.ts <动作组> <动作 ID>` | 逐帧输出一个动作的 IK 警告、关节角度和地面接触 |
+| `node --import tsx scripts/inspect.ts <动作组> <动作 ID>` | 逐帧输出一个动作的 IK 警告、关节角度、地面接触和侧视关节方向问题，有问题时退出码为 1 |
 | `pnpm gallery <目录>` | 渲染器械图鉴：每种器械放在站立人物旁边 |
 
 `pnpm sheets`、`pnpm render`、`pnpm family` 和 `pnpm gallery` 需要 Chromium 无头内核。运行一次 `pnpm exec playwright-core install chromium-headless-shell` 安装内核，或用环境变量 `CHROME_PATH` 指定本机的 Chromium。
@@ -198,6 +199,10 @@ pnpm build:assets               # 写出 ../assets/public/animations/exercises/v
 已验证（2026-10-21，UTC+8）：
 
 - `pnpm typecheck` 没有类型错误。`pnpm check` 确认 `lottie/` 的 33 个文件与源码一致。
+- 全量生成 1,583 个动作的 3,166 个动画文件，没有 IK 警告和构图警告。
+- 逐帧校验动作库的 1,567 个动作，0 个有问题。校验项为 IK、关节低于地面、合成警告和缩放。校验脚本不在仓库中。
+- 用 `src/rig/anatomy.ts` 的规则逐帧检查 1,309 个侧视动作，没有髋后伸、膝反向、颈部弯折或脊柱折角超限。258 个正视动作不适用这项检查。
+- 关节方向修复改动了 27 个动作组的 115 个动作。这 27 个动作组的审查图都经过人工查看，其中 18 个动作按数据集原文再次手动修正。
 - 改用数学库和 `@/` 别名后，全部 3,177 个输出文件逐帧比对：2,449 个逐字节一致，其余 728 个的逐帧差异都在关键帧压缩的误差范围内。最大差异为旋转 0.20°、路径 0.10 px、位置 0.01 px。
 - `src/` 按 `math/`、`draw/`、`rig/`、`compose/`、`build/` 和 `exercises/` 重新分目录后，全量生成的 3,176 个动画文件与整理前逐字节一致，`lottie/index.json` 没有变化。
 - 课程动作的两张总览图由 lottie-web 5.13.0 在 Chromium 无头内核中渲染，16 个动作的姿态经过人工查看。
@@ -210,7 +215,9 @@ pnpm build:assets               # 写出 ../assets/public/animations/exercises/v
 
 未验证：
 
-- 动作库没有全部经过人工审查。`pnpm check` 目前失败：7 个动作库动作（14 个文件）有 IK 警告。全库校验还发现 11 个动作有关节低于地面，1 个动作有合成警告，部分动作同时有多种问题。自动校验发现不了的姿态错误也还存在。
+- 动作库没有全部经过人工审查。人工查看过的只有修复涉及的动作组，其余动作只通过了自动校验。自动校验发现不了手未握器械、姿势误读等错误。
+- 转角扫描标记了 108 个动作的大角度旋转，没有逐一复核。其中一部分是正常动作，例如双力臂中上臂从头顶转到体侧。
+- 343 个动作至少有一帧的肘部看起来反向超过 20°。侧视中上臂旋转会让正确的肘部看起来反向，所以这一项只报告，没有逐一复核。
 - lottie-ios 的原生渲染效果。lottie-android 只目视检查过 `bodyweight-squat` 一个动作。浏览器中的渲染结果不能代替原生验收。
 - 真机上的 CPU、内存和电量开销。
 - 动作细节没有经过教练或康复专业人员审核。

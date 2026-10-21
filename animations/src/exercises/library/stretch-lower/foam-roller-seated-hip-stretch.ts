@@ -19,7 +19,7 @@ export default {
     const p = tl.at(t).p;
     return {
       hip: [188, FLOOR - 26], spine: { lumbar: -92 - 16 * p, thoracic: -92 - 16 * p }, neck: -90 - 16 * p, head: -90 - 16 * p,
-      legs: { near: { a1: 0, a2: -125 * p, foot: 0 }, far: { a1: 2, a2: 2 - 125 * p, foot: 0 } },
+      legs: { near: { a1: -70 * p, a2: 100 * p, foot: 0 }, far: { a1: 2 - 68 * p, a2: 2 + 102 * p, foot: 0 } },
       arms: { near: { target: [165, FLOOR - 8], side: [-1, 0], hand: 180 }, far: { target: [161, FLOOR - 8], side: [-1, 0], hand: 180 } },
     };
   },

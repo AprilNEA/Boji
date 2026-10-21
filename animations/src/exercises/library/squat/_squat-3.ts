@@ -333,8 +333,8 @@ export function supineLegPress(opts: SupinePressOptions): SideExercise {
       return {
         hip, spine: { target: spineEnd, side: [0, 1] }, neck: 180, head: 180,
         legs: {
-          near: { target: a, foot: -90, side: [1, 0] },
-          far: { target: add(a, [-5, 2]), foot: -90, side: [1, 0] },
+          near: { target: a, foot: -90, side: [-1, 0] },
+          far: { target: add(a, [-5, 2]), foot: -90, side: [-1, 0] },
         },
         arms: {
           near: { target: [168, G - 63], side: [0, 1], hand: 180 },

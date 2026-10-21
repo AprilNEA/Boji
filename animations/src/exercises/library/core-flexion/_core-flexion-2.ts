@@ -110,7 +110,7 @@ export function supineCrunch(
 }
 
 /** Supine leg lifts: the lower back remains on the mat and only the legs move. */
-export function legLift(info: Info, opts: { low: number; high: number; hipCurl?: boolean; bent?: boolean; groundedStart?: boolean; hands?: 'side' | 'head' }): SideExercise {
+export function legLift(info: Info, opts: { low: number; high: number; hipCurl?: boolean; curlTargetShift?: number; bent?: boolean; groundedStart?: boolean; hands?: 'side' | 'head' }): SideExercise {
   const tl = repTL();
   return {
     id: info.id, name: info.name, tl, mat: true, meta: infoMeta(info),
@@ -118,7 +118,9 @@ export function legLift(info: Info, opts: { low: number; high: number; hipCurl?:
     pose(t) {
       const p = tl.at(t).p, a = lerp(opts.low, opts.high, p);
       const hip = opts.hipCurl ? add(HIP, [-24 * p, -18 * p]) : HIP;
-      const spine = opts.hipCurl ? { target: NECK, side: [0, 1] as Vec2 } : { lumbar: FLAT, thoracic: FLAT };
+      // A small upper-back slide keeps the rolling pelvis from forcing a sharp spinal hinge.
+      const curlNeck: Vec2 = [NECK[0] - (opts.curlTargetShift ?? 0) * p, NECK[1]];
+      const spine = opts.hipCurl ? { target: curlNeck, side: [0, 1] as Vec2 } : { lumbar: FLAT, thoracic: FLAT };
       const shin = opts.bent ? lerp(0, -8, p) : a;
       const legs = opts.groundedStart
         ? {
@@ -250,8 +252,9 @@ export function cableReverse(info: Info): SideExercise {
     dynamic: [cableLine(column.pulley, (J) => cableGrip(J)), cableHandle('bar', (J) => ({ p: cableGrip(J), a: towardCable(cableGrip(J), column.pulley) }), { len: 34 })],
     pose(t) {
       const p = tl.at(t).p, hip = add(HIP, [-23 * p, -17 * p]), thigh = lerp(-90, -140, p);
+      const curlNeck: Vec2 = [NECK[0] - 12 * p, NECK[1]];
       return {
-        hip, spine: { target: NECK, side: [0, 1] }, neck: 182, head: 181,
+        hip, spine: { target: curlNeck, side: [0, 1] }, neck: 182, head: 181,
         legs: { near: { a1: thigh, a2: 0, foot: 0 }, far: { a1: thigh + 2, a2: 2, foot: 2 } },
         arms: { near: { a1: -90, a2: -90, hand: 0 }, far: { a1: -88, a2: -88, hand: 2 } },
       };

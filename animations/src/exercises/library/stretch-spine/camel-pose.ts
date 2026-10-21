@@ -1,5 +1,5 @@
-// Kneel with both knees and heels fixed to the mat, holding each heel with the hands.
-// Glide the hips forward and lengthen the front body into a controlled backward spinal arch.
+// Kneel and sit back toward the heels, holding each heel with the hands.
+// Push the hips up and forward over the knees, lift the chest and drop the head back into the back arch.
 import type { SideExercise } from '@/exercise.ts';
 import { camelPose, stretchTL } from './_stretch-spine.ts';
 

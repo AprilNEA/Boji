@@ -9,7 +9,10 @@
 //   - A table of joint angles in degrees. 180 = straight. Side view: near (n) and far (f) limbs. Front view: the
 //     figure's left (l) and right (r) limbs; the figure's left is on the right of the screen.
 //   - The lowest joint relative to the ground, to catch limbs that sink into the floor.
-// Exit code 1 when any frame has an IK warning or a joint more than 2 px below the ground.
+//   - Side view: joint directions from src/rig/anatomy.ts over every frame: a thigh behind the torso line, a knee
+//     bent backward, a bent neck or a kinked spine. These catch a torso folded onto the legs and a figure drawn
+//     supine instead of prone, which the unsigned angles in the table cannot show.
+// Exit code 1 when any frame has an IK warning, a joint more than 2 px below the ground, or an anatomy issue.
 import { compose, FPS } from '@/compose/index.ts';
 import type { Exercise, FrontExercise, SideExercise } from '@/exercise.ts';
 import { loadFamily } from '@/exercises/library/load.ts';
@@ -18,6 +21,7 @@ import { parseArgs } from 'node:util';
 import { vec2, vec3 } from 'gl-matrix';
 import { ang, D2R, sub, type Vec2 } from '@/math/vec2.ts';
 import { IK_WARNINGS } from '@/rig/ik.ts';
+import { anatomyIssues } from '@/rig/anatomy.ts';
 import { dot3, mul3, sub3, type Vec3 } from '@/math/vec3.ts';
 import { posterFrame } from '@/build/poster.ts';
 import { BODY, GROUND, solve } from '@/rig/side.ts';
@@ -68,12 +72,31 @@ for (let f = 0; f < N; f++) {
 }
 IK_WARNINGS.length = 0;
 
+// Anatomy issues, frame by frame (side view only). The key drops the number, so one kind is one line.
+const anatomy = new Map<string, { first: number; last: number; count: number; max: number }>();
+let anatomyFrames = 0;
+if (view !== 'front') {
+  for (let f = 0; f < N; f++) {
+    const issues = anatomyIssues(solve((ex as SideExercise).pose(f / N)));
+    if (issues.length) anatomyFrames++;
+    for (const issue of issues) {
+      const key = issue.replace(/ [0-9]+$/, ''), value = Number(issue.slice(issue.lastIndexOf(' ') + 1));
+      const k = anatomy.get(key);
+      if (k) { k.last = f; k.count++; k.max = Math.max(k.max, value); } else anatomy.set(key, { first: f, last: f, count: 1, max: value });
+    }
+  }
+}
+
 const c = compose(ex as Exercise, 'light');
 console.log(`${ex.id}  ${ex.name}  view ${view}  ${N} frames  poster ${poster}  zoom ${c.zoom.toFixed(2)}`);
 console.log(`IK: ${warnFrames} of ${N} frames have warnings`);
 for (const [w, k] of kinds) console.log(`  ${w}  frames ${k.first}-${k.last} (${k.count})`);
 const other = c.warnings.filter((w) => !w.includes('unreachable'));
 for (const w of other) console.log(`  compose: ${w}`);
+if (view !== 'front') {
+  console.log(`anatomy: ${anatomyFrames} of ${N} frames have issues`);
+  for (const [w, k] of anatomy) console.log(`  ${w} up to ${k.max} deg  frames ${k.first}-${k.last} (${k.count})`);
+}
 
 let lowest = -Infinity;
 if (view === 'front') {
@@ -133,4 +156,4 @@ if (view === 'front') {
   console.log('side: hip = angle between torso and thigh (180 = straight, 90 = seated), shoulder = arm away from the torso line (0 = arm along the side, 90 = forward or back, 180 = overhead), torso + = leaning toward screen right, ankle lift = ankle above standing height');
 }
 console.log(`lowest joint: ${lowest.toFixed(1)} px ${lowest > 0 ? 'below' : 'above'} the ground (joint centers; limbs have thickness)`);
-process.exit(warnFrames > 0 || lowest > 2 ? 1 : 0);
+process.exit(warnFrames > 0 || lowest > 2 || anatomyFrames > 0 ? 1 : 0);

@@ -1,7 +1,7 @@
 // Private builders for cardio-2. Each pose keeps the machine contacts fixed or moves them on the correct crank or rail.
 // The figures face right. Fast cardio loops repeat at the starting pose without a seam.
 import type { SideExercise, PropShape } from '@/exercise.ts';
-import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { add, lerp, rotate, sub, type Vec2 } from '@/math/vec2.ts';
 import { timeline } from '@/math/timeline.ts';
 import { BODY, type Joints, type Pose } from '@/rig/side.ts';
 import { A, G, GRIP_IN_HAND, standLegs } from '@/exercises/common.ts';
@@ -14,6 +14,8 @@ const loop = (total: number) => timeline([
   { d: total / 2, from: 1, to: 0, e: [1, 0.45] },
 ]);
 const cardioTL = loop(1.2);
+/** Choose the anterior knee solution as a foot or pedal moves around the hip. */
+const kneeSide = (target: Vec2, hip: (J: Joints) => Vec2) => (J: Joints): Vec2 => rotate(sub(target, hip(J)), -90);
 const upright = (hip: Vec2): Omit<Pose, 'legs' | 'arms'> => ({
   hip, spine: { lumbar: -90, thoracic: -90 }, neck: -90, head: -90,
 });
@@ -112,10 +114,14 @@ export function bicycle(meta: CardioMeta, name: string, kind: 'stationary' | 'ro
     pose(t) {
       const theta = TAU * t;
       const pedal = (offset: number): Vec2 => [crank[0] + radius * Math.cos(theta + offset), crank[1] + radius * Math.sin(theta + offset)];
+      const nearPedal = pedal(0), farPedal = pedal(Math.PI);
       const handY = recumbent ? 304 : 259;
       return {
         ...seated(hip, recumbent ? -76 : -82),
-        legs: { near: { target: pedal(0), foot: 0, side: [1, 0] }, far: { target: pedal(Math.PI), foot: 0, side: [1, 0] } },
+        legs: {
+          near: { target: nearPedal, foot: 0, side: kneeSide(nearPedal, (J) => J.H) },
+          far: { target: farPedal, foot: 0, side: kneeSide(farPedal, (J) => J.Hf) },
+        },
         arms: { near: { target: [260, handY], side: [1, 0], hand: 0 }, far: { target: [254, handY + 3], side: [1, 0], hand: 0 } },
       };
     },
@@ -388,8 +394,8 @@ export function dumbbellBurpee(meta: CardioMeta, name: string): SideExercise {
         hip: p.hip,
         spine: { lumbar: p.spine, thoracic: p.spine }, neck: p.spine, head: p.spine,
         legs: {
-          near: { target: p.feet[0], foot: p.foot, side: [0, 1] },
-          far: { target: p.feet[1], foot: p.foot, side: [0, 1] },
+          near: { target: p.feet[0], foot: p.foot, side: kneeSide(p.feet[0], (J) => J.H) },
+          far: { target: p.feet[1], foot: p.foot, side: kneeSide(p.feet[1], (J) => J.Hf) },
         },
         arms: {
           near: { target: (J) => [lerp(p.hands[0][0], J.S[0], p.press), lerp(p.hands[0][1], J.S[1] - 124, p.press)], side: [1, 0], hand: p.hand },

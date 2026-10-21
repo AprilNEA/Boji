@@ -20,7 +20,7 @@ export default {
     const planted = standLegs(250, -4);
     const liftFrom = near ? [250, G - A] as [number, number] : [246, G - A] as [number, number];
     const raised = {
-      target: lerpV(liftFrom, [HIP[0] + 54, G - A - 82], p), foot: lerp(0, -25, p), side: [0, -1] as [number, number],
+      target: lerpV(liftFrom, [HIP[0] + 54, G - A - 82], p), foot: lerp(0, -25, p), side: [1, 0] as [number, number],
     };
     return {
       hip: HIP, spine: { lumbar: -90 + turn * 0.35, thoracic: -90 + turn }, neck: -90 + turn, head: -90 + turn,

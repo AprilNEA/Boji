@@ -70,8 +70,9 @@ function basePose(spec: FlySpec): Omit<Pose, 'arms'> {
       hip: [206, 326], spine: { lumbar: 160, thoracic: 160 }, neck: 160, head: 160,
       farHip: 0, farShoulder: 0,
       legs: {
-        near: { target: [decline.roller[0], decline.roller[1] + 5], foot: -25, side: [0, 1] },
-        far: { target: [decline.roller[0] - 4, decline.roller[1] + 4], foot: -25, side: [0, 1] },
+        // Supine knees bend upward toward the ceiling, not down through the bench.
+        near: { target: [decline.roller[0], decline.roller[1] + 5], foot: -25, side: [0, -1] },
+        far: { target: [decline.roller[0] - 4, decline.roller[1] + 4], foot: -25, side: [0, -1] },
       },
     };
   }

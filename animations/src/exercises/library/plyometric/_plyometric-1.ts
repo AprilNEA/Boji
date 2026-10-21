@@ -2,7 +2,7 @@
 // Each builder keeps every landing target above the ground and uses quick, seamless cycles.
 // The named variants change visible foot placement, arm action, equipment and range of motion.
 import type { EquipmentTag, FrontExercise, LibraryMeta, SideExercise } from '@/exercise.ts';
-import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { add, ang, dir, lerp, polar, type Vec2 } from '@/math/vec2.ts';
 import { timeline } from '@/math/timeline.ts';
 import { add3, type Vec3 } from '@/math/vec3.ts';
 import { BODY, type Joints, type LimbPair, type LimbSpec, type Pose } from '@/rig/side.ts';
@@ -82,6 +82,20 @@ function lungePose(t: number, alternate: boolean, bar = false): Pose {
 function barArms(): { near: LimbSpec; far: LimbSpec } {
   // Hands stabilize the bar beside the shoulders, without hiding the trunk in side view.
   return { near: { a1: -148, a2: 154, hand: 154 }, far: { a1: -154, a2: 150, hand: 150 } };
+}
+
+/**
+ * Rear-rack grip. Relative to the upper torso, the upper arm points down and back (210 degrees) and the
+ * forearm rises along the back (12 degrees), so the wrist sits beside the bar just behind the shoulder.
+ * The wrist is an IK target, so the elbows stay down when the torso leans in the jump and the landing.
+ */
+function kneelingBarArms(): { near: LimbSpec; far: LimbSpec } {
+  const torso = (J: Joints) => ang(J.A(0.86));
+  const arm = (shoulder: (J: Joints) => Vec2): LimbSpec => ({
+    target: (J) => polar(polar(shoulder(J), torso(J) + 210, BODY.upper), torso(J) + 12, BODY.fore),
+    side: (J) => dir(torso(J) + 210),
+  });
+  return { near: arm((J) => J.S), far: arm((J) => J.Sf) };
 }
 
 function barPart() {
@@ -190,10 +204,10 @@ export function sidePlyo(b: Base, kind: SideKind): SideExercise {
         if (p < 0.28) {
           return {
             hip: [218, G - 112], spine: { lumbar: -90, thoracic: -90 }, neck: -90, head: -90,
-            legs: { near: { a1: 90, a2: 180, foot: 180 }, far: { a1: 90, a2: 180, foot: 180 } }, arms: barArms(),
+            legs: { near: { a1: 90, a2: 180, foot: 180 }, far: { a1: 90, a2: 180, foot: 180 } }, arms: kneelingBarArms(),
           };
         }
-        return { ...verticalJump(Math.min(1, (p - 0.28) / 0.72), 'down'), arms: barArms() };
+        return { ...verticalJump(Math.min(1, (p - 0.28) / 0.72), 'down'), arms: kneelingBarArms() };
       },
     };
   }

@@ -69,8 +69,8 @@ export function pullUp(x: Catalog, opts: PullUpOptions = {}): SideExercise {
     };
     if (opts.kneeCrunch) return {
       // Start with thighs vertical and calves level. The thighs then fold to the chest.
-      near: { a1: lerp(90, -43, q), a2: lerp(0, 24, q), foot: lerp(0, 18, q) },
-      far: { a1: lerp(91, -42, q), a2: lerp(1, 25, q), foot: lerp(1, 19, q) },
+      near: { a1: lerp(90, -43, q), a2: lerp(180, 24, q), foot: lerp(180, 18, q) },
+      far: { a1: lerp(91, -42, q), a2: lerp(181, 25, q), foot: lerp(181, 19, q) },
     };
     if (opts.tuck || opts.vBar) return {
       // Bent knees keep an advanced hanging variation inside the frame without grounding the feet.
@@ -285,12 +285,12 @@ export function barMuscleUp(x: Catalog, opts: { kipping?: boolean; weighted?: bo
         // the legs lengthen into the top support. The kipping form starts with the feet swept behind the torso.
         legs: {
           near: {
-            a1: lerp(opts.kipping ? -130 : -55, 75, p), a2: lerp(opts.kipping ? 80 : 75, 105, p),
-            foot: lerp(15 + 10 * swing, 75, p),
+            a1: lerp(opts.kipping ? -110 : -55, 75, p), a2: lerp(opts.kipping ? 20 : 75, 105, p),
+            foot: lerp(opts.kipping ? 20 : 15 + 10 * swing, 75, p),
           },
           far: {
-            a1: lerp(opts.kipping ? -129 : -54, 76, p), a2: lerp(opts.kipping ? 81 : 76, 106, p),
-            foot: lerp(16 + 10 * swing, 76, p),
+            a1: lerp(opts.kipping ? -109 : -54, 76, p), a2: lerp(opts.kipping ? 21 : 76, 106, p),
+            foot: lerp(opts.kipping ? 21 : 16 + 10 * swing, 76, p),
           },
         },
         arms: {
@@ -329,8 +329,8 @@ export function ringMuscleUp(x: Catalog, opts: { kipping?: boolean } = {}): Side
       return {
         hip: hipForShoulder(S, spine), spine, neck: -90, head: -90, farHip: 0,
         legs: {
-          near: { a1: lerp(opts.kipping ? -130 : -55, 75, p), a2: lerp(opts.kipping ? 80 : 75, 105, p), foot: lerp(opts.kipping ? 25 : 15, 75, p) },
-          far: { a1: lerp(opts.kipping ? -129 : -54, 76, p), a2: lerp(opts.kipping ? 81 : 76, 106, p), foot: lerp(opts.kipping ? 26 : 16, 76, p) },
+          near: { a1: lerp(opts.kipping ? -110 : -55, 75, p), a2: lerp(opts.kipping ? 20 : 75, 105, p), foot: lerp(opts.kipping ? 20 : 15, 75, p) },
+          far: { a1: lerp(opts.kipping ? -109 : -54, 76, p), a2: lerp(opts.kipping ? 21 : 76, 106, p), foot: lerp(opts.kipping ? 21 : 16, 76, p) },
         },
         arms: {
           near: { target: wrist, side: [-1, 0], hand: -90 },

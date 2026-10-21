@@ -68,9 +68,11 @@ export function kneesToChest(p: number): Pose {
 export function proneQuad(p: number, lift = 0): Pose {
   const hip: Vec2 = [258, FLOOR - 30 - lift * p];
   return {
-    hip, spine: { target: [140, FLOOR - 24 - lift * p], side: [0, 1] }, neck: 180, head: 180, farHip: 0, farShoulder: 0,
-    legs: { near: { a1: 0, a2: lerp(0, -135, p), foot: lerp(0, -100, p) }, far: { a1: 0, a2: 0, foot: 0 } },
-    arms: floorArms([lerp(0, -25, p), lerp(0, -40, p)], [175, 175]),
+    // A prone figure faces right: the chest and head are right of the pelvis.
+    hip, spine: { lumbar: 2, thoracic: 2 }, neck: 0, head: 0, farHip: 0, farShoulder: 0,
+    // The calf folds forward toward the head and the foot returns toward the glute.
+    legs: { near: { a1: 180, a2: lerp(180, 360, p), foot: lerp(180, 350, p) }, far: { a1: 180, a2: 180, foot: 180 } },
+    arms: floorArms([180, lerp(180, 220, p)], [180, 180]),
   };
 }
 
@@ -78,9 +80,10 @@ export function proneQuad(p: number, lift = 0): Pose {
 export function sideQuad(p: number): Pose {
   const hip: Vec2 = [255, FLOOR - 48];
   return {
-    hip, spine: { target: [142, FLOOR - 62], side: [0, 1] }, neck: 180, head: 180, farHip: 0, farShoulder: 0,
-    legs: { near: { a1: 5, a2: 175, foot: 180 }, far: { a1: 0, a2: lerp(0, -132, p), foot: lerp(0, -92, p) } },
-    arms: floorArms([176, 176], [lerp(2, -35, p), lerp(2, -44, p)]),
+    // Keep the face and chest right; the top calf folds toward the head.
+    hip, spine: { lumbar: 0, thoracic: 0 }, neck: 0, head: 0, farHip: 0, farShoulder: 0,
+    legs: { near: { a1: 180, a2: 315, foot: 315 }, far: { a1: 180, a2: lerp(180, 315, p), foot: lerp(180, 290, p) } },
+    arms: floorArms([180, 180], [180, lerp(180, 220, p)]),
   };
 }
 
@@ -106,11 +109,11 @@ export function sideGroin(p: number): Pose {
 
 /** Four-point base: one knee flexes from a reachable partial hold to a full quadriceps stretch. */
 export function quadrupedQuad(p: number): Pose {
-  // The shin is already folded at the start, so the hand can keep honest contact with the foot.
-  const a2 = lerp(-45, -82, p);
+  // Extend the hip behind the torso, then fold the shin toward the head and hand.
+  const a2 = lerp(330, 340, p);
   return {
     hip: QUAD.hip, spine: QUAD.spine, neck: -12, head: -10, farHip: 0, farShoulder: 0,
-    legs: { near: { a1: 90, a2, foot: lerp(-70, -104, p) }, far: { a1: 90, a2: 178, foot: 180 } },
+    legs: { near: { a1: 135, a2, foot: lerp(330, 340, p) }, far: { a1: 90, a2: 178, foot: 180 } },
     arms: { near: { target: (J: Joints) => J.ankle_n, side: [-1, 0], hand: -100 }, far: plantedArm(QUAD.wristFar) },
   };
 }
@@ -120,7 +123,7 @@ export function halfKneel(p: number): Pose {
   const backKnee: Vec2 = [185, FLOOR - 11], hip: Vec2 = add(backKnee, [lerp(12, 47, p), -93]);
   return {
     hip, farHip: 0, spine: { lumbar: lerp(-90, -95, p), thoracic: lerp(-91, -93, p) }, neck: -88, head: -89,
-    legs: { near: { target: [293, G - A], foot: 0, side: [1, 0] }, far: { target: backKnee, foot: 180, side: [-1, 0] } },
+    legs: { near: { target: [293, G - A], foot: 0, side: [1, 0] }, far: { target: backKnee, foot: 180, side: [1, 0] } },
     // Both hands rest lightly on the forward thigh; fixed directions retain reachable elbows through the hip glide.
     arms: floorArms([66, 91], [69, 94]),
   };
@@ -132,7 +135,7 @@ export function standingRunner(p: number): Pose {
   const hip: Vec2 = [lerp(230, 249, p), G - A - 150];
   return {
     hip, farHip: 0, spine: { lumbar: -84, thoracic: -86 }, neck: -88, head: -88,
-    legs: { near: { target: [290, G - A], foot: 0, side: [1, 0] }, far: { target: [143, G - A], foot: 0, side: [-1, 0] } },
+    legs: { near: { target: [290, G - A], foot: 0, side: [1, 0] }, far: { target: [143, G - A], foot: 0, side: [1, 0] } },
     arms: floorArms([65, 93], [69, 96]),
   };
 }
@@ -144,7 +147,7 @@ export function runnersLunge(p: number): Pose {
   const hip = hipForShoulder([hand[0], hand[1] - 121], spine);
   return {
     hip, spine, neck: lerp(-6, -3, p), head: lerp(-4, -2, p), farHip: 0, farShoulder: 0,
-    legs: { near: { target: [254, G - A], foot: 0, side: [1, 0] }, far: { target: [33, G - A], foot: 0, side: [-1, 0] } },
+    legs: { near: { target: [254, G - A], foot: 0, side: [1, 0] }, far: { target: [33, G - A], foot: 0, side: [1, 0] } },
     arms: { near: plantedArm(hand), far: plantedArm(add(hand, [-25, 0])) },
   };
 }
@@ -196,7 +199,8 @@ export function seatedGlute(p: number): Pose {
   const hip: Vec2 = [178, G - 82];
   return {
     hip, spine: { lumbar: lerp(-89, -76, p), thoracic: lerp(-90, -78, p) }, neck: -87, head: -88, farHip: 0,
-    legs: { near: { a1: 12, a2: 31, foot: 0 }, far: { a1: lerp(58, -4, p), a2: lerp(-143, 40, p), foot: lerp(165, 42, p) } },
+    // Keep the crossed knee flexed on its anatomical side throughout the opening motion.
+    legs: { near: { a1: 12, a2: 31, foot: 0 }, far: { a1: lerp(58, -4, p), a2: lerp(228, 166, p), foot: lerp(165, 166, p) } },
     arms: floorArms([lerp(70, 50, p), lerp(88, 64, p)], [lerp(74, 22, p), lerp(93, 48, p)]),
   };
 }
@@ -227,7 +231,7 @@ export function chairLongLeg(p: number): Pose {
   return {
     hip, spine: { lumbar: lerp(-89, -58, p), thoracic: lerp(-90, -60, p) }, neck: lerp(-88, -62, p), head: lerp(-90, -64, p), farHip: 0,
     // Targets keep the extended heel and the tucked support foot on the floor through the hinge.
-    legs: { near: { target: [361, G - A], foot: -16, side: [1, 0] }, far: { target: [180, G - A], foot: 0, side: [-1, 0] } },
+    legs: { near: { target: [361, G - A], foot: -16, side: [1, 0] }, far: { target: [180, G - A], foot: 0, side: [1, 0] } },
     arms: floorArms([lerp(74, 38, p), lerp(91, 47, p)], [lerp(79, 43, p), lerp(96, 51, p)]),
   };
 }
@@ -237,7 +241,7 @@ export function benchStandingQuad(p: number): Pose {
   const hip: Vec2 = [lerp(250, 272, p), G - A - 183];
   return {
     hip, spine: { lumbar: -90, thoracic: -90 }, neck: -90, head: -90, farHip: 0,
-    legs: { near: { target: [265, G - A], foot: 0, side: [1, 0] }, far: { target: [145, G - 90], foot: 180, side: [-1, 0] } },
+    legs: { near: { target: [265, G - A], foot: 0, side: [1, 0] }, far: { target: [145, G - 90], foot: 180, side: [1, 0] } },
     arms: floorArms([80, 96]),
   };
 }
@@ -258,7 +262,7 @@ export function rockingFrog(p: number): Pose {
   const hip: Vec2 = [lerp(QUAD.hip[0], QUAD.hip[0] - 43, p), QUAD.hip[1] + 20 * p];
   return {
     hip, spine: QUAD.spine, neck: -12, head: -10, farHip: 0, farShoulder: 0,
-    legs: { near: { target: [QUAD.K[0] - 28 * p, QUAD.K[1]], foot: 180, side: [-1, 0] }, far: { target: [QUAD.K[0] - 34 * p, QUAD.K[1]], foot: 180, side: [-1, 0] } },
+    legs: { near: { target: [QUAD.K[0] - 28 * p, QUAD.K[1]], foot: 180, side: [1, 0] }, far: { target: [QUAD.K[0] - 34 * p, QUAD.K[1]], foot: 180, side: [1, 0] } },
     arms: { near: plantedArm(QUAD.wrist), far: plantedArm(QUAD.wristFar) },
   };
 }

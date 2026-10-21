@@ -126,10 +126,10 @@ export function seatedLegRoll(x: Catalog, area: 'calf' | 'hamstring'): SideExerc
     hip,
     // The torso stays reclined so the hands can bear weight without excessive shoulder extension.
     spine: { lumbar: 179, thoracic: 178 }, neck: 177, head: 178,
-    // Near: relaxed working leg. Far: knee bent with the sole planted as the optional support leg.
+    // Near: relaxed working leg. Far: the planted support foot fixes a knee that points toward the ceiling.
     legs: {
       near: { a1: 16, a2: 16, foot: 0 },
-      far: { a1: 65, a2: 0, foot: 0 },
+      far: { target: [380, G - A], side: [0, -1], foot: 0 },
     },
     arms: {
       near: { target: [151, FLOOR - 7], side: [0, -1], hand: 0 },

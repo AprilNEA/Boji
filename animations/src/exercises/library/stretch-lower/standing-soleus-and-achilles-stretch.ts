@@ -3,7 +3,7 @@
 // The torso remains upright and the hands rest on the hips.
 import type { SideExercise } from '@/exercise.ts';
 import { lerp } from '@/math/vec2.ts';
-import { handOnHip } from '@/exercises/common.ts';
+import { G, handOnHip } from '@/exercises/common.ts';
 import { stretchTL } from './_stretch-lower-2.ts';
 
 const tl = stretchTL;
@@ -20,8 +20,8 @@ export default {
       hip: [lerp(267, 283, p), lerp(255, 306, p)],
       spine: { lumbar: lerp(-90, -82, p), thoracic: lerp(-90, -84, p) }, neck: -88, head: -88,
       legs: {
-        near: { a1: lerp(90, 70, p), a2: lerp(90, 35, p), foot: 0 },
-        far: { a1: lerp(90, 145, p), a2: lerp(90, 60, p), foot: 0 },
+        near: { target: [lerp(267, 323, p), G - 13], foot: 0, side: [1, 0] },
+        far: { target: [lerp(264, 222, p), G - 13], foot: 0, side: [1, 0] },
       },
       arms: { near: handOnHip(0), far: handOnHip(-5) },
     };

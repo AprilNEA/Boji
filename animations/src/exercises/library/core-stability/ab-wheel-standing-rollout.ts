@@ -7,6 +7,9 @@ import { abWheel, standingWheelRolloutPose } from './_core-stability-2.ts';
 
 const tl = workTL(0.45);
 
+// standingWheelRolloutPose sets the knee direction from the leg, so the knees bend forward through the hinge.
+const pose = (t: number) => standingWheelRolloutPose(tl.at(t).p);
+
 export default {
   id: 'ab-wheel-standing-rollout',
   name: '站姿健腹轮',
@@ -18,7 +21,7 @@ export default {
   },
   muscles: [{ m: 'abs' }, { m: 'delts', side: 'both', scale: 0.48 }, { m: 'lowerBack', scale: 0.32 }],
   dynamic: [abWheel((J) => [J.wrist_n[0], J.wrist_n[1] + 9])],
-  propsBox: [120, 480],
+  propsBox: [30, 505],
   poster: 0.31,
-  pose: (t) => standingWheelRolloutPose(tl.at(t).p),
+  pose,
 } satisfies SideExercise;

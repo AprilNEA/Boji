@@ -9,5 +9,15 @@ const info = {
   sources: ["fe:Kettlebell_Seated_Press"],
 } satisfies PressInfo;
 
-const exercise = floorKettlebellPress(info);
+const base = floorKettlebellPress(info);
+const exercise = {
+  ...base,
+  pose(t: number) {
+    return {
+      ...base.pose(t),
+      // The extended floor-seated legs slope toward their flat feet without either knee reversing.
+      legs: { near: { a1: 5, a2: 9, foot: 0 }, far: { a1: 5, a2: 9, foot: 0 } },
+    };
+  },
+};
 export default exercise satisfies SideExercise;

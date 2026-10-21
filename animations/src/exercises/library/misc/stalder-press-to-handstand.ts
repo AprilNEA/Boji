@@ -1,9 +1,9 @@
 // Start in a low straddle support with both palms fixed to the floor.
-// Press the hips over the shoulders while the straight legs close from the straddle to a handstand.
-// Hold the stacked handstand briefly, then lower under control to the supported straddle.
+// Fold the straight legs toward the torso, press the hips above the shoulders, then open to handstand.
+// The side projection overlaps the frontal straddle while the hips travel over the planted hands.
 import type { SideExercise } from '@/exercise.ts';
-import { lerp, type Vec2 } from '@/math/vec2.ts';
-import { timeline } from '@/math/timeline.ts';
+import { type Vec2 } from '@/math/vec2.ts';
+import { keyframes, timeline } from '@/math/timeline.ts';
 import { ARM_STRAIGHT, FLOOR, hipForShoulder } from '@/exercises/common.ts';
 
 const tl = timeline([
@@ -15,6 +15,10 @@ const tl = timeline([
 
 const WRIST: Vec2 = [260, FLOOR - 7];
 const SHOULDER: Vec2 = [WRIST[0], WRIST[1] - ARM_STRAIGHT];
+// Keep the thighs on the flexed side of the torso while it turns. Opening the hips waits until they are high enough
+// for the straight legs to clear the floor.
+const spineAngle = keyframes([[0, -90], [0.24, -90], [0.68, 90], [1, 90]]);
+const legAngle = keyframes([[0, 0], [0.24, -70], [0.68, 110], [1, 270]]);
 
 export default {
   id: 'stalder-press-to-handstand',
@@ -35,7 +39,8 @@ export default {
   ],
   pose(t) {
     const p = tl.at(t).p;
-    const spine = { lumbar: lerp(-90, 90, p), thoracic: lerp(-90, 90, p) };
+    const spine = { lumbar: spineAngle(p), thoracic: spineAngle(p) };
+    const leg = legAngle(p);
     return {
       // The shoulder stays directly above the planted wrists through the full press.
       hip: hipForShoulder(SHOULDER, spine),
@@ -45,9 +50,8 @@ export default {
       neck: spine.thoracic,
       head: spine.thoracic,
       legs: {
-        // Side view shows the straddle as one leg forward and the other behind the trunk.
-        near: { a1: lerp(0, -90, p), a2: lerp(0, -90, p), foot: lerp(0, -90, p) },
-        far: { a1: lerp(180, 270, p), a2: lerp(180, 270, p), foot: lerp(180, 270, p) },
+        near: { a1: leg, a2: leg, foot: leg },
+        far: { a1: leg, a2: leg, foot: leg },
       },
       arms: {
         near: { target: WRIST, side: [1, 0], hand: 90 },

@@ -49,8 +49,9 @@ function basePose(support: Support, power = false): Omit<Pose, 'arms'> {
     hip: [206, 326], spine: { lumbar: 160, thoracic: 160 }, neck: 160, head: 160,
     farHip: 0, farShoulder: 0,
     legs: {
-      near: { target: [DECLINE.roller[0], DECLINE.roller[1] + 5], foot: -25, side: [0, 1] },
-      far: { target: [DECLINE.roller[0] - 4, DECLINE.roller[1] + 4], foot: -25, side: [0, 1] },
+      // Supine decline: the knees rise above the hip-to-roller line, toward the chest.
+      near: { target: [DECLINE.roller[0], DECLINE.roller[1] + 5], foot: -25, side: [0, -1] },
+      far: { target: [DECLINE.roller[0] - 4, DECLINE.roller[1] + 4], foot: -25, side: [0, -1] },
     },
   };
   return {

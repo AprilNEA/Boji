@@ -5,6 +5,7 @@ import { smooth, timeline, type Timeline } from '@/math/timeline.ts';
 import { solve, type Joints, type LimbPair, type Pose } from '@/rig/side.ts';
 import type { Palette } from '@/draw/palettes.ts';
 import { A, G, FLOOR, handOnHip, standLegs, HIGH_PLANK } from '@/exercises/common.ts';
+import { inclineBench } from '@/exercises/equipment/index.ts';
 
 type HandleKind = 'rope' | 'v' | 'straight' | 'single';
 type WeightKind = 'dumbbell' | 'kettlebell' | 'ez-bar';
@@ -247,21 +248,21 @@ const incline = (() => {
   const base = {
     hip, spine: { lumbar: -50, thoracic: -52 }, neck: -53, head: -49,
     legs: {
-      near: { target: [178, G - A], foot: 0, side: [0, -1] },
-      far: { target: [172, G - A], foot: 0, side: [0, -1] },
+      // The chest-supported athlete is prone. Each knee points forward while the feet stay behind the hips.
+      near: { target: [178, G - A], foot: 0, side: [1, 0] },
+      far: { target: [172, G - A], foot: 0, side: [1, 0] },
     } satisfies LimbPair,
   };
   const J = solve({ ...base, arms: { near: { a1: 90, a2: 90 }, far: { a1: 90, a2: 90 } } });
   return { ...base, J };
 })();
 
+// The backrest rises toward the prone athlete's head at screen right, parallel to the 50° torso and about 20 px in
+// front of the spine line, so the chest rests on the pad. Same bench as inclineRow in _horizontal-row-1.ts.
+const INCLINE_BENCH = inclineBench({ x: 220, top: 132, angle: 50, facing: -1, back: 165, seat: 72 });
+
 function inclineProps(pal: Palette, cable: boolean): { back: PropShape[] } {
-  const out: PropShape[] = [
-    { kind: 'box', nm: 'bench-base', color: pal.metalDark, c: [248, G - 5], s: [180, 10], r: 4 },
-    { kind: 'box', nm: 'bench-leg', color: pal.metalDark, c: [232, 363], s: [14, 156], r: 4, rot: -50 },
-    { kind: 'box', nm: 'incline-pad', color: pal.pad, c: [269, 249], s: [25, 180], r: 10, rot: -50 },
-    { kind: 'box', nm: 'seat-pad', color: pal.padFar, c: [207, 338], s: [68, 18], r: 8, rot: -3 },
-  ];
+  const out: PropShape[] = [...INCLINE_BENCH.draw(pal)];
   if (cable) out.push(
     { kind: 'box', nm: 'cable-base', color: pal.metalDark, c: [415, G - 5], s: [40, 10], r: 4 },
     { kind: 'box', nm: 'cable-column', color: pal.metal, c: [415, (130 + G) / 2], s: [20, G - 120], r: 5 },
@@ -281,7 +282,7 @@ export function inclineRow(c: Catalog & { weight?: WeightKind; cable?: boolean; 
   return {
     id: c.id, name: c.name, tl: ROW_TL, meta: meta(c),
     muscles: [{ m: 'upperBack' }, { m: 'biceps', side: c.single ? 'near' : 'both', scale: 0.55 }, { m: 'delts', side: c.wide ? 'both' : 'near', scale: c.wide ? 0.55 : 0.3 }, { m: 'forearms', side: c.single ? 'near' : 'both', scale: 0.3 }],
-    props: (pal) => inclineProps(pal, c.cable ?? false), propsBox: [130, c.cable ? 430 : 350],
+    props: (pal) => inclineProps(pal, c.cable ?? false), propsBox: [INCLINE_BENCH.box[0], c.cable ? 430 : INCLINE_BENCH.box[1]],
     dynamic: [
       ...(c.cable ? [{ nm: 'Cable', z: 'back' as const, kind: 'line' as const, width: 2.8, color: (pal: Palette) => pal.cable, at: (J: Joints) => [pulley, grip(J)] as [Vec2, Vec2] }] : []),
       ...(c.single ? [{ nm: c.cable ? 'Rope Handle' : 'Dumbbell', z: 'underNearArm' as const, kind: 'rigid' as const, shapes: (pal: Palette) => c.cable ? handleShapes(pal, 'rope') : weightShapes(pal, 'dumbbell'), at: (J: Joints) => ({ p: grip(J), a: c.reverse ? 180 : 0 }) }] : [

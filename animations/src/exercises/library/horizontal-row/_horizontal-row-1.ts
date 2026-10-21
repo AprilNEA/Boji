@@ -1,7 +1,7 @@
 // Private builders for horizontal-row-1 exercises.
 // Each builder keeps the fixed support point stable and moves the grip through a controlled row.
 import type { SideExercise } from '@/exercise.ts';
-import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { add, lerp, lerpV, mul, type Vec2 } from '@/math/vec2.ts';
 import type { LimbPair } from '@/rig/side.ts';
 import { G, A, GRIP_IN_HAND, standLegs } from '@/exercises/common.ts';
 import {
@@ -142,8 +142,9 @@ export function invertedRow(base: Base, opts: { bench?: boolean; bentKnee?: bool
       return {
         hip, spine: { lumbar: lerp(-157, -164, p), thoracic: lerp(-157, -164, p) }, neck: -160, head: -160,
         legs: {
-          near: { target: ankle, foot: 0, side: [0, 1] },
-          far: { target: add(ankle, [-4, 1]), foot: 0, side: [0, 1] },
+          // A supine knee rises toward the ceiling. The former downward pole folded both knees toward the floor.
+          near: { target: ankle, foot: 0, side: [0, -1] },
+          far: { target: add(ankle, [-4, 1]), foot: 0, side: [0, -1] },
         },
         arms: {
           near: { target: [bar[0], bar[1] + GRIP_IN_HAND], side: [0, 1], hand: -90 },
@@ -188,11 +189,13 @@ export function kneelingRow(base: Base, opts: { single?: boolean; rope?: boolean
 
 /** Chest-supported row on an incline bench. The torso stays on the pad while the bar moves beneath the chest. */
 export function inclineRow(base: Base, opts: { cable?: boolean; reverse?: boolean } = {}): SideExercise {
-  const bench = inclineBench({ x: 272, angle: 45, facing: 1, back: 172, seat: 72 });
-  const hip: Vec2 = [270, G - 118];
+  // The backrest rises toward the prone athlete's head at screen right, parallel to the 50° torso and about 20 px in
+  // front of the spine line, so the chest rests on the pad. The feet stay on the floor behind the hips.
+  const bench = inclineBench({ x: 220, top: 132, angle: 50, facing: -1, back: 165, seat: 72 });
+  const hip: Vec2 = [230, G - A - 163];
   const pulley: Vec2 = [397, G - 108];
   const column = opts.cable ? cableColumn({ x: 418, pulleyY: pulley[1], toward: -1 }) : undefined;
-  const grip = (p: number): Vec2 => [lerp(247, 237, p), lerp(G - 78, G - 142, p)];
+  const grip = (J: any, p: number): Vec2 => lerpV(add(J.S, [2, 124]), add(J.B(0.3), mul(J.A(0.3), 16)), p);
   return {
     ...base, tl: ROW_TL, meta: base.meta, muscles: rowMuscles,
     props: (pal) => ({ back: [...bench.draw(pal), ...(column?.draw(pal) ?? [])] }),
@@ -203,11 +206,11 @@ export function inclineRow(base: Base, opts: { cable?: boolean; reverse?: boolea
     pose(t) {
       const p = ROW_TL.at(t).p;
       return {
-        hip, spine: { lumbar: -135, thoracic: -135 }, neck: -135, head: -135,
-        legs: { near: { target: [356, G - A], foot: 0, side: [0, 1] }, far: { target: [350, G - A], foot: 0, side: [0, 1] } },
+        hip, spine: { lumbar: -50, thoracic: -52 }, neck: -53, head: -49,
+        legs: { near: { target: [178, G - A], foot: 0, side: [1, 0] }, far: { target: [172, G - A], foot: 0, side: [1, 0] } },
         arms: {
-          near: { target: grip(p), side: [-1, 0.2], hand: opts.reverse ? -90 : 90 },
-          far: { target: (J) => add(grip(p), [J.Sf[0] - J.S[0] - 3, J.Sf[1] - J.S[1] - 2]), side: [-1, 0.2], hand: opts.reverse ? -90 : 90 },
+          near: { target: (J) => grip(J, p), side: [-1, 0.2], hand: opts.reverse ? -90 : 90 },
+          far: { target: (J) => add(grip(J, p), [J.Sf[0] - J.S[0] - 3, J.Sf[1] - J.S[1] - 2]), side: [-1, 0.2], hand: opts.reverse ? -90 : 90 },
         },
       };
     },
@@ -225,8 +228,9 @@ export function proneRow(base: Base): SideExercise {
     pose(t) {
       const p = ROW_TL.at(t).p;
       return {
-        hip: [282, G - 160], spine: { lumbar: -171, thoracic: -171 }, neck: -171, head: -171,
-        legs: { near: { target: [370, G - A], foot: 0, side: [0, 1] }, far: { target: [364, G - A], foot: 0, side: [0, 1] } },
+        // Prone on the flat pad: the head is right of the hips and the feet extend behind the body.
+        hip: [205, G - 160], spine: { lumbar: 0, thoracic: 0 }, neck: 0, head: 0,
+        legs: { near: { target: [106, G - A], foot: 180, side: [0, 1] }, far: { target: [100, G - A], foot: 180, side: [0, 1] } },
         arms: {
           near: { target: grip(p), side: [-1, 0.2], hand: 90 },
           far: { target: (J) => add(grip(p), [J.Sf[0] - J.S[0] - 3, J.Sf[1] - J.S[1] - 2]), side: [-1, 0.2], hand: 90 },

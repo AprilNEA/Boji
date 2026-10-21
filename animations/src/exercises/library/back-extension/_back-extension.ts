@@ -227,21 +227,22 @@ export function benchFlutter(d: Details): SideExercise {
 const ROMAN_HIP: Vec2 = [270, 305];
 const romanProps = (pal: Palette): Props => ({
   back: [
-    { kind: 'box' as const, nm: 'roman-base', color: pal.metalDark, c: [316, G - 5], s: [190, 10], r: 3 },
-    { kind: 'box' as const, nm: 'roman-upright', color: pal.metal, c: [300, 365], s: [14, 156], r: 6, rot: -22 },
+    { kind: 'box' as const, nm: 'roman-base', color: pal.metalDark, c: [224, G - 5], s: [190, 10], r: 3 },
+    { kind: 'box' as const, nm: 'roman-upright', color: pal.metal, c: [240, 365], s: [14, 156], r: 6, rot: 22 },
     { kind: 'box' as const, nm: 'hip-pad', color: pal.pad, c: [270, 320], s: [96, 24], r: 9 },
-    { kind: 'box' as const, nm: 'foot-rail', color: pal.metalDark, c: [371, 406], s: [106, 10], r: 4, rot: 39 },
-    { kind: 'oval' as const, nm: 'near-ankle-pad', color: pal.pad, c: [401, 424], s: [30, 30] },
-    { kind: 'oval' as const, nm: 'far-ankle-pad', color: pal.padFar, c: [383, 409], s: [27, 27] },
+    { kind: 'box' as const, nm: 'foot-rail', color: pal.metalDark, c: [169, 406], s: [106, 10], r: 4, rot: -39 },
+    { kind: 'oval' as const, nm: 'near-ankle-pad', color: pal.pad, c: [139, 424], s: [30, 30] },
+    { kind: 'oval' as const, nm: 'far-ankle-pad', color: pal.padFar, c: [157, 409], s: [27, 27] },
   ],
 });
 
 function romanPose(p: number): Pose {
-  const spineA = lerp(145, 220, p);
+  // A chest-down pose faces right: the lowered torso is 35°, then it rises to -40° in line with the secured legs.
+  const spineA = lerp(35, -40, p);
   return {
     hip: ROMAN_HIP,
     spine: { lumbar: spineA + 2, thoracic: spineA - 2 }, neck: spineA - 1, head: spineA - 2,
-    legs: { near: { a1: 39, a2: 39, foot: 0 }, far: { a1: 39, a2: 39, foot: 0 } },
+    legs: { near: { a1: 141, a2: 141, foot: 180 }, far: { a1: 141, a2: 141, foot: 180 } },
     arms: crossedArms(),
   };
 }
@@ -252,7 +253,7 @@ export function romanBackExtension(d: Details): SideExercise {
     tl: EXT_TL,
     muscles: [{ m: 'lowerBack' }, { m: 'glutes', scale: 0.55 }, { m: 'hamstrings', side: 'both', scale: 0.45 }],
     props: romanProps,
-    propsBox: [170, 420],
+    propsBox: [120, 370],
     pose: (t) => romanPose(EXT_TL.at(t).p),
   };
 }

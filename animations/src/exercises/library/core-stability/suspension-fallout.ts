@@ -3,11 +3,25 @@
 // Return from the long fallout without bending the elbows or arching the lower back.
 import type { SideExercise } from '@/exercise.ts';
 import { gripAt, workTL } from '@/exercises/equipment/index.ts';
+import type { Joints } from '@/rig/side.ts';
 import { suspensionFalloutPose } from './_core-stability-2.ts';
 
 const tl = workTL(0.6);
 const ANCHOR_N: [number, number] = [315, 62];
 const ANCHOR_F: [number, number] = [306, 62];
+
+const pose = (t: number) => {
+  const base = suspensionFalloutPose(tl.at(t).p);
+  // The knees remain anterior to the shins as the torso leans into the straps.
+  const kneeSide = (J: Joints) => J.A(0);
+  return {
+    ...base,
+    legs: {
+      near: { ...base.legs.near, side: kneeSide },
+      far: { ...base.legs.far, side: kneeSide },
+    },
+  };
+};
 
 export default {
   id: 'suspension-fallout',
@@ -41,5 +55,5 @@ export default {
   ],
   propsBox: [270, 480],
   poster: 0.32,
-  pose: (t) => suspensionFalloutPose(tl.at(t).p),
+  pose,
 } satisfies SideExercise;

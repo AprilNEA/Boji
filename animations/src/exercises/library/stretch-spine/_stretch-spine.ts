@@ -2,12 +2,12 @@
 // The front poses use the frontal rig only for lateral flexion and axial rotation, where the motion stays readable.
 import type { Props } from '@/exercise.ts';
 import type { FrontPose, FSide, Turn } from '@/rig/front.ts';
-import { BODY, type Pose } from '@/rig/side.ts';
+import { BODY, solve, type Joints, type Pose } from '@/rig/side.ts';
 import type { Palette } from '@/draw/palettes.ts';
-import { add, ang, dir, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
-import { timeline } from '@/math/timeline.ts';
+import { add, ang, dir, len, lerp, mul, sub, type Vec2 } from '@/math/vec2.ts';
+import { keyframes, timeline } from '@/math/timeline.ts';
 import type { Vec3 } from '@/math/vec3.ts';
-import { A, FLOOR, G, QUAD, kneelLeg, plantedArm, standLegs } from '@/exercises/common.ts';
+import { A, ARM_STRAIGHT, FLOOR, G, QUAD, kneelLeg, plantedArm, standLegs } from '@/exercises/common.ts';
 
 /** A slow static stretch: arrive in 1.7 s, hold for 3.2 s, and return without a loop jump. */
 export const stretchTL = timeline([
@@ -28,7 +28,8 @@ const STAND_HIP: Vec2 = [250, G - A - (BODY.thigh + BODY.shin - 1)];
 const CHAIR_HIP: Vec2 = [242, G - 104];
 const SUPINE_NECK: Vec2 = [150, FLOOR - 18];
 const SUPINE_HIP: Vec2 = add(SUPINE_NECK, mul(dir(-3.8), 123.7));
-const SUPINE_FLAT = -3.8;
+// The spine points from the hip toward the head (left), so lying flat is 176.2 degrees, not -3.8.
+const SUPINE_FLAT = 176.2;
 
 /** Standing, straight-legged base with both arms hanging. */
 export function standingSideBase(): Pose {
@@ -157,15 +158,16 @@ export function sphinxPose(q: number): Pose {
 
 /** Upward-facing dog: palms and the tops of the feet are fixed as the arms straighten and the thighs lift. */
 export function upwardDogPose(q: number): Pose {
-  const hip: Vec2 = [250, lerp(FLOOR - 17, FLOOR - 50, q)];
+  // A small initial thigh lift leaves room for the knees to flex toward the floor without crossing the mat.
+  const hip: Vec2 = [250, lerp(FLOOR - 27, FLOOR - 50, q)];
   const spine = { lumbar: lerp(-8, -42, q), thoracic: lerp(-12, -70, q) };
   const wrist = (far: boolean) => (J: import('@/rig/side.ts').Joints): Vec2 => [J.S[0] + (far ? -3 : 0), FLOOR - 7];
   return {
     hip, spine, neck: lerp(-14, -60, q), head: lerp(-15, -58, q),
     legs: {
-      // The feet stay far behind the hips so the knees remain extended as the thighs lift.
-      near: { target: [72, FLOOR - 7], side: [0, -1], foot: 180 },
-      far: { target: [78, FLOOR - 7], side: [0, -1], foot: 180 },
+      // The feet stay far behind the hips so the knees remain extended and above the mat as the thighs lift.
+      near: { target: [72, FLOOR - 7], side: [0, 1], foot: 180 },
+      far: { target: [72, FLOOR - 7], side: [0, 1], foot: 180 },
     },
     arms: {
       near: { target: wrist(false), side: [1, 0], hand: 0 },
@@ -177,8 +179,9 @@ export function upwardDogPose(q: number): Pose {
 /** Prone scorpion: chest and palms remain on the mat while one bent leg crosses over the back, alternating sides. */
 export function proneScorpionPose(p: number): Pose {
   const q = Math.abs(p);
-  // Use the upward half of the angle circle (180° to 325°), not the downward 180° to -35° interpolation.
-  const crossed = { a1: lerp(180, 325, q), a2: lerp(180, 150, q), foot: lerp(180, 150, q) };
+  // Raise the knee slightly behind the prone torso, then fold the heel toward the back of the thigh.
+  // Keeping the thigh below 225° prevents it from passing through the torso during the cross-body sweep.
+  const crossed = { a1: lerp(180, 215, q), a2: lerp(180, 315, q), foot: lerp(180, 315, q) };
   const long = { a1: 180, a2: 180, foot: 180 };
   const nearActive = p >= 0;
   return {
@@ -234,27 +237,44 @@ export function crossBodyKneePose(q: number): Pose {
   };
 }
 
-/** Camel pose: knees and heels remain planted while the pelvis glides forward and both hands stay on the heels. */
+/**
+ * Camel pose from a kneeling sit. The knees and shins stay on the mat, the tops of the feet lie flat, and both hands
+ * hold the heels for the whole rep. q 0: the hips sit just above the heels with the torso reclined about 45°.
+ * q 1: the hips push up and forward over the knees, the chest lifts, the upper back arches, and the head drops back
+ * to look at the ceiling. The torso points up and back (negative angles); it never points below the hips.
+ */
+const CAMEL_LUMBAR = keyframes([[0, -105], [0.47, -140], [1, -142]], (u: number) => u);
+const CAMEL_THORACIC = keyframes([[0, -150], [0.47, -180], [1, -185]], (u: number) => u);
 export function camelPose(q: number): Pose {
-  const knee: Vec2 = [270, FLOOR - 12];
-  const hip: Vec2 = [lerp(245, 270, q), FLOOR - 106];
-  const thigh = ang(sub(knee, hip));
-  const spine = { lumbar: lerp(130, 150, q), thoracic: lerp(170, 180, q) };
-  const heel = (far: boolean) => (J: import('@/rig/side.ts').Joints): Vec2 => {
-    const ankle = far ? J.ankle_f : J.ankle_n;
-    return [ankle[0] - 14, ankle[1]];
+  const knee: Vec2 = [300, FLOOR - 12];
+  const thighUp = lerp(-155, -80, q); // direction from knee to hip
+  const hip = add(knee, mul(dir(thighUp), BODY.thigh));
+  // The back arch is shared by the lumbar and thoracic spine, so neither the spine kink nor the hip extension passes
+  // its anatomical limit (scripts/inspect.ts). The three stops were checked for heel reach at thigh -155, -120, -80.
+  const lumbar = CAMEL_LUMBAR(q);
+  const legs = {
+    near: { a1: thighUp + 180, a2: 180, foot: 180 },
+    far: { a1: thighUp + 180, a2: 180, foot: 180 },
   };
-  return {
-    hip, spine, neck: spine.thoracic, head: spine.thoracic,
-    legs: {
-      near: { a1: thigh, a2: 180, foot: 180 },
-      far: { a1: thigh, a2: 180, foot: 180 },
-    },
-    arms: {
-      near: { target: heel(false), side: [0, -1], hand: 180 },
-      far: { target: heel(true), side: [0, -1], hand: 180 },
-    },
-  };
+  const heelOf = (ankle: Vec2): Vec2 => [ankle[0] - 6, ankle[1] - 8];
+  const bodyFor = (thoracic: number) => ({
+    hip, spine: { lumbar, thoracic }, legs,
+    neck: lerp(thoracic + 15, thoracic - 15, q), head: lerp(thoracic + 25, thoracic - 30, q),
+  });
+  const freeArms = { near: { a1: 90, a2: 90 }, far: { a1: 90, a2: 90 } };
+  // If the straight arms still fall short of the heels, arch the upper back a little further, up to 75° past the
+  // lumbar spine.
+  let thoracic = CAMEL_THORACIC(q);
+  for (; thoracic > lumbar - 75; thoracic -= 1) {
+    const J = solve({ ...bodyFor(thoracic), arms: freeArms });
+    if (len(sub(J.S, heelOf(J.ankle_n))) <= ARM_STRAIGHT - 2) break;
+  }
+  const arm = (far: boolean) => ({
+    target: (J: Joints) => heelOf(far ? J.ankle_f : J.ankle_n),
+    side: [-1, 0] as Vec2,
+    hand: (J: Joints) => ang(sub(heelOf(far ? J.ankle_f : J.ankle_n), far ? J.Sf : J.S)),
+  });
+  return { ...bodyFor(thoracic), arms: { near: arm(false), far: arm(true) } };
 }
 
 /** Stability-ball hug: both feet remain planted while the seated body folds over the ball without letting it roll away. */
@@ -306,8 +326,8 @@ export function ballPyramidPose(q: number): Pose {
   return {
     hip, spine, neck: lerp(44, 52, q), head: lerp(44, 55, q),
     legs: {
-      near: { target: [155, FLOOR - 7], side: [0, -1], foot: 180 },
-      far: { target: [151, FLOOR - 7], side: [0, -1], foot: 180 },
+      near: { target: [155, FLOOR - 7], side: [0, 1], foot: 180 },
+      far: { target: [151, FLOOR - 7], side: [0, 1], foot: 180 },
     },
     arms: {
       near: { target: wrist(false), side: [-1, 0], hand: 0 },

@@ -3,9 +3,9 @@
 import type { EquipmentTag, FrontExercise, MuscleSpec, PropShape, SideExercise } from '@/exercise.ts';
 import { add, lerp, sub, type Vec2 } from '@/math/vec2.ts';
 import { timeline } from '@/math/timeline.ts';
-import { BODY, GROUND, type Joints, type Pose } from '@/rig/side.ts';
+import { BODY, GROUND, solve, type Joints, type Pose } from '@/rig/side.ts';
 import { project, type FrontJoints } from '@/rig/front.ts';
-import { A, ARM_STRAIGHT, G, GRIP_IN_HAND, QUAD, hipForShoulder, standLegs } from '@/exercises/common.ts';
+import { A, ARM_STRAIGHT, FLOOR, G, GRIP_IN_HAND, QUAD, hipForShoulder, standLegs } from '@/exercises/common.ts';
 import type { Palette } from '@/draw/palettes.ts';
 
 export interface StrongmanBase {
@@ -317,19 +317,41 @@ export function forwardDragPress(o: StrongmanBase): SideExercise {
   };
 }
 
+/**
+ * Bear crawl stance. Unlike QUAD, the knees hover about 15 px above the mat under the hips, and the feet stand on
+ * the toes with the heels up, as in HIGH_PLANK (ankle 41 px above the mat, foot 85°).
+ */
+const BEAR = (() => {
+  const knee: Vec2 = [QUAD.K[0], FLOOR - 26];
+  const hip: Vec2 = [knee[0], knee[1] - BODY.thigh];
+  const ankle: Vec2 = [knee[0] - 89, FLOOR - 41];
+  const legs = { near: { target: ankle, side: [1, 0] as Vec2, foot: 85 }, far: { target: ankle, side: [1, 0] as Vec2, foot: 85 } };
+  const probeAt = (a: number) => solve({ hip, spine: { lumbar: a, thoracic: a - 2 }, neck: -12, head: -10, farHip: 0, farShoulder: 0, legs, arms: { near: { a1: 90, a2: 90 }, far: { a1: 90, a2: 90 } } });
+  // The higher hips tip the flat back toward the head until the shoulder sits one arm length (minus a soft elbow)
+  // above the wrist, the same rule as QUAD.
+  let a = QUAD.spine.lumbar;
+  for (let i = 0; i < 120 && probeAt(a).S[1] < FLOOR - 7 - 123.5; i++) a += 0.25;
+  const probe = probeAt(a);
+  return {
+    hip, ankle, spine: { lumbar: a, thoracic: a - 2 },
+    wrist: [probe.S[0] + 3, FLOOR - 7] as Vec2, wristFar: [probe.Sf[0] + 2, FLOOR - 7] as Vec2,
+  };
+})();
+
 export function bearCrawlSledDrag(o: StrongmanBase): SideExercise {
   const pose = (t: number): Pose => {
     const s = Math.sin(Math.PI * 2 * t);
+    // The legs drive alternately: each foot steps 12 px forward and back and lifts 6 px while it moves forward.
     const leg = (far: boolean): Pose['legs']['near'] => {
       const q = far ? -s : s;
-      return { target: [QUAD.hip[0] - 63 + 12 * q, G - A - 6 * Math.max(0, q)] as Vec2, side: [-1, 0] as Vec2, foot: 180 };
+      return { target: [BEAR.ankle[0] + 12 * q, BEAR.ankle[1] - 6 * Math.max(0, q)] as Vec2, side: [1, 0] as Vec2, foot: 85 };
     };
     return {
-      hip: QUAD.hip, spine: QUAD.spine, neck: -10, head: -10, farHip: 0, farShoulder: 0,
+      hip: BEAR.hip, spine: BEAR.spine, neck: -10, head: -10, farHip: 0, farShoulder: 0,
       legs: { near: leg(false), far: leg(true) },
       arms: {
-        near: { target: QUAD.wrist, side: [-1, 0], hand: 0 },
-        far: { target: QUAD.wristFar, side: [-1, 0], hand: 0 },
+        near: { target: BEAR.wrist, side: [-1, 0], hand: 0 },
+        far: { target: BEAR.wristFar, side: [-1, 0], hand: 0 },
       },
     };
   };

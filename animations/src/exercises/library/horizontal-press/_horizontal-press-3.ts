@@ -507,8 +507,9 @@ function smithBench(c: HorizontalPressConfig): SideExercise {
       neck: spine,
       head: spine,
       legs: {
-        near: { target: add(bench.roller, [-5, 17]), foot: -20, side: [0, 1] },
-        far: { target: add(bench.roller, [-9, 18]), foot: -20, side: [0, 1] },
+        // Supine decline: the knees rise above the hip-to-roller line, toward the chest.
+        near: { target: add(bench.roller, [-5, 17]), foot: -20, side: [0, -1] },
+        far: { target: add(bench.roller, [-9, 18]), foot: -20, side: [0, -1] },
       },
     };
     return smithFromPose(c, base, (J, p) => add(J.S, [65, lerp(-55, -108, p)]), bench);

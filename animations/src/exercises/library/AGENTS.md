@@ -48,12 +48,12 @@ Run the commands in `animations/`. Set `TMPDIR` to a writable directory inside t
 | Command | Purpose |
 | --- | --- |
 | `node --import tsx scripts/family.ts <family> --out <dir> [--dark] [--worklist <json>] [<id>...]` | Type-checks, validates and generates the given exercises, then renders review sheets to `<dir>`. |
-| `node --import tsx scripts/inspect.ts <family> <id> [--frames a,b,c] [--samples n]` | Prints IK warnings frame by frame, joint angles and ground contact for one exercise. |
+| `node --import tsx scripts/inspect.ts <family> <id> [--frames a,b,c] [--samples n]` | Prints IK warnings frame by frame, joint angles, ground contact and, in the side view, joint direction issues for one exercise. |
 | `node --import tsx scripts/gallery.ts <dir>` | Renders every equipment helper next to a standing figure. |
 
 `family.ts` with IDs or `--worklist` imports and type-checks only those files and the helpers that they import. Unfinished files of other authors in the same directory do not affect the result. Without IDs, it checks the whole family.
 
-Both scripts exit with code 1 on errors. `inspect.ts` also exits with code 1 when a frame has an IK warning or a joint goes more than 2 px below the ground.
+Both scripts exit with code 1 on errors. `inspect.ts` also exits with code 1 when a frame has an IK warning, a joint goes more than 2 px below the ground, or a side-view frame has a joint direction issue (the `anatomy:` line).
 
 ## Rules for parallel authors
 
@@ -97,6 +97,9 @@ Source: `src/rig/side.ts` and `src/exercises/common.ts`.
 - The ankle sits `A` = 13 px above the sole. The figure is about 384 px tall, so 1 px is about 0.46 cm and 10 cm is about 22 px.
 - A limb has either an IK `target` (ankle or wrist) with a bend `side`, or fixed directions `a1` and `a2`. `foot` and `hand` set the end direction.
 - The far hip sits 3 px behind the near hip (`farHip`). The far shoulder sits 4 px behind (`farShoulder`).
+- Lying orientation follows from facing right. Supine (chest up): the head is on the left and the spine points about 180°. Prone (chest down): the head is on the right and the spine points about 0°. A prone pose with the head on the left cannot exist in this rig; it is a supine pose.
+- Joints bend one way. A knee bends so the foot moves toward the back of the thigh: standing, the foot goes back; supine with the knees up, the knees point at the ceiling; prone, the foot rises. The thigh cannot swing far behind the torso line.
+- `src/rig/anatomy.ts` measures these directions. `inspect.ts` reports a thigh more than 70° behind the torso line, a knee bent backward by more than 10°, a neck bent more than 80° from the thoracic spine, and a thoracic spine kinked more than 80° from the lumbar spine. It does not judge elbows, because a rotated upper arm (rear-rack grip, upright row) can make a correct elbow look reversed in side view.
 
 Helpers in `common.ts`:
 
@@ -212,11 +215,13 @@ Open every sheet image of your exercises. Open the dark sheet (`--dark`) at leas
 
 ### Common defects
 
-Automatic checks do not find these defects. `family.ts` and `inspect.ts` check only the floor, IK reach and compose warnings. Look for them in every review.
+`inspect.ts` finds the first three defects in the side view through its `anatomy:` line. The automatic checks do not find the others, and they do not check the front view or elbows. Look for all of them in every review.
 
 | Defect | Typical cause | Fix |
 | --- | --- | --- |
 | The torso lies on top of the legs, or the body folds through itself | A lying angle points the wrong way. For example, the spine points from the hip toward the feet | Check that the neck base lands where the shoulders should be. Derive the lying angle from the hip and neck positions |
+| A knee bends backward: a back leg with the shin pointing forward, a supine knee pointing at the floor, a far knee pointing back while the near knee points forward | The IK `side` vector of that leg points the wrong way, often copied from a standing pose into a lying or kneeling one. `side` only picks which side of the hip-to-ankle line the knee goes, so a fixed `side` can also flip the knee in the middle of a move when that line turns past it. A fixed `a2` on the wrong side of `a1` does the same | Point `side` toward where the knee should go in this pose. If the leg turns a lot, use a `side` function that follows the thigh or the torso. Check both legs on every frame with `inspect.ts` |
+| A prone exercise is drawn supine, and the hips bend backward | The pose puts the head on the left for a chest-down exercise | Put the head on the right, the spine near 0°, and the chest toward the floor or the bench |
 | A segment swings through the floor, a bench or the body | `lerp(a, b)` between angles that differ by more than 180° takes the long way round, for example `lerp(160, -38)` | Write both ends on the same side of ±180°, for example `lerp(160, 322)` |
 | The head stays flat, or tips back, while the trunk rises | `neck` and `head` are fixed numbers | Derive them from the thoracic angle, for example `neck: thoracic + 4` |
 | The arms point behind the back or into the floor as the trunk moves | Arm angles `a1` and `a2` are absolute screen angles | Use a `target` in the torso frame, such as `add(J.B(0.8), mul(J.A(0.8), 24))`, and a `side` function |

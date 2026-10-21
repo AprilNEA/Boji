@@ -3,6 +3,7 @@
 // The torso leans forward and both hands maintain gentle rope tension.
 import type { SideExercise } from '@/exercise.ts';
 import type { Joints } from '@/rig/side.ts';
+import { G } from '@/exercises/common.ts';
 import { loopedStrap, stretchTL } from './_stretch-lower-2.ts';
 
 const tl = stretchTL;
@@ -11,8 +12,8 @@ export default {
   meta: { en: 'Rope Calf Stretch', family: 'stretch-lower', equipment: ['rope'], sources: ['hz:1378'] },
   muscles: [{ m: 'calves', side: 'near' }, { m: 'hamstrings', side: 'near', scale: 0.35 }],
   dynamic: [...loopedStrap<Joints>((J) => [J.wrist_n, J.ankle_n, J.wrist_f], 'Rope')],
-  pose(t) { const p = tl.at(t).p; return { hip: [258, 255 + 30 * p], spine: { lumbar: -90 + 78 * p, thoracic: -90 + 76 * p }, neck: -90 + 76 * p, head: -88 + 73 * p,
-    legs: { near: { a1: 90 - 28 * p, a2: 90 - 28 * p, foot: -65 * p }, far: { a1: 90 + 46 * p, a2: 90 - 38 * p, foot: 0 } },
+  pose(t) { const p = tl.at(t).p; return { hip: [273, 265], spine: { lumbar: -90 + 78 * p, thoracic: -90 + 76 * p }, neck: -90 + 76 * p, head: -88 + 73 * p,
+    legs: { near: { target: [325, G - 13], foot: -30 * p, side: [1, 0] }, far: { target: [222, G - 13], foot: 0, side: [1, 0] } },
     arms: { near: { a1: 90 + 16 * p, a2: 90 + 16 * p, hand: 90 + 16 * p }, far: { a1: 92 + 17 * p, a2: 92 + 17 * p, hand: 92 + 17 * p } },
   }; },
 } satisfies SideExercise;

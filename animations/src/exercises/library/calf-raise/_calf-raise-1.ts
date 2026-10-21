@@ -42,7 +42,7 @@ function ballContact(a: number): { dx: number; h: number } {
 
 /** A folded non-working leg, clearly held off the ground behind the working leg. */
 function liftedLeg(): LimbSpec {
-  return { a1: 115, a2: -20, foot: -5 };
+  return { a1: 115, a2: -110, foot: -5 };
 }
 
 function standingBody(p: number, config: Pick<StandingConfig, 'single' | 'baseH' | 'start' | 'top'>): Omit<Pose, 'arms'> {

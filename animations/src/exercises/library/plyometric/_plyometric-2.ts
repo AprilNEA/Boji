@@ -160,7 +160,7 @@ function splitJumpPose(t: number): Pose {
   const leftLoad = () => planted([195, 311], floorAnkle(247), floorAnkle(143), -88, 86, 91);
   const air = (): Pose => ({
     hip: [195, 231], spine: { lumbar: -88, thoracic: -90 }, neck: -91, head: -90,
-    legs: { near: { a1: 53, a2: 116, foot: 3 }, far: { a1: 132, a2: 72, foot: 3 } },
+    legs: { near: { a1: 53, a2: 116, foot: 3 }, far: { a1: 132, a2: 192, foot: 3 } },
     arms: arms(86, 92),
   });
   const rightLoad = () => planted([195, 311], floorAnkle(143), floorAnkle(247), -88, 86, 91);
@@ -526,7 +526,7 @@ export function smithSplitJumpExercise(): SideExercise {
   });
   const air = (): Pose => ({
     hip: [248, 220], spine: { lumbar: -89, thoracic: -91 }, neck: -92, head: -90,
-    legs: { near: { a1: 54, a2: 114, foot: 3 }, far: { a1: 130, a2: 70, foot: 3 } },
+    legs: { near: { a1: 54, a2: 114, foot: 3 }, far: { a1: 130, a2: 190, foot: 3 } },
     arms: { near: { a1: 165, a2: 18, hand: 180 }, far: { a1: 168, a2: 20, hand: 180 } },
   });
   return {

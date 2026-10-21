@@ -203,7 +203,7 @@ export function inclineDumbbellFrontRaise(c: { id: string; name: string; en: str
 export function proneInclineBarbellRaise(c: { id: string; name: string; en: string; sources: string[] }): SideExercise {
   const base: Omit<Pose, 'arms'> = {
     hip: [244, G - 111], spine: { lumbar: -46, thoracic: -45 }, neck: -44, head: -43,
-    legs: { near: { a1: 35, a2: 16, foot: 0 }, far: { a1: 35, a2: 16, foot: 0 } },
+    legs: { near: { a1: 145, a2: 150, foot: 0 }, far: { a1: 145, a2: 150, foot: 0 } },
   };
   return {
     id: c.id, name: c.name, tl: normalTL,

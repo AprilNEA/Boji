@@ -2,7 +2,7 @@
 // define the exercise. Floor bodies use the existing course-animation heights so the mat, knees and head stay visible.
 import type { LibraryMeta, SideExercise } from '@/exercise.ts';
 import { add, ang, clamp, dir, lerp, mul, type Vec2 } from '@/math/vec2.ts';
-import { smooth, timeline, type Timeline } from '@/math/timeline.ts';
+import { keyframes, smooth, timeline, type Timeline } from '@/math/timeline.ts';
 import type { Joints, Pose } from '@/rig/side.ts';
 import { A, FLOOR } from '@/exercises/common.ts';
 import { bandLine, barbell, declineBench, flatBench, gripAt, workTL } from '@/exercises/equipment/index.ts';
@@ -182,10 +182,21 @@ export function seatedBench(base: Base, opts: { kind: 'raise' | 'tuck' | 'kickou
     { d: 0.2, from: 3, to: 3, e: [0.9, 0.9] }, { d: 0.8, from: 3, to: 4, e: [0.85, 0.25] },
   ]) : REP;
   const leg = (p: number) => {
-    // The bent start puts the sole on the floor from the 43 cm bench. The former 30°/150° pose left it floating.
-    if (opts.kind === 'raise') return { a1: lerp(38, 0, p), a2: lerp(142, 0, p), foot: 0 };
-    if (opts.kind === 'kickout') return { a1: lerp(38, 3, p), a2: lerp(142, 3, p), foot: 0 };
-    return { a1: lerp(10, 20, p), a2: lerp(10, -150, p), foot: lerp(0, -150, p) };
+    // A 38° straight leg puts the sole on the floor from the 43 cm bench. Rotating its lower leg independently
+    // from 142° to 0° made the ankle arc through the floor before it rose.
+    if (opts.kind === 'raise') {
+      const a = lerp(38, 0, p);
+      return { a1: a, a2: a, foot: 0 };
+    }
+    // The knee first folds and lifts the foot clear of the floor. It then extends forward, as in the kick-out source.
+    if (opts.kind === 'kickout') return {
+      a1: keyframes([[0, 38], [0.35, 5], [1, 3]])(p),
+      a2: keyframes([[0, 142], [0.35, 165], [1, 3]])(p),
+      foot: lerp(0, 3, p),
+    };
+    // The knee moves up and back toward the chest. The shin stays in front of the thigh,
+    // so each knee flexes forward instead of folding backward during the transition.
+    return { a1: lerp(10, -145, p), a2: lerp(10, 0, p), foot: 0 };
   };
   return {
     ...base, tl,
@@ -201,7 +212,9 @@ export function seatedBench(base: Base, opts: { kind: 'raise' | 'tuck' | 'kickou
       const torso = opts.barbell ? -90 : opts.kind === 'tuck' ? lerp(-135, -116, p) : -116;
       return {
         hip, spine: { lumbar: torso, thoracic: torso - 2 }, neck: torso, head: torso,
-        legs: pair(l, { ...f, a1: f.a1 + 2, a2: f.a2 + 2 }),
+        legs: pair(l, opts.kind === 'raise'
+          ? { ...f, a1: f.a1 + 2, a2: f.a2 - 2 }
+          : { ...f, a1: f.a1 + 2, a2: f.a2 + 2 }),
         arms: opts.barbell
           ? pair({ target: [262, bench.seatY - 27], side: [-1, 0], hand: 90 }, { target: [259, bench.seatY - 29], side: [-1, 0], hand: 90 })
           : pair({ target: hand, side: [-1, 0], hand: 90 }, { target: add(hand, [-3, 0]), side: [-1, 0], hand: 90 }),

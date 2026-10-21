@@ -4,11 +4,23 @@
 import type { SideExercise } from '@/exercise.ts';
 import { makeBallCurl } from './_biceps-curl-4.ts';
 
-export default makeBallCurl({
+const base = makeBallCurl({
   id: 'dumbbell-stability-ball-seated-biceps-curl-with-leg-raised',
   name: '健身球坐姿抬腿哑铃弯举',
   en: 'Dumbbell Stability Ball Seated Biceps Curl with Leg Raised',
   sources: ['hz:1652'],
   bilateral: true,
   raisedLeg: true,
-}) satisfies SideExercise;
+});
+
+export default {
+  ...base,
+  pose(t) {
+    const pose = base.pose(t);
+    return {
+      ...pose,
+      // The lifted knee remains extended instead of folding toward the floor.
+      legs: { ...pose.legs, near: { a1: 0, a2: 0, foot: 0 } },
+    };
+  },
+} satisfies SideExercise;

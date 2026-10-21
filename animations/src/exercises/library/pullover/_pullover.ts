@@ -136,10 +136,10 @@ export function declineBarPullover(opts: DeclinePulloverOptions): SideExercise {
   const radius = opts.bent ? 118 : STRAIGHT_GRIP_RADIUS;
   const base: Omit<Pose, 'arms'> = {
     hip: [254, 316], spine: { lumbar: 160, thoracic: 160 }, neck: 160, head: 160,
-    // The knees point down, not through the bench. The shoes hook under the roller at the high end.
+    // In this supine decline position, the knees point above the bench. The shoes hook under the roller at the high end.
     legs: {
-      near: { target: [335, 310], foot: 160, side: [0, 1] },
-      far: { target: [331, 312], foot: 160, side: [0, 1] },
+      near: { target: [335, 310], foot: 160, side: [0, -1] },
+      far: { target: [331, 312], foot: 160, side: [0, -1] },
     },
   };
   const gripPoint = (J: Joints, p: number) => shoulderArc(J, p, radius, -110, -170);
@@ -320,7 +320,8 @@ export function ballPullover(opts: BallPulloverOptions): SideExercise {
         spine, neck: spineAngle, head: spineAngle,
         legs: {
           near: { target: [285, G - A], foot: 0, side: [0, -1] },
-          far: { target: [279, G - A], foot: 0, side: [0, -1] },
+          // The far target is offset behind the hip. Follow the near knee so this leg keeps its normal bend as the hips rise.
+          far: { target: [279, G - A], foot: 0, side: (J) => sub(J.knee_n, J.Hf) },
         },
       };
       // The first motion is the pullover. The later hip-extension phase keeps the dumbbell above the chest.
@@ -340,16 +341,16 @@ export function singleArmBallPullover(id: string, name: string, meta: Meta): Sid
     { d: 0.3, from: 1, to: 1, e: [1, 0.9] },
     { d: 0.8, from: 1, to: 0, e: [0.9, 0.35] },
   ]);
-  const activeNear = (t: number): boolean => t < 0.5;
+  // The near arm does both repetitions of the loop; the source switches arms only after the set.
   const repetitionProgress = (t: number): number => tl.at(t < 0.5 ? t : t - 0.5).p;
   const oneDumbbell: MovingPart = {
-    nm: 'Alternating Dumbbell', kind: 'rigid', z: 'underNearArm',
+    nm: 'Single Dumbbell', kind: 'rigid', z: 'underNearArm',
     shapes: (pal) => [
       { kind: 'box', nm: 'handle', color: pal.metal, c: [0, 0], s: [24, 5], r: 2.5 },
       { kind: 'box', nm: 'plate-a', color: pal.plate, c: [-16, 0], s: [9, 30], r: 3 },
       { kind: 'box', nm: 'plate-b', color: pal.plate, c: [16, 0], s: [9, 30], r: 3 },
     ],
-    at: (J, t) => ({ p: gripAt(J, activeNear(t) ? 'n' : 'f'), a: 90 }),
+    at: (J) => ({ p: gripAt(J, 'n'), a: 90 }),
   };
   return {
     id,
@@ -364,13 +365,17 @@ export function singleArmBallPullover(id: string, name: string, meta: Meta): Sid
         hip: [285, 306], spine: { lumbar: 180, thoracic: 180 }, neck: 180, head: 180,
         legs: {
           near: { target: [285, G - A], foot: 0, side: [0, -1] },
-          far: { target: [279, G - A], foot: 0, side: [0, -1] },
+          far: { target: [279, G - A], foot: 0, side: (J) => sub(J.knee_n, J.Hf) },
         },
       };
-      const active = activeNear(t);
+      const armAngle = lerp(-90, -160, p);
+      // The free hand rests on the abdomen with the elbow dropped beside the body.
+      const restingArm = {
+        target: (J: Joints) => add(J.B(0.3), mul(J.A(0.3), 14)),
+        side: [0, 1] as Vec2,
+        hand: (J: Joints) => ang(J.T(0.3)) + 180,
+      };
       const arm = (side: 'near' | 'far') => {
-        const isActive = side === 'near' ? active : !active;
-        const armAngle = isActive ? lerp(-90, -160, p) : -90;
         return {
           target: (J: Joints) => {
             const shoulder = side === 'near' ? J.S : J.Sf;
@@ -381,7 +386,7 @@ export function singleArmBallPullover(id: string, name: string, meta: Meta): Sid
           hand: armAngle,
         };
       };
-      return { ...base, arms: { near: arm('near'), far: arm('far') } };
+      return { ...base, arms: { near: arm('near'), far: restingArm } };
     },
   };
 }

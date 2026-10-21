@@ -3,7 +3,7 @@
 // Hands remain on the hips so the lunge position stays clear.
 import type { SideExercise } from '@/exercise.ts';
 import { lerp } from '@/math/vec2.ts';
-import { handOnHip } from '@/exercises/common.ts';
+import { G, handOnHip } from '@/exercises/common.ts';
 import { stretchTL } from './_stretch-lower-2.ts';
 
 const tl = stretchTL;
@@ -20,9 +20,9 @@ export default {
       hip: [lerp(263, 284, p), lerp(255, 299, p)],
       spine: { lumbar: -90, thoracic: -90 }, neck: -90, head: -90,
       legs: {
-        near: { a1: lerp(90, 72, p), a2: lerp(90, 34, p), foot: 0 },
-        // Rear ankle is raised, with the toes keeping contact on the floor.
-        far: { a1: lerp(90, 165, p), a2: lerp(90, 80, p), foot: lerp(0, 76, p) },
+        near: { target: [lerp(263, 325, p), G - 13], foot: 0, side: [1, 0] },
+        // Rear toes stay down as the ankle rises for the hip-flexor stretch.
+        far: { target: [lerp(260, 230, p), lerp(G - 13, G - 40, p)], foot: 76 * p, side: [1, 0] },
       },
       arms: { near: handOnHip(0), far: handOnHip(-5) },
     };
