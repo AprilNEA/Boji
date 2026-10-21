@@ -7,10 +7,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import club.leanmuscle.boji.core.companion.CompanionSettings
+import club.leanmuscle.boji.core.companion.WatchStatus
+import club.leanmuscle.boji.core.companion.WearCompanionSync
 import club.leanmuscle.boji.core.data.Appearance
 import club.leanmuscle.boji.core.data.AppearanceSettings
 import club.leanmuscle.boji.core.data.BojiStore
 import club.leanmuscle.boji.core.di.IoDispatcher
+import club.leanmuscle.boji.core.health.HealthRepository
 import club.leanmuscle.boji.core.membership.AccountState
 import club.leanmuscle.boji.core.membership.MembershipRepository
 import club.leanmuscle.boji.core.model.BojiSnapshot
@@ -41,6 +45,9 @@ class SettingsViewModel @Inject constructor(
     private val store: BojiStore,
     private val appearanceSettings: AppearanceSettings,
     private val membership: MembershipRepository,
+    private val health: HealthRepository,
+    private val companion: CompanionSettings,
+    private val wearSync: WearCompanionSync,
     private val contentResolver: ContentResolver,
     @param:IoDispatcher private val io: CoroutineDispatcher,
 ) : ViewModel() {
@@ -48,6 +55,18 @@ class SettingsViewModel @Inject constructor(
 
     val appearance: StateFlow<Appearance> = appearanceSettings.appearance
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), Appearance.System)
+
+    /** Whether the widget may show today's check-ins. Off until the user turns it on. */
+    val companionSharing: StateFlow<Boolean> = companion.sharingEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    /** Whether the Wear OS app gets the check-ins. Settings shows it while sharing is on. */
+    val watchStatus: StateFlow<WatchStatus> = wearSync.status
+
+    /** Sends the snapshot again and checks the watch. Settings calls this each time it appears. */
+    fun refreshWatchStatus() {
+        viewModelScope.launch { wearSync.refreshStatus() }
+    }
 
     /** The signed-in email for the 俱乐部账号 row, or null when nobody is signed in. */
     val accountEmail: StateFlow<String?> = membership.state
@@ -71,6 +90,10 @@ class SettingsViewModel @Inject constructor(
 
     fun setSelectedPlan(plan: PlanKind) {
         viewModelScope.launch { store.setSelectedPlan(plan) }
+    }
+
+    fun setCompanionSharing(value: Boolean) {
+        viewModelScope.launch { companion.setSharingEnabled(value) }
     }
 
     fun setAppearance(value: Appearance) {
@@ -101,9 +124,11 @@ class SettingsViewModel @Inject constructor(
 
     fun resetAll() {
         viewModelScope.launch {
-            // As on iOS: the session and the card cache go first, then the records.
-            // This does not delete the account or the card on the server.
+            // As on iOS: sharing and the session and the card cache go first, then the health query,
+            // then the records. This does not delete the account, the card or anything in Health Connect.
+            companion.setSharingEnabled(false)
             membership.clearLocalData()
+            health.disconnect()
             store.resetAll()
             nickname = store.snapshot.value?.state?.displayName.orEmpty()
         }

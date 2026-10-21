@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Wear OS 应用。文案与 ios/BojiWatch 一致，「iPhone」改为「手机」。 -->
+<resources>
+    <string name="app_name">薄肌</string>
+    <string name="watch_title">今日进度</string>
+    <string name="watch_refresh">刷新</string>
+    <string name="watch_connecting">正在连接手机</string>
+    <string name="watch_requesting">正在请求更新</string>
+    <string name="watch_offline">手机当前离线</string>
+    <string name="watch_offline_detail">已保留快照。仅显示今天的当前数据。</string>
+    <string name="watch_connected">已连接手机</string>
+    <string name="watch_unavailable">此设备无法使用共享</string>
+    <string name="watch_failed">无法连接手机</string>
+    <string name="watch_plan">计划</string>
+    <string name="watch_training">手动训练</string>
+    <string name="watch_water">饮水</string>
+    <string name="watch_sleep">睡眠</string>
+    <string name="watch_logged">已记录</string>
+    <string name="watch_not_logged">未记录</string>
+    <string name="watch_synced">同步于 %1$s</string>
+    <string name="watch_sharing_off">共享未开启</string>
+    <string name="watch_turn_on_sharing">请在手机的薄肌设置中开启共享。</string>
+    <string name="watch_no_data">尚无共享数据</string>
+    <string name="watch_stale">今天没有当前数据</string>
+    <string name="watch_stale_detail">已保留旧快照，但不会显示非今日记录。</string>
+</resources>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The Wear OS app. The text follows ios/BojiWatch/Localizable.xcstrings, with "phone" for "iPhone".
+    watch_logged and watch_not_logged repeat habit_recorded and habit_not_recorded of locales/,
+    because crates/locales generates strings_shared.xml only for :app.
+-->
+<resources>
+    <string name="app_name">Lean Muscle</string>
+    <string name="watch_title">Today’s Progress</string>
+    <string name="watch_refresh">Refresh</string>
+    <string name="watch_connecting">Connecting to phone</string>
+    <string name="watch_requesting">Requesting update</string>
+    <string name="watch_offline">Phone is offline</string>
+    <string name="watch_offline_detail">A snapshot was kept. Only today’s data is shown.</string>
+    <string name="watch_connected">Phone connected</string>
+    <string name="watch_unavailable">Sharing isn’t available on this device</string>
+    <string name="watch_failed">Can’t connect to phone</string>
+    <string name="watch_plan">Plan</string>
+    <string name="watch_training">Manual Training</string>
+    <string name="watch_water">Water</string>
+    <string name="watch_sleep">Sleep</string>
+    <string name="watch_logged">Logged</string>
+    <string name="watch_not_logged">Not logged</string>
+    <string name="watch_synced">Synced %1$s</string>
+    <string name="watch_sharing_off">Sharing is off</string>
+    <string name="watch_turn_on_sharing">Turn on sharing in Lean Muscle settings on your phone.</string>
+    <string name="watch_no_data">No shared data yet</string>
+    <string name="watch_stale">No data for today</string>
+    <string name="watch_stale_detail">An old snapshot was kept, but records from other days aren’t shown.</string>
+</resources>

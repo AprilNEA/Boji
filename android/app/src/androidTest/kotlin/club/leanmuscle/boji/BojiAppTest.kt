@@ -1,8 +1,10 @@
 package club.leanmuscle.boji
 
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
@@ -167,6 +169,23 @@ class BojiAppTest {
         composeRule.awaitStore(store) { it.state.joinedChallenge }
         composeRule.onNodeWithTag("challenge_leave").performScrollTo().performClick()
         composeRule.awaitStore(store) { !it.state.joinedChallenge }
+    }
+
+    @Test
+    fun bodyEntriesShowTheTrendChart() {
+        runBlocking {
+            store.addBodyEntry(weight = 70.4, waist = 81.0)
+            store.addBodyEntry(weight = 70.1, waist = 80.6)
+        }
+        composeRule.awaitStore(store) { it.bodyEntriesByDate.size == 2 }
+        composeRule.onNodeWithTag(BojiDestination.Progress.tabTag).performClick()
+
+        // The chart is one picture for TalkBack, described by the number of entries.
+        val label = composeRule.activity.resources.getQuantityString(R.plurals.progress_chart_a11y, 2, 2)
+        composeRule.onNodeWithTag("body_trend_chart")
+            .performScrollTo()
+            .assertIsDisplayed()
+            .assert(hasContentDescription(label))
     }
 
     @Test

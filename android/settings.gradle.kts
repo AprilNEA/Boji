@@ -24,3 +24,5 @@ rootProject.name = "Boji"
 include(":app")
 include(":baselineprofile")
 include(":rpc")
+include(":shared")
+include(":wear")

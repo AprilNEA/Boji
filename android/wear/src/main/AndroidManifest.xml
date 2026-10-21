@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Google Play offers this APK to watches only. Never set required="false". -->
+    <uses-feature android:name="android.hardware.type.watch" />
+
+    <!--
+        The watch keeps only the last snapshot from the phone, in no-backup storage, so backup and
+        device transfer have nothing to copy.
+    -->
+    <application
+        android:name=".WatchApplication"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.DeviceDefault"
+        tools:ignore="DataExtractionRules"
+        tools:targetApi="31">
+        <!-- The app shows what the phone app shares, so it is not useful without the phone. -->
+        <meta-data
+            android:name="com.google.android.wearable.standalone"
+            android:value="false" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:taskAffinity="">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+            Receives the snapshots that the phone app sends while the watch is connected. Google Play
+            services binds it, and WearableListenerService accepts calls from Google Play services only.
+            The filter limits it to CompanionDataLayer.SNAPSHOT_PATH.
+        -->
+        <service
+            android:name=".data.SnapshotListenerService"
+            android:exported="true"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data
+                    android:host="*"
+                    android:path="/boji/companion/snapshot"
+                    android:scheme="wear" />
+            </intent-filter>
+        </service>
+    </application>
+
+</manifest>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Wear OS Data Layer capability of the watch app. The phone app sends snapshots to nodes
+     with this capability. Keep the name equal to CompanionDataLayer.WATCH_CAPABILITY. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@array/android_wear_capabilities">
+    <string-array name="android_wear_capabilities" translatable="false">
+        <item>boji_watch_app</item>
+    </string-array>
+</resources>

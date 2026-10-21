@@ -1,5 +1,6 @@
 package club.leanmuscle.boji
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import club.leanmuscle.boji.core.companion.CompanionRoute
 import club.leanmuscle.boji.core.data.Appearance
 import club.leanmuscle.boji.ui.AppViewModel
 import club.leanmuscle.boji.ui.BojiApp
@@ -28,6 +30,8 @@ class MainActivity : ComponentActivity() {
         // Android 15+ enforces edge-to-edge for apps that target API 35 or higher.
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        // After a configuration change or process restore, the tab is already part of the saved state.
+        if (savedInstanceState == null) openRoute(intent)
         setContent {
             val appearance by appViewModel.appearance.collectAsStateWithLifecycle()
             val systemDark = isSystemInDarkTheme()
@@ -50,6 +54,16 @@ class MainActivity : ComponentActivity() {
                 if (appearance != null) BojiApp(modifier = Modifier.semantics { testTagsAsResourceId = true }, viewModel = appViewModel)
             }
         }
+    }
+
+    /** The widget starts this activity with CLEAR_TOP and SINGLE_TOP, so a running instance gets its route here. */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        openRoute(intent)
+    }
+
+    private fun openRoute(intent: Intent?) {
+        CompanionRoute.parse(intent?.dataString)?.let(appViewModel::openRoute)
     }
 
     private companion object {

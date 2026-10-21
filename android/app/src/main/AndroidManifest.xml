@@ -6,16 +6,31 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!--
+        Health Connect: read weight and sleep only. Boji declares no write permission and no
+        background or history permission, so it reads while open and at most 30 days back.
+        core/health/HealthDataProvider.kt lists the same two permissions.
+    -->
+    <uses-permission android:name="android.permission.health.READ_WEIGHT" />
+    <uses-permission android:name="android.permission.health.READ_SLEEP" />
+
+    <queries>
+        <!-- Android 11-13: getSdkStatus can find the Health Connect app only when it is visible. -->
+        <package android:name="com.google.android.apps.healthdata" />
+        <!-- Apps that write to Health Connect declare these screens, so their names can be shown as sources. -->
+        <intent>
+            <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+            <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+        </intent>
+    </queries>
+
+    <!--
         Body records are sensitive personal data. Backup and device transfer stay off
         until the Android data layer defines what may leave the device.
         API 26-30: allowBackup="false" disables every backup type, so fullBackupContent is not needed.
         API 31+: allowBackup="false" stops cloud backup; dataExtractionRules also stops device transfer.
-
-        CredManMissingDal: Credential Manager saves and fills passwords without Digital Asset Links.
-        The links share passwords with the club website, and need a domain that serves
-        /.well-known/assetlinks.json with the release signing certificate fingerprint. That domain
-        does not exist yet (iOS has no webcredentials domain either). When it exists, add the
-        asset_statements meta-data here and remove CredManMissingDal from tools:ignore.
     -->
     <application
         android:name=".BojiApplication"
@@ -26,8 +41,17 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
         android:theme="@style/Theme.Boji"
-        tools:ignore="DataExtractionRules,CredManMissingDal"
+        tools:ignore="DataExtractionRules"
         tools:targetApi="31">
+        <!--
+            Digital Asset Links for Credential Manager passwords. The statements include
+            https://leanmuscle.club/.well-known/assetlinks.json. Password sharing with the site works
+            only after the site serves that file with the release signing certificate fingerprint.
+        -->
+        <meta-data
+            android:name="asset_statements"
+            android:resource="@string/asset_statements" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -36,6 +60,69 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+            How Boji uses health data. Health Connect shows no permission screen without it.
+            Android 13 and lower open it with ACTION_SHOW_PERMISSIONS_RATIONALE.
+        -->
+        <activity
+            android:name=".feature.health.HealthPermissionsRationaleActivity"
+            android:exported="true"
+            android:label="@string/health_rationale_title">
+            <intent-filter>
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+            </intent-filter>
+        </activity>
+        <!-- Android 14 and higher open the same screen from the system's Health Connect settings. -->
+        <activity-alias
+            android:name="ViewPermissionUsageActivity"
+            android:exported="true"
+            android:permission="android.permission.START_VIEW_PERMISSION_USAGE"
+            android:targetActivity=".feature.health.HealthPermissionsRationaleActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+                <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+            </intent-filter>
+        </activity-alias>
+
+        <!--
+            The home screen widget. Not exported: the system delivers widget, time and language
+            broadcasts, and the app sends its own midnight refresh with an explicit intent.
+        -->
+        <receiver
+            android:name=".feature.widget.DailyWidgetReceiver"
+            android:exported="false"
+            android:label="@string/widget_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/daily_widget_info" />
+        </receiver>
+
+        <!--
+            Answers the watch app's snapshot request. Google Play services binds it, and
+            WearableListenerService accepts calls from Google Play services only. The filter limits it
+            to CompanionDataLayer.REQUEST_PATH, so other Data Layer events do not start the app.
+        -->
+        <service
+            android:name=".core.companion.CompanionWearService"
+            android:exported="true"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.REQUEST_RECEIVED" />
+                <data
+                    android:host="*"
+                    android:path="/boji/companion/request"
+                    android:scheme="wear" />
+            </intent-filter>
+        </service>
 
         <!-- Shares the member card image that the user confirms in the share preview. -->
         <provider

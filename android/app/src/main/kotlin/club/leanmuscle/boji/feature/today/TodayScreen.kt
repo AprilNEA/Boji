@@ -47,6 +47,7 @@ import club.leanmuscle.boji.core.model.Workout
 import club.leanmuscle.boji.feature.entry.DailyEntrySheet
 import club.leanmuscle.boji.feature.entry.DailySheet
 import club.leanmuscle.boji.feature.training.WorkoutCard
+import club.leanmuscle.boji.feature.health.HealthSummaryCard
 import club.leanmuscle.boji.ui.components.BojiCard
 import club.leanmuscle.boji.ui.components.BojiScaffold
 import club.leanmuscle.boji.ui.components.FootNote
@@ -67,6 +68,7 @@ fun TodayScreen(
     onOpenWorkout: (Workout) -> Unit,
     onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
+    healthSummary: @Composable () -> Unit = {},
 ) {
     var sheet by rememberSaveable { mutableStateOf<DailySheet?>(null) }
     BojiScaffold(
@@ -85,6 +87,7 @@ fun TodayScreen(
                 subtitle = stringResource(R.string.today_subtitle),
             )
             RhythmCard(snapshot)
+            healthSummary()
             SectionHeading(stringResource(R.string.today_habits_title), stringResource(R.string.today_habits_detail))
             HabitCards(snapshot, onOpen = { sheet = it })
             SectionHeading(stringResource(R.string.today_recommend_title), stringResource(R.string.today_recommend_detail))
@@ -300,9 +303,12 @@ private fun HabitCard(
 fun TodayScreen(
     onOpenWorkout: (Workout) -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenHealth: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TodayViewModel = hiltViewModel(),
 ) {
     val snapshot by viewModel.snapshot.collectAsStateWithLifecycle()
-    snapshot?.let { TodayScreen(it, viewModel, onOpenWorkout, onOpenSettings, modifier) }
+    snapshot?.let {
+        TodayScreen(it, viewModel, onOpenWorkout, onOpenSettings, modifier, healthSummary = { HealthSummaryCard(onOpen = onOpenHealth) })
+    }
 }

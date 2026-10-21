@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Equal to the launcher colors in app/src/main/res/values/colors.xml. -->
+<resources>
+    <color name="ic_launcher_background">#EDEEE9</color>
+    <color name="ic_launcher_foreground">#3D574C</color>
+</resources>

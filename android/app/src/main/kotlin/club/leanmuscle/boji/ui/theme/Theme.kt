@@ -11,7 +11,8 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 
 // Brand colors stay fixed. Dynamic color is off so Android matches the iOS accent.
-private val LightColors: ColorScheme = lightColorScheme(
+// The home screen widget uses the same schemes through Glance.
+internal val LightColors: ColorScheme = lightColorScheme(
     primary = PrimaryLight,
     onPrimary = OnPrimaryLight,
     primaryContainer = PrimaryContainerLight,
@@ -62,7 +63,7 @@ private val LightColors: ColorScheme = lightColorScheme(
     onTertiaryFixedVariant = OnTertiaryFixedVariantLight,
 )
 
-private val DarkColors: ColorScheme = darkColorScheme(
+internal val DarkColors: ColorScheme = darkColorScheme(
     primary = PrimaryDark,
     onPrimary = OnPrimaryDark,
     primaryContainer = PrimaryContainerDark,

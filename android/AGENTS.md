@@ -1,6 +1,8 @@
 # android/
 
-This directory holds the native Android app. The app uses Kotlin and Jetpack Compose with Material 3. This directory is a separate Gradle project; the repository root is not a Gradle project. Read `README.md` for the features, the code structure, the iOS mapping and the verification records.
+This directory holds the native Android app and its Wear OS app. Both use Kotlin and Jetpack Compose with Material 3. This directory is a separate Gradle project; the repository root is not a Gradle project. Read `README.md` for the features, the code structure, the iOS mapping and the verification records.
+
+The Gradle modules are `:app` (the phone app), `:wear` (the Wear OS app), `:shared` (code that both apps use), `:rpc` (the generated API client) and `:baselineprofile` (the Baseline Profile of `:app`).
 
 ## Setup
 
@@ -18,8 +20,11 @@ Run these commands in `android/`.
 # Build, run the unit tests and run Lint.
 ./gradlew assembleDebug testDebugUnitTest lintDebug
 
-# Run the Compose UI tests. A device or an emulator must be connected.
-./gradlew connectedDebugAndroidTest
+# Run the Compose UI tests of the phone app on a phone or a phone emulator, and the tests of the
+# watch app on a Wear OS emulator or watch. Set ANDROID_SERIAL when both are connected, because
+# connectedDebugAndroidTest runs on every connected device.
+ANDROID_SERIAL=<phone> ./gradlew :app:connectedDebugAndroidTest
+ANDROID_SERIAL=<watch> ./gradlew :wear:connectedDebugAndroidTest
 
 # Regenerate the Baseline Profile on a connected emulator or device (API 28 or later), then commit
 # app/src/release/generated/baselineProfiles/.
@@ -76,9 +81,43 @@ Crash reporting is off unless the build sets a Sentry DSN with `-Pboji.sentryDsn
 - `NetworkModule` provides the only `OkHttpClient`. Redirects are off. Better Auth (`/api/auth/` endpoints) is a JSON API outside the proto contract: call it through `BetterAuthApi` with Retrofit and the kotlinx.serialization converter. Call `boji.v1` services through the generated Connect clients. Do not hand-write RPC request or response types.
 - `AuthSessionStore` and `MembershipCacheStore` are DataStore files encrypted by `EncryptedJsonSerializer`. `KeystoreCipher` uses an AES-256-GCM key in the Android Keystore and passes the file purpose as associated data. When a file cannot be decrypted, for example after the key is lost, treat the account as signed out. Do not crash and do not log the file content.
 - `MembershipRepository` holds the account rules of `../ios/Boji/Models/MembershipStore.swift`. Map a server error by its `ErrorInfo.reason` first, then by the Connect code. Treat membership numbers as opaque strings, as the root `AGENTS.md` requires.
-- `PasswordCredentials` saves and offers the email password with Credential Manager. The app does not declare Digital Asset Links yet; `AndroidManifest.xml` records why.
-- Deleting all local data in Settings also clears the session and the cached member card. It does not delete the account or the membership on the server.
+- `PasswordCredentials` saves and offers the email password with Credential Manager. `res/values/asset_statements.xml` includes `https://leanmuscle.club/.well-known/assetlinks.json`, and `AndroidManifest.xml` declares it as the `asset_statements` meta-data. `AssetStatementsTest` checks both. The site file is not published yet; `README.md` holds its content. Put only the SHA-256 of the Play App Signing certificate in it, never a debug fingerprint. Do not add `handle_all_urls` while the app handles no web links.
+- Deleting all local data in Settings also turns off check-in sharing, clears the session and the cached member card, and disconnects Health Connect. It does not delete the account or the membership on the server, and it does not touch records or permissions in Health Connect.
 - UI tests replace `DataFileModule`, `AccountFileModule` and `NetworkModule` with `@TestInstallIn` modules in `src/androidTest/`. Each test uses a new directory, and the member service is `null` unless a test starts `FakeMemberServerRule`.
+
+### Health Connect
+
+- `core/health/` holds the rules of `../ios/Boji/Models/HealthDataStore.swift`. `HealthConnectDataProvider` is the only class that calls the Health Connect client. `HealthRepository` owns the state; screens reach it through `HealthViewModel`.
+- Read only weight (`READ_WEIGHT`) and sleep (`READ_SLEEP`), for the last 30 days, while the app is open. Health Connect has no waist record type; do not map waist to another type. Do not add write, background or history permissions without updating `README.md` and the Play Console health declaration.
+- `HealthPermissions` in `HealthDataProvider.kt` and the `uses-permission` entries in `AndroidManifest.xml` list the same permissions. `HealthManifestTest` checks both against the library.
+- Request permissions only from a user tap on the Health page. `BojiApp` calls `refreshHealth()` on every resume and the Health page refreshes when it opens; both do nothing while disconnected.
+- Keep health samples in memory only. Do not write them to `state.json`, the export file, Sentry or the member service. Only the connected flag is stored, in the settings Preferences DataStore.
+- A failed read clears the samples and the last check time. A disconnect drops a read that is still running. Missing values show "no data", never zero.
+- `HealthPermissionsRationaleActivity` is the privacy screen that Health Connect requires. Keep its `ACTION_SHOW_PERMISSIONS_RATIONALE` filter and the `ViewPermissionUsageActivity` alias with `START_VIEW_PERMISSION_USAGE`; without them Health Connect shows no permission dialog. Keep the Health Connect package in `<queries>`, which Android 11 to 13 need for `getSdkStatus`.
+- UI tests replace `HealthProviderModule` with `TestHealthModule`. Its permission contract answers synchronously, so tests never open Health Connect or read real health data.
+
+### Widget
+
+- `feature/widget/` holds the home screen widget, the counterpart of `../ios/BojiWidgets/BojiDailyWidget.swift`. Build it with Glance (`glance-appwidget` and `glance-material3`, one `glance` version). Use only `androidx.glance` composables in it; Compose UI and Material 3 components do not work in a widget.
+- The widget shows only whether today's workout, water and sleep are logged (`DailyStatus`). Do not show amounts, body or Health Connect data, the plan, the account or the member card.
+- Sharing is off by default. `CompanionSettings` stores the switch as `companionSharingEnabled` in the settings Preferences DataStore. While it is off, `DailyWidgetState.of` returns `Disabled` before it looks at the records.
+- The widget runs in the app process and reads `BojiStore` through `DailyWidgetEntryPoint`. Do not add a snapshot file for it. `DailyWidgetSync`, started in `BojiApplication`, calls `updateAll` when the widget state changes. `DailyWidgetReceiver` redraws after local midnight with an inexact `RTC` alarm and after time, time zone and language changes. Keep `updatePeriodMillis` at 0 and do not request exact alarms.
+- Glance runs its sessions with WorkManager and asks only for `work-runtime` 2.7.1. `work` in `gradle/libs.versions.toml` pins a current stable release; keep it when you upgrade Glance, and remove it only if Glance asks for a newer version itself.
+- `DailyWidget` uses `SizeMode.Exact`, so `LocalSize` is the real size. Keep the generated preview (`providePreview`) on sample data, never on the user's records.
+- Keep `DailyWidgetReceiver` unexported. Widget clicks start `MainActivity` with an explicit intent, a `boji://<tab>` URI and `CLEAR_TOP` plus `SINGLE_TOP`. `CompanionRoute.parse` keeps the iOS rules; do not register the `boji` scheme in the manifest. A route only selects a tab.
+- `CompanionTest` covers the state rules, the midnight time and the route parser. `DailyWidgetContentTest` renders the widget with `glance-appwidget-testing` and checks the text, the descriptions and the click actions. `CompanionSharingTest` covers the switch, deletion and the routes. Update them with the widget.
+
+### Watch
+
+- `:wear` is the Wear OS app, the counterpart of `../ios/BojiWatch/`. It shows only what the phone shares: today's three check-ins, the plan title and the sync time. Do not add records, training, accounts or network access to it.
+- `:shared` holds `CompanionSnapshot`, the contract of `../ios/Shared/CompanionSnapshot.swift`, and `CompanionDataLayer`, the paths and capability names. Keep the iOS JSON format: the same field names, ISO 8601 UTC times with milliseconds, `schemaVersion` 1, at most 16 KiB and a plan title of at most 40 characters. Put only code that both apps use in `:shared`, with no UI and no Play services dependency.
+- The Data Layer connects only apps with the same application ID and signing certificate. Keep `applicationId` of `:wear` equal to `:app`, and sign both with the same key. Keep the `versionCode` of `:wear` different from every phone build, as `wear/build.gradle.kts` explains.
+- Send snapshots with `MessageClient` only. Do not use `DataClient`, data items or assets: the snapshot must not be stored outside the two apps. A message is lost when the watch is away, so the watch asks for the snapshot (`REQUEST_PATH`) when it opens and when the phone becomes reachable.
+- The capability names in `res/values/wear.xml` of `:app` (`boji_phone_app`) and `:wear` (`boji_watch_app`) must equal `CompanionDataLayer`. The listener services filter the exact paths. Keep `CompanionWearService` and `SnapshotListenerService` on `WearableListenerService`, which accepts calls from Google Play services only.
+- `WearCompanionSync`, started in `BojiApplication`, sends a snapshot when sharing or a check-in changes and when a watch connects. While sharing is off it sends only `CompanionSnapshot.disabled`, so the watch deletes its data. While `state.json` cannot be read, it keeps the last snapshot. Each snapshot is newer than the last one, even when the clock goes back.
+- The watch keeps only the newest valid snapshot, in `noBackupFilesDir`. It shows the check-ins only while `isCurrent` is true for the watch's time zone. Keep the watch app `standalone=false` and without backup.
+- UI tests replace `WatchLinkModule` with `TestWatchLinkModule`, so phone tests never use the real Data Layer. `CompanionSnapshotTest`, `WearCompanionSyncTest` and `WatchCompanionRepositoryTest` are JVM tests. `WatchScreenTest` needs a Wear OS emulator or watch.
+- The watch copy is in `wear/src/main/res/values*/strings.xml`. iOS shows the same copy, so it belongs in `../locales/`, but `../crates/locales/` does not generate files for `:wear` yet. Add each key in English and Simplified Chinese.
 
 ### Performance
 
@@ -116,6 +155,8 @@ Crash reporting is off unless the build sets a Sentry DSN with `-Pboji.sentryDsn
 - Do not lock the screen orientation. With target SDK 37, layouts must support landscape and large screens.
 - Play an exercise animation only in the current exercise card of a session. Lists keep icons, so a screen plays at most one animation. Choose the palette with `BojiThemeColors.isDark`, not `isSystemInDarkTheme()`.
 - A session pauses when the app leaves the foreground. A configuration change (rotation, light or dark mode) also sends `ON_PAUSE`, so check `isChangingConfigurations` before pausing.
+- Draw charts with Vico (`vico-compose` and `vico-compose-m3`, one `vico` version). Do not draw charts with `Canvas`. Take the colors from `MaterialTheme` through `rememberM3VicoTheme`.
+- `feature/progress/BodyTrend.kt` computes the body trend data without Compose, and `BodyTrendTest` covers it. The x values are epoch days in `BojiSnapshot.zone`, one point per day (the last entry of the day). The y range does not start at zero, as on iOS. `BodyTrendChart.kt` only maps that data to Vico. The chart does not scroll or zoom, and TalkBack reads it as one node with `progress_chart_a11y`.
 
 ### Parity with iOS
 

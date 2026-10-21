@@ -5,7 +5,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import club.leanmuscle.boji.feature.entry.DailyEntryActions
 import android.content.Intent
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,12 +38,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -60,6 +54,7 @@ import club.leanmuscle.boji.core.model.BodyEntry
 import club.leanmuscle.boji.core.model.BojiSnapshot
 import club.leanmuscle.boji.feature.entry.DailyEntrySheet
 import club.leanmuscle.boji.feature.entry.DailySheet
+import club.leanmuscle.boji.feature.health.HealthSummaryCard
 import club.leanmuscle.boji.ui.components.BojiCard
 import club.leanmuscle.boji.ui.components.BojiScaffold
 import club.leanmuscle.boji.ui.components.EmptyNote
@@ -84,6 +79,7 @@ fun ProgressScreen(
     entryActions: DailyEntryActions,
     onDeleteBodyEntry: (String) -> Unit,
     modifier: Modifier = Modifier,
+    healthSummary: @Composable () -> Unit = {},
 ) {
     var showBodySheet by rememberSaveable { mutableStateOf(false) }
     BojiScaffold(title = stringResource(R.string.tab_progress), modifier = modifier.testTag("screen_Progress")) { padding ->
@@ -112,6 +108,7 @@ fun ProgressScreen(
                 )
             }
             WeekCard(snapshot)
+            healthSummary()
             SectionHeading(stringResource(R.string.progress_body_title), detail = null) {
                 TextButton(onClick = { showBodySheet = true }, modifier = Modifier.testTag("add_body_entry")) {
                     Icon(painterResource(R.drawable.ic_add), contentDescription = null, modifier = Modifier.size(18.dp))
@@ -231,11 +228,17 @@ private fun BodyCard(entries: List<BodyEntry>, zone: ZoneId, onDelete: (String) 
         }
         Spacer(Modifier.height(12.dp))
         val chartLabel = pluralStringResource(R.plurals.progress_chart_a11y, entries.size, entries.size)
-        TrendChart(
-            values = entries.map(valueOf),
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.fillMaxWidth().height(170.dp).semantics { contentDescription = chartLabel },
-        )
+        val trend = remember(entries, zone, metric) { bodyTrend(entries, zone, valueOf) }
+        if (trend != null) {
+            BodyTrendChart(
+                trend = trend,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(170.dp)
+                    .testTag("body_trend_chart")
+                    .clearAndSetSemantics { contentDescription = chartLabel },
+            )
+        }
         Spacer(Modifier.height(8.dp))
         entries.asReversed().take(VISIBLE_ENTRIES).forEach { entry ->
             HorizontalDivider()
@@ -245,41 +248,6 @@ private fun BodyCard(entries: List<BodyEntry>, zone: ZoneId, onDelete: (String) 
                 onDelete = { onDelete(entry.id) },
             )
         }
-    }
-}
-
-/** Line and points. The y axis fits the data instead of starting at zero, as on iOS. */
-@Composable
-private fun TrendChart(values: List<Double>, color: Color, modifier: Modifier = Modifier) {
-    val gridColor = MaterialTheme.colorScheme.outlineVariant
-    val bounds = remember(values) {
-        val low = values.min()
-        val high = values.max()
-        val margin = maxOf((high - low) * 0.15, 0.5)
-        (low - margin) to (high + margin)
-    }
-    Canvas(modifier) {
-        val (low, high) = bounds
-        val inset = 8.dp.toPx()
-        val width = size.width - inset * 2
-        val height = size.height - inset * 2
-        for (line in 0..3) {
-            val y = inset + height * line / 3f
-            drawLine(gridColor, Offset(inset, y), Offset(size.width - inset, y), strokeWidth = 1.dp.toPx())
-        }
-        val points = values.mapIndexed { index, value ->
-            val x = if (values.size == 1) size.width / 2 else inset + width * index / (values.size - 1)
-            val y = inset + height * (1f - ((value - low) / (high - low)).toFloat())
-            Offset(x, y)
-        }
-        if (points.size > 1) {
-            val path = Path().apply {
-                moveTo(points.first().x, points.first().y)
-                points.drop(1).forEach { lineTo(it.x, it.y) }
-            }
-            drawPath(path, color, style = Stroke(width = 2.5.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round))
-        }
-        points.forEach { drawCircle(color, radius = 4.dp.toPx(), center = it) }
     }
 }
 
@@ -343,7 +311,9 @@ private fun ShareCard(totalWorkouts: Int, activeDays: Int) {
 
 /** 足迹 with its view model. Shows nothing until state.json has been read. */
 @Composable
-fun ProgressScreen(modifier: Modifier = Modifier, viewModel: ProgressViewModel = hiltViewModel()) {
+fun ProgressScreen(onOpenHealth: () -> Unit, modifier: Modifier = Modifier, viewModel: ProgressViewModel = hiltViewModel()) {
     val snapshot by viewModel.snapshot.collectAsStateWithLifecycle()
-    snapshot?.let { ProgressScreen(it, viewModel, viewModel::deleteBodyEntry, modifier) }
+    snapshot?.let {
+        ProgressScreen(it, viewModel, viewModel::deleteBodyEntry, modifier, healthSummary = { HealthSummaryCard(onOpen = onOpenHealth) })
+    }
 }

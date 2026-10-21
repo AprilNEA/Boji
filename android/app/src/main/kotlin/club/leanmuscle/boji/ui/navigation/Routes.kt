@@ -33,6 +33,10 @@ data class ArticleRoute(val articleId: Int) : NavKey
 @Serializable
 data object SettingsRoute : NavKey
 
+// Health Connect page. Pushed in the tab that opened it: 今天, 足迹 or Settings.
+@Serializable
+data object HealthRoute : NavKey
+
 // Member center. Pushed in the tab that opened it: the Club tab or Settings.
 @Serializable
 data object MembershipRoute : NavKey

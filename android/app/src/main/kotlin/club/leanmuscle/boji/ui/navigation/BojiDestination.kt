@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.navigation3.runtime.NavKey
 import club.leanmuscle.boji.R
+import club.leanmuscle.boji.core.companion.CompanionRoute
 
 /** Top-level destinations. The order matches the iOS `TabView` in `ios/Boji/BojiApp.swift`. */
 enum class BojiDestination(
@@ -33,3 +34,12 @@ enum class BojiDestination(
         val Start = Today
     }
 }
+
+/** The tab for a widget route. Same tab order as `CompanionRoute.tabIndex` on iOS. */
+val CompanionRoute.destination: BojiDestination
+    get() = when (this) {
+        CompanionRoute.Today -> BojiDestination.Today
+        CompanionRoute.Training -> BojiDestination.Training
+        CompanionRoute.Progress -> BojiDestination.Progress
+        CompanionRoute.Club -> BojiDestination.Club
+    }

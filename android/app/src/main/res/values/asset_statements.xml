@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Digital Asset Links of the app, read by credential providers such as Google Password Manager.
+        The app includes the statements of the club website. The site file must list this package
+        with the SHA-256 fingerprint of the release signing certificate; see "Digital Asset Links"
+        in android/README.md. The include must stay https, without a redirect.
+    -->
+    <string name="asset_statements" translatable="false">
+        [{
+            \"include\": \"https://leanmuscle.club/.well-known/assetlinks.json\"
+        }]
+    </string>
+</resources>

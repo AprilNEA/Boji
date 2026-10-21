@@ -54,8 +54,10 @@ import club.leanmuscle.boji.core.model.Workout
 import club.leanmuscle.boji.core.model.WorkoutLibrary
 import club.leanmuscle.boji.feature.club.ArticleScreen
 import club.leanmuscle.boji.feature.club.ClubScreen
+import club.leanmuscle.boji.feature.health.HealthScreen
 import club.leanmuscle.boji.feature.membership.AccountSecurityScreen
 import club.leanmuscle.boji.feature.membership.AuthScreen
+import club.leanmuscle.boji.core.companion.CompanionRoute
 import club.leanmuscle.boji.feature.membership.EnrollScreen
 import club.leanmuscle.boji.feature.membership.MembershipScreen
 import club.leanmuscle.boji.feature.membership.MembershipTermsScreen
@@ -73,6 +75,7 @@ import club.leanmuscle.boji.ui.navigation.AuthRoute
 import club.leanmuscle.boji.ui.navigation.BojiDestination
 import club.leanmuscle.boji.ui.navigation.ClubRoute
 import club.leanmuscle.boji.ui.navigation.EnrollRoute
+import club.leanmuscle.boji.ui.navigation.HealthRoute
 import club.leanmuscle.boji.ui.navigation.HomeRoute
 import club.leanmuscle.boji.ui.navigation.MembershipRoute
 import club.leanmuscle.boji.ui.navigation.MembershipTermsRoute
@@ -81,6 +84,7 @@ import club.leanmuscle.boji.ui.navigation.SessionRoute
 import club.leanmuscle.boji.ui.navigation.SettingsRoute
 import club.leanmuscle.boji.ui.navigation.TodayRoute
 import club.leanmuscle.boji.ui.navigation.TrainingRoute
+import club.leanmuscle.boji.ui.navigation.destination
 import club.leanmuscle.boji.ui.navigation.WorkoutRoute
 import club.leanmuscle.boji.ui.theme.BojiThemeColors
 import java.time.temporal.WeekFields
@@ -101,11 +105,15 @@ fun BojiApp(
     viewModel: AppViewModel = hiltViewModel(),
 ) {
     val snapshot by viewModel.snapshot.collectAsStateWithLifecycle()
+    val requestedRoute by viewModel.requestedRoute.collectAsStateWithLifecycle()
     // Time to full display ends when state.json has been read and the first real screen shows.
     ReportDrawnWhen { snapshot != null }
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(viewModel, lifecycleOwner) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            // Once per return to the foreground, like iOS on scenePhase .active. Does nothing while
+            // Health Connect is disconnected, and never asks for permissions.
+            viewModel.refreshHealth()
             while (true) {
                 viewModel.refreshDay()
                 delay(DAY_REFRESH_MILLIS)
@@ -120,7 +128,7 @@ fun BojiApp(
         Column {
             if (error != null) StorageBanner(error)
             Box(Modifier.weight(1f).then(if (error != null) Modifier.consumeWindowInsets(WindowInsets.statusBars) else Modifier)) {
-                if (current.state.hasOnboarded) AppNavigation(weekFields) else WelcomeScreen()
+                if (current.state.hasOnboarded) AppNavigation(weekFields, requestedRoute, viewModel::routeOpened) else WelcomeScreen()
             }
         }
     }
@@ -156,7 +164,7 @@ private fun StorageBanner(error: StorageError) {
 
 /** Top level: the tabs, with the training session above them, like the iOS full-screen cover. */
 @Composable
-private fun AppNavigation(weekFields: WeekFields) {
+private fun AppNavigation(weekFields: WeekFields, requestedRoute: CompanionRoute?, onRouteOpened: () -> Unit) {
     val appStack = rememberNavBackStack(HomeRoute)
     NavDisplay(
         backStack = appStack,
@@ -164,7 +172,12 @@ private fun AppNavigation(weekFields: WeekFields) {
         entryDecorators = listOf(rememberSaveableStateHolderNavEntryDecorator(), rememberViewModelStoreNavEntryDecorator()),
         entryProvider = entryProvider {
             entry<HomeRoute> {
-                HomeTabs(weekFields = weekFields, onStartSession = { workout -> appStack.add(SessionRoute(workout.id)) })
+                HomeTabs(
+                    weekFields = weekFields,
+                    requestedRoute = requestedRoute,
+                    onRouteOpened = onRouteOpened,
+                    onStartSession = { workout -> appStack.add(SessionRoute(workout.id)) },
+                )
             }
             entry<SessionRoute> { key ->
                 val workout = WorkoutLibrary.byId(key.workoutId)
@@ -181,11 +194,22 @@ private fun AppNavigation(weekFields: WeekFields) {
 /**
  * Tabs with one back stack each. Every tab decorates its own entries, so a hidden tab keeps
  * its scroll position, inputs and view models. The display shows the start tab under the
- * current tab, so back from another tab's root returns to the start tab.
+ * current tab, so back from another tab's root returns to the start tab. A widget route only
+ * selects its tab, like `onOpenURL` on iOS: the tab keeps its stack, and a running session stays on top.
  */
 @Composable
-private fun HomeTabs(weekFields: WeekFields, onStartSession: (Workout) -> Unit) {
+private fun HomeTabs(
+    weekFields: WeekFields,
+    requestedRoute: CompanionRoute?,
+    onRouteOpened: () -> Unit,
+    onStartSession: (Workout) -> Unit,
+) {
     var current by rememberSaveable { mutableStateOf(BojiDestination.Start) }
+    LaunchedEffect(requestedRoute) {
+        val route = requestedRoute ?: return@LaunchedEffect
+        current = route.destination
+        onRouteOpened()
+    }
     val stacks = BojiDestination.entries.associateWith { rememberNavBackStack(it.root) }
     val entries = BojiDestination.entries.associateWith { destination ->
         val stack = stacks.getValue(destination)
@@ -250,15 +274,16 @@ private fun tabEntryProvider(
     val openSettings: () -> Unit = { push(SettingsRoute) }
     val openMembership: () -> Unit = { push(MembershipRoute) }
     val openTerms: () -> Unit = { push(MembershipTermsRoute) }
+    val openHealth: () -> Unit = { push(HealthRoute) }
     return entryProvider {
         entry<TodayRoute>(tabKey) {
-            TodayScreen(onOpenWorkout = openWorkout, onOpenSettings = openSettings)
+            TodayScreen(onOpenWorkout = openWorkout, onOpenSettings = openSettings, onOpenHealth = openHealth)
         }
         entry<TrainingRoute>(tabKey) {
             TrainingScreen(onOpenWorkout = openWorkout)
         }
         entry<ProgressRoute>(tabKey) {
-            ProgressScreen()
+            ProgressScreen(onOpenHealth = openHealth)
         }
         entry<ClubRoute>(tabKey) {
             ClubScreen(
@@ -275,7 +300,10 @@ private fun tabEntryProvider(
             ArticleScreen(articleId = key.articleId, onBack = { stack.remove(key) })
         }
         entry<SettingsRoute>(tabKey) {
-            SettingsScreen(onBack = back, onOpenMembership = openMembership)
+            SettingsScreen(onBack = back, onOpenMembership = openMembership, onOpenHealth = openHealth)
+        }
+        entry<HealthRoute>(tabKey) { key ->
+            HealthScreen(onBack = { stack.remove(key) })
         }
         entry<MembershipRoute>(tabKey) { key ->
             MembershipScreen(

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Health Connect copy. Only the Android client shows it; iOS has its own Apple Health copy. -->
+<resources>
+    <string name="health_title">Health Connect</string>
+    <string name="health_settings_row">Health Data and Permissions</string>
+    <string name="health_intro_title">Less Logging, More Living</string>
+    <string name="health_intro_text">Reads weight and sleep from the last 30 days. The data comes from Health Connect. It isn’t uploaded to the club and isn’t written back to Health Connect.</string>
+    <string name="health_status_title">Connection Status</string>
+    <string name="health_unavailable">Health Connect Isn’t Available on This Device</string>
+    <string name="health_unavailable_text">You can still use all manual logging features.</string>
+    <string name="health_update_required">Health Connect Needs to Be Installed or Updated</string>
+    <string name="health_update_required_text">On Android 13 and lower, Health Connect is a separate app from Google Play.</string>
+    <string name="health_install">Get Health Connect</string>
+    <string name="health_not_connected">Not Connected to Health Connect</string>
+    <string name="health_connected">Health Data Connected</string>
+    <string name="health_connect">Connect Health Connect</string>
+    <string name="health_grant_missing">Grant Missing Permissions</string>
+    <string name="health_manage">Manage in Health Connect</string>
+    <string name="health_refresh">Refresh Health Data</string>
+    <string name="health_loading">Checking…</string>
+    <string name="health_last_synced">Last checked: %1$s</string>
+    <string name="health_missing_weight">Weight permission isn’t granted.</string>
+    <string name="health_missing_sleep">Sleep permission isn’t granted.</string>
+    <string name="health_error_no_permission">No permission was granted, so nothing is connected.</string>
+    <string name="health_error_read_failed">This check didn’t finish: %1$s</string>
+    <string name="health_error_unknown">Unknown error</string>
+    <string name="health_values_title">Latest Readable Data</string>
+    <string name="health_latest_weight">Latest Weight</string>
+    <string name="health_latest_sleep">Latest Sleep Day</string>
+    <string name="health_no_data">No readable data</string>
+    <string name="health_value_unit">%1$s %2$s</string>
+    <string name="health_sample_meta">%1$s · %2$s</string>
+    <string name="health_weights_title">Weight Samples · Last 30 Days</string>
+    <string name="health_sleep_title">Recent Sleep Days</string>
+    <string name="health_sleep_rule">Each sleep day runs from 18:00 the day before to 18:00 that day. Only sleep stages count. Overlapping sources aren’t added twice, and awake or out-of-bed stages don’t count as sleep.</string>
+    <string name="health_sources">Sources: %1$s</string>
+    <string name="health_disconnect">Disconnect Health Data</string>
+    <string name="health_disconnect_title">Disconnect Health Connect?</string>
+    <string name="health_disconnect_text">This doesn’t affect manual logs or change the original data in Health Connect.</string>
+    <string name="health_disconnect_confirm">Disconnect and Clear Display</string>
+    <string name="health_share_title">You Decide What to Share</string>
+    <string name="health_share_partial">You can grant weight and sleep separately. When no samples are readable, missing values aren’t shown as zero.</string>
+    <string name="health_share_local">Samples appear only while the app runs and aren’t written to the export file. Manual logs are stored separately, and health data doesn’t overwrite them.</string>
+    <string name="health_share_revoke">You can manage Lean Muscle’s access in Health Connect. Disconnecting only clears what this app shows. It doesn’t revoke the permissions or delete records in Health Connect.</string>
+    <string name="health_no_waist">Health Connect has no waist record type, so waist stays a manual log.</string>
+    <string name="health_summary_title">From Health Connect</string>
+    <string name="health_summary_note">Read-only · Separate from manual logs</string>
+    <string name="health_summary_error">This check didn’t finish. Try again on the Health Connect page.</string>
+    <string name="health_summary_open">View health data and sources</string>
+    <string name="settings_delete_health_note">Also disconnects Health Connect. Records in Health Connect aren’t deleted.</string>
+    <string name="health_rationale_title">How Lean Muscle Uses Health Data</string>
+    <string name="health_rationale_read">Lean Muscle reads two data types from Health Connect: weight and sleep sessions. It reads the last 30 days, only while the app is open.</string>
+    <string name="health_rationale_use">Lean Muscle shows the latest weight, the sleep hours of each sleep day, and the app that wrote each record. It doesn’t write, change or delete anything in Health Connect.</string>
+    <string name="health_rationale_storage">The data stays in memory while the app runs. It isn’t saved to the device, isn’t included in the export file and isn’t sent to the club or to anyone else.</string>
+    <string name="health_rationale_policy">Read the Full Privacy Policy</string>
+    <string name="health_privacy_url" translatable="false">https://leanmuscle.club/privacy/</string>
+    <string name="health_play_store_url" translatable="false">market://details?id=com.google.android.apps.healthdata&amp;url=healthconnect%3A%2F%2Fonboarding</string>
+</resources>

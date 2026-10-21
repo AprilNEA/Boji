@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -23,6 +24,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -38,14 +40,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.core.content.pm.PackageInfoCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import club.leanmuscle.boji.R
+import club.leanmuscle.boji.core.companion.WatchStatus
 import club.leanmuscle.boji.core.data.Appearance
 import club.leanmuscle.boji.core.model.BojiSnapshot
 import club.leanmuscle.boji.core.model.PlanKind
@@ -60,6 +65,7 @@ import club.leanmuscle.boji.ui.components.titleRes
 fun SettingsScreen(
     onBack: () -> Unit,
     onOpenMembership: () -> Unit,
+    onOpenHealth: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
@@ -67,6 +73,13 @@ fun SettingsScreen(
     val appearance by viewModel.appearance.collectAsStateWithLifecycle()
     val exportResult by viewModel.exportResult.collectAsStateWithLifecycle()
     val accountEmail by viewModel.accountEmail.collectAsStateWithLifecycle()
+    val companionSharing by viewModel.companionSharing.collectAsStateWithLifecycle()
+    val watchStatus by viewModel.watchStatus.collectAsStateWithLifecycle()
+    // A watch may have connected or got the app while Settings was in the background.
+    LifecycleResumeEffect(viewModel) {
+        viewModel.refreshWatchStatus()
+        onPauseOrDispose {}
+    }
     val current = snapshot ?: return
     SettingsScreen(
         snapshot = current,
@@ -82,6 +95,10 @@ fun SettingsScreen(
         onBack = onBack,
         accountEmail = accountEmail,
         onOpenMembership = onOpenMembership,
+        onOpenHealth = onOpenHealth,
+        companionSharing = companionSharing,
+        onCompanionSharingChange = viewModel::setCompanionSharing,
+        watchStatus = watchStatus,
         modifier = modifier,
     )
 }
@@ -102,6 +119,10 @@ fun SettingsScreen(
     accountEmail: String?,
     onOpenMembership: () -> Unit,
     modifier: Modifier = Modifier,
+    onOpenHealth: () -> Unit = {},
+    companionSharing: Boolean = false,
+    onCompanionSharingChange: (Boolean) -> Unit = {},
+    watchStatus: WatchStatus = WatchStatus.Checking,
 ) {
     val snackbar = remember { SnackbarHostState() }
     var confirmDelete by rememberSaveable { mutableStateOf(false) }
@@ -154,6 +175,32 @@ fun SettingsScreen(
                         ?: stringResource(R.string.settings_account_signed_out),
                 )
             }
+            // Same place as the iOS section 小组件与 Apple Watch: after the account, before the display mode.
+            SettingsSection(stringResource(R.string.settings_companion_header)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .toggleable(value = companionSharing, role = Role.Switch, onValueChange = onCompanionSharingChange)
+                        .testTag("settings_companion_sharing"),
+                ) {
+                    Icon(painterResource(R.drawable.ic_home), contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Text(stringResource(R.string.settings_companion_toggle), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                    // The row handles the toggle, so TalkBack reads one switch with its label.
+                    Switch(checked = companionSharing, onCheckedChange = null)
+                }
+                // Like iOS: the watch status matters only while sharing is on.
+                if (companionSharing) {
+                    Text(
+                        stringResource(watchStatus.labelRes),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (watchStatus == WatchStatus.Failed) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.testTag("settings_watch_status"),
+                    )
+                }
+                FootNote(stringResource(R.string.settings_companion_note))
+            }
             SettingsSection(stringResource(R.string.settings_appearance)) {
                 Text(stringResource(R.string.settings_display_mode), style = MaterialTheme.typography.labelLarge)
                 Options(
@@ -177,6 +224,11 @@ fun SettingsScreen(
                     Text(stringResource(R.string.settings_privacy_local), style = MaterialTheme.typography.bodyLarge)
                 }
                 FootNote(stringResource(R.string.settings_privacy_note))
+                OutlinedButton(onClick = onOpenHealth, modifier = Modifier.fillMaxWidth().testTag("settings_health")) {
+                    Icon(painterResource(R.drawable.ic_health_and_safety), contentDescription = null, modifier = Modifier.size(18.dp))
+                    Text(stringResource(R.string.health_settings_row), modifier = Modifier.padding(start = 8.dp).weight(1f))
+                    Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.size(18.dp))
+                }
                 val exportName = stringResource(R.string.settings_export_filename)
                 OutlinedButton(
                     onClick = { exportLauncher.launch(exportName) },
@@ -220,6 +272,7 @@ fun SettingsScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(stringResource(R.string.settings_delete_confirm_text))
                     Text(stringResource(R.string.settings_delete_membership_note))
+                    Text(stringResource(R.string.settings_delete_health_note))
                 }
             },
             confirmButton = {
@@ -271,3 +324,14 @@ private fun versionLabel(): String {
     val info = remember(context) { context.packageManager.getPackageInfo(context.packageName, 0) }
     return stringResource(R.string.settings_version, info.versionName.orEmpty(), PackageInfoCompat.getLongVersionCode(info))
 }
+
+private val WatchStatus.labelRes: Int
+    get() = when (this) {
+        WatchStatus.Checking -> R.string.settings_watch_checking
+        WatchStatus.Unavailable -> R.string.settings_watch_unavailable
+        WatchStatus.NoWatch -> R.string.settings_watch_none
+        WatchStatus.AppMissing -> R.string.settings_watch_app_missing
+        WatchStatus.Waiting -> R.string.settings_watch_waiting
+        WatchStatus.Connected -> R.string.settings_watch_connected
+        WatchStatus.Failed -> R.string.settings_watch_failed
+    }
