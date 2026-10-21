@@ -81,16 +81,27 @@ This enforcement ladder is intended as a guideline. It does not limit the abilit
 
 This Code of Conduct applies within all community spaces, and also applies when an individual is officially representing the community in public or other spaces. Examples of representing our community include using an official email address, posting via an official social media account, or acting as an appointed representative at an online or offline event.
 
-In the Boji community, community spaces include the GitHub repository at https://github.com/AprilNEA/Boji (its issues, pull requests and GitHub Discussions) and the membership features of the Boji apps, such as membership card nicknames. In the apps, the Club Guidelines also apply. AprilNEA LLC acts as the Community Moderators.
+In the Boji community, community spaces include:
+
+- The [GitHub repository](https://github.com/AprilNEA/Boji), including its issues, pull requests and [GitHub Discussions](https://github.com/AprilNEA/Boji/discussions).
+- The membership features of the Boji apps, such as membership card nicknames. The Club Guidelines in the apps also apply.
+
+AprilNEA LLC acts as the Community Moderators.
 
 
 ## Attribution
 
-This Code of Conduct is adapted from the Contributor Covenant, version 3.0, permanently available at [https://www.contributor-covenant.org/version/3/0/](https://www.contributor-covenant.org/version/3/0/).
+This Code of Conduct is adapted from the [Contributor Covenant, version 3.0](https://www.contributor-covenant.org/version/3/0/).
 
-Contributor Covenant is stewarded by the Organization for Ethical Source and licensed under CC BY-SA 4.0. To view a copy of this license, visit [https://creativecommons.org/licenses/by-sa/4.0/](https://creativecommons.org/licenses/by-sa/4.0/)
+Contributor Covenant is stewarded by the Organization for Ethical Source and licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 
-For answers to common questions about Contributor Covenant, see the FAQ at [https://www.contributor-covenant.org/faq](https://www.contributor-covenant.org/faq). Translations are provided at [https://www.contributor-covenant.org/translations](https://www.contributor-covenant.org/translations). Additional enforcement and community guideline resources can be found at [https://www.contributor-covenant.org/resources](https://www.contributor-covenant.org/resources). The enforcement ladder was inspired by the work of [Mozilla’s code of conduct team](https://github.com/mozilla/inclusion).
+The enforcement ladder was inspired by the work of [Mozilla’s code of conduct team](https://github.com/mozilla/inclusion).
+
+More about Contributor Covenant:
+
+- [FAQ](https://www.contributor-covenant.org/faq)
+- [Translations](https://www.contributor-covenant.org/translations)
+- [Enforcement and community guideline resources](https://www.contributor-covenant.org/resources)
 
 ---
 
@@ -178,13 +189,24 @@ For answers to common questions about Contributor Covenant, see the FAQ at [http
 
 本行为准则适用于社区所有空间，同时也适用于个人在公共场合或其他场合正式代表社区的情况。代表社区的行为包括但不限于：使用官方电子邮件地址；通过官方社交媒体账号发布内容；作为指定代表出席线上或线下活动。
 
-在 Boji 社区中，社区空间包括 GitHub 仓库 https://github.com/AprilNEA/Boji（及其 Issue、Pull Request 和 GitHub Discussions），以及 Boji App 中的会员功能，例如会员卡昵称。在 App 中，俱乐部守则同时适用。社区管理员由 AprilNEA LLC 担任。
+在 Boji 社区中，社区空间包括：
+
+- [GitHub 仓库](https://github.com/AprilNEA/Boji)，及其 Issue、Pull Request 和 [GitHub Discussions](https://github.com/AprilNEA/Boji/discussions)。
+- Boji App 中的会员功能，例如会员卡昵称。App 中的俱乐部守则同时适用。
+
+社区管理员由 AprilNEA LLC 担任。
 
 
 ## 贡献归属
 
-本行为准则改编自 贡献者公约 3.0 版，该公约永久可在此查阅：[https://www.contributor-covenant.org/version/3/0/](https://www.contributor-covenant.org/version/3/0/)。
+本行为准则改编自[贡献者公约 3.0 版](https://www.contributor-covenant.org/version/3/0/)。
 
-贡献者公约 由 Organization for Ethical Source 负责维护，并以 CC BY-SA 4.0 许可协议发布。查看该许可协议请访问：[https://creativecommons.org/licenses/by-sa/4.0/](https://creativecommons.org/licenses/by-sa/4.0/)。
+贡献者公约由 Organization for Ethical Source 负责维护，并以 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) 许可协议发布。
 
-关于 贡献者公约 的常见问题解答，请参阅：[https://www.contributor-covenant.org/faq](https://www.contributor-covenant.org/faq)。各语言版本译文请见：[https://www.contributor-covenant.org/translations](https://www.contributor-covenant.org/translations)。更多执行与社区指南资源请见：[https://www.contributor-covenant.org/resources](https://www.contributor-covenant.org/resources)。本分级措施的灵感来源于 [Mozilla 行为准则团队](https://github.com/mozilla/inclusion) 的工作。
+本分级措施的灵感来源于 [Mozilla 行为准则团队](https://github.com/mozilla/inclusion)的工作。
+
+关于贡献者公约的更多资料：
+
+- [常见问题解答](https://www.contributor-covenant.org/faq)
+- [各语言版本译文](https://www.contributor-covenant.org/translations)
+- [执行与社区指南资源](https://www.contributor-covenant.org/resources)
