@@ -136,7 +136,14 @@ App 内置 4 套课程、16 个动作，居家徒手和健身房器械都有：
 
 ### 手表、小组件与健康数据
 
-- **小组件和手表**：开启「共享当天打卡状态」后，在主屏幕和手表上查看当天三项是否完成。只共享是否完成，不共享具体数值。
+<p align="center">
+  <img src="assets/public/screenshots/apple/watch/zh-Hans/today/ultra-3-49mm/natural-ocean-band-anchor-blue.png" width="240" alt="Apple Watch Ultra 3 上的今日进度：已连接 iPhone，计划为居家训练，手动训练未记录，饮水和睡眠已记录">
+  &nbsp;&nbsp;&nbsp;
+  <img src="assets/public/screenshots/apple/watch/zh-Hans/today/series-11-46mm/titanium-natural-milanese-loop.png" width="224" alt="Apple Watch Series 11 上的今日进度：手动训练未记录，饮水和睡眠已记录">
+</p>
+<p align="center"><sub>Apple Watch Ultra 3 和 Apple Watch Series 11 上的今日进度</sub></p>
+
+- **小组件和手表**：开启「共享当天打卡状态」后，在主屏幕和手表上查看当天三项是否完成。只共享三项是否完成和训练场景，不共享具体数值。
 - **健康数据**：只读连接 Apple 健康或 Health Connect，读取体重、睡眠等数据，与手动记录分开显示。
 
 以上两项都默认关闭。
@@ -227,8 +234,11 @@ I have read the CLA Document and I hereby sign the CLA
 | 网站媒体 | `websites/public/media/` |
 | 人像照片 | `websites/public/images/portraits/` |
 | App 截图 | `ios/app-store/screenshots/`、`assets/public/screenshots/` |
+| Apple 设备边框（Apple Design Resources） | `ios/app-store/screenshots/public/frames/`、`websites/public/frames/`、`assets/public/screenshots/apple/watch/` |
 | 动作库 | `animations/src/exercises/library/`、`assets/public/previews/library/` |
 | Apple Root CA 证书 | `bizserver/assets/wallet/apple-root-ca.crt` |
 | 第三方依赖与字体 | — |
 
 如需使用动作库，须另行取得 AprilNEA LLC 的商业授权。
+
+Apple、Apple Watch 和 iPhone 是 Apple Inc. 在美国和其他国家和地区注册的商标。
