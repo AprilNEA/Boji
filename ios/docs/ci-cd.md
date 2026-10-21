@@ -37,8 +37,8 @@ CI 不使用 `pull_request_target`。PR 不进入带凭据的 Environment。不�
 
 | 工具 | 固定值 |
 | --- | --- |
-| Runner | `macos-26` |
-| Xcode | `26.6`，构建号 `17F113` |
+| Runner | `xcode-27`，GitHub 托管 |
+| Xcode | `27.1`，构建号 `27A9275` |
 | XcodeGen | `2.46.0`，校验官方 ZIP 的 SHA-256 |
 | Node.js | `26.11.1` |
 | pnpm | `12.9.1` |
@@ -47,9 +47,11 @@ CI 不使用 `pull_request_target`。PR 不进入带凭据的 Environment。不�
 
 Action 使用完整提交 SHA。SwiftPM 使用仓库中的 `Package.resolved`。pnpm 和 Cargo 使用现有锁文件。
 
-本机使用 Xcode 27.1。所查托管镜像列出 Xcode 26.6，未列出 27.1。因此，CI 先以 26.6 作为待验收基线。本轮没有验证这套托管工具链的完整编译。
+本机和 CI 都使用 Xcode 27.1，构建号均为 `27A9275`。`xcode-27` 是 GitHub 的 preview 镜像，可能不稳定或排队。它的底层系统是 macOS 27，默认 Xcode 是 27.0。工作流用 `DEVELOPER_DIR` 选择 `/Applications/Xcode_27.1.app`。这个路径是符号链接，指向镜像中的 Xcode 27.1 Release Candidate。镜像只带 iOS 27.0 和 watchOS 27.0 模拟器。以上信息来自 2026-10-12 的镜像清单。
 
-工作流检查 Xcode 版本和构建号。不匹配就停止，不会自动换版本。若代码必须使用 27.1，先确认可用的托管镜像，再更新配置。不要为赶上线而改用不受控的 Runner。
+CI 原先使用 `macos-26` 和 Xcode 26.6。在这套工具链上，`actool` 编译 `AppIcon.icon` 时抛出异常。因此，`master` 上 2026-10-21 前的最近 3 次运行都失败了。改用 `xcode-27` 后，这个问题是否解决未验证。
+
+工作流检查 Xcode 版本和构建号。不匹配就停止，不会自动换版本。GitHub 更新镜像后，`Xcode_27.1.app` 可能指向另一个构建。这时 `check.py toolchain` 会停止。先查镜像清单，再一起更新 `ci/toolchain.json` 和工作流。`ci/tests/test_pipeline.py` 检查工作流中的重复值与 `ci/toolchain.json` 一致。不要为赶上线而改用不受控的 Runner。
 
 ## 配置发布权限
 
@@ -232,7 +234,8 @@ GPG 测试只生成一次性测试密钥。测试使用短临时路径，避免 
 
 ## 参考
 
-- [GitHub macOS 26 镜像清单](https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md "前往 GitHub")
+- [GitHub Xcode 27 镜像清单](https://github.com/actions/runner-images/blob/main/images/macos/xcode-27-arm64-Readme.md "前往 GitHub")
+- [GitHub Xcode 27 镜像公告](https://github.com/actions/runner-images/issues/14404 "前往 GitHub")
 - [在 Runner 安装 Apple 证书](https://docs.github.com/actions/use-cases-and-examples/deploying/installing-an-apple-certificate-on-macos-runners-for-xcode-development "前往 GitHub 文档")
 - [GitHub Environment 保护规则](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments "前往 GitHub 文档")
 - [Apple 构建上传权限](https://developer.apple.com/help/app-store-connect/manage-builds/upload-builds/ "前往 Apple 文档")

@@ -61,8 +61,9 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 
 - Keep one workflow at `../.github/workflows/ios.yml`, with separate CI, TestFlight and review jobs. Manual dispatch selects `ci`, `testflight` or `review`.
 - PR jobs use GitHub-hosted runners without release secrets. Do not use `pull_request_target` or personal self-hosted runners for PR code.
-- Pin actions by commit SHA, Xcode by version/build and XcodeGen by archive checksum. Keep workflow values aligned with `ci/toolchain.json`.
-- Run `python3 -m unittest discover -s ios/ci/tests -v` and `actionlint .github/workflows/ios.yml` from the repository root after CI changes.
+- Pin actions by commit SHA, Xcode by version/build and XcodeGen by archive checksum. Keep workflow values aligned with `ci/toolchain.json`. `ci/tests/test_pipeline.py` checks the runner label, `DEVELOPER_DIR`, Node.js and pnpm values.
+- The macOS jobs use the GitHub-hosted `xcode-27` preview label with Xcode 27.1. Read `docs/ci-cd.md` before you change the runner or Xcode.
+- Run `python3 -m unittest discover -s ios/ci/tests -v` and `actionlint .github/workflows/ios.yml` from the repository root after CI changes. `../.github/actionlint.yaml` declares `xcode-27`, because actionlint 1.7.12 does not list that label.
 - Release jobs require manual dispatch on `master` and protected environments. Do not create, copy or broaden signing credentials without authorization.
 - TestFlight requires successful CI jobs in the same run. Review must verify successful `validate`, `build`, `release-gate` and `testflight` jobs in the source run.
 - Preserve those job names or update `ci/guard.py` with them. A successful workflow conclusion alone does not prove that an upload occurred.

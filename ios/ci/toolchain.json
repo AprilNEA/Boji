@@ -1,8 +1,8 @@
 {
-  "runner": "macos-26",
-  "xcodeVersion": "26.6",
-  "xcodeBuild": "17F113",
-  "xcodePath": "/Applications/Xcode_26.6.app/Contents/Developer",
+  "runner": "xcode-27",
+  "xcodeVersion": "27.1",
+  "xcodeBuild": "27A9275",
+  "xcodePath": "/Applications/Xcode_27.1.app/Contents/Developer",
   "nodeVersion": "26.11.1",
   "pnpmVersion": "12.9.1",
   "xcodegen": {

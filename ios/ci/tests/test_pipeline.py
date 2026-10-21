@@ -288,6 +288,22 @@ class SourceTests(unittest.TestCase):
         self.assertNotIn('signing.py', jobs['review'])
         self.assertNotIn('store.py upload', jobs['review'])
 
+    def test_workflow_repeats_the_pinned_toolchain(self):
+        import re
+        config = json.loads((CI / 'toolchain.json').read_text())
+        source = (CI.parents[1] / guard.WORKFLOW).read_text()
+        sections = re.split(r'^  ([a-z-]+):\n', source.split('\njobs:\n', 1)[1], flags=re.MULTILINE)
+        jobs = dict(zip(sections[1::2], sections[2::2]))
+        macos = {name for name, body in jobs.items() if 'DEVELOPER_DIR:' in body}
+        self.assertEqual(macos, {'validate', 'build', 'testflight'})
+        for name in macos:
+            self.assertIn(f"    runs-on: {config['runner']}\n", jobs[name])
+            self.assertIn(f"      DEVELOPER_DIR: {config['xcodePath']}\n", jobs[name])
+        for name in set(jobs) - macos:
+            self.assertRegex(jobs[name], r'\n    runs-on: ubuntu-\d+\.\d+\n')
+        self.assertEqual(set(re.findall(r"node-version: '([^']+)'", source)), {config['nodeVersion']})
+        self.assertEqual(set(re.findall(r'pnpm@([0-9.]+)', source)), {config['pnpmVersion']})
+
     def test_review_mode_skips_build_and_store_runs_are_not_cancelled(self):
         source = (CI.parents[1] / guard.WORKFLOW).read_text()
         self.assertIn("if: github.event_name != 'workflow_dispatch' || inputs.action == 'ci' || inputs.action == 'testflight'", source)
