@@ -91,8 +91,9 @@
 | `pnpm family <动作组> --out <目录> [<动作 ID>...]` | 检查并生成一个动作组，渲染审查图。用法见 `src/exercises/library/AGENTS.md` |
 | `node --import tsx scripts/inspect.ts <动作组> <动作 ID>` | 逐帧输出一个动作的 IK 警告、关节角度、地面接触和侧视关节方向问题，有问题时退出码为 1 |
 | `pnpm gallery <目录>` | 渲染器械图鉴：每种器械放在站立人物旁边 |
+| `pnpm readme` | 渲染根目录 README 使用的动作图片，写到 `../assets/public/previews/`：课程动作的代表帧 PNG，以及脚本中 `GIFS` 所列动作的循环 GIF。浅色和深色各一套。先运行 `pnpm build`，因为脚本读取 `lottie-library/` |
 
-`pnpm sheets`、`pnpm render`、`pnpm family` 和 `pnpm gallery` 需要 Chromium 无头内核。运行一次 `pnpm exec playwright-core install chromium-headless-shell` 安装内核，或用环境变量 `CHROME_PATH` 指定本机的 Chromium。
+`pnpm sheets`、`pnpm render`、`pnpm family`、`pnpm gallery` 和 `pnpm readme` 需要 Chromium 无头内核。运行一次 `pnpm exec playwright-core install chromium-headless-shell` 安装内核，或用环境变量 `CHROME_PATH` 指定本机的 Chromium。
 
 ## 修改动作
 
@@ -100,7 +101,8 @@
 2. 如果要改身体比例、部件形状或肌肉区域，编辑 `src/rig/side.ts` 或 `src/rig/front.ts`。如果要改颜色，编辑 `src/draw/palettes.ts`。这些文件的修改会影响全部动作。
 3. 运行 `pnpm build`。如果某一帧的手脚够不到目标点，输出中会出现 `WARN`，退出码为 1。
 4. 课程动作运行 `pnpm sheets` 和 `pnpm preview`，动作库动作运行 `pnpm family`，检查画面。
-5. 运行 `pnpm typecheck` 和 `pnpm check`，然后把源码、`lottie/` 和总览图一起提交。不要提交 `lottie-library/`。
+5. 课程动作运行 `pnpm readme`，更新根目录 README 的动作图片。
+6. 运行 `pnpm typecheck` 和 `pnpm check`，然后把源码、`lottie/`、总览图和 `../assets/public/previews/course/` 一起提交。不要提交 `lottie-library/`。
 
 新增动作时，新建脚本，再注册：
 

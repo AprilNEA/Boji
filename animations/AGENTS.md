@@ -10,6 +10,7 @@ This directory generates the exercise Lottie animations for the iOS and Android 
 - Keep `tsconfig.json` strict. Write imports with the `.ts` extension. Use erasable syntax only: no `enum`, `namespace` or parameter properties.
 - Import a file in another directory with the `@/` alias, which `tsconfig.json` maps to `src/`, for example `import { solve } from '@/rig/side.ts'`. Use `./` only for a file in the same directory. Do not write `../`. tsx resolves the alias at run time.
 - The tsx CLI (`pnpm <script>`) opens an IPC socket. Where the environment does not allow that (`listen EPERM`), run the same script with `node --import tsx <file>`.
+- gifenc ships no types. `scripts/gifenc.d.ts` declares the members that `scripts/readme.ts` uses. Import the default export of `gifenc`, because Node does not see named exports in the package.
 
 ## Source layout
 
@@ -54,6 +55,7 @@ Use the libraries through the helpers in `src/`. Do not hand-write vector math, 
 
 - Do not edit files in `lottie/` or `lottie-library/` by hand. Change `src/`, run `pnpm build`, and commit `lottie/` in the same commit as the source change.
 - Git ignores `lottie-library/` and the asset host output `../assets/public/animations/`. Commit only the library source. Do not commit generated library files, and do not use Git LFS for them.
+- `pnpm readme` (`scripts/readme.ts`) writes the images of the root `README.md` to `../assets/public/previews/`. Git tracks them. See "README exercise images" in the root `AGENTS.md`.
 - Keep the generator deterministic. Do not use `Date`, `Math.random` or environment-dependent values in `src/`.
 - Use shape layers only: paths, ellipses, rectangles, fills and strokes. Do not add images, expressions, masks, layer parenting or text, because the native players must render the files.
 - `COURSES` in `src/courses.ts` must match the app courses. Use the IDs of `Exercise.id` in `ios/Boji/Models/BojiStore.swift` and Android `Workout.kt`, in the app order.
@@ -71,9 +73,10 @@ Use the libraries through the helpers in `src/`. Do not hand-write vector math, 
 2. Run `pnpm build`. A `WARN` line or exit code 1 means an IK target is out of reach. Fix the pose before you continue.
 3. Run `pnpm sheets` and inspect `docs/contact-sheet-light.jpg` and `docs/contact-sheet-dark.jpg`. The fifth column, with a dashed outline, is the poster frame.
 4. Update the exercise table in `README.md`.
+5. For a course exercise, run `pnpm readme` and commit the changed files in `../assets/public/previews/course/` in the same commit.
 
 ## Verify
 
 - Run `pnpm typecheck` and `pnpm check`. `devenv test` at the repository root runs both.
-- `pnpm sheets` and `pnpm render` need Chromium. Install it with `pnpm exec playwright-core install chromium-headless-shell`, or set `CHROME_PATH`.
+- `pnpm sheets`, `pnpm render` and `pnpm readme` need Chromium. Install it with `pnpm exec playwright-core install chromium-headless-shell`, or set `CHROME_PATH`.
 - Browser rendering does not verify lottie-ios or lottie-android. Report native rendering as not verified unless you ran it on a simulator or a device.
