@@ -56,6 +56,9 @@ enum MembershipDateCoding {
 }
 
 /// 服务端授予的会员权益，或旧缓存中的权益代码。
+///
+/// bizserver 的 `EffectiveEntitlement` 没有 ID，所以服务端权益的 `id` 可以为 nil。
+/// 旧服务的缓存可能带有 UUID 形式的 `id`，解码时仍然校验它。
 public struct MembershipEntitlement: Codable, Equatable, Sendable {
     public let id: String?
     public let code: String
@@ -76,7 +79,7 @@ public struct MembershipEntitlement: Codable, Equatable, Sendable {
 
     /// 创建服务端格式的权益。
     public init(
-        id: String,
+        id: String?,
         code: String,
         name: String,
         description: String,
@@ -111,8 +114,8 @@ public struct MembershipEntitlement: Codable, Equatable, Sendable {
         }
 
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let id = try container.decode(String.self, forKey: .id)
-        guard UUID(uuidString: id) != nil else {
+        let id = try container.decodeIfPresent(String.self, forKey: .id)
+        if let id, UUID(uuidString: id) == nil {
             throw DecodingError.dataCorruptedError(
                 forKey: .id,
                 in: container,
@@ -148,18 +151,18 @@ public struct MembershipEntitlement: Codable, Equatable, Sendable {
             return
         }
 
-        guard let id, UUID(uuidString: id) != nil, let grantedAt else {
+        guard id.map({ UUID(uuidString: $0) != nil }) ?? true, let grantedAt else {
             throw EncodingError.invalidValue(
                 self,
                 EncodingError.Context(
                     codingPath: encoder.codingPath,
-                    debugDescription: "服务端权益必须包含有效 UUID 和授予时间。"
+                    debugDescription: "服务端权益必须包含授予时间，ID 存在时必须是 UUID。"
                 )
             )
         }
 
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(id, forKey: .id)
+        try container.encodeIfPresent(id, forKey: .id)
         try container.encode(code, forKey: .code)
         try container.encode(name, forKey: .name)
         try container.encode(description, forKey: .description)
@@ -334,10 +337,27 @@ struct MembershipAccount: Codable, Equatable, Sendable {
     let email: String
     let emailVerified: Bool
 
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case email
+        case emailVerified
+    }
+
     init(id: String, name: String, email: String, emailVerified: Bool) {
         self.id = id
         self.name = name
         self.email = email
         self.emailVerified = emailVerified
+    }
+
+    /// Better Auth 的 `name` 和 `email` 可以为 null。例如 Apple 只在首次授权时提供姓名。
+    /// 缺少的值解码为空字符串。
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
+        email = try container.decodeIfPresent(String.self, forKey: .email) ?? ""
+        emailVerified = try container.decodeIfPresent(Bool.self, forKey: .emailVerified) ?? false
     }
 }

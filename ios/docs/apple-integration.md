@@ -29,9 +29,17 @@
 
 账号页已接入系统 `SignInWithAppleButton`。客户端生成 32 字节随机值，并将 SHA-256 值交给 Apple。客户端把原始随机值交给后端，以匹配已确认的校验契约。
 
-客户端调用 `/api/auth/sign-in/social`。后端验证身份令牌后，客户端继续使用原有 Bearer 会话。登录令牌存入绑定服务地址的 Keychain 条目。
+客户端调用 `/api/auth/sign-in/social`。后端验证身份令牌后，客户端继续使用原有 Bearer 会话。登录令牌存入绑定服务地址的 Keychain 条目。登录后，客户端用 `/api/auth/get-session` 读取账号，再用 `MembershipService.ListMemberships` 读取会员卡。
 
-取消系统登录不会建立本地会话。首次返回的姓名可以缺失；客户端不会伪造姓名或邮箱。Apple 与已有邮箱账号不自动合并。[3]
+取消系统登录不会建立本地会话。首次返回的姓名可以缺失；客户端不会伪造姓名或邮箱。`get-session` 返回的 `name` 为 null 时，客户端把它当成空姓名。Apple 与已有邮箱账号不自动合并。[3]
+
+后端拒绝 Apple 身份令牌时，客户端按 Better Auth 的错误码显示提示，并且不清除本机状态：
+
+| 错误码 | 提示 |
+| --- | --- |
+| `LINKING_NOT_ALLOWED`、`LINKING_DIFFERENT_EMAILS_NOT_ALLOWED` | 这个邮箱已有俱乐部账号。请用邮箱和密码登录。 |
+| `USER_EMAIL_NOT_FOUND` | Apple 没有提供邮箱，无法创建账号。请在 iPhone 设置中停止此 App 使用 Apple 登录，然后重试。 |
+| 其他 `401` 错误，例如 `INVALID_TOKEN` | Apple 登录校验失败，请重新尝试。 |
 
 客户端和服务端必须同时启用，才显示可用登录按钮：
 
@@ -39,15 +47,15 @@
 | --- | --- | --- |
 | `BOJI_APPLE_SIGN_IN_ENABLED` | `YES` | 客户端能力开关，仍需后端就绪 |
 | `BOJI_API_BASE_URL` | 空 | 正式环境必须使用 HTTPS |
-| `/api/capabilities.appleSignIn` | 后端决定 | 确认服务端 Apple 配置就绪 |
+| `SystemService.GetServerConfig` 的 `apple_login_enabled` | 后端决定 | 确认服务端 Apple 配置就绪 |
 
 工程已加入 Sign in with Apple entitlement。后端需要自己的 Team ID、Key ID、Service ID 和 `.p8` 私钥。私钥只能放在后端，不能写入 App 或提交到 Git。
 
 ## 3. Apple Wallet 身份卡
 
-有效会员卡页已加入系统钱包按钮。客户端请求 `/api/membership/wallet/pass`，使用现有 Bearer 会话。请求不包含健康数据。
+有效会员卡页已加入系统钱包按钮。客户端调用 `WalletService.GetMembershipPass`，`name` 为 `users/me/memberships/{membership}/pass`，使用现有 Bearer 会话。请求不包含健康数据。
 
-客户端要求响应类型为 `application/vnd.apple.pkpass`。空响应、错误类型和超过 2 MiB 的响应都会被拒绝。PassKit 解析凭证后，还要核对凭证类型和会员 ID。
+客户端要求 `MembershipPass.mime_type` 为 `application/vnd.apple.pkpass`。空内容、其他类型和超过 1 MiB 的内容都会被拒绝。1 MiB 是契约规定的上限。PassKit 解析凭证后，还要核对凭证类型和会员 ID。
 
 凭证类型必须匹配 `BOJI_WALLET_PASS_TYPE_IDENTIFIER`。`serialNumber` 必须等于当前会员卡 ID。校验通过后，App 打开系统添加窗口，由用户确认；关闭窗口不被当成「添加成功」。
 
@@ -56,9 +64,9 @@
 | 配置 | 默认值 | 用途 |
 | --- | --- | --- |
 | `BOJI_WALLET_PASS_TYPE_IDENTIFIER` | `pass.club.leanmuscle.boji.membership` | 与服务端 Pass Type ID 一致 |
-| `/api/capabilities.walletPass` | 后端决定 | 确认服务端签发能力 |
+| `SystemService.GetServerConfig` 的 `wallet_pass_enabled` | 后端决定 | 确认服务端签发能力 |
 
-服务未配置证书时，钱包接口返回 `503 WALLET_NOT_CONFIGURED`。无卡、未验证邮箱和暂停会员会被后端拒绝。钱包卡仅展示身份，不提供支付或场馆核销。
+服务未配置证书时，钱包接口返回 `failed_precondition` 和原因 `WALLET_NOT_CONFIGURED`。客户端收到后把 `walletPass` 能力设为关闭，钱包按钮换成「服务尚未启用正式凭证签发。」。无卡、未验证邮箱和暂停会员会被后端拒绝。钱包卡仅展示身份，不提供支付或场馆核销。
 
 当前不包含钱包凭证自动更新与推送。已经添加的钱包卡不会自动反映后续暂停状态，因此不能作为实时授权凭证。
 

@@ -48,7 +48,7 @@ final class MembershipTests: XCTestCase {
         let transport = FakeTransport(responses: [
             signInResponse(token: "token-1"),
             meResponse(verifiedAccount()),
-            membershipResponse(nil)
+            listResponse(nil)
         ])
         let store = makeStore(transport: transport)
 
@@ -68,9 +68,9 @@ final class MembershipTests: XCTestCase {
         let transport = FakeTransport(responses: [
             signInResponse(token: "token-1"),
             meResponse(account),
-            membershipResponse(nil),
-            membershipResponse(serverCard),
-            membershipResponse(updatedCard)
+            listResponse(nil),
+            createResponse(serverCard),
+            createResponse(updatedCard)
         ])
         let store = makeStore(transport: transport)
 
@@ -85,10 +85,15 @@ final class MembershipTests: XCTestCase {
         XCTAssertEqual(store.card?.joinedAt, joinedAt)
         XCTAssertEqual(store.card?.status, "active")
         XCTAssertEqual(transport.requestCount, 5)
-        XCTAssertEqual(transport.lastRequest?.url?.path, "/api/membership/enroll")
-        let body = try XCTUnwrap(transport.lastRequest?.httpBody)
-        let request = try XCTUnwrap(JSONSerialization.jsonObject(with: body) as? [String: String])
-        XCTAssertEqual(request["termsVersion"], "community-v1")
+        XCTAssertEqual(transport.lastRequest?.url?.path, "/boji.v1.MembershipService/CreateMembership")
+        XCTAssertEqual(transport.lastRequest?.httpMethod, "POST")
+        XCTAssertEqual(transport.lastRequest?.value(forHTTPHeaderField: "Content-Type"), "application/proto")
+        let request = try XCTUnwrap(MembershipRPCFixtures.createMembershipRequest(from: transport.lastRequest?.httpBody))
+        XCTAssertEqual(request, MembershipRPCFixtures.CreateMembershipRequest(
+            parent: "users/me",
+            nickname: "客户端请求名称",
+            termsVersion: "community-v1"
+        ))
     }
 
     func testUnverifiedLoginDoesNotStoreToken() async {
@@ -270,7 +275,7 @@ final class MembershipTests: XCTestCase {
         let transport = FakeTransport(responses: [
             signInResponse(token: "super-secret-token"),
             meResponse(account),
-            membershipResponse(member(account: account))
+            listResponse(member(account: account))
         ])
         let store = makeStore(transport: transport, tokenStore: tokenStore, cacheStore: cache)
 
@@ -316,7 +321,8 @@ final class MembershipTests: XCTestCase {
     private func member(
         account: MembershipAccount,
         displayName: String = "会员",
-        joinedAt: Date = Date(),
+        // Protobuf 时间戳以纳秒存储。固定的整秒时间可以无损往返。
+        joinedAt: Date = Date(timeIntervalSince1970: 1_792_483_200),
         memberNumber: String = "sample-member"
     ) -> ClubMember {
         ClubMember(
@@ -327,7 +333,9 @@ final class MembershipTests: XCTestCase {
             joinedAt: joinedAt,
             tier: "community",
             status: "active",
-            entitlements: ["local_tracking", "training_library", "progress_history"],
+            grantedEntitlements: ["local_tracking", "training_library", "progress_history"].map {
+                MembershipEntitlement(id: nil, code: $0, name: $0, description: "", grantedAt: joinedAt, expiresAt: nil)
+            },
             expiresAt: nil
         )
     }
@@ -337,13 +345,27 @@ final class MembershipTests: XCTestCase {
     }
 
     private func meResponse(_ account: MembershipAccount) -> MembershipHTTPResponse {
-        let data = try! MembershipDateCoding.encoder().encode(MePayload(user: account))
+        let object: [String: Any] = [
+            "user": ["id": account.id, "name": account.name, "email": account.email, "emailVerified": account.emailVerified],
+            "session": [
+                "id": "session-1",
+                "userId": account.id,
+                "createdAt": MembershipDateCoding.string(from: Date().addingTimeInterval(-60)),
+                "expiresAt": MembershipDateCoding.string(from: Date().addingTimeInterval(3600))
+            ]
+        ]
+        let data = try! JSONSerialization.data(withJSONObject: object)
         return MembershipHTTPResponse(data: data, statusCode: 200)
     }
 
-    private func membershipResponse(_ member: ClubMember?) -> MembershipHTTPResponse {
-        let data = try! MembershipDateCoding.encoder().encode(MembershipPayload(membership: member))
-        return MembershipHTTPResponse(data: data, statusCode: 200)
+    /// `ListMemberships` 的响应。nil 表示没有会员卡。
+    private func listResponse(_ member: ClubMember?) -> MembershipHTTPResponse {
+        MembershipRPCFixtures.memberships(member.map { [$0] } ?? [])
+    }
+
+    /// `CreateMembership` 的响应。
+    private func createResponse(_ member: ClubMember) -> MembershipHTTPResponse {
+        MembershipRPCFixtures.membership(member)
     }
 
     private func errorResponse(statusCode: Int, code: String) -> MembershipHTTPResponse {
@@ -353,13 +375,6 @@ final class MembershipTests: XCTestCase {
         )
     }
 
-    private struct MePayload: Encodable {
-        let user: MembershipAccount
-    }
-
-    private struct MembershipPayload: Encodable {
-        let membership: ClubMember?
-    }
 }
 
 private enum FakeTransportFailure: Error {

@@ -57,7 +57,7 @@ xcodebuild -project Boji.xcodeproj -scheme Boji \
 
 Debug 构建的 `--uitesting` 参数启用内存存储和会员测试服务。测试卡标明非真实会员，不连接后端。健康查询使用空数据测试提供器，不访问真实 HealthKit。界面测试不改写正常使用的身体记录。测试截图保存在 Xcode 测试结果中。
 
-受限终端可能拦截 Swift 宏插件。出现 `sandbox_apply: Operation not permitted` 时，需要允许 Xcode 执行宏插件。不要删除 `@Observable` 来掩盖权限问题。
+受限终端可能拦截 Swift 宏插件，或拦截 SwiftPM 加载 `BojiAPI` 等包的清单。出现 `sandbox_apply: Operation not permitted` 时，需要允许 Xcode 执行它们。不要删除 `@Observable` 或包来掩盖权限问题。
 
 ## 免费会员卡
 
@@ -65,15 +65,17 @@ Debug 构建的 `--uitesting` 参数启用内存存储和会员测试服务。�
 
 领卡包含昵称预览、守则确认和信息核对。分享预览支持三种配色，卡号默认隐藏。流程和验证结果见[会员卡体验完善](docs/membership-experience.md)。
 
-Debug 默认连接 `http://localhost:3000`。正式配置通过构建设置 `BOJI_API_BASE_URL` 写入 `BojiAPIBaseURL`。Release 必须使用 HTTPS；未配置时禁用联网领卡。后端由独立任务维护，不包含在此 iOS 目录。
+Debug 默认连接 `http://localhost:3000`。正式配置通过构建设置 `BOJI_API_BASE_URL` 写入 `BojiAPIBaseURL`。Release 必须使用 HTTPS；未配置时禁用联网领卡。后端源码在仓库的 `bizserver/` 目录，不包含在此 iOS 目录。
 
-接入与验证边界见[会员卡开发说明](../docs/membership.md)。这版不包含付费订阅或场馆核销。
+正式服务地址为 `https://api.leanmuscle.club`。TestFlight 构建从 GitHub 环境 `ios-testflight` 的同名变量读取它。本机要连接正式服务时，在构建命令中加入 `BOJI_API_BASE_URL=https://api.leanmuscle.club`。可以临时修改本机设置，但不要把正式地址提交到 `project.yml`。
+
+接入与验证边界见[会员卡开发说明](../docs/membership.md)。改用 Connect 接口后的测试结果见[Connect 接口迁移验证](docs/connect-verification.md)。这版不包含付费订阅或场馆核销。
 
 ## 账号与安全
 
 认证使用原生 Swift 的 `BetterAuthClient` 对接后端标准接口。登录后可在「设置 → 账号与安全」检查当前会话、修改密码或退出其他会话。令牌只从 `set-auth-token` 读取，保存在 Keychain。
 
-接入方式与本轮验证结果见 [Better Auth 原生接入](docs/better-auth.md)。服务器地址仍需独立配置；客户端实现不等于生产服务已上线。
+接入方式与本轮验证结果见 [Better Auth 原生接入](docs/better-auth.md)。正式服务已上线并开启 Apple 登录，但登录后与正式服务的完整往返尚未验证。
 
 ## Apple 生态配置
 

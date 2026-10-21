@@ -118,7 +118,7 @@ final class AuthSecurityStoreTests: XCTestCase {
         ["id": "user-1", "name": "测试会员", "email": "member@example.test", "emailVerified": true]
     }
     private func loginResponses() -> [MembershipHTTPResponse] {
-        [response(200, ["token": "raw-token"], headers: ["set-auth-token": "original.signed-token"]), response(200, ["user": user]), response(200, ["membership": NSNull()])]
+        [response(200, ["token": "raw-token"], headers: ["set-auth-token": "original.signed-token"]), sessionResponse(), MembershipRPCFixtures.memberships([])]
     }
     private func sessionResponse() -> MembershipHTTPResponse {
         response(200, ["user": user, "session": ["id": "session-1", "userId": "user-1", "token": "do-not-persist", "createdAt": MembershipDateCoding.string(from: Date().addingTimeInterval(-60)), "expiresAt": MembershipDateCoding.string(from: Date().addingTimeInterval(3600))]])

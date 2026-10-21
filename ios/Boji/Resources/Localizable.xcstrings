@@ -162,6 +162,16 @@
         }
       }
     },
+    "Apple 没有提供邮箱，无法创建账号。请在 iPhone 设置中停止此 App 使用 Apple 登录，然后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple didn’t share an email address, so an account can’t be created. In iPhone Settings, stop using Sign in with Apple for this app, then try again."
+          }
+        }
+      }
+    },
     "Apple 登录凭据不完整，请重试。" : {
       "localizations" : {
         "en" : {
@@ -3874,6 +3884,16 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "这个邮箱已有俱乐部账号。请用邮箱和密码登录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This email already has a club account. Sign in with your email and password."
           }
         }
       }

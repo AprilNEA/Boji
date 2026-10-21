@@ -1,55 +1,30 @@
 import Foundation
 import Security
 
+/// 会员服务入口。账号认证使用 Better Auth 的 `/api/auth/*` 端点，会员卡、服务能力和钱包凭证使用 Connect 服务。
 struct MembershipAPI: Sendable {
-    private struct MeResponse: Decodable {
-        let user: MembershipAccount
-    }
-
-    private struct MembershipResponse: Decodable {
-        let membership: ClubMember?
-    }
-
-    private struct EnrollmentRequest: Encodable {
-        let displayName: String
-        let termsVersion: String
-    }
-
-    private let client: BojiHTTPClient
     private let betterAuth: BetterAuthClient
+    private let rpc: MembershipRPCClient
 
     init(configuration: MembershipServiceConfiguration?, transport: any MembershipTransport) {
-        let client = BojiHTTPClient(configuration: configuration, transport: transport)
-        self.client = client
-        betterAuth = BetterAuthClient(httpClient: client)
+        betterAuth = BetterAuthClient(configuration: configuration, transport: transport)
+        rpc = MembershipRPCClient(configuration: configuration, transport: transport)
     }
 
+    /// 读取令牌对应的账号。令牌没有有效会话时，抛出 401 错误。
     func me(token: String) async throws -> MembershipAccount {
-        let response: MeResponse = try await client.request(path: "api/me", method: "GET", token: token)
-        return response.user
+        guard let session = try await betterAuth.getSession(token: token) else {
+            throw MembershipAPIError.server(statusCode: 401, code: "UNAUTHORIZED")
+        }
+        return session.user
     }
 
     func membership(token: String) async throws -> ClubMember? {
-        let response: MembershipResponse = try await client.request(
-            path: "api/membership",
-            method: "GET",
-            token: token
-        )
-        return response.membership
+        try await rpc.currentMembership(token: token)
     }
 
     func enroll(displayName: String, token: String) async throws -> ClubMember {
-        let body = EnrollmentRequest(displayName: displayName, termsVersion: "community-v1")
-        let response: MembershipResponse = try await client.request(
-            path: "api/membership/enroll",
-            method: "POST",
-            token: token,
-            body: try client.encodedBody(body)
-        )
-        guard let membership = response.membership else {
-            throw MembershipAPIError.invalidResponse
-        }
-        return membership
+        try await rpc.createMembership(nickname: displayName, token: token)
     }
 
     func signIn(email: String, password: String) async throws -> String {
@@ -61,29 +36,11 @@ struct MembershipAPI: Sendable {
     }
 
     func capabilities() async throws -> MembershipCapabilities {
-        try await client.request(path: "api/capabilities", method: "GET")
+        try await rpc.serverConfig()
     }
 
-    func walletPass(token: String) async throws -> Data {
-        let response = try await client.perform(
-            path: "api/membership/wallet/pass",
-            method: "GET",
-            token: token,
-            accept: "application/vnd.apple.pkpass"
-        )
-        let contentType = response.header(named: "Content-Type")?
-            .split(separator: ";")
-            .first?
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .lowercased()
-        guard response.statusCode == 200,
-              contentType == "application/vnd.apple.pkpass",
-              !response.data.isEmpty,
-              response.data.count <= 2 * 1024 * 1024
-        else {
-            throw MembershipAPIError.invalidResponse
-        }
-        return response.data
+    func walletPass(membershipID: String, token: String) async throws -> Data {
+        try await rpc.membershipPass(membershipID: membershipID, token: token)
     }
 
     func register(name: String, email: String, password: String) async throws {
@@ -401,8 +358,8 @@ actor UITestingMembershipTransport: MembershipTransport {
         switch (request.httpMethod ?? "GET", path) {
         case ("POST", "/api/auth/sign-in/email"):
             return MembershipHTTPResponse(data: Data("{}".utf8), statusCode: 200, headers: ["set-auth-token": token])
-        case ("GET", "/api/capabilities"):
-            return MembershipHTTPResponse(data: Data("{\"appleSignIn\":false,\"walletPass\":false}".utf8), statusCode: 200)
+        case ("POST", "/boji.v1.SystemService/GetServerConfig"):
+            return MembershipRPCFixtures.serverConfig(appleSignIn: false, walletPass: false)
         case ("POST", "/api/auth/sign-up/email"),
              ("POST", "/api/auth/send-verification-email"),
              ("POST", "/api/auth/request-password-reset"),
@@ -435,48 +392,42 @@ actor UITestingMembershipTransport: MembershipTransport {
                 return errorResponse(statusCode: 401, code: "UNAUTHORIZED")
             }
             return try encoded(UITestingRevokeResponse(status: true))
-        case ("GET", "/api/me"):
+        case ("POST", "/boji.v1.MembershipService/ListMemberships"):
             guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)" else {
-                return errorResponse(statusCode: 401, code: "UNAUTHORIZED")
-            }
-            return try encoded(["user": account])
-        case ("GET", "/api/membership"):
-            guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)" else {
-                return errorResponse(statusCode: 401, code: "UNAUTHORIZED")
+                return MembershipRPCFixtures.error(.unauthenticated, reason: "SESSION_REQUIRED")
             }
             membershipReads += 1
             if scenario == "offline", membershipReads > 1 { throw URLError(.notConnectedToInternet) }
-            return try encoded(MembershipPayload(membership: card))
-        case ("POST", "/api/membership/enroll"):
+            return MembershipRPCFixtures.memberships(card.map { [$0] } ?? [])
+        case ("POST", "/boji.v1.MembershipService/CreateMembership"):
             guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)" else {
-                return errorResponse(statusCode: 401, code: "UNAUTHORIZED")
+                return MembershipRPCFixtures.error(.unauthenticated, reason: "SESSION_REQUIRED")
             }
-            if card == nil {
-                let displayName = displayName(from: request.httpBody) ?? "测试会员"
-                card = ClubMember(
-                    id: "ui-test-membership",
-                    userId: account.id,
-                    memberNumber: "PREVIEW-MEMBER",
-                    displayName: displayName,
-                    joinedAt: Date(),
-                    tier: "community",
-                    status: "active",
-                    grantedEntitlements: [
-                        MembershipEntitlement(id: "47ad41b2-f031-41ee-8b01-4ff2e5e6e221", code: "local_tracking", name: "日常记录", description: "训练、饮水与睡眠，按自己的节奏。", grantedAt: Date(), expiresAt: nil),
-                        MembershipEntitlement(id: "47ad41b2-f031-41ee-8b01-4ff2e5e6e222", code: "training_library", name: "基础训练库", description: "居家与健身房课程，逐组完成。", grantedAt: Date(), expiresAt: nil),
-                        MembershipEntitlement(id: "47ad41b2-f031-41ee-8b01-4ff2e5e6e223", code: "progress_history", name: "成长足迹", description: "查看训练历史与身体数据趋势。", grantedAt: Date(), expiresAt: nil)
-                    ],
-                    expiresAt: nil
-                )
+            if let card {
+                return MembershipRPCFixtures.membership(card)
             }
-            return try encoded(MembershipPayload(membership: card))
+            let enrollment = MembershipRPCFixtures.createMembershipRequest(from: request.httpBody)
+            let joinedAt = Date()
+            let created = ClubMember(
+                id: "ui-test-membership",
+                userId: account.id,
+                memberNumber: "PREVIEW-MEMBER",
+                displayName: enrollment?.nickname ?? "测试会员",
+                joinedAt: joinedAt,
+                tier: "community",
+                status: "active",
+                grantedEntitlements: [
+                    MembershipEntitlement(id: nil, code: "local_tracking", name: "日常记录", description: "训练、饮水与睡眠，按自己的节奏。", grantedAt: joinedAt, expiresAt: nil),
+                    MembershipEntitlement(id: nil, code: "training_library", name: "基础训练库", description: "居家与健身房课程，逐组完成。", grantedAt: joinedAt, expiresAt: nil),
+                    MembershipEntitlement(id: nil, code: "progress_history", name: "成长足迹", description: "查看训练历史与身体数据趋势。", grantedAt: joinedAt, expiresAt: nil)
+                ],
+                expiresAt: nil
+            )
+            card = created
+            return MembershipRPCFixtures.membership(created)
         default:
             return errorResponse(statusCode: 404, code: "NOT_FOUND")
         }
-    }
-
-    private struct MembershipPayload: Encodable {
-        let membership: ClubMember?
     }
 
     private struct UITestingSessionResponse: Encodable {
@@ -504,15 +455,6 @@ actor UITestingMembershipTransport: MembershipTransport {
             data: Data("{\"code\":\"\(code)\",\"message\":\"test\"}".utf8),
             statusCode: statusCode
         )
-    }
-
-    private func displayName(from data: Data?) -> String? {
-        guard let data,
-              let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
-        else {
-            return nil
-        }
-        return object["displayName"] as? String
     }
 }
 #endif

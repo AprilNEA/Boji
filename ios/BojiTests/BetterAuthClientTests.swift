@@ -80,6 +80,23 @@ final class BetterAuthClientTests: XCTestCase {
         XCTAssertNil(session)
     }
 
+    func testGetSessionAcceptsAppleUserWithoutName() async throws {
+        // Apple 只在首次授权时提供姓名，所以 Better Auth 的 name 可以为 null。日期格式与 better-auth-rs 相同。
+        let expiresAt = MembershipDateCoding.string(from: Date().addingTimeInterval(3600))
+        let transport = BetterAuthRecordingTransport(responses: [response(data: """
+        {"user":{"id":"apple-user","name":null,"email":"relay@privaterelay.appleid.com","emailVerified":true,"image":null,"createdAt":"2026-10-21T11:20:31.123Z","updatedAt":"2026-10-21T11:20:31.123Z"},
+         "session":{"id":"session-1","userId":"apple-user","token":"server-token","createdAt":"2026-10-21T11:20:31.123Z","updatedAt":"2026-10-21T11:20:31.123Z","expiresAt":"\(expiresAt)","ipAddress":null,"userAgent":null}}
+        """)])
+
+        let session = try await makeClient(transport).getSession(token: "session-token")
+
+        let user = try XCTUnwrap(session?.user)
+        XCTAssertEqual(user.id, "apple-user")
+        XCTAssertEqual(user.name, "")
+        XCTAssertEqual(user.email, "relay@privaterelay.appleid.com")
+        XCTAssertTrue(user.emailVerified)
+    }
+
     func testGetSessionReturnsNilForExpiredSession() async throws {
         let transport = BetterAuthRecordingTransport(responses: [
             sessionResponse(userID: "user-1", expiresAt: Date().addingTimeInterval(-1))

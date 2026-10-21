@@ -16,26 +16,37 @@
 
 ## 接口契约
 
-iOS 当前仍调用旧服务的 REST 业务接口，下表描述现有 iOS 代码的调用。旧服务没有上线过，Rust 后端不提供 `/api/me` 和 `/api/membership*` 路径。会员接口改为 `MembershipService` 的 ConnectRPC 方法，详见 [RPC 使用说明](../bizserver/docs/connectrpc-api.md)。认证仍使用 `/api/auth/*` 端点。iOS 切换后，必须同步更新本节。
+账号认证使用 Better Auth 的 `/api/auth/*` 端点。会员卡、服务能力和钱包凭证使用 bizserver 的 ConnectRPC 方法。RPC 契约以 `bizserver/proto/boji/v1/` 为准，详见 [RPC 使用说明](../bizserver/docs/connectrpc-api.md)。下表列出 iOS 的调用。
 
 | 接口 | 行为 |
 | --- | --- |
 | `POST /api/auth/sign-up/email` | 注册，提交 name、email、password；不自动登录 |
-| `POST /api/auth/sign-in/email` | 登录；从 set-auth-token 响应头读取令牌 |
+| `POST /api/auth/sign-in/email` | 邮箱登录；从 `set-auth-token` 响应头读取令牌 |
+| `POST /api/auth/sign-in/social` | Apple 登录，提交 `provider: apple` 和 `idToken`；从 `set-auth-token` 响应头读取令牌 |
 | `POST /api/auth/send-verification-email` | 重发验证邮件 |
 | `POST /api/auth/request-password-reset` | 发送重置邮件 |
-| `GET /api/me` | 恢复用户与会话状态 |
+| `GET /api/auth/get-session` | 恢复用户与会话状态；没有有效会话时返回 null |
 | `POST /api/auth/sign-out` | 请求注销当前会话 |
-| `GET /api/membership` | 返回 membership，可为 null |
-| `POST /api/membership/enroll` | 提交 displayName 和 termsVersion，返回会员卡 |
+| `SystemService.GetServerConfig` | 读取 Apple 登录和钱包凭证的服务端开关；不需要登录 |
+| `MembershipService.ListMemberships` | `parent` 为 `users/me`，返回零或一张会员卡 |
+| `MembershipService.CreateMembership` | 提交 `nickname` 和 `terms_version`，返回会员卡。卡已存在时返回 `MEMBERSHIP_ALREADY_EXISTS`，客户端改为读取现有卡 |
+| `WalletService.GetMembershipPass` | `name` 为 `users/me/memberships/{membership}/pass`，返回已签名的 `.pkpass` 文件 |
 
-守则版本固定为 `community-v1`。后端校验登录和邮箱验证状态。`401` 表示需要重新登录，`403 EMAIL_NOT_VERIFIED` 表示需要验证邮箱。
+守则版本固定为 `community-v1`。后端校验登录和邮箱验证状态。Better Auth 端点返回 `401` 时，客户端要求重新登录。
 
-会员字段为 `id`、`userId`、`memberNumber`、`displayName`、`joinedAt`、`tier`、`status`、`entitlements` 和 `expiresAt`。时间采用 UTC ISO 8601。免费卡的 `tier` 为 `community`，`expiresAt` 为 null。
+Connect 错误带有一个 `google.rpc.ErrorInfo`，客户端按它的 `reason` 处理错误：
 
-`memberNumber` 是不透明字符串。客户端原样展示，并使用最新响应刷新缓存。客户端不从卡号推断权限、等级或其他身份信息。
+- `SESSION_REQUIRED`：需要重新登录。
+- `EMAIL_NOT_VERIFIED`：需要验证邮箱。
+- `WALLET_NOT_CONFIGURED`：钱包签发服务未配置，客户端停用钱包按钮。
 
-`entitlements` 是对象数组，每项包含 `id`、`code`、`name`、`description`、`grantedAt` 和 `expiresAt`。客户端使用服务端的展示信息，不依赖数组顺序。
+其他原因显示该操作的通用失败提示。没有 `ErrorInfo` 的 `unavailable` 或超时错误来自网关或网络，客户端按离线处理。暂停的会员卡不是错误：`ListMemberships` 返回它，`state` 为 `SUSPENDED`。
+
+会员字段来自 `boji.v1.Membership`：`name`、`member_number`、`nickname`、`terms_version`、`tier`、`state`、`entitlements`、`create_time` 和 `expire_time`。`name` 的格式为 `users/{user}/memberships/{membership}`。客户端从中取得会员卡 ID 和用户 ID，并核对用户 ID 与当前账号一致。免费卡的 `tier` 为 `COMMUNITY`，没有 `expire_time`。未知的 `state` 按暂停处理，未知的 `tier` 不开启会员能力。
+
+`member_number` 是不透明字符串。客户端原样展示，并使用最新响应刷新缓存。客户端不从卡号推断权限、等级或其他身份信息。
+
+`entitlements` 是 `EffectiveEntitlement` 列表，每项包含 `code`、`display_name`、`description`、`grant_time` 和 `expire_time`。权益没有 ID。客户端使用服务端的展示信息，不依赖列表顺序。
 
 旧字符串缓存可以读取，但不会被当成已核验的授权。未知、过期或尚未生效的权益不会开启客户端能力。
 
@@ -43,11 +54,11 @@ iOS 当前仍调用旧服务的 REST 业务接口，下表描述现有 iOS 代�
 
 ## 配置与边界
 
-Debug 默认访问 `http://localhost:3000`。通过 Xcode 构建设置 `BOJI_API_BASE_URL` 覆盖地址。该值写入应用的 `BojiAPIBaseURL` 配置。
+Debug 默认访问 `http://localhost:3000`。通过 Xcode 构建设置 `BOJI_API_BASE_URL` 覆盖地址。该值写入应用的 `BojiAPIBaseURL` 配置。正式服务地址为 `https://api.leanmuscle.club`。要让 Debug 构建连接正式服务，在构建命令中加入 `BOJI_API_BASE_URL=https://api.leanmuscle.club`。
 
 Release 只接受 HTTPS。缺少有效地址时，会员服务显示未配置。客户端不能为了展示效果而自动改用测试卡。
 
-本地开发邮件由后端写入文件。iOS 已提供邮箱和 Apple 登录的客户端流程。真实邮件服务、Apple 登录验证及账号删除，仍需后端和发布配置。
+本地开发邮件由后端写入文件。iOS 已提供邮箱和 Apple 登录的客户端流程。bizserver 校验 Apple 身份令牌，正式服务已开启 Apple 登录。真实邮件服务和账号删除仍需后端和发布配置。
 
 ## 安全与隐私
 

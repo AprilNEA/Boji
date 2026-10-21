@@ -7,7 +7,7 @@ This directory holds the native iOS app, its watchOS app and its widgets. The pr
 | Path | Content |
 | --- | --- |
 | `project.yml` | XcodeGen spec. It generates `Boji.xcodeproj` |
-| `Boji/Models/` | Local store, HTTP and auth clients, membership and health models |
+| `Boji/Models/` | Local store, HTTP, auth and Connect clients, membership and health models |
 | `Boji/Views/` | SwiftUI screens and the design system (`DesignSystem.swift`) |
 | `Boji/Resources/` | Icon Composer document (`AppIcon.icon`), privacy manifest, `Localizable.xcstrings` for the copy that only the app shows, and `InfoPlist.xcstrings` |
 | `BojiWatch/` | watchOS app, with its own `Localizable.xcstrings` and `InfoPlist.xcstrings` |
@@ -91,13 +91,15 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - Edit `project.yml`, not `Boji.xcodeproj`. After each change to `project.yml`, run `xcodegen generate` and commit both files.
 - Edit `Boji/Resources/AppIcon.icon` in Icon Composer. Xcode compiles the icon during the app build.
 - Write build outputs to `../.work/boji-ios/`. Do not write DerivedData or other build outputs inside `ios/`.
-- If a restricted terminal blocks Swift macro plugins with `sandbox_apply: Operation not permitted`, allow Xcode to run the plugins. Do not remove `@Observable` to hide the permission problem.
-- Lottie and Sentry are pinned with `exactVersion` in `project.yml`. Keep the generated `Package.resolved` with the project.
+- If a restricted terminal blocks Swift macro plugins or SwiftPM manifest loading with `sandbox_apply: Operation not permitted`, allow Xcode to run them. Do not remove `@Observable` or a package to hide the permission problem.
+- Lottie and Sentry are pinned with `exactVersion` in `project.yml`. connect-swift and swift-protobuf are pinned with `exact:` in `BojiAPI/Package.swift`. Keep the generated `Package.resolved` with the project.
 - Bundle `../animations/lottie` as a folder reference. Never bundle `lottie-library` or flatten the theme directories.
 - Load course animations by exercise ID through `ExerciseAnimationCatalog`. Use `posterFrame` for Reduce Motion; missing resources need a static fallback.
 - Keep only the current exercise player active. Pause for hidden views, inactive scenes, rests, and user pauses.
 - Exclude `*.tmp` files from generated build resources.
-- Do not edit `BojiAPI/Sources/BojiAPI/Generated/`. `buf generate` in `BojiAPI/` writes it from `../bizserver/proto/boji/v1/`. Follow "API contract" in the root `AGENTS.md` for the version rules. The app targets do not link `BojiAPI` yet. When a target adopts it, add it as a local package in `project.yml`.
+- Do not edit `BojiAPI/Sources/BojiAPI/Generated/`. `buf generate` in `BojiAPI/` writes it from `../bizserver/proto/boji/v1/`. Follow "API contract" in the root `AGENTS.md` for the version rules.
+- The `Boji` target links `BojiAPI` as a local package in `project.yml`. The widgets and the watch app do not. `Models/MembershipRPC.swift` calls `SystemService`, `MembershipService` and `WalletService` through `MembershipTransport`, so Connect calls share the cookie-free session, the redirect blocker and the test transports with the Better Auth calls. Keep account calls on `/api/auth/*` in `Models/BetterAuthClient.swift`.
+- Test targets do not import `BojiAPI`. Build Connect responses and read Connect requests with `MembershipRPCFixtures` in `Models/MembershipRPCFixtures.swift`, which compiles only in Debug. The UI test transport uses the same fixtures.
 
 ### Shared copy
 
@@ -122,7 +124,7 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - Format a list or a date inside the `Text` interpolation, for example `Text("来源：\(sources, format: .list(type: .and))")`. Do not join a list with `、`.
 - A count needs English plural variations (`one` and `other`) in the catalog, for example `剩余 %lld 秒`. A plural variation must contain the number.
 - Give VoiceOver the full word when the visible label is shortened. The accessory widgets show 训, 饮 and 眠, or T, W and S in English, and read `name`.
-- Do not localize the test fixtures in the `#if DEBUG` part of `Models/MembershipAPI.swift` or the `DecodingError` debug descriptions.
+- Do not localize the test fixtures in the `#if DEBUG` part of `Models/MembershipAPI.swift`, in `Models/MembershipRPCFixtures.swift` or the `DecodingError` debug descriptions.
 - Muscle names in `ExerciseAnimationCatalog` come from `../animations/` and are in Chinese only. They are not localized yet.
 
 ### Tests
@@ -138,6 +140,7 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 
 - Read auth tokens only from the `set-auth-token` response header. Store them only in the Keychain. Do not put tokens in JSON exports.
 - A Release build must use an HTTPS `BOJI_API_BASE_URL`. If the value is not set, keep online membership features disabled.
+- Keep `BOJI_API_BASE_URL` empty in `project.yml`, so that Debug builds connect to `http://localhost:3000`. TestFlight builds read it from the `ios-testflight` environment variable through `ci/signing.py`. To test against the production service `https://api.leanmuscle.club`, pass `BOJI_API_BASE_URL=https://api.leanmuscle.club` to `xcodebuild` or change it locally. Do not commit the production URL.
 - Show HealthKit samples in memory only. Do not save them, upload them or let them overwrite manual records.
 - Widgets and the watch app show only today's check-in state. Do not share health samples or account data with them. Sharing is off by default.
 - The About section of Settings links to the privacy policy and the terms of use on the website, as App Review guideline 5.1.1(i) requires. Build the URLs only with `LegalDocument` in `Boji/Models/LegalDocument.swift`. Chinese locales open the Chinese pages, and other locales open the English pages under `/en/`.

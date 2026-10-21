@@ -33,7 +33,7 @@
 
 认证路径为 `/api/auth/*`。新服务不需要兼容旧服务的密码格式、会话或响应形状。安全配置仍需逐项验证。
 
-会员本人接口使用 `/boji.v1.<Service>/<Method>`，运营接口使用 `/boji.admin.v1.<Service>/<Method>`。服务不提供旧 REST 路径。原生客户端尚未切换，必须改用 ConnectRPC 生成的客户端。
+会员本人接口使用 `/boji.v1.<Service>/<Method>`，运营接口使用 `/boji.admin.v1.<Service>/<Method>`。服务不提供旧 REST 路径。iOS 和 Android 已用 ConnectRPC 生成的客户端调用 `MembershipService`，并通过 `/api/auth/get-session` 读取账号状态。iOS 还调用 `SystemService` 和 `WalletService`。两端都还没有接入注销账号和更换邮箱。
 
 ## 上线前提
 
@@ -148,7 +148,7 @@ Rust 检查在 `/tmp` 下的源码快照中运行。快照的 `Cargo.toml` 和 `
 | 单元、集成与数据库契约测试 | 51 项通过，无失败或忽略，其中运营专项 9 项 |
 | 生成客户端的文档测试 | 36 项通过 |
 | 中文排版与文档相对链接 | 通过 |
-| 原生客户端联调 | 未验证；iOS 和 Android 尚未改用新协议 |
+| 原生客户端联调 | 本轮未验证。之后 iOS 和 Android 已改用新协议，iOS 对正式服务的检查见 [iOS Connect 接口迁移验证记录](../../ios/docs/connect-verification.md) |
 | Docker 镜像构建 | 未验证 |
 
 契约测试覆盖资源名的 `me` 与 `-` 写法、跨用户访问拒绝和 AIP-193 错误详情。测试也覆盖 JSON 与二进制 protobuf 编码、页令牌绑定、etag 冲突、增量同步令牌和无法解码请求的错误格式。

@@ -25,6 +25,7 @@
 		27FE2609C62109FE7A50DE17 /* HealthDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21905AB8E7B0CE32504579D7 /* HealthDataStore.swift */; };
 		2A270EB8EBE2CB77EDF2F525 /* TrainingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5C69E187FD17A2705F3713 /* TrainingView.swift */; };
 		2D3C6DD55721463172DA1E0D /* HealthConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458A3077F92019074E88F6CF /* HealthConnectionView.swift */; };
+		352016E5B270E99C0DA6E065 /* MembershipRPCFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52902C7BFFB3D07FB320C4F9 /* MembershipRPCFixtures.swift */; };
 		3B0A9512235FB99171894270 /* BojiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F4EEA7892D89748155D924 /* BojiUITests.swift */; };
 		40613947F1DBA770A474CF9B /* BojiWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 661AE16B78FF2F30E57965DC /* BojiWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4BE11F2893AB2F064E9D90FB /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8B234B8805CB455487EB328C /* InfoPlist.xcstrings */; };
@@ -35,6 +36,7 @@
 		5F4B361E84F5BB9CBCD33F13 /* MembershipStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544A88E9634042791CE6BBA0 /* MembershipStore.swift */; };
 		60987045AF5F5E131593E45B /* BetterAuthSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532250876ED85B6BDAAA301C /* BetterAuthSession.swift */; };
 		612D6F52AC64C1F976F8291C /* StoreScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670551344EB1A3043C1C22E4 /* StoreScreenshotTests.swift */; };
+		641A1BA8053D06572B18470A /* MembershipRPC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F35FB8FDA9D385BDEE9F1F /* MembershipRPC.swift */; };
 		7055CB37DA9468F8256E9218 /* MembershipWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22C5C88414598B9A653BD08 /* MembershipWalletView.swift */; };
 		70DFD9ED3418E6CA8812A330 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 211607BD7F6AC18DAEDF5277 /* PrivacyInfo.xcprivacy */; };
 		71AA5771B94005956B486FCA /* MembershipPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43252989887EE4615826FA3F /* MembershipPresentation.swift */; };
@@ -59,6 +61,7 @@
 		B5E73CBB3085B0690818FEA9 /* AppleSignInSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DA81187EA829BFF5FF639A /* AppleSignInSection.swift */; };
 		BC9FCC9D20F279F305021487 /* HealthDataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E2BDA8BA4453BF2D000EFF /* HealthDataStoreTests.swift */; };
 		C4DAE2AD6AE64A6575BB8A40 /* MembershipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D0E927BAEA70844A0A902F8 /* MembershipView.swift */; };
+		C8204FC7B3D31DF0611787D0 /* MembershipRPCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C7734F5BA146860613E16F /* MembershipRPCTests.swift */; };
 		CB10FCBE961A16770B5CF502 /* BojiStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4840C3365DFE332E18C11C /* BojiStore.swift */; };
 		CC1037D29706935C780AE46D /* Shared.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D9FCBE76E0C8017D6AB44D93 /* Shared.xcstrings */; };
 		CDB72F7C2DBE92403FC9DB0B /* LegalDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9E35155AD090D46105762 /* LegalDocument.swift */; };
@@ -74,6 +77,7 @@
 		ECC0752898E65CD0B3F38B60 /* HealthModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B15C9B68AF3F3BA6693740F2 /* HealthModelsTests.swift */; };
 		ED8361A9B5DDDAF1961727DA /* Shared.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D9FCBE76E0C8017D6AB44D93 /* Shared.xcstrings */; };
 		EFC099F736E7B22B1EC279DF /* BetterAuthClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B01B3D23C54B54A44BED01 /* BetterAuthClientTests.swift */; };
+		F25944572489EE2913FC1A1A /* BojiAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 0446446CAA4953C7A7852257 /* BojiAPI */; };
 		F36AB1BAFE815C7E6BE778E5 /* CrashReporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86890533E48BB7931E9497D0 /* CrashReporting.swift */; };
 		F44E14E3D7D3178065F10A99 /* CompanionSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 251281D9128481F09CCD0E0D /* CompanionSnapshot.swift */; };
 		F48FE9F202DCDCAB1E2CD78A /* AccountSecurityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1CD9EE11102D933988D55A /* AccountSecurityView.swift */; };
@@ -152,6 +156,7 @@
 		211607BD7F6AC18DAEDF5277 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		21905AB8E7B0CE32504579D7 /* HealthDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthDataStore.swift; sourceTree = "<group>"; };
 		222CF8D8C8A70FCD67F93991 /* MembershipPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipPresentationTests.swift; sourceTree = "<group>"; };
+		24F35FB8FDA9D385BDEE9F1F /* MembershipRPC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipRPC.swift; sourceTree = "<group>"; };
 		251281D9128481F09CCD0E0D /* CompanionSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionSnapshot.swift; sourceTree = "<group>"; };
 		26ED9E884634733D489F5BD6 /* MembershipBoundaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipBoundaryTests.swift; sourceTree = "<group>"; };
 		289FEADA3B5814EB470D4F4B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -167,12 +172,14 @@
 		4AD951089E95ACCBD0D4BC85 /* CompanionSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionSnapshotTests.swift; sourceTree = "<group>"; };
 		4BCFE5FC6932EA2AA0EDEF99 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		4D4840C3365DFE332E18C11C /* BojiStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojiStore.swift; sourceTree = "<group>"; };
+		52902C7BFFB3D07FB320C4F9 /* MembershipRPCFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipRPCFixtures.swift; sourceTree = "<group>"; };
 		532250876ED85B6BDAAA301C /* BetterAuthSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetterAuthSession.swift; sourceTree = "<group>"; };
 		544A88E9634042791CE6BBA0 /* MembershipStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipStore.swift; sourceTree = "<group>"; };
 		559E32ADE93BAC9FEFAF3107 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		5603FBE9B60558248690ABBC /* BetterAuthClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetterAuthClient.swift; sourceTree = "<group>"; };
 		583F71FA07F4AFB0262B3D19 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
 		5E83A1EEADA038A229812FF6 /* MembershipSharingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipSharingView.swift; sourceTree = "<group>"; };
+		62C7734F5BA146860613E16F /* MembershipRPCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipRPCTests.swift; sourceTree = "<group>"; };
 		64E2BDA8BA4453BF2D000EFF /* HealthDataStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthDataStoreTests.swift; sourceTree = "<group>"; };
 		661AE16B78FF2F30E57965DC /* BojiWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BojiWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		670551344EB1A3043C1C22E4 /* StoreScreenshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreScreenshotTests.swift; sourceTree = "<group>"; };
@@ -207,6 +214,7 @@
 		B593CBD0DE4FCBB630D2DFFB /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
 		B8BA1903CA55018029EC3DB9 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		BB1CD9EE11102D933988D55A /* AccountSecurityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSecurityView.swift; sourceTree = "<group>"; };
+		C385CF235F9F652ECCD35DD9 /* BojiAPI */ = {isa = PBXFileReference; lastKnownFileType = folder; name = BojiAPI; path = BojiAPI; sourceTree = SOURCE_ROOT; };
 		C5DA81187EA829BFF5FF639A /* AppleSignInSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleSignInSection.swift; sourceTree = "<group>"; };
 		C67A5E4EC28793B5ECEC4D8F /* AuthSecurityStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthSecurityStoreTests.swift; sourceTree = "<group>"; };
 		C8A1C0B6584F9060F92CAAAC /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -226,6 +234,7 @@
 			files = (
 				1B6C2F31C52117A2978F4E77 /* Lottie in Frameworks */,
 				D2A3381C29D34E1D66969FA1 /* Sentry in Frameworks */,
+				F25944572489EE2913FC1A1A /* BojiAPI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,9 +289,19 @@
 				491E8393498E63062E9C40F4 /* MembershipAPI.swift */,
 				19368F1E87C44FF35C2129F7 /* MembershipModels.swift */,
 				43252989887EE4615826FA3F /* MembershipPresentation.swift */,
+				24F35FB8FDA9D385BDEE9F1F /* MembershipRPC.swift */,
+				52902C7BFFB3D07FB320C4F9 /* MembershipRPCFixtures.swift */,
 				544A88E9634042791CE6BBA0 /* MembershipStore.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		5A1749EDECB1D0054EBE9F23 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				C385CF235F9F652ECCD35DD9 /* BojiAPI */,
+			);
+			name = Packages;
 			sourceTree = "<group>";
 		};
 		604EC6EBB79CE5E793506212 /* BojiUITests */ = {
@@ -329,6 +348,7 @@
 				604EC6EBB79CE5E793506212 /* BojiUITests */,
 				A65E9437B350FCF8F0354DE6 /* BojiWatch */,
 				1BA0AED925E27CAB5F441FAC /* BojiWidgets */,
+				5A1749EDECB1D0054EBE9F23 /* Packages */,
 				44EE62C5417E6C642AD46BE4 /* Shared */,
 				37812E47C860068B7936EC16 /* Products */,
 			);
@@ -390,6 +410,7 @@
 				26ED9E884634733D489F5BD6 /* MembershipBoundaryTests.swift */,
 				C8C48E60EA9F78C658B0715F /* MembershipEntitlementTests.swift */,
 				222CF8D8C8A70FCD67F93991 /* MembershipPresentationTests.swift */,
+				62C7734F5BA146860613E16F /* MembershipRPCTests.swift */,
 				A54E43AA718586768EB78014 /* MembershipTests.swift */,
 			);
 			path = BojiTests;
@@ -454,6 +475,7 @@
 			packageProductDependencies = (
 				95D6C7CE2B162F64784AF160 /* Lottie */,
 				8F064198CCCD2086E644CCE1 /* Sentry */,
+				0446446CAA4953C7A7852257 /* BojiAPI */,
 			);
 			productName = Boji;
 			productReference = 741CEA2B76902756BAC5F5F0 /* Boji.app */;
@@ -540,6 +562,7 @@
 			packageReferences = (
 				5A3C3D2DA02EBB23AEEF5DD3 /* XCRemoteSwiftPackageReference "lottie-spm" */,
 				B2C293D2BE7A0BF7204A616E /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
+				1A1A80CEB8B090F28DAEC27B /* XCLocalSwiftPackageReference "BojiAPI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 37812E47C860068B7936EC16 /* Products */;
@@ -618,6 +641,7 @@
 				EA839609A4BF2A3352AFBC3A /* MembershipBoundaryTests.swift in Sources */,
 				52D821C4FFA537D6BA2D7277 /* MembershipEntitlementTests.swift in Sources */,
 				07BFAABA6BD1ECF2781F8220 /* MembershipPresentationTests.swift in Sources */,
+				C8204FC7B3D31DF0611787D0 /* MembershipRPCTests.swift in Sources */,
 				AADC71F00D5FDCF324AE65C6 /* MembershipTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -653,6 +677,8 @@
 				A51B69FE6782240E140B3BBA /* MembershipEnrollmentView.swift in Sources */,
 				160AB7711E92162E5A7181F9 /* MembershipModels.swift in Sources */,
 				71AA5771B94005956B486FCA /* MembershipPresentation.swift in Sources */,
+				641A1BA8053D06572B18470A /* MembershipRPC.swift in Sources */,
+				352016E5B270E99C0DA6E065 /* MembershipRPCFixtures.swift in Sources */,
 				B55214557290A8264026615F /* MembershipSharingView.swift in Sources */,
 				5F4B361E84F5BB9CBCD33F13 /* MembershipStore.swift in Sources */,
 				C4DAE2AD6AE64A6575BB8A40 /* MembershipView.swift in Sources */,
@@ -1087,6 +1113,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		1A1A80CEB8B090F28DAEC27B /* XCLocalSwiftPackageReference "BojiAPI" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = BojiAPI;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		5A3C3D2DA02EBB23AEEF5DD3 /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -1107,6 +1140,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0446446CAA4953C7A7852257 /* BojiAPI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BojiAPI;
+		};
 		8F064198CCCD2086E644CCE1 /* Sentry */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B2C293D2BE7A0BF7204A616E /* XCRemoteSwiftPackageReference "sentry-cocoa" */;

@@ -102,6 +102,22 @@ Sentry 在这套流程中保持关闭。启用应用崩溃上报需要另行审�
 
 本机的 `op run` 交互会话不能供 Runner 使用。本轮没有将 1Password 数据复制到 GitHub。配置 Secrets 或无人值守保险库访问，需要另行授权。
 
+### 当前配置状态
+
+2026-10-21 20:40（UTC+08:00）在 GitHub 仓库设置中核对。`gh api` 只读查询的结果与页面一致：
+
+| 项目 | 状态 |
+| --- | --- |
+| `ios-testflight` 环境 | 已创建，部署分支限制为 `master` |
+| `ios-testflight` 的 `BOJI_API_BASE_URL` | `https://api.leanmuscle.club` |
+| `ios-testflight` 的 required reviewers 和禁止自行批准 | 未设置 |
+| `IOS_BACKEND_VERIFIED`、`IOS_ARTIFACT_PUBLIC_KEY` | 未设置 |
+| TestFlight 的 Secrets | 未设置 |
+| `ios-appstore-review` 环境 | 未创建 |
+| 仓库变量 `IOS_RELEASE_ENABLED` | 未设置，上传和提审 job 会停止 |
+
+设置 required reviewers 前，先确定审批人。只有一位维护者时，开启禁止自行批准会使任何人都无法批准部署。
+
 ## 第二层：上传构建
 
 先将目标提交合并到 `master`。`testflight` 模式会在同次运行中重新执行 CI。两个 CI job 都通过后，才允许进入签名和上传。输入版本必须与 `ios/project.yml` 和 `app-store/project.json` 一致。

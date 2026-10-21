@@ -192,7 +192,26 @@ final class MembershipStore {
         do {
             let token = try await api.signInWithApple(identity)
             await completeAuthentication(token: token, operation: operation, action: .appleSignIn)
-        } catch { handle(error, action: .appleSignIn, operation: operation) }
+        } catch {
+            if isCurrent(operation), let message = appleSignInMessage(for: error) {
+                errorMessage = message
+                return
+            }
+            handle(error, action: .appleSignIn, operation: operation)
+        }
+    }
+
+    /// Better Auth 拒绝 Apple 身份令牌时的提示。此时还没有本机会话，所以 401 不清除登录状态。
+    private func appleSignInMessage(for error: Error) -> String? {
+        guard case MembershipAPIError.server(let statusCode, let code) = error else { return nil }
+        switch code {
+        case "LINKING_NOT_ALLOWED", "LINKING_DIFFERENT_EMAILS_NOT_ALLOWED":
+            return String(localized: "这个邮箱已有俱乐部账号。请用邮箱和密码登录。")
+        case "USER_EMAIL_NOT_FOUND":
+            return String(localized: "Apple 没有提供邮箱，无法创建账号。请在 iPhone 设置中停止此 App 使用 Apple 登录，然后重试。")
+        default:
+            return statusCode == 401 ? String(localized: "Apple 登录校验失败，请重新尝试。") : nil
+        }
     }
 
     func walletPassData() async -> Data? {
@@ -207,7 +226,7 @@ final class MembershipStore {
         guard let operation = beginOperation() else { return nil }
         defer { finishOperation(operation) }
         do {
-            let data = try await api.walletPass(token: token)
+            let data = try await api.walletPass(membershipID: card.id, token: token)
             guard isCurrent(operation), self.card?.id == card.id, self.card?.isActive == true else { return nil }
             return data
         } catch { handle(error, action: .wallet, operation: operation); return nil }
@@ -612,6 +631,11 @@ final class MembershipStore {
             }
             if code == "SESSION_NOT_FRESH" {
                 errorMessage = String(localized: "此操作需要重新登录后再试。")
+                return
+            }
+            if code == "WALLET_NOT_CONFIGURED" {
+                capabilities = MembershipCapabilities(appleSignIn: capabilities?.appleSignIn ?? false, walletPass: false)
+                errorMessage = String(localized: "Wallet 签发服务尚未配置。")
                 return
             }
         }
