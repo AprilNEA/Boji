@@ -36,6 +36,8 @@ private struct WatchCompanionView: View {
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    // Align text with the navigation title and keep it off the curved screen edges.
+                    .scenePadding(.horizontal)
                 }
             }
             .navigationTitle("今日进度")
@@ -102,6 +104,9 @@ private struct WatchCompanionView: View {
             Text("同步于 \(snapshot.generatedAt.formatted(date: .omitted, time: .shortened))")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
+                // The footnote can sit at the bottom edge of the first screen. Center it so the rounded corners do not clip it.
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity, alignment: .center)
         }
     }
 

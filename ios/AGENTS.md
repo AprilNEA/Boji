@@ -164,3 +164,5 @@ Read `docs/design.md` before you change a screen. Build screens from the compone
 - Do not draw concentric progress rings. The HIG reserves that form for Activity rings.
 - Define every custom color with light, dark and increased-contrast variants. Use `BojiTheme.accentFill`, not `accent`, behind white text or symbols.
 - Support dark mode and Dynamic Type on every screen. Do not use a fixed font size for text. Switch side-by-side cards to a column at accessibility sizes with `AdaptiveStack`.
+- In the watch app, apply `.scenePadding(.horizontal)` to custom content in a `ScrollView`. Text then aligns with the navigation title and the status bar, and stays off the curved screen edges. `List` and `Button` get these margins from the system.
+- In the watch app, center a short footnote at the end of a `ScrollView`, such as the sync time. The first screen can end on that line, and the rounded corners clip leading text there.
