@@ -18,6 +18,7 @@ This directory holds the 薄肌俱乐部 promotional website and the Boji docs s
 | `src/app/api/search/route.ts` | Static search index for all pages of `../docs/` and `../docs/sites/`, split by language. The build writes it to `out/api/search` |
 | `src/app/global-not-found.tsx` | 404 page for the whole site |
 | `src/app/globals.css`, `src/app/docs.css` | Website styles and docs styles |
+| `src/instrumentation-client.ts` | Optional Sentry error reporting. Next.js runs it in the browser before hydration |
 | `src/components/` | Page components, grouped by page, plus `layout/` and `ui/` |
 | `src/components/docs/mdx.tsx` | Components that docs MDX can use |
 | `src/components/docs/StandalonePage.tsx` | Renders a standalone page of `../docs/sites/` in a given language, without a sidebar |
@@ -47,6 +48,7 @@ Run these commands in this directory:
 ## Rules
 
 - The site is self-hosted as static files. Do not add runtime requests to Manus or other third-party services, and do not add Manus proxy hosts to `next.config.ts`. The site must not read `app.config.ts` or `public/manus-routes.json`.
+- Sentry is the only exception. `src/instrumentation-client.ts` loads `@sentry/browser` only when the build sets `NEXT_PUBLIC_SENTRY_DSN`. A build without it must not load the Sentry chunk or send a request. Keep the `BrowserSession` integration removed, keep `dataCollection` off, and do not add tracing or Session Replay. See `../docs/sentry.md`.
 - Keep the files that only this site uses in `public/` and reference them by local path. Use the asset host `https://assets.leanmuscle.club` only for the generic files in the repository-level `assets/public/`, such as the app icon.
 - Do not add `/manus-storage/` paths, `files.manuscdn.com` URLs or other hosted storage URLs.
 - Keep the site static. Do not add server actions or other features that `output: "export"` does not support. The only route handler is `src/app/api/search/route.ts`. It exports `staticGET` with `revalidate = false`, so the build writes the search index as a file. Do not add route handlers that need a server.

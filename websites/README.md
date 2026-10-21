@@ -18,6 +18,12 @@ pnpm build      # 静态构建，产物在 out/
 
 网站不依赖 Manus 或其他后端服务。`pnpm build` 生成的 `out/` 是纯静态文件，可以放到任意静态服务器或 CDN 上。站点专用的图片、视频和字体都在 `out/` 内，页面运行时只请求本站资源。Discord 邀请链接是唯一的外部链接，在官网页脚和文档侧边栏中出现，只在用户点击时打开。
 
+构建时设置了 `NEXT_PUBLIC_SENTRY_DSN`，网站才会把未捕获的错误上报到 Sentry，这是唯一的例外。默认构建不加载 Sentry，也不向 Sentry 发出请求。启用方式和上报字段见 [Sentry 错误上报](../docs/sentry.md)。
+
+```sh
+NEXT_PUBLIC_SENTRY_DSN='https://<公钥>@<主机>/<项目编号>' pnpm build
+```
+
 部署时注意三点：
 
 - 构建开启了 `trailingSlash`，每个路由导出为 `<路由>/index.html`。服务器需要把 `/theory/` 映射到 `theory/index.html`，大多数静态服务器默认如此。

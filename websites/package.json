@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",
+    "@sentry/browser": "^11.8.0",
     "fumadocs-core": "16.17.7",
     "fumadocs-mdx": "15.4.8",
     "fumadocs-ui": "16.17.7",
