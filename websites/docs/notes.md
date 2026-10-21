@@ -1,13 +1,13 @@
 # 项目笔记（外部信息与素材）
 
 ## 研究事实（用于文案，来源已核对）
-- 邵艾伦 Alan：千万粉丝英语口语博主，自称“薄肌理论创始人”；X 帖：“‘薄肌’只是一个载体。”“真正火的，是年轻男人想重新掌控自己人生的欲望。”（https://x.com/AlanShao111/status/2093592063568966076）
-- 邵艾伦另一句：“薄肌理论，就是把多巴胺从游戏手里抢回来。”（https://x.com/AlanShao111/status/2110140102941057089）
+- 邵艾伦 Alan：千万粉丝英语口语博主，自称“薄肌理论创始人”；X 帖：“‘薄肌’只是一个载体。”“真正火的，是年轻男人想重新掌控自己人生的欲望。”（[来源](https://x.com/AlanShao111/status/2093592063568966076)）
+- 邵艾伦另一句：“薄肌理论，就是把多巴胺从游戏手里抢回来。”（[来源](https://x.com/AlanShao111/status/2110140102941057089)）
 - 黄毛理论：最早 8 月 14 日评价王水牛事件时提出；播客中概括为“不被外界评价左右，坚持自己判断过的方向”。
-- 邵艾伦视频原话：“Regardless how you feel, right? Regardless of how much you don't wanna go”；主张体脂长期低于 13%、不吃欺骗餐（https://www.uscardforum.com/t/topic/538838）
-- 播客《对话孙宇晨：年轻人如何抓住AI时代的机会？》2026-10-10 中午 12 点上线，4 小时以上（https://www.bilibili.com/video/BV176pp69Eom/）
-- 孙宇晨：“我已经正式开始练了，刚开始练了两三天。”172 cm / 75 kg / 体脂约 29%，3–6 个月看效果；蛋白粉 25g + 肌酸 5g，蛋白质目标 140–150g，Oura Ring，Claude 拍照算热量，净热量缺口 600 卡以内；以前以为蛋白粉是“科技与狠活”（https://x.com/i/article/2108490232467476804）
-- 三套底层认知：孙学、薄肌理论、黄毛理论（https://www.zhihu.com/question/2091813630790707135）
+- 邵艾伦视频原话：“Regardless how you feel, right? Regardless of how much you don't wanna go”；主张体脂长期低于 13%、不吃欺骗餐（[来源](https://www.uscardforum.com/t/topic/538838)）
+- 播客《对话孙宇晨：年轻人如何抓住AI时代的机会？》2026-10-10 中午 12 点上线，4 小时以上（[来源](https://www.bilibili.com/video/BV176pp69Eom/)）
+- 孙宇晨：“我已经正式开始练了，刚开始练了两三天。”172 cm / 75 kg / 体脂约 29%，3–6 个月看效果；蛋白粉 25g + 肌酸 5g，蛋白质目标 140–150g，Oura Ring，Claude 拍照算热量，净热量缺口 600 卡以内；以前以为蛋白粉是“科技与狠活”（[来源](https://x.com/i/article/2108490232467476804)）
+- 三套底层认知：孙学、薄肌理论、黄毛理论（[来源](https://www.zhihu.com/question/2091813630790707135)）
 - 中国居民膳食指南（2022）：成年男性每天饮水 1700 mL，女性 1500 mL；成年人睡眠 7–9 小时参考。
 - 波场 TRON 创始人孙宇晨。
 
@@ -34,7 +34,7 @@
 - /home/ubuntu/thin-muscle-club/mockups/01-hero-founders.png 等四张；设计草案 /home/ubuntu/thin-muscle-club/薄肌俱乐部-设计草案.md
 
 ## Discord（已停用）
-- 2026-10-21 起，社区渠道改为 GitHub Discussions（https://github.com/AprilNEA/Boji/discussions），网站不再链接 Discord。原邀请：https://discord.gg/Fwb5dchAw (server "ThinMuscle 薄肌"; Discord API on 2026-10-16 reports expires_at 2026-11-15T00:32:58Z, i.e. a 30-day invite). Footer "联系我们" column links to it.
+- 2026-10-21 起，社区渠道改为 [GitHub Discussions](https://github.com/AprilNEA/Boji/discussions)，网站不再链接 Discord。原邀请：<https://discord.gg/Fwb5dchAw>（server "ThinMuscle 薄肌"; Discord API on 2026-10-16 reports expires_at 2026-11-15T00:32:58Z, i.e. a 30-day invite). Footer "联系我们" column links to it.
 ## 逐水草而居 source
 - 孙宇晨 in the 邵艾伦 podcast: "逐水草而居" — go where you create the most value; avoid locking yourself into one city early with mortgage/car/marriage; keep assets "拎了就走". Summary: https://x.com/i/article/2108546430478713188
 

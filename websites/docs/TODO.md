@@ -56,7 +56,7 @@
 - [x] 影片中已删除的旧副标题（“一位已量产。一位在内测。Beta”，0.46–1.79s）以黑底遮除，原片保留在 /home/ubuntu/upload/。
 
 ## 11. 社区
-- [x] 页脚“联系我们”加入 Discord 社区链接 https://discord.gg/Fwb5dchAw（新标签页打开）。
+- [x] 页脚“联系我们”加入 [Discord 社区链接](https://discord.gg/Fwb5dchAw)（新标签页打开）。
 
 ## 12. 首页 SEO
 - [x] 首页 meta keywords 7 个，以“薄肌”为核心：薄肌、薄肌理论、薄肌俱乐部、薄肌身材、邵艾伦、孙宇晨、体脂率。
