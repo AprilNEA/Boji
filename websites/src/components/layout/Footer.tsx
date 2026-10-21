@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { CONTACT_EMAIL, DISCORD_URL, FOOTNOTES, NAV_LINKS } from "@/lib/content";
-import { DiscordIcon } from "@/components/ui/DiscordIcon";
+import { CONTACT_EMAIL, DISCUSSIONS_URL, FOOTNOTES, NAV_LINKS } from "@/lib/content";
+import { GitHubIcon } from "@/components/ui/GitHubIcon";
 import { Logo } from "@/components/ui/Logo";
 import { RegionPicker } from "@/components/layout/RegionPicker";
 
@@ -75,13 +75,13 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <a
-                  href={DISCORD_URL}
+                  href={DISCUSSIONS_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="footer-link inline-flex items-center gap-1.5"
                 >
-                  <DiscordIcon />
-                  加入 Discord 社区
+                  <GitHubIcon />
+                  GitHub Discussions
                   <span aria-hidden>↗</span>
                 </a>
               </li>

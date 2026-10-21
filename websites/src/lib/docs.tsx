@@ -1,9 +1,9 @@
 import Link from "next/link";
 import type { BaseLayoutProps, LinkItemType } from "fumadocs-ui/layouts/shared";
 import type { Translations } from "fumadocs-ui/i18n";
-import { DiscordIcon } from "@/components/ui/DiscordIcon";
+import { GitHubIcon } from "@/components/ui/GitHubIcon";
 import { Logo } from "@/components/ui/Logo";
-import { DISCORD_URL } from "@/lib/content";
+import { DISCUSSIONS_URL } from "@/lib/content";
 
 /**
  * 支持页、隐私政策和用户协议。支持页和隐私政策的地址用作 App Store Connect 的
@@ -16,12 +16,12 @@ export const PAGE_LINKS = [
 ] as const;
 
 /** 图标链接在侧边栏中显示在底部、深浅色切换按钮的左边，在顶栏中显示在右侧。 */
-const DISCORD_LINK: LinkItemType = {
+const DISCUSSIONS_LINK: LinkItemType = {
   type: "icon",
-  text: "Discord",
-  label: "加入 Discord 社区",
-  icon: <DiscordIcon className="size-4" />,
-  url: DISCORD_URL,
+  text: "GitHub Discussions",
+  label: "在 GitHub Discussions 提问和交流",
+  icon: <GitHubIcon className="size-4" />,
+  url: DISCUSSIONS_URL,
   external: true,
 };
 
@@ -37,7 +37,7 @@ export function baseOptions(): BaseLayoutProps {
       ),
       url: "/docs/",
     },
-    links: [{ text: "返回官网", url: "/" }, DISCORD_LINK],
+    links: [{ text: "返回官网", url: "/" }, DISCUSSIONS_LINK],
   };
 }
 
@@ -53,7 +53,7 @@ export function pageOptions(): BaseLayoutProps {
       ),
       url: "/",
     },
-    links: [{ text: "文档", url: "/docs/" }, ...PAGE_LINKS, DISCORD_LINK],
+    links: [{ text: "文档", url: "/docs/" }, ...PAGE_LINKS, DISCUSSIONS_LINK],
   };
 }
 

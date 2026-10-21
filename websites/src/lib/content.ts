@@ -22,7 +22,7 @@ export const LAUNCH_FILM = {
 } as const;
 
 export const CONTACT_EMAIL = "thinmuscle-club@proton.me";
-export const DISCORD_URL = "https://discord.gg/Fwb5dchAw";
+export const DISCUSSIONS_URL = "https://github.com/AprilNEA/Boji/discussions";
 
 export const NAV_LINKS = [
   { href: "/theory/", label: "理论" },

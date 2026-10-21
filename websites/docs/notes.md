@@ -33,8 +33,8 @@
 ## 设计效果图（沙盒）
 - /home/ubuntu/thin-muscle-club/mockups/01-hero-founders.png 等四张；设计草案 /home/ubuntu/thin-muscle-club/薄肌俱乐部-设计草案.md
 
-## Discord
-- Invite: https://discord.gg/Fwb5dchAw (server "ThinMuscle 薄肌"; Discord API on 2026-10-16 reports expires_at 2026-11-15T00:32:58Z, i.e. a 30-day invite). Footer "联系我们" column links to it.
+## Discord（已停用）
+- 2026-10-21 起，社区渠道改为 GitHub Discussions（https://github.com/AprilNEA/Boji/discussions），网站不再链接 Discord。原邀请：https://discord.gg/Fwb5dchAw (server "ThinMuscle 薄肌"; Discord API on 2026-10-16 reports expires_at 2026-11-15T00:32:58Z, i.e. a 30-day invite). Footer "联系我们" column links to it.
 ## 逐水草而居 source
 - 孙宇晨 in the 邵艾伦 podcast: "逐水草而居" — go where you create the most value; avoid locking yourself into one city early with mortgage/car/marriage; keep assets "拎了就走". Summary: https://x.com/i/article/2108546430478713188
 
