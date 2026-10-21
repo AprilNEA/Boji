@@ -11,12 +11,12 @@
 | `ios/` | iOS App、watchOS App 和小组件：SwiftUI 和 XcodeGen 工程 | 首版功能已实现 | [iOS 说明](../ios/README.md) |
 | `android/` | Android App：Kotlin、Jetpack Compose 和 Gradle 工程 | 训练和记录功能已移植；账号、会员和设备联动尚未移植 | [Android 说明](../android/README.md) |
 | `bizserver/` | 后端：Rust、Axum、ConnectRPC、SeaORM 和 PostgreSQL | 开发中，尚未部署 | [后端说明](../bizserver/README.md) |
-| `animations/` | 动作 Lottie 动画：TypeScript 生成器和生成的 JSON | 16 个课程动作已生成 | [动作动画说明](../animations/README.md) |
+| `animations/` | 动作 Lottie 动画：TypeScript 生成器和生成的 JSON | 16 个课程动作已接入两端；动作库的 1567 个动作已生成，尚未接入 | [动作动画说明](../animations/README.md) |
 | `websites/` | 薄肌俱乐部宣传网站和 `/docs` 文档站：Next.js 静态导出、Tailwind CSS、Motion 和 Fumadocs | 网站已从 `bojiclub` 导入；文档站只有占位页面 | [网站说明](../websites/README.md) |
 | `locales/` | 两端共用的文案：YAML 格式的 ICU MessageFormat，每种语言一个目录 | 已接入 iOS 和 Android | [文案说明](../locales/README.md) |
 | `crates/` | 仓库工具的 Rust 工作区。`crates/locales/` 从 `locales/` 生成两端的字符串资源 | 不适用 | [文案说明](../locales/README.md) |
 | `docs/` | 两端共享的文档。`docs/sites/` 存放文档站的页面 | 不适用 | [会员卡开发说明](membership.md) |
-| `assets/public/` | 部署到 `https://assets.leanmuscle.club` 的通用静态文件，目前是浅色和深色应用图标，根目录 README 也使用这两张图 | 已上线 | 不适用 |
+| `assets/public/` | 部署到 `https://assets.leanmuscle.club` 的通用静态文件，目前有浅色和深色应用图标、iOS 截图和动作预览图。根目录 README 使用这些文件 | 应用图标已上线；截图和动作预览图尚未部署 | 不适用 |
 
 每个目录还有一份 `AGENTS.md`，记录面向编码代理的目录规则。
 
