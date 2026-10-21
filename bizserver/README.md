@@ -10,6 +10,7 @@
 - 账号注销和更换邮箱。注销需要邮件中的确认码，更换邮箱需要旧邮箱确认和新邮箱验证。
 - 认证邮件经 SMTP 中继发送。开发环境未设置 `SMTP_HOST` 时写入本地文件。
 - Apple 登录：原生身份令牌和网页 `form_post` 流程。设置全部 `APPLE_*` 变量后启用。账号关联由 `ACCOUNT_LINKING` 控制，默认关闭。详见[认证迁移说明](docs/migration-auth.md)。
+- Google 登录：原生 ID 令牌。设置 `GOOGLE_CLIENT_ID` 后启用，账号关联规则与 Apple 相同。
 - 免费会员卡与结构化权益。每个用户最多持有一张会员卡。
 - Apple Wallet 会员卡。设置 `WALLET_*` 变量后，服务端为有效会员卡签发通行证。
 - 主动授权的活动同步、冲突检测和每日汇总。
@@ -37,6 +38,7 @@
 | `MAIL_FROM`、`SMTP_*`、`MAIL_OUTPUT_DIR` | 认证邮件 | 必须设置 `SMTP_HOST` 和 `MAIL_FROM`，`SMTP_TLS` 不能为 `none` |
 | `CLIENT_IP_HEADER`、`TRUSTED_PROXIES` | 会话记录的客户端 IP | 可选。留空时不记录 IP |
 | `APPLE_*`、`ACCOUNT_LINKING` | Apple 登录 | 可选。全部填写或全部留空 |
+| `GOOGLE_*` | Google 登录 | 可选。填写 `GOOGLE_CLIENT_ID` 即启用，另外两项依赖它 |
 | `WALLET_*` | Apple Wallet 签名材料 | 可选。全部填写或全部留空 |
 
 `CLIENT_IP_HEADER` 必须是网关覆盖写入的请求头，例如 `cf-connecting-ip`。客户端能自行设置的请求头会让会话记录伪造的 IP。

@@ -60,4 +60,14 @@ public interface ServerConfigOrBuilder extends
    * @return The activitySyncEnabled.
    */
   boolean getActivitySyncEnabled();
+
+  /**
+   * <pre>
+   * Output only. True when Sign in with Google is available under `/api/auth`.
+   * </pre>
+   *
+   * <code>bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   * @return The googleLoginEnabled.
+   */
+  boolean getGoogleLoginEnabled();
 }

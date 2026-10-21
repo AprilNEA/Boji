@@ -26,6 +26,7 @@ async fn test_auth() -> Arc<Auth> {
         },
         client_ip: Default::default(),
         apple: None,
+        google: None,
         account_linking: Default::default(),
     };
     build(database, options)

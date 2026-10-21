@@ -138,6 +138,31 @@ public object ServerConfigKt {
     public fun clearActivitySyncEnabled() {
       _builder.clearActivitySyncEnabled()
     }
+
+    /**
+     * ```
+     * Output only. True when Sign in with Google is available under `/api/auth`.
+     * ```
+     *
+     * `bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];`
+     */
+    public var googleLoginEnabled: kotlin.Boolean
+      @kotlin.jvm.JvmName("getGoogleLoginEnabled")
+        get() = _builder.googleLoginEnabled
+      @kotlin.jvm.JvmName("setGoogleLoginEnabled")
+        set(value) {
+        _builder.googleLoginEnabled = value
+      }
+    /**
+     * ```
+     * Output only. True when Sign in with Google is available under `/api/auth`.
+     * ```
+     *
+     * `bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];`
+     */
+    public fun clearGoogleLoginEnabled() {
+      _builder.clearGoogleLoginEnabled()
+    }
   }
 }
 public inline fun club.leanmuscle.boji.v1.ServerConfig.copy(block: `club.leanmuscle.boji.v1`.ServerConfigKt.Dsl.() -> kotlin.Unit): club.leanmuscle.boji.v1.ServerConfig =

@@ -79,6 +79,7 @@ async fn run(sentry: bool) -> Result<()> {
     }
     let capabilities = rpc::Capabilities {
         apple_sign_in: config.apple.is_some(),
+        google_sign_in: config.google.is_some(),
         wallet,
     };
     let auth = auth::build(
@@ -90,6 +91,7 @@ async fn run(sentry: bool) -> Result<()> {
             mail: config.mail,
             client_ip: config.client_ip,
             apple: config.apple,
+            google: config.google,
             account_linking: config.account_linking,
         },
     )

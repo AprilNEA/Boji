@@ -33,6 +33,7 @@ async fn native_auth_and_business_rpc_over_real_http() {
             },
             client_ip: auth::ClientIp::default(),
             apple: None,
+            google: None,
             account_linking: auth::AccountLinking::Disabled,
         },
     )

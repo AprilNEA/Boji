@@ -43,6 +43,9 @@ public nonisolated struct Boji_V1_ServerConfig: Sendable {
   /// Output only. True when `ActivityService` accepts synchronization.
   public var activitySyncEnabled: Bool = false
 
+  /// Output only. True when Sign in with Google is available under `/api/auth`.
+  public var googleLoginEnabled: Bool = false
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -68,7 +71,7 @@ fileprivate nonisolated let _protobuf_package = "boji.v1"
 
 nonisolated extension Boji_V1_ServerConfig: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ServerConfig"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{3}apple_login_enabled\0\u{3}wallet_pass_enabled\0\u{3}activity_sync_enabled\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{3}apple_login_enabled\0\u{3}wallet_pass_enabled\0\u{3}activity_sync_enabled\0\u{3}google_login_enabled\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -80,6 +83,7 @@ nonisolated extension Boji_V1_ServerConfig: SwiftProtobuf.Message, SwiftProtobuf
       case 2: try { try decoder.decodeSingularBoolField(value: &self.appleLoginEnabled) }()
       case 3: try { try decoder.decodeSingularBoolField(value: &self.walletPassEnabled) }()
       case 4: try { try decoder.decodeSingularBoolField(value: &self.activitySyncEnabled) }()
+      case 5: try { try decoder.decodeSingularBoolField(value: &self.googleLoginEnabled) }()
       default: break
       }
     }
@@ -98,6 +102,9 @@ nonisolated extension Boji_V1_ServerConfig: SwiftProtobuf.Message, SwiftProtobuf
     if self.activitySyncEnabled != false {
       try visitor.visitSingularBoolField(value: self.activitySyncEnabled, fieldNumber: 4)
     }
+    if self.googleLoginEnabled != false {
+      try visitor.visitSingularBoolField(value: self.googleLoginEnabled, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -106,6 +113,7 @@ nonisolated extension Boji_V1_ServerConfig: SwiftProtobuf.Message, SwiftProtobuf
     if lhs.appleLoginEnabled != rhs.appleLoginEnabled {return false}
     if lhs.walletPassEnabled != rhs.walletPassEnabled {return false}
     if lhs.activitySyncEnabled != rhs.activitySyncEnabled {return false}
+    if lhs.googleLoginEnabled != rhs.googleLoginEnabled {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

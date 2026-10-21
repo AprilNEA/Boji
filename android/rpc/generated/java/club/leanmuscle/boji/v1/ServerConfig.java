@@ -209,6 +209,44 @@ public  final class ServerConfig extends
     activitySyncEnabled_ = false;
   }
 
+  public static final int GOOGLE_LOGIN_ENABLED_FIELD_NUMBER = 5;
+  private boolean googleLoginEnabled_;
+  /**
+   * <pre>
+   * Output only. True when Sign in with Google is available under `/api/auth`.
+   * </pre>
+   *
+   * <code>bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   * @return The googleLoginEnabled.
+   */
+  @java.lang.Override
+  public boolean getGoogleLoginEnabled() {
+    return googleLoginEnabled_;
+  }
+  /**
+   * <pre>
+   * Output only. True when Sign in with Google is available under `/api/auth`.
+   * </pre>
+   *
+   * <code>bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   * @param value The googleLoginEnabled to set.
+   */
+  private void setGoogleLoginEnabled(boolean value) {
+    
+    googleLoginEnabled_ = value;
+  }
+  /**
+   * <pre>
+   * Output only. True when Sign in with Google is available under `/api/auth`.
+   * </pre>
+   *
+   * <code>bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   */
+  private void clearGoogleLoginEnabled() {
+
+    googleLoginEnabled_ = false;
+  }
+
   public static club.leanmuscle.boji.v1.ServerConfig parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -506,6 +544,46 @@ public  final class ServerConfig extends
       return this;
     }
 
+    /**
+     * <pre>
+     * Output only. True when Sign in with Google is available under `/api/auth`.
+     * </pre>
+     *
+     * <code>bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return The googleLoginEnabled.
+     */
+    @java.lang.Override
+    public boolean getGoogleLoginEnabled() {
+      return instance.getGoogleLoginEnabled();
+    }
+    /**
+     * <pre>
+     * Output only. True when Sign in with Google is available under `/api/auth`.
+     * </pre>
+     *
+     * <code>bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param value The googleLoginEnabled to set.
+     * @return This builder for chaining.
+     */
+    public Builder setGoogleLoginEnabled(boolean value) {
+      copyOnWrite();
+      instance.setGoogleLoginEnabled(value);
+      return this;
+    }
+    /**
+     * <pre>
+     * Output only. True when Sign in with Google is available under `/api/auth`.
+     * </pre>
+     *
+     * <code>bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearGoogleLoginEnabled() {
+      copyOnWrite();
+      instance.clearGoogleLoginEnabled();
+      return this;
+    }
+
     // @@protoc_insertion_point(builder_scope:boji.v1.ServerConfig)
   }
   @java.lang.Override
@@ -526,10 +604,11 @@ public  final class ServerConfig extends
             "appleLoginEnabled_",
             "walletPassEnabled_",
             "activitySyncEnabled_",
+            "googleLoginEnabled_",
           };
           java.lang.String info =
-              "\u0000\u0004\u0000\u0000\u0001\u0004\u0004\u0000\u0000\u0000\u0001\u0208\u0002\u0007" +
-              "\u0003\u0007\u0004\u0007";
+              "\u0000\u0005\u0000\u0000\u0001\u0005\u0005\u0000\u0000\u0000\u0001\u0208\u0002\u0007" +
+              "\u0003\u0007\u0004\u0007\u0005\u0007";
           return newMessageInfo(DEFAULT_INSTANCE, info, objects);
       }
       case GET_DEFAULT_INSTANCE: {
