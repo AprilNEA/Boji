@@ -102,9 +102,9 @@ export function Footer() {
                 问题与投诉：
                 <br />
                 <a href={`mailto:${CONTACT_EMAIL}`} className="footer-link">
-                  thinmuscle-club
+                  support
                   <wbr />
-                  @proton.me
+                  @leanmuscle.club
                 </a>
               </li>
             </ul>

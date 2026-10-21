@@ -21,7 +21,7 @@ export const LAUNCH_FILM = {
   duration: "0:21",
 } as const;
 
-export const CONTACT_EMAIL = "thinmuscle-club@proton.me";
+export const CONTACT_EMAIL = "support@leanmuscle.club";
 export const DISCUSSIONS_URL = "https://github.com/AprilNEA/Boji/discussions";
 
 /** 顶栏链接。首页是 App 介绍，发布会和选购是俱乐部的恶搞页面。 */

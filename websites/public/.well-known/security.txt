@@ -1,0 +1,5 @@
+Contact: mailto:security@leanmuscle.club
+Expires: 2027-10-21T00:00:00.000Z
+Preferred-Languages: en, zh
+Canonical: https://leanmuscle.club/.well-known/security.txt
+Policy: https://github.com/AprilNEA/Boji/security/policy
