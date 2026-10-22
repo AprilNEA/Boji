@@ -5,7 +5,6 @@ struct ProgressViewScreen: View {
     @Environment(BojiStore.self) private var store
     @State private var entry = false
     @State private var metric = BodyMetric.weight
-    private var sortedEntries: [BodyEntry] { store.bodyEntries.sorted { $0.date < $1.date } }
     private var shareText: String {
         String(localized: .Shared.progressShareText(
             workouts: String(localized: .Shared.progressShareWorkouts(count: store.totalWorkouts)),
@@ -83,7 +82,7 @@ struct ProgressViewScreen: View {
                         ForEach(BodyMetric.allCases) { Text($0.title).tag($0) }
                     }
                     .pickerStyle(.segmented)
-                    if let latest = sortedEntries.last {
+                    if let latest = store.bodyEntries.last {
                         HStack(alignment: .firstTextBaseline, spacing: 4) {
                             Text(metric.value(of: latest).formatted(.number.precision(.fractionLength(1))))
                                 .font(.system(.largeTitle, design: .rounded, weight: .bold))
@@ -92,7 +91,7 @@ struct ProgressViewScreen: View {
                             Spacer()
                             Text(.Shared.progressLatest).font(.footnote).foregroundStyle(.secondary)
                         }
-                        Chart(sortedEntries) { item in
+                        Chart(store.bodyEntries) { item in
                             LineMark(x: .value("日期", item.date), y: .value(metric.title, metric.value(of: item)))
                                 .foregroundStyle(BojiTheme.accent).interpolationMethod(.monotone)
                             PointMark(x: .value("日期", item.date), y: .value(metric.title, metric.value(of: item)))
@@ -100,7 +99,7 @@ struct ProgressViewScreen: View {
                         }
                         .chartYScale(domain: .automatic(includesZero: false))
                         .frame(height: 170)
-                        .accessibilityLabel("身体记录趋势，共 \(sortedEntries.count) 条。下方列出最近的数值。")
+                        .accessibilityLabel("身体记录趋势，共 \(store.bodyEntries.count) 条。下方列出最近的数值。")
                     } else {
                         ContentUnavailableView {
                             Label(.Shared.progressEmptyTitle, systemImage: "chart.xyaxis.line")
@@ -110,9 +109,9 @@ struct ProgressViewScreen: View {
                     }
                 }
             }
-            if !sortedEntries.isEmpty {
+            if !store.bodyEntries.isEmpty {
                 GroupedRows {
-                    ForEach(sortedEntries.reversed().prefix(5)) { item in
+                    ForEach(store.bodyEntries.suffix(5).reversed()) { item in
                         HStack {
                             Text(item.date.formatted(date: .abbreviated, time: .omitted)).foregroundStyle(.secondary)
                             Spacer()

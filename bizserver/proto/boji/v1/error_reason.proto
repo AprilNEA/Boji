@@ -147,4 +147,54 @@ enum ErrorReason {
 
   // `INTERNAL`: the server failed. The message contains no storage details.
   INTERNAL_ERROR = 32;
+
+  // `FAILED_PRECONDITION`: the method requires a membership card, and the
+  // caller has none. Create a membership first.
+  MEMBERSHIP_REQUIRED = 33;
+
+  // `NOT_FOUND`: the organization does not exist.
+  ORGANIZATION_NOT_FOUND = 34;
+
+  // `INVALID_ARGUMENT`: no organization of the requested type accepts the
+  // domain of the email address, or the domain is excluded, for example an
+  // alumni domain. Do not retry with the same address.
+  AFFILIATION_EMAIL_DOMAIN_UNKNOWN = 35;
+
+  // `NOT_FOUND`: the affiliation email verification does not exist.
+  AFFILIATION_EMAIL_VERIFICATION_NOT_FOUND = 36;
+
+  // `INVALID_ARGUMENT`: the verification code is wrong. The user can try
+  // again until the verification expires.
+  AFFILIATION_VERIFICATION_CODE_INVALID = 37;
+
+  // `FAILED_PRECONDITION`: the verification code expired, was already used,
+  // or received too many wrong codes. Request a new code.
+  AFFILIATION_VERIFICATION_EXPIRED = 38;
+
+  // `FAILED_PRECONDITION`: the verification would change the organization
+  // within the cooldown period of its type after the last change.
+  ORGANIZATION_CHANGE_TOO_SOON = 39;
+
+  // `FAILED_PRECONDITION`: the user has no active affiliation of the type to
+  // end. The caller leaves an organization, or an operator revokes an
+  // affiliation.
+  AFFILIATION_INACTIVE = 40;
+
+  // `FAILED_PRECONDITION`: the server cannot verify affiliation email
+  // addresses. Hide the verification entry and read `ServerConfig` again
+  // later. Do not retry automatically.
+  AFFILIATION_VERIFICATION_NOT_CONFIGURED = 41;
+
+  // `RESOURCE_EXHAUSTED`: the request exceeds a limit. The error carries
+  // `google.rpc.RetryInfo` with the delay before the next attempt can
+  // succeed.
+  RATE_LIMITED = 42;
+
+  // `FAILED_PRECONDITION`: an operator froze an organization that is already
+  // frozen. The call changed nothing and wrote no audit event.
+  ORGANIZATION_STANDING_ALREADY_FROZEN = 43;
+
+  // `FAILED_PRECONDITION`: an operator unfroze an organization that is not
+  // frozen. The call changed nothing and wrote no audit event.
+  ORGANIZATION_STANDING_NOT_FROZEN = 44;
 }

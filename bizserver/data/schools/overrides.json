@@ -1,0 +1,122 @@
+{
+  "schools": {
+    "AU:Australian National University": {
+      "chinese_name": "澳大利亚国立大学"
+    },
+    "AU:University of Queensland": {
+      "chinese_name": "昆士兰大学"
+    },
+    "AU:University of Sydney": {
+      "chinese_name": "悉尼大学"
+    },
+    "CA:University of Toronto": {
+      "chinese_name": "多伦多大学"
+    },
+    "CH:ETHZ - ETH Zurich": {
+      "chinese_name": "苏黎世联邦理工学院"
+    },
+    "CH:Universität Zürich": {
+      "chinese_name": "苏黎世大学"
+    },
+    "CN:Chengdu University": {
+      "chinese_name": "成都大学"
+    },
+    "CN:Dalian Medical University": {
+      "chinese_name": "大连医科大学"
+    },
+    "CN:Hainan University": {
+      "chinese_name": "海南大学"
+    },
+    "CN:Shanghai Jiao Tong University": {
+      "chinese_name": "上海交通大学",
+      "merge": ["CN:Shanghai Jiaotong University"]
+    },
+    "CN:Shanghai University of Engineering Science": {
+      "chinese_name": "上海工程技术大学"
+    },
+    "CN:South China Agricultural University": {
+      "chinese_name": "华南农业大学"
+    },
+    "CN:South China Normal University": {
+      "chinese_name": "华南师范大学"
+    },
+    "CN:Southeast University": {
+      "chinese_name": "东南大学"
+    },
+    "CN:Southwest University of Finance and Economics": {
+      "chinese_name": "西南财经大学"
+    },
+    "CN:The University of Nottingham Ningbo China": {
+      "chinese_name": "宁波诺丁汉大学"
+    },
+    "CN:Xi'an Jiaotong-Liverpool University": {
+      "chinese_name": "西交利物浦大学"
+    },
+    "CN:Zhejiang Normal University": {
+      "chinese_name": "浙江师范大学"
+    },
+    "GB:Imperial College London": {
+      "chinese_name": "帝国理工学院"
+    },
+    "GB:University College London, University of London": {
+      "chinese_name": "伦敦大学学院"
+    },
+    "GB:University of Durham": {
+      "chinese_name": "杜伦大学"
+    },
+    "GB:University of Manchester": {
+      "chinese_name": "曼彻斯特大学"
+    },
+    "GB:University of Warwick": {
+      "chinese_name": "华威大学"
+    },
+    "GB:University of the Arts London": {
+      "chinese_name": "伦敦艺术大学"
+    },
+    "IE:University College Dublin": {
+      "chinese_name": "都柏林大学"
+    },
+    "MO:Macau University of Science and Technology": {
+      "chinese_name": "澳门科技大学"
+    },
+    "SG:Nanyang Technological University": {
+      "chinese_name": "南洋理工大学"
+    },
+    "US:Boston University": {
+      "chinese_name": "波士顿大学"
+    },
+    "US:Cornell University": {
+      "chinese_name": "康奈尔大学"
+    },
+    "US:New York University": {
+      "chinese_name": "纽约大学"
+    },
+    "US:Rutgers University": {
+      "chinese_name": "罗格斯大学"
+    },
+    "US:University of California, Los Angeles": {
+      "chinese_name": "加州大学洛杉矶分校"
+    },
+    "US:University of California, San Diego": {
+      "chinese_name": "加州大学圣地亚哥分校"
+    },
+    "US:University of California, Santa Barbara": {
+      "chinese_name": "加州大学圣塔芭芭拉分校"
+    },
+    "US:University of Minnesota": {
+      "chinese_name": "明尼苏达大学"
+    },
+    "US:University of Southern California": {
+      "chinese_name": "南加州大学"
+    },
+    "US:University of Wisconsin - Madison": {
+      "chinese_name": "威斯康星大学麦迪逊分校"
+    },
+    "US:Vanderbilt University": {
+      "chinese_name": "范德堡大学"
+    },
+    "VN:Hanoi University": {
+      "chinese_name": "河内大学"
+    }
+  }
+}

@@ -209,14 +209,58 @@ public  final class ServerConfig extends
     activitySyncEnabled_ = false;
   }
 
-  public static final int GOOGLE_LOGIN_ENABLED_FIELD_NUMBER = 5;
+  public static final int ORGANIZATION_RANKING_ENABLED_FIELD_NUMBER = 5;
+  private boolean organizationRankingEnabled_;
+  /**
+   * <pre>
+   * Output only. True when `AffiliationService` can send and check
+   * affiliation verification codes. `OrganizationService` serves the
+   * organization lists and the rankings in either case.
+   * </pre>
+   *
+   * <code>bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   * @return The organizationRankingEnabled.
+   */
+  @java.lang.Override
+  public boolean getOrganizationRankingEnabled() {
+    return organizationRankingEnabled_;
+  }
+  /**
+   * <pre>
+   * Output only. True when `AffiliationService` can send and check
+   * affiliation verification codes. `OrganizationService` serves the
+   * organization lists and the rankings in either case.
+   * </pre>
+   *
+   * <code>bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   * @param value The organizationRankingEnabled to set.
+   */
+  private void setOrganizationRankingEnabled(boolean value) {
+    
+    organizationRankingEnabled_ = value;
+  }
+  /**
+   * <pre>
+   * Output only. True when `AffiliationService` can send and check
+   * affiliation verification codes. `OrganizationService` serves the
+   * organization lists and the rankings in either case.
+   * </pre>
+   *
+   * <code>bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   */
+  private void clearOrganizationRankingEnabled() {
+
+    organizationRankingEnabled_ = false;
+  }
+
+  public static final int GOOGLE_LOGIN_ENABLED_FIELD_NUMBER = 6;
   private boolean googleLoginEnabled_;
   /**
    * <pre>
    * Output only. True when Sign in with Google is available under `/api/auth`.
    * </pre>
    *
-   * <code>bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   * <code>bool google_login_enabled = 6 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
    * @return The googleLoginEnabled.
    */
   @java.lang.Override
@@ -228,7 +272,7 @@ public  final class ServerConfig extends
    * Output only. True when Sign in with Google is available under `/api/auth`.
    * </pre>
    *
-   * <code>bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   * <code>bool google_login_enabled = 6 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
    * @param value The googleLoginEnabled to set.
    */
   private void setGoogleLoginEnabled(boolean value) {
@@ -240,7 +284,7 @@ public  final class ServerConfig extends
    * Output only. True when Sign in with Google is available under `/api/auth`.
    * </pre>
    *
-   * <code>bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   * <code>bool google_login_enabled = 6 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
    */
   private void clearGoogleLoginEnabled() {
 
@@ -546,10 +590,56 @@ public  final class ServerConfig extends
 
     /**
      * <pre>
+     * Output only. True when `AffiliationService` can send and check
+     * affiliation verification codes. `OrganizationService` serves the
+     * organization lists and the rankings in either case.
+     * </pre>
+     *
+     * <code>bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return The organizationRankingEnabled.
+     */
+    @java.lang.Override
+    public boolean getOrganizationRankingEnabled() {
+      return instance.getOrganizationRankingEnabled();
+    }
+    /**
+     * <pre>
+     * Output only. True when `AffiliationService` can send and check
+     * affiliation verification codes. `OrganizationService` serves the
+     * organization lists and the rankings in either case.
+     * </pre>
+     *
+     * <code>bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param value The organizationRankingEnabled to set.
+     * @return This builder for chaining.
+     */
+    public Builder setOrganizationRankingEnabled(boolean value) {
+      copyOnWrite();
+      instance.setOrganizationRankingEnabled(value);
+      return this;
+    }
+    /**
+     * <pre>
+     * Output only. True when `AffiliationService` can send and check
+     * affiliation verification codes. `OrganizationService` serves the
+     * organization lists and the rankings in either case.
+     * </pre>
+     *
+     * <code>bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearOrganizationRankingEnabled() {
+      copyOnWrite();
+      instance.clearOrganizationRankingEnabled();
+      return this;
+    }
+
+    /**
+     * <pre>
      * Output only. True when Sign in with Google is available under `/api/auth`.
      * </pre>
      *
-     * <code>bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * <code>bool google_login_enabled = 6 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
      * @return The googleLoginEnabled.
      */
     @java.lang.Override
@@ -561,7 +651,7 @@ public  final class ServerConfig extends
      * Output only. True when Sign in with Google is available under `/api/auth`.
      * </pre>
      *
-     * <code>bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * <code>bool google_login_enabled = 6 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
      * @param value The googleLoginEnabled to set.
      * @return This builder for chaining.
      */
@@ -575,7 +665,7 @@ public  final class ServerConfig extends
      * Output only. True when Sign in with Google is available under `/api/auth`.
      * </pre>
      *
-     * <code>bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * <code>bool google_login_enabled = 6 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
      * @return This builder for chaining.
      */
     public Builder clearGoogleLoginEnabled() {
@@ -604,11 +694,12 @@ public  final class ServerConfig extends
             "appleLoginEnabled_",
             "walletPassEnabled_",
             "activitySyncEnabled_",
+            "organizationRankingEnabled_",
             "googleLoginEnabled_",
           };
           java.lang.String info =
-              "\u0000\u0005\u0000\u0000\u0001\u0005\u0005\u0000\u0000\u0000\u0001\u0208\u0002\u0007" +
-              "\u0003\u0007\u0004\u0007\u0005\u0007";
+              "\u0000\u0006\u0000\u0000\u0001\u0006\u0006\u0000\u0000\u0000\u0001\u0208\u0002\u0007" +
+              "\u0003\u0007\u0004\u0007\u0005\u0007\u0006\u0007";
           return newMessageInfo(DEFAULT_INSTANCE, info, objects);
       }
       case GET_DEFAULT_INSTANCE: {

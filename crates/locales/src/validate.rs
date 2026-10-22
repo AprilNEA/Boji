@@ -13,6 +13,7 @@ use crate::catalog::{Catalog, Config, Entry, LOCALES_DIR};
 use crate::locale::Locale;
 use crate::message::{Forms, Message, Segment};
 use crate::model::{ArgType, Key, PluralCategory, Target};
+use crate::wallet;
 
 /// One broken rule, tied to a file and, when known, a key.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -110,6 +111,7 @@ impl Catalog {
         let parsed = self.parse_messages(&mut problems);
         self.check_complete(&mut problems);
         self.check_plural_consistency(&parsed, &mut problems);
+        self.check_wallet(&parsed, &mut problems);
         if !problems.0.is_empty() {
             return Err(problems.0);
         }
@@ -313,6 +315,47 @@ impl Catalog {
                             ),
                         );
                     }
+                }
+            }
+        }
+    }
+
+    /// A Wallet pass uses the fallback text of each string as its localization
+    /// key, and `pass.strings` has no format arguments. So a `wallet` key holds
+    /// literal text, and its fallback text is unique and not empty.
+    fn check_wallet(&self, parsed: &HashMap<(&Locale, &Key), Message>, problems: &mut Problems) {
+        let fallback = &self.config.fallback;
+        let mut owners: HashMap<String, &Key> = HashMap::new();
+        for (domain, entries) in &self.meta {
+            for (key, entry) in entries {
+                if !entry.targets.contains(&Target::Wallet) {
+                    continue;
+                }
+                if !entry.args.is_empty() {
+                    problems.add(
+                        meta_path(domain),
+                        Some(key),
+                        "declares arguments, but the wallet target takes literal text only; Wallet pass.strings files have no format arguments",
+                    );
+                    continue;
+                }
+                let Some(text) = parsed.get(&(fallback, key)).and_then(wallet::literal_text) else {
+                    continue;
+                };
+                if text.trim().is_empty() {
+                    problems.add(
+                        message_path(fallback, domain),
+                        Some(key),
+                        "is empty; the pass uses the fallback text as the localization key",
+                    );
+                } else if let Some(first) = owners.insert(text, key) {
+                    problems.add(
+                        message_path(fallback, domain),
+                        Some(key),
+                        format!(
+                            "has the same `{fallback}` text as `{first}`; the pass uses the fallback text as the localization key"
+                        ),
+                    );
                 }
             }
         }

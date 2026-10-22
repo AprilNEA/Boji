@@ -12,9 +12,10 @@
 - Apple 登录：原生身份令牌和网页 `form_post` 流程。设置全部 `APPLE_*` 变量后启用。账号关联由 `ACCOUNT_LINKING` 控制，默认关闭。详见[认证迁移说明](docs/migration-auth.md)。
 - Google 登录：原生 ID 令牌。设置 `GOOGLE_CLIENT_ID` 后启用，账号关联规则与 Apple 相同。
 - 免费会员卡与结构化权益。每个用户最多持有一张会员卡。
-- Apple Wallet 会员卡。设置 `WALLET_*` 变量后，服务端为有效会员卡签发通行证。
+- Apple Wallet 会员卡。设置 `WALLET_*` 变量后，服务端为有效会员卡签发通行证，并提供通行证更新服务。会员卡状态变化后，已添加的通行证随之更新。
 - 主动授权的活动同步、冲突检测和每日汇总。
 - 会员运营：列表、查询、暂停、恢复和权益管理。变更与审计原子提交。
+- 学校排名：学校名单、学校邮箱验证码认证、公开的学校人数排名和运营的撤销与冻结。接口使用通用的组织模型，学校是 `SCHOOL` 类型的组织。设置 `AFFILIATION_EMAIL_HMAC_KEY` 后启用认证。名单数据见 [`data/schools/`](data/schools/README.md)，规则见[大学排名设计](../docs/developers/school-ranking.mdx)。
 - Axum 健康检查、CORS 和脱敏请求日志。
 - 可选的 Sentry 错误上报：设置 `SENTRY_DSN` 后，上报 `ERROR` 日志、panic 和启动错误。事件不含请求头、请求体、查询串和用户身份。详见 [Sentry 错误上报](../docs/developers/sentry.mdx)。
 - 版本化 SeaORM 迁移与 Docker 开发配置。
@@ -22,9 +23,11 @@
 以下内容不在本服务中：
 
 - 可靠发件箱。服务端不保存待发邮件，也不自动重发。
-- 通行证更新和 Google Wallet。已保存的通行证不会随会员卡状态更新。
+- Google Wallet。
+- 通行证推送的重试。APNs 推送失败时，服务端只记录日志，不重发。用户在钱包的通行证详情中下拉刷新时，钱包仍会请求更新服务。
 - 注销账号时撤销 Apple 令牌。这一步需要 iOS 客户端提供授权码，详见[迁移状态](docs/migration-status.md)。
-- 请求限流、代理信任和压力测试。这些由 CDN 和网关负责。
+- 请求限流、代理信任和压力测试。这些由 CDN 和网关负责。学校验证码的发送上限是业务规则，不是请求限流。
+- 学校排名的网站页面和 App 入口。
 
 ## 配置
 
@@ -39,7 +42,8 @@
 | `CLIENT_IP_HEADER`、`TRUSTED_PROXIES` | 会话记录的客户端 IP | 可选。留空时不记录 IP |
 | `APPLE_*`、`ACCOUNT_LINKING` | Apple 登录 | 可选。全部填写或全部留空 |
 | `GOOGLE_*` | Google 登录 | 可选。填写 `GOOGLE_CLIENT_ID` 即启用，另外两项依赖它 |
-| `WALLET_*` | Apple Wallet 签名材料 | 可选。全部填写或全部留空 |
+| `WALLET_*` | Apple Wallet 签名材料和通行证认证令牌密钥 | 可选。全部填写或全部留空。启用时必须设置 `BETTER_AUTH_URL` |
+| `AFFILIATION_EMAIL_HMAC_KEY` | 学校认证 | 可选。留空时关闭学校认证 |
 
 `CLIENT_IP_HEADER` 必须是网关覆盖写入的请求头，例如 `cf-connecting-ip`。客户端能自行设置的请求头会让会话记录伪造的 IP。
 
@@ -48,8 +52,25 @@
 - 私钥与 `WALLET_SIGNER_CERT` 匹配。
 - 签名证书主题的 UID 等于 `WALLET_PASS_TYPE_IDENTIFIER`，OU 等于 `WALLET_TEAM_IDENTIFIER`。
 - 签名证书由 `WALLET_WWDR_CERT` 签发，WWDR 证书由内置的 Apple Root CA 签发。
+- `WALLET_AUTH_TOKEN_KEY` 至少 32 字节，并且不同于 `BETTER_AUTH_SECRET`。
 
 证书过期或尚未生效不会阻止启动。此时 `walletPassEnabled` 为 `false`，签发请求返回 `WALLET_NOT_CONFIGURED`。
+
+### 通行证更新服务
+
+启用 Wallet 后，服务在 `/wallet` 下挂载 Apple 定义的更新服务。通行证的 `webServiceURL` 是 `BETTER_AUTH_URL` 的源站加 `/wallet`，例如 `https://api.example.com/wallet`。网关必须把 `/wallet/v1/*` 转发到本服务。这组接口是 Apple 规定的 HTTP 和 JSON 接口，不是 ConnectRPC。
+
+| 方法 | 路径 | 作用 |
+| --- | --- | --- |
+| POST | `/wallet/v1/devices/{设备}/registrations/{Pass Type ID}/{序列号}` | 设备登记推送令牌。新登记返回 `201`，已登记返回 `200` |
+| DELETE | 同上 | 设备删除通行证后注销登记 |
+| GET | `/wallet/v1/devices/{设备}/registrations/{Pass Type ID}` | 返回 `passesUpdatedSince` 之后变化的序列号。没有变化时返回 `204` |
+| GET | `/wallet/v1/passes/{Pass Type ID}/{序列号}` | 返回重新签名的最新通行证 |
+| POST | `/wallet/v1/log` | 钱包上报的错误。日志只记录条数 |
+
+每张通行证带一个认证令牌。令牌由 `WALLET_AUTH_TOKEN_KEY` 和序列号经 HMAC-SHA256 派生，数据库不保存令牌。更换 `WALLET_AUTH_TOKEN_KEY` 后，已添加的通行证全部无法更新，用户需要重新添加。所以首次部署后不要更换这个密钥。
+
+运营暂停或恢复会员卡后，服务端标记通行证已变化，再通过 APNs 向登记的设备发送空推送。推送使用通行证签名证书和生产环境 APNs，不需要单独的推送证书。APNs 报告令牌失效时，服务端删除这条登记。暂停的会员卡返回已失效（`voided`）的通行证，恢复后通行证重新生效。
 
 ## 本地启动
 
@@ -72,8 +93,11 @@ chmod 600 .env
 ```bash
 docker compose up -d postgres
 cargo run --locked -- migrate
+cargo run --locked -- import-schools
 cargo run --locked -- serve
 ```
+
+`import-schools` 把 `data/schools/` 中的学校名单写入数据库，可以重复运行。不运行这一步时，学校名单为空，所有学校邮箱都返回 `AFFILIATION_EMAIL_DOMAIN_UNKNOWN`。
 
 数据库只监听 `127.0.0.1:55439`，与 `.env.example` 中的 `DATABASE_URL` 一致。本机服务地址为 `http://localhost:3000`。`/healthz` 检查进程。`/readyz` 检查数据库。未设置 `SMTP_HOST` 时，开发邮件写入 `.data/mail/`，不会实际外发。
 
@@ -106,10 +130,11 @@ Docker 服务地址为 `http://localhost:3002`。Compose 等待数据库就绪�
 
 镜像包含 `linux/amd64` 和 `linux/arm64` 两个平台，两个平台分别在 GitHub 托管的原生 runner 上构建。每个平台附带 SBOM 和 SLSA 来源证明 (provenance)。仓库为私有仓库时，流程不签名来源证明，因为公共 Sigstore 服务会把仓库名和提交记录到公开日志中。
 
-镜像默认设置 `APP_ENV=production`，缺少生产配置时服务拒绝启动。`compose.yml` 为本地服务设置 `APP_ENV=development`。部署时先运行 `migrate`，再运行 `serve`：
+镜像默认设置 `APP_ENV=production`，缺少生产配置时服务拒绝启动。`compose.yml` 为本地服务设置 `APP_ENV=development`。部署时先运行 `migrate` 和 `import-schools`，再运行 `serve`：
 
 ```bash
 docker run --rm --env-file .env.production ghcr.io/aprilnea/boji-bizserver:0.1.0 migrate
+docker run --rm --env-file .env.production ghcr.io/aprilnea/boji-bizserver:0.1.0 import-schools
 docker run -d --env-file .env.production -p 3000:3000 ghcr.io/aprilnea/boji-bizserver:0.1.0
 ```
 
@@ -119,9 +144,10 @@ docker run -d --env-file .env.production -p 3000:3000 ghcr.io/aprilnea/boji-bizs
 
 认证保留 `/api/auth/*`。业务改用版本化 RPC 路径。协议按 Google AIP 设计，协议文件是接口的唯一来源：
 
-- [会员本人协议](proto/boji/v1/)：系统配置、会员卡、活动同步、Wallet 和错误原因
-- [运营协议](proto/boji/admin/v1/)：权益目录与会员运营
+- [会员本人协议](proto/boji/v1/)：系统配置、会员卡、活动同步、Wallet、学校排名和错误原因
+- [运营协议](proto/boji/admin/v1/)：权益目录、会员运营和学校排名运营
 - [iOS 客户端代码](../ios/BojiAPI/)：在该目录运行 `buf generate`，从 `proto/boji/v1/` 生成 Swift 消息和 Connect 客户端
+- [Android 客户端代码](../android/rpc/)：在该目录运行 `buf generate`，从 `proto/boji/v1/` 生成 Kotlin 消息和 Connect 客户端
 - [RPC 使用说明](docs/connectrpc-api.md)
 - [运营权限与审计说明](docs/admin-operations.md)
 - [认证迁移说明](docs/migration-auth.md)

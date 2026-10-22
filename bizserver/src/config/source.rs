@@ -17,7 +17,7 @@ use serde::Deserialize;
 /// A key path with a `.` places the value in a group, for example
 /// `APPLE_TEAM_ID` becomes `apple.team_id`. The process ignores variables
 /// that are not in this table.
-pub const VARIABLES: [(&str, &str); 34] = [
+pub const VARIABLES: [(&str, &str); 35] = [
     ("APP_ENV", "app_env"),
     ("HOST", "host"),
     ("PORT", "port"),
@@ -50,7 +50,6 @@ pub const VARIABLES: [(&str, &str); 34] = [
     ),
     ("WALLET_PASS_TYPE_IDENTIFIER", "wallet.pass_type_identifier"),
     ("WALLET_TEAM_IDENTIFIER", "wallet.team_identifier"),
-    ("WALLET_ORGANIZATION_NAME", "wallet.organization_name"),
     ("WALLET_SIGNER_CERT", "wallet.signer_cert"),
     ("WALLET_SIGNER_KEY", "wallet.signer_key"),
     (
@@ -58,6 +57,8 @@ pub const VARIABLES: [(&str, &str); 34] = [
         "wallet.signer_key_passphrase",
     ),
     ("WALLET_WWDR_CERT", "wallet.wwdr_cert"),
+    ("WALLET_AUTH_TOKEN_KEY", "wallet.auth_token_key"),
+    ("AFFILIATION_EMAIL_HMAC_KEY", "affiliation_email_hmac_key"),
 ];
 
 /// Return the environment variable for a figment key path.
@@ -174,6 +175,7 @@ pub struct Settings {
     pub apple: AppleSettings,
     pub google: GoogleSettings,
     pub wallet: WalletSettings,
+    pub affiliation_email_hmac_key: Option<String>,
 }
 
 /// `MAIL_*` variables.
@@ -221,11 +223,11 @@ pub struct GoogleSettings {
 pub struct WalletSettings {
     pub pass_type_identifier: Option<String>,
     pub team_identifier: Option<String>,
-    pub organization_name: Option<String>,
     pub signer_cert: Option<String>,
     pub signer_key: Option<String>,
     pub signer_key_passphrase: Option<String>,
     pub wwdr_cert: Option<String>,
+    pub auth_token_key: Option<String>,
 }
 
 #[cfg(test)]

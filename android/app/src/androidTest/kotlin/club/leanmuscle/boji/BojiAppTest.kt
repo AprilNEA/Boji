@@ -81,7 +81,7 @@ class BojiAppTest {
     @Test
     fun keepsSelectedTabAndDetailAfterRecreate() {
         composeRule.onNodeWithTag(BojiDestination.Training.tabTag).performClick()
-        composeRule.onNodeWithTag("mobility_workout").performScrollTo().performClick()
+        composeRule.onNodeWithTag("course_mobility").performScrollTo().performClick()
         composeRule.onNodeWithTag("screen_WorkoutDetail").assertIsDisplayed()
 
         // A configuration change, such as rotation or a theme switch.
@@ -117,7 +117,7 @@ class BojiAppTest {
     fun finishingASessionRecordsTheWorkout() {
         val workout = WorkoutLibrary.Mobility
         composeRule.onNodeWithTag(BojiDestination.Training.tabTag).performClick()
-        composeRule.onNodeWithTag("mobility_workout").performScrollTo().performClick()
+        composeRule.onNodeWithTag("course_mobility").performScrollTo().performClick()
         composeRule.onNodeWithTag("start_workout").performClick()
         composeRule.onNodeWithTag("screen_Session").assertIsDisplayed()
 

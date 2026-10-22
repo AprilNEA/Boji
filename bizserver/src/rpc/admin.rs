@@ -128,6 +128,8 @@ impl BusinessService {
                 ),
             });
         }
+        // The transaction committed, so devices that ask now see the new pass.
+        self.pass_updates.pass_changed(id);
         membership_resource(&result.membership, None)
     }
 }

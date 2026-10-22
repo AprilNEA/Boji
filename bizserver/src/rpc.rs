@@ -6,21 +6,29 @@
 
 mod activity;
 mod admin;
+mod affiliation;
 mod conversion;
 pub(crate) mod error;
 mod filter;
 mod membership;
 mod names;
+mod organization;
+mod organization_admin;
 mod pagination;
 mod wallet;
 
 use crate::{
     auth::{self, Auth, AuthFailure, Principal},
+    domain::organization::{AffiliationEmailKey, RankingCache},
+    mail::Mailer,
     proto::{
         boji::{admin::v1 as a, v1 as p},
         google,
     },
-    wallet::PassSigner,
+    wallet::{
+        PassSigner,
+        push::{PassUpdates, PushSender},
+    },
 };
 use connectrpc::{
     ConnectError, ErrorCode, RequestContext, Response, ServiceRequest, ServiceResult,
@@ -34,14 +42,29 @@ pub struct BusinessService {
     db: DatabaseConnection,
     auth: Arc<Auth>,
     wallet: Option<Arc<PassSigner>>,
+    affiliation_verification: Option<AffiliationVerification>,
+    ranking: RankingCache,
+    pass_updates: PassUpdates,
 }
 
 impl BusinessService {
     /// Construct a transport over the existing SeaORM pool and authentication service.
     ///
-    /// `wallet` signs Apple Wallet passes. `None` disables `WalletService`.
-    pub fn new(db: DatabaseConnection, auth: Arc<Auth>, wallet: Option<Arc<PassSigner>>) -> Self {
-        Self { db, auth, wallet }
+    /// `capabilities.wallet` signs Apple Wallet passes. `None` disables
+    /// `WalletService`. `capabilities.wallet_push` tells devices that a pass
+    /// changed. `capabilities.affiliation_verification` sends organization
+    /// verification codes. `None` disables the methods of
+    /// `AffiliationService` that send or check codes.
+    pub fn new(db: DatabaseConnection, auth: Arc<Auth>, capabilities: &Capabilities) -> Self {
+        let pass_updates = PassUpdates::new(db.clone(), capabilities.wallet_push.clone());
+        Self {
+            db,
+            auth,
+            wallet: capabilities.wallet.clone(),
+            affiliation_verification: capabilities.affiliation_verification.clone(),
+            ranking: RankingCache::default(),
+            pass_updates,
+        }
     }
 
     async fn principal(&self, context: &RequestContext) -> Result<Principal, ConnectError> {
@@ -77,6 +100,20 @@ pub struct Capabilities {
     pub google_sign_in: bool,
     /// Apple Wallet pass signing. `None` when the `WALLET_*` variables are unset.
     pub wallet: Option<Arc<PassSigner>>,
+    /// Pass update notifications. `None` records pass changes but sends no
+    /// notification. `main.rs` sets it whenever `wallet` is set.
+    pub wallet_push: Option<Arc<dyn PushSender>>,
+    /// Organization email verification. `None` when `AFFILIATION_EMAIL_HMAC_KEY` is unset.
+    pub affiliation_verification: Option<AffiliationVerification>,
+}
+
+/// The key and the mail transport of organization email verification.
+#[derive(Clone, Debug)]
+pub struct AffiliationVerification {
+    /// The key of the address and code digests.
+    pub key: Arc<AffiliationEmailKey>,
+    /// The transport that delivers verification codes.
+    pub mailer: Mailer,
 }
 
 /// The `ServerConfig` singleton.
@@ -109,6 +146,7 @@ impl p::SystemService for SystemService {
                 .as_ref()
                 .is_some_and(|signer| signer.is_current(chrono::Utc::now())),
             activity_sync_enabled: true,
+            organization_ranking_enabled: self.capabilities.affiliation_verification.is_some(),
             ..Default::default()
         })
     }
@@ -135,18 +173,24 @@ fn install_type_registry() {
 /// Register generated service traits with the official ConnectRPC runtime.
 ///
 /// `WalletService` is always registered. Without valid signing material it
-/// returns `WALLET_NOT_CONFIGURED`.
+/// returns `WALLET_NOT_CONFIGURED`. `AffiliationService` is always
+/// registered too. Without a key it returns
+/// `AFFILIATION_VERIFICATION_NOT_CONFIGURED` from the methods that send or check
+/// codes.
 pub fn router(
     db: DatabaseConnection,
     auth: Arc<Auth>,
     capabilities: Capabilities,
 ) -> connectrpc::Router {
     install_type_registry();
-    let service = Arc::new(BusinessService::new(db, auth, capabilities.wallet.clone()));
+    let service = Arc::new(BusinessService::new(db, auth, &capabilities));
     let router = connectrpc::Router::new().add_service(Arc::new(SystemService { capabilities }));
     let router = p::MembershipServiceExt::register(service.clone(), router);
     let router = p::ActivityServiceExt::register(service.clone(), router);
     let router = p::WalletServiceExt::register(service.clone(), router);
+    let router = p::OrganizationServiceExt::register(service.clone(), router);
+    let router = p::AffiliationServiceExt::register(service.clone(), router);
     let router = a::EntitlementServiceExt::register(service.clone(), router);
-    a::MembershipServiceExt::register(service, router)
+    let router = a::MembershipServiceExt::register(service.clone(), router);
+    a::OrganizationServiceExt::register(service, router)
 }

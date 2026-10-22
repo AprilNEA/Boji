@@ -1,0 +1,2199 @@
+[
+  {
+    "id": "bodyweight-squat",
+    "name": "徒手深蹲",
+    "course": "home-beginner",
+    "courses": [
+      "home-beginner"
+    ],
+    "seconds": 3.5,
+    "frames": 210,
+    "posterFrame": 106,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      }
+    ],
+    "files": {
+      "light": "light/bodyweight-squat.json",
+      "dark": "dark/bodyweight-squat.json"
+    },
+    "sha256": {
+      "light": "409a1daaaef5a7627f89ba733a698cd26ecc5f362ec848685e7ff4a8d03c78d5",
+      "dark": "6006c6ab0ece2f14eb5c4dd4b270c4ccde4a42756d119e32f70e2cedb17f35ab"
+    }
+  },
+  {
+    "id": "wall-push-up",
+    "name": "墙壁俯卧撑",
+    "course": "home-beginner",
+    "courses": [
+      "home-beginner"
+    ],
+    "seconds": 3.3,
+    "frames": 198,
+    "posterFrame": 97,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      }
+    ],
+    "files": {
+      "light": "light/wall-push-up.json",
+      "dark": "dark/wall-push-up.json"
+    },
+    "sha256": {
+      "light": "08688ac0cf0c2e17c16c189a549ba2da0ea651cb3111716c11387d81120b9874",
+      "dark": "c2de999ee3b0f8019252459fa93d21fc8c691a01ecc3044a263081daf26b5c86"
+    }
+  },
+  {
+    "id": "glute-bridge",
+    "name": "臀桥",
+    "course": "home-beginner",
+    "courses": [
+      "home-beginner"
+    ],
+    "seconds": 4.2,
+    "frames": 252,
+    "posterFrame": 72,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      }
+    ],
+    "files": {
+      "light": "light/glute-bridge.json",
+      "dark": "dark/glute-bridge.json"
+    },
+    "sha256": {
+      "light": "102b7b8dbe032e165373c83b2e5212c8556433d194707ceefaf24bfb70c596b7",
+      "dark": "de8ed1998271c2d92a4755009711baf281d234efd010d890a17758e957a515c8"
+    }
+  },
+  {
+    "id": "bird-dog",
+    "name": "鸟狗式",
+    "course": "home-beginner",
+    "courses": [
+      "home-beginner"
+    ],
+    "seconds": 7.4,
+    "frames": 444,
+    "posterFrame": 126,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "lowerBack",
+        "name": "竖脊肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/bird-dog.json",
+      "dark": "dark/bird-dog.json"
+    },
+    "sha256": {
+      "light": "dbc74ed28497eb1089cbe71e9f8386c94a245352462270a1f7f5469e5c8637f5",
+      "dark": "5069c8fe787f90cf403dc3250ddd8d20bea6bca5445974fb52b5fa67f8f4c13f"
+    }
+  },
+  {
+    "id": "reverse-lunge",
+    "name": "后撤步弓步蹲",
+    "course": "home-intermediate",
+    "courses": [
+      "home-intermediate"
+    ],
+    "seconds": 6.3,
+    "frames": 378,
+    "posterFrame": 94,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      }
+    ],
+    "files": {
+      "light": "light/reverse-lunge.json",
+      "dark": "dark/reverse-lunge.json"
+    },
+    "sha256": {
+      "light": "f4adec7c0bda8569ee05886be92408d0fc1c3fb6004f30a884f54c7980bbae7d",
+      "dark": "686cfcd245c7b56dd7f322e70babce76b13b10696c6cc8abac10c24cf7d4a286"
+    }
+  },
+  {
+    "id": "knee-push-up",
+    "name": "跪姿俯卧撑",
+    "course": "home-intermediate",
+    "courses": [
+      "home-intermediate"
+    ],
+    "seconds": 3.3,
+    "frames": 198,
+    "posterFrame": 97,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      },
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      }
+    ],
+    "files": {
+      "light": "light/knee-push-up.json",
+      "dark": "dark/knee-push-up.json"
+    },
+    "sha256": {
+      "light": "ebdf2092cdb0d960b30287a8ec9c60d191d08548f98f62383e899477665c4ba6",
+      "dark": "698f10439ed6b0ef68cf4053711bf27691313b4381686198c7241b5aa181011e"
+    }
+  },
+  {
+    "id": "dead-bug",
+    "name": "死虫式",
+    "course": "home-intermediate",
+    "courses": [
+      "home-intermediate"
+    ],
+    "seconds": 6.6,
+    "frames": 396,
+    "posterFrame": 108,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "hipFlexor",
+        "name": "髂腰肌"
+      }
+    ],
+    "files": {
+      "light": "light/dead-bug.json",
+      "dark": "dark/dead-bug.json"
+    },
+    "sha256": {
+      "light": "cb3ea2b564fb5ecd1a9945d55b7a9e55076f40a70a1cee09ed94a6d1e031d574",
+      "dark": "74f8b9f090e1029e818e029718a461b1b29af4dec34b8ecb825fb0b349ac6ec8"
+    }
+  },
+  {
+    "id": "wall-sit",
+    "name": "靠墙静蹲",
+    "course": "home-intermediate",
+    "courses": [
+      "home-intermediate"
+    ],
+    "seconds": 6.2,
+    "frames": 372,
+    "posterFrame": 264,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      }
+    ],
+    "files": {
+      "light": "light/wall-sit.json",
+      "dark": "dark/wall-sit.json"
+    },
+    "sha256": {
+      "light": "59b2fd520ff55bbd4ce95d4fac4e741937c030a77c8c8d21f5da83e0fd8a3148",
+      "dark": "166a515694614b4991130f8095ed1b62426d26d241ac95c5babc7392aa605868"
+    }
+  },
+  {
+    "id": "plank",
+    "name": "平板支撑",
+    "course": "home-intermediate",
+    "courses": [
+      "home-intermediate",
+      "home-core"
+    ],
+    "seconds": 4,
+    "frames": 240,
+    "posterFrame": 120,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/plank.json",
+      "dark": "dark/plank.json"
+    },
+    "sha256": {
+      "light": "c735c4bab6a74fc6f9fd90717d9a55565c72ab5ccf1c23f099e5bda85b6e0b8e",
+      "dark": "ae4e89beac09de3fa77ac580f14e12a0e103eca9a3a87e05be9f0d3284562553"
+    }
+  },
+  {
+    "id": "chest-press",
+    "name": "坐姿推胸",
+    "course": "gym-beginner",
+    "courses": [
+      "gym-beginner"
+    ],
+    "seconds": 3.4,
+    "frames": 204,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/chest-press.json",
+      "dark": "dark/chest-press.json"
+    },
+    "sha256": {
+      "light": "d6d5bd69c5adaddfe2feffec3ee9b7178bfb5810c9e5055d242ae973d9166d37",
+      "dark": "b8cf31699a75997a99561bbad76e218b44157a43aea734a7bae495a2d46391e8"
+    }
+  },
+  {
+    "id": "seated-row",
+    "name": "坐姿划船",
+    "course": "gym-beginner",
+    "courses": [
+      "gym-beginner"
+    ],
+    "seconds": 3.5,
+    "frames": 210,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "lats",
+        "name": "背阔肌"
+      },
+      {
+        "key": "upperBack",
+        "name": "菱形肌和斜方肌中部"
+      },
+      {
+        "key": "biceps",
+        "name": "肱二头肌"
+      }
+    ],
+    "files": {
+      "light": "light/seated-row.json",
+      "dark": "dark/seated-row.json"
+    },
+    "sha256": {
+      "light": "9a17ed941624e8a5efbd09c71bb2e294b1ce0eb4d7e1061ebed36a197a1697d7",
+      "dark": "52296ff8c402e44531bfa480c651ee572704b0b00949ad0bfa909d3e56eeb29a"
+    }
+  },
+  {
+    "id": "leg-press",
+    "name": "坐姿腿举",
+    "course": "gym-beginner",
+    "courses": [
+      "gym-beginner",
+      "gym-lower"
+    ],
+    "seconds": 3.6,
+    "frames": 216,
+    "posterFrame": 66,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      }
+    ],
+    "files": {
+      "light": "light/leg-press.json",
+      "dark": "dark/leg-press.json"
+    },
+    "sha256": {
+      "light": "f97b17f7edc59f930f8c6757e6fb0772857f98133453dc3bfcc41d6a7aafbbd2",
+      "dark": "c88951fd3833c153b211ed9d0a8f62ccd144b39a4b35af14dabd925090b17bd2"
+    }
+  },
+  {
+    "id": "lat-pulldown",
+    "name": "高位下拉",
+    "course": "gym-beginner",
+    "courses": [
+      "gym-beginner"
+    ],
+    "seconds": 3.5,
+    "frames": 210,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "lats",
+        "name": "背阔肌"
+      },
+      {
+        "key": "biceps",
+        "name": "肱二头肌"
+      },
+      {
+        "key": "upperBack",
+        "name": "菱形肌和斜方肌中部"
+      }
+    ],
+    "files": {
+      "light": "light/lat-pulldown.json",
+      "dark": "dark/lat-pulldown.json"
+    },
+    "sha256": {
+      "light": "869147735ce7563bb69209a8d6e69776ff2f2036fada251b88550b9290631e64",
+      "dark": "0c350272fc496a67eee9ec492d30650cd5e9fc06b949939e9a8c9efd1f90ff05"
+    }
+  },
+  {
+    "id": "cat-cow",
+    "name": "猫牛式",
+    "course": "mobility",
+    "courses": [
+      "mobility"
+    ],
+    "seconds": 5,
+    "frames": 300,
+    "posterFrame": 75,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "lowerBack",
+        "name": "竖脊肌"
+      }
+    ],
+    "files": {
+      "light": "light/cat-cow.json",
+      "dark": "dark/cat-cow.json"
+    },
+    "sha256": {
+      "light": "9b590012d69c5142226896eaaf9e3eb00e6c3a759bad51bc2a6fa51c18fed79a",
+      "dark": "181f8db30dc4e34b6b33821fd6d8d7012ad03a2206509348e9200f9622f34ed4"
+    }
+  },
+  {
+    "id": "hip-flexor-stretch",
+    "name": "髋屈肌拉伸",
+    "course": "mobility",
+    "courses": [
+      "mobility"
+    ],
+    "seconds": 5.8,
+    "frames": 348,
+    "posterFrame": 168,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "hipFlexor",
+        "name": "髂腰肌"
+      },
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      }
+    ],
+    "files": {
+      "light": "light/hip-flexor-stretch.json",
+      "dark": "dark/hip-flexor-stretch.json"
+    },
+    "sha256": {
+      "light": "3f8b438f2803cea5ab0a03170dcdd545131c30af75fd5495c1c15c21c57fac01",
+      "dark": "8166b16db1e910b4289449ffa2e381c02e9824604dd264e89de91ea1c59b7dae"
+    }
+  },
+  {
+    "id": "chest-stretch",
+    "name": "开胸拉伸",
+    "course": "mobility",
+    "courses": [
+      "mobility"
+    ],
+    "seconds": 5.4,
+    "frames": 324,
+    "posterFrame": 156,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/chest-stretch.json",
+      "dark": "dark/chest-stretch.json"
+    },
+    "sha256": {
+      "light": "1eca8acb5222eb286d98a7cb6cf1d008b1b11f5fadf0b0785373b3ab9c1b9360",
+      "dark": "47e70b3365c4088e128d4de6e2dd96a50b5452a88af6f1c20ece88574943c1a7"
+    }
+  },
+  {
+    "id": "push-up",
+    "name": "标准俯卧撑",
+    "course": "home-strength",
+    "courses": [
+      "home-strength"
+    ],
+    "seconds": 3.4,
+    "frames": 204,
+    "posterFrame": 103,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      },
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/push-up.json",
+      "dark": "dark/push-up.json"
+    },
+    "sha256": {
+      "light": "4bba1a325348916220b2d34f7220b2741b0007c28dee580f83b9d0048e2d1eed",
+      "dark": "bef6c0393031772099cfda989568511628cbd90a4e595c1e6c2a2ed69b54a2be"
+    }
+  },
+  {
+    "id": "bodyweight-split-squat",
+    "name": "徒手分腿蹲",
+    "course": "home-strength",
+    "courses": [
+      "home-strength"
+    ],
+    "seconds": 3.35,
+    "frames": 201,
+    "posterFrame": 63,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      }
+    ],
+    "files": {
+      "light": "light/bodyweight-split-squat.json",
+      "dark": "dark/bodyweight-split-squat.json"
+    },
+    "sha256": {
+      "light": "f743a28db45110dde5e8bc8d1a3847a6dacdb9d1856591fae15557916e9f19e7",
+      "dark": "45c600b26a4e5b6909a37b8ab2a7555c91d4fc45fc4f6cbe4417329a9ff0c5c8"
+    }
+  },
+  {
+    "id": "single-leg-glute-bridge",
+    "name": "单腿臀桥",
+    "course": "home-strength",
+    "courses": [
+      "home-strength"
+    ],
+    "seconds": 3.55,
+    "frames": 213,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      }
+    ],
+    "files": {
+      "light": "light/single-leg-glute-bridge.json",
+      "dark": "dark/single-leg-glute-bridge.json"
+    },
+    "sha256": {
+      "light": "ebb9f86813700c96104a31037bc01d83cf89a86e87d63bc77911f2a1ec0ebbb3",
+      "dark": "121d9717088ba3cf2deb57e727027573bb3b823375724366768dfc50cf1018cd"
+    }
+  },
+  {
+    "id": "bench-dip",
+    "name": "凳上反向臂屈伸",
+    "course": "home-strength",
+    "courses": [
+      "home-strength"
+    ],
+    "seconds": 3.4,
+    "frames": 204,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      },
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/bench-dip.json",
+      "dark": "dark/bench-dip.json"
+    },
+    "sha256": {
+      "light": "2049adffb6455803cd8dd4f289bbaa6a2b552130e1cb7c7cbae846e1625c8f9d",
+      "dark": "8d9c26819b42825f9de7197cf53b8713557df24488f0fb1dfaff98bf6c822bfb"
+    }
+  },
+  {
+    "id": "superman",
+    "name": "俯卧超人挺身",
+    "course": "home-strength",
+    "courses": [
+      "home-strength"
+    ],
+    "seconds": 3.5,
+    "frames": 210,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "lowerBack",
+        "name": "竖脊肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      }
+    ],
+    "files": {
+      "light": "light/superman.json",
+      "dark": "dark/superman.json"
+    },
+    "sha256": {
+      "light": "8334c8f527c443da913aa0f763f3fff824bcc46bfb60331a8a703ffe47e6e83e",
+      "dark": "b4fcdff784a7fea171eb8fc9697c409dd42fa60068fc03fea19d1f3e117f622a"
+    }
+  },
+  {
+    "id": "bodyweight-forearm-side-plank",
+    "name": "自重前臂侧平板支撑",
+    "course": "home-strength",
+    "courses": [
+      "home-strength"
+    ],
+    "seconds": 3.55,
+    "frames": 213,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "obliques",
+        "name": "腹斜肌"
+      },
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/bodyweight-forearm-side-plank.json",
+      "dark": "dark/bodyweight-forearm-side-plank.json"
+    },
+    "sha256": {
+      "light": "7b28d6ce7a9c4d675c79123ba6913349258a34b935d0d76c816629e18aa241f7",
+      "dark": "0237c453581c600ba3fb1dcc50add8fb8214a679cd855fd334f84413e195cf8a"
+    }
+  },
+  {
+    "id": "crunch",
+    "name": "卷腹",
+    "course": "home-core",
+    "courses": [
+      "home-core"
+    ],
+    "seconds": 3.5,
+    "frames": 210,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      }
+    ],
+    "files": {
+      "light": "light/crunch.json",
+      "dark": "dark/crunch.json"
+    },
+    "sha256": {
+      "light": "1c88496c3c3932646c406c9c258ca5b743e2e56301f8016a043dbe98cefd55db",
+      "dark": "d2ed6acd894a5dda631655ab0b553b47415fe9f7836f1ee638002c0205bb41bd"
+    }
+  },
+  {
+    "id": "reverse-crunch",
+    "name": "反向卷腹",
+    "course": "home-core",
+    "courses": [
+      "home-core"
+    ],
+    "seconds": 3.25,
+    "frames": 195,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "hipFlexor",
+        "name": "髂腰肌"
+      }
+    ],
+    "files": {
+      "light": "light/reverse-crunch.json",
+      "dark": "dark/reverse-crunch.json"
+    },
+    "sha256": {
+      "light": "673f399297b905ca19d40fee14ee5f2bce3039d56a2d208e3c5388f7e8cffc4b",
+      "dark": "85caf834617230f026a8bcc4aee45a37473f8d749750964493a660274e25ea0b"
+    }
+  },
+  {
+    "id": "bicycle-crunch",
+    "name": "自行车卷腹",
+    "course": "home-core",
+    "courses": [
+      "home-core"
+    ],
+    "seconds": 4.4,
+    "frames": 264,
+    "posterFrame": 37,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "obliques",
+        "name": "腹斜肌"
+      },
+      {
+        "key": "hipFlexor",
+        "name": "髂腰肌"
+      }
+    ],
+    "files": {
+      "light": "light/bicycle-crunch.json",
+      "dark": "dark/bicycle-crunch.json"
+    },
+    "sha256": {
+      "light": "19144caa8b96c40021ebc6e952f2e67f30e1f07b66e9ba0a4ca6f990df773775",
+      "dark": "bf74cf673a1ecb2a66389d2ad2c65ebbeaf11f79ff8c71a0a6e9b5b441152d41"
+    }
+  },
+  {
+    "id": "russian-twist",
+    "name": "俄罗斯转体",
+    "course": "home-core",
+    "courses": [
+      "home-core"
+    ],
+    "seconds": 4.6,
+    "frames": 276,
+    "posterFrame": 36,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "obliques",
+        "name": "腹斜肌"
+      },
+      {
+        "key": "lowerBack",
+        "name": "竖脊肌"
+      }
+    ],
+    "files": {
+      "light": "light/russian-twist.json",
+      "dark": "dark/russian-twist.json"
+    },
+    "sha256": {
+      "light": "5e4a4cb9bde09a2ea7aaace890f042503b32300919281e4a03fbc0ccacf3840f",
+      "dark": "a815ef7f5f9967f78bb0b8afc388db4b6808eae8665e26998dd9f3821c0c379a"
+    }
+  },
+  {
+    "id": "flutter-kick",
+    "name": "仰卧交替打腿",
+    "course": "home-core",
+    "courses": [
+      "home-core"
+    ],
+    "seconds": 1.6,
+    "frames": 96,
+    "posterFrame": 47,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "hipFlexor",
+        "name": "髂腰肌"
+      }
+    ],
+    "files": {
+      "light": "light/flutter-kick.json",
+      "dark": "dark/flutter-kick.json"
+    },
+    "sha256": {
+      "light": "b2182d189b85ed0061e6457b7f3381d4f1ddcf4b69d0bbd7723db0631d3da4b7",
+      "dark": "d001aa48050e452c9110877a069de127eadf79d672812882ea3f2104601c1ca3"
+    }
+  },
+  {
+    "id": "jumping-jack",
+    "name": "开合跳",
+    "course": "home-cardio",
+    "courses": [
+      "home-cardio"
+    ],
+    "seconds": 1.1,
+    "frames": 66,
+    "posterFrame": 16,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "calves",
+        "name": "小腿三头肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      },
+      {
+        "key": "abductors",
+        "name": "臀中肌和髋外展肌"
+      }
+    ],
+    "files": {
+      "light": "light/jumping-jack.json",
+      "dark": "dark/jumping-jack.json"
+    },
+    "sha256": {
+      "light": "d451cce57599b23f8dc931adba35852ff633c12ff3ee673435f265ae14fc02d6",
+      "dark": "a9bddffa76c513f476e1c281790b06912a00bcfe623986e7d3b3d61ed06398d3"
+    }
+  },
+  {
+    "id": "wall-high-knees",
+    "name": "扶墙高抬腿",
+    "course": "home-cardio",
+    "courses": [
+      "home-cardio"
+    ],
+    "seconds": 0.72,
+    "frames": 43,
+    "posterFrame": 11,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "hipFlexor",
+        "name": "髂腰肌"
+      },
+      {
+        "key": "calves",
+        "name": "小腿三头肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      }
+    ],
+    "files": {
+      "light": "light/wall-high-knees.json",
+      "dark": "dark/wall-high-knees.json"
+    },
+    "sha256": {
+      "light": "38383dd73c80e106e2586e1536e0db68eb09bf429cde17f9b57b1e54a02531e5",
+      "dark": "775e934b3677649994d802e6ae26cb49cebe9a7dd4a7098bf24fc5426f239aa1"
+    }
+  },
+  {
+    "id": "mountain-climber",
+    "name": "登山者",
+    "course": "home-cardio",
+    "courses": [
+      "home-cardio"
+    ],
+    "seconds": 2.8,
+    "frames": 168,
+    "posterFrame": 33,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "hipFlexor",
+        "name": "髂腰肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/mountain-climber.json",
+      "dark": "dark/mountain-climber.json"
+    },
+    "sha256": {
+      "light": "bcdea83d5644b83850fa8bc4f809f4704a09a8db08fdc5cf9964727b1fbae2cf",
+      "dark": "cb6b2411ad333570a6dad51e7d7c6f83789e04cf42218f513ecf830f02533502"
+    }
+  },
+  {
+    "id": "jump-squat",
+    "name": "深蹲跳",
+    "course": "home-cardio",
+    "courses": [
+      "home-cardio"
+    ],
+    "seconds": 0.77,
+    "frames": 46,
+    "posterFrame": 20,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "calves",
+        "name": "小腿三头肌"
+      },
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      }
+    ],
+    "files": {
+      "light": "light/jump-squat.json",
+      "dark": "dark/jump-squat.json"
+    },
+    "sha256": {
+      "light": "33ce4f7d01db3eaa5806159f092919e3a10ba6c1a3c2c81231c65ac24ec7c36d",
+      "dark": "4a9f5c59fca0c0d8cdde553bdb23da1cab1efa09f8bd0d1087b7a82584b2fffb"
+    }
+  },
+  {
+    "id": "bear-crawl",
+    "name": "熊爬",
+    "course": "home-cardio",
+    "courses": [
+      "home-cardio"
+    ],
+    "seconds": 1.2,
+    "frames": 72,
+    "posterFrame": 18,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      },
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      },
+      {
+        "key": "hipFlexor",
+        "name": "髂腰肌"
+      }
+    ],
+    "files": {
+      "light": "light/bear-crawl.json",
+      "dark": "dark/bear-crawl.json"
+    },
+    "sha256": {
+      "light": "49e8ff7338d86d500a57a50aeca3974946320639bcd2534f7873ccb07ba69def",
+      "dark": "a52583d9d8bf15d2fc5cb1fc5875e62ce88a47e2207bedf1f27635b252ffeaa7"
+    }
+  },
+  {
+    "id": "bodyweight-burpee",
+    "name": "波比跳",
+    "course": "home-cardio",
+    "courses": [
+      "home-cardio"
+    ],
+    "seconds": 2,
+    "frames": 120,
+    "posterFrame": 103,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      },
+      {
+        "key": "calves",
+        "name": "小腿三头肌"
+      }
+    ],
+    "files": {
+      "light": "light/bodyweight-burpee.json",
+      "dark": "dark/bodyweight-burpee.json"
+    },
+    "sha256": {
+      "light": "41136843cd876f72e02eafb5549c8ebf7922d8fe58a8affe266cc0ebf5ee1008",
+      "dark": "df54c762c758db02c757bd5c8a01363a313f4049b3f45f583dcbf0a03d547447"
+    }
+  },
+  {
+    "id": "dumbbell-goblet-squat",
+    "name": "哑铃高脚杯深蹲",
+    "course": "home-dumbbell",
+    "courses": [
+      "home-dumbbell",
+      "gym-free-weights"
+    ],
+    "seconds": 3.7,
+    "frames": 222,
+    "posterFrame": 115,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      }
+    ],
+    "files": {
+      "light": "light/dumbbell-goblet-squat.json",
+      "dark": "dark/dumbbell-goblet-squat.json"
+    },
+    "sha256": {
+      "light": "e099a4c82a33001d0705b6fa79c61d90a19ae81a1854fab1bdf6ea92bc635302",
+      "dark": "ac8c83547c00769d7c4ef711f6458e8d343351054977b0491756dfa31383084e"
+    }
+  },
+  {
+    "id": "dumbbell-floor-press",
+    "name": "哑铃地板卧推",
+    "course": "home-dumbbell",
+    "courses": [
+      "home-dumbbell"
+    ],
+    "seconds": 3.4,
+    "frames": 204,
+    "posterFrame": 0,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/dumbbell-floor-press.json",
+      "dark": "dark/dumbbell-floor-press.json"
+    },
+    "sha256": {
+      "light": "6ce8643ccccf60b048907cb807c073de50a13a75c3685c86db439be98efa6f95",
+      "dark": "309c103ffdb0a483305ad9f841ca30bf9543d0a270f4b1f96e3221f5c085c51b"
+    }
+  },
+  {
+    "id": "dumbbell-bent-over-row",
+    "name": "哑铃俯身划船",
+    "course": "home-dumbbell",
+    "courses": [
+      "home-dumbbell",
+      "gym-free-weights"
+    ],
+    "seconds": 3.3,
+    "frames": 198,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "upperBack",
+        "name": "菱形肌和斜方肌中部"
+      },
+      {
+        "key": "biceps",
+        "name": "肱二头肌"
+      },
+      {
+        "key": "forearms",
+        "name": "前臂肌群"
+      },
+      {
+        "key": "lowerBack",
+        "name": "竖脊肌"
+      }
+    ],
+    "files": {
+      "light": "light/dumbbell-bent-over-row.json",
+      "dark": "dark/dumbbell-bent-over-row.json"
+    },
+    "sha256": {
+      "light": "62ea398c49dd076badc1c82f435f059c06314851316f63f0b405ee337e64d5fe",
+      "dark": "4e607cbe29fb7d500dc1103db9b744817ddfac604c41a3f1a61f7accd7ec7c2d"
+    }
+  },
+  {
+    "id": "dumbbell-romanian-deadlift",
+    "name": "哑铃罗马尼亚硬拉",
+    "course": "home-dumbbell",
+    "courses": [
+      "home-dumbbell",
+      "gym-free-weights"
+    ],
+    "seconds": 3.9,
+    "frames": 234,
+    "posterFrame": 127,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "lowerBack",
+        "name": "竖脊肌"
+      }
+    ],
+    "files": {
+      "light": "light/dumbbell-romanian-deadlift.json",
+      "dark": "dark/dumbbell-romanian-deadlift.json"
+    },
+    "sha256": {
+      "light": "6bc8bd7e8246e4480a0eeb9dad6b5b78301ef47449cb2642343b314d0f4bd9fb",
+      "dark": "3f8ce4df284d582611a34c4e8825b822ccbd27a1c15bda428e434e62ffc67b54"
+    }
+  },
+  {
+    "id": "dumbbell-reverse-lunge",
+    "name": "哑铃后撤弓步蹲",
+    "course": "home-dumbbell",
+    "courses": [
+      "home-dumbbell"
+    ],
+    "seconds": 3.35,
+    "frames": 201,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      }
+    ],
+    "files": {
+      "light": "light/dumbbell-reverse-lunge.json",
+      "dark": "dark/dumbbell-reverse-lunge.json"
+    },
+    "sha256": {
+      "light": "94b3000f67509fd571c02ec4ad8249a58735c83a1440aada9d44bf3d018ba7d6",
+      "dark": "99e81f34020e8435f5d40efe758cc52b2cbc15d6d2760f56e31aca800bbbe3bd"
+    }
+  },
+  {
+    "id": "dumbbell-lateral-raise",
+    "name": "哑铃侧平举",
+    "course": "home-dumbbell",
+    "courses": [
+      "home-dumbbell"
+    ],
+    "seconds": 3.35,
+    "frames": 201,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "delts",
+        "name": "三角肌"
+      },
+      {
+        "key": "traps",
+        "name": "斜方肌上部"
+      }
+    ],
+    "files": {
+      "light": "light/dumbbell-lateral-raise.json",
+      "dark": "dark/dumbbell-lateral-raise.json"
+    },
+    "sha256": {
+      "light": "e937fce339c7006f448d4c4293fbc16e2ee0f9cff6e15a75a22d78b7aaf8b4cf",
+      "dark": "b8869c503416fc0c2835db8073e1469da9ac47c541b64177f8693906cd51bf88"
+    }
+  },
+  {
+    "id": "dumbbell-bench-press",
+    "name": "哑铃卧推",
+    "course": "gym-free-weights",
+    "courses": [
+      "gym-free-weights"
+    ],
+    "seconds": 3.4,
+    "frames": 204,
+    "posterFrame": 0,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/dumbbell-bench-press.json",
+      "dark": "dark/dumbbell-bench-press.json"
+    },
+    "sha256": {
+      "light": "823747268e42ff9cb3871f8ba3de2e0a3c2e95c72368339449ae52185a8dfdf0",
+      "dark": "43f06d70f5cfb60927067fc86cb28988d3e78d78a8596277a8b42935b9b8d41f"
+    }
+  },
+  {
+    "id": "dumbbell-seated-shoulder-press",
+    "name": "哑铃坐姿肩上推举",
+    "course": "gym-free-weights",
+    "courses": [
+      "gym-free-weights"
+    ],
+    "seconds": 3.37,
+    "frames": 202,
+    "posterFrame": 69,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "delts",
+        "name": "三角肌"
+      },
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      }
+    ],
+    "files": {
+      "light": "light/dumbbell-seated-shoulder-press.json",
+      "dark": "dark/dumbbell-seated-shoulder-press.json"
+    },
+    "sha256": {
+      "light": "5a363fa2296ad722110dc3dbf900c24acf3e2fb94082d1702167432149560446",
+      "dark": "59842293f93088464014fe3630c5474f0bfa2cb5fbf0829c8214dd57db39d07e"
+    }
+  },
+  {
+    "id": "dumbbell-biceps-curl",
+    "name": "哑铃弯举",
+    "course": "gym-free-weights",
+    "courses": [
+      "gym-free-weights"
+    ],
+    "seconds": 3.4,
+    "frames": 204,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "biceps",
+        "name": "肱二头肌"
+      },
+      {
+        "key": "forearms",
+        "name": "前臂肌群"
+      }
+    ],
+    "files": {
+      "light": "light/dumbbell-biceps-curl.json",
+      "dark": "dark/dumbbell-biceps-curl.json"
+    },
+    "sha256": {
+      "light": "f37aabbc3680f3f47f9d8bddd794b244161c94a61eb8c86f4ad49771b91a31fb",
+      "dark": "4ef94beef2ae37423a3da805e54ac5c13870557e5f395d860cac7a3699898cde"
+    }
+  },
+  {
+    "id": "machine-chest-press",
+    "name": "器械推胸",
+    "course": "gym-upper",
+    "courses": [
+      "gym-upper"
+    ],
+    "seconds": 3.35,
+    "frames": 201,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/machine-chest-press.json",
+      "dark": "dark/machine-chest-press.json"
+    },
+    "sha256": {
+      "light": "89b2c40186f67d2932495672811c8205668b5d18edba543e106e2af55b488422",
+      "dark": "bfe9335aa41eae6112dd7cc6e500a00a3fc24b461392c94e23ff57a5717b63bf"
+    }
+  },
+  {
+    "id": "machine-shoulder-press",
+    "name": "器械肩上推举",
+    "course": "gym-upper",
+    "courses": [
+      "gym-upper"
+    ],
+    "seconds": 3.37,
+    "frames": 202,
+    "posterFrame": 69,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "delts",
+        "name": "三角肌"
+      },
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      }
+    ],
+    "files": {
+      "light": "light/machine-shoulder-press.json",
+      "dark": "dark/machine-shoulder-press.json"
+    },
+    "sha256": {
+      "light": "0cd82310585710d93d1b644e6403dd541135a0981e00fb7742fa454954e64893",
+      "dark": "9f9cf9f60d71c356a1cf031c6f18d8f9248f1f852db19c8d51e02381357dcdf6"
+    }
+  },
+  {
+    "id": "machine-assisted-pull-up",
+    "name": "器械辅助引体向上",
+    "course": "gym-upper",
+    "courses": [
+      "gym-upper"
+    ],
+    "seconds": 3.4,
+    "frames": 204,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "lats",
+        "name": "背阔肌"
+      },
+      {
+        "key": "biceps",
+        "name": "肱二头肌"
+      },
+      {
+        "key": "forearms",
+        "name": "前臂肌群"
+      }
+    ],
+    "files": {
+      "light": "light/machine-assisted-pull-up.json",
+      "dark": "dark/machine-assisted-pull-up.json"
+    },
+    "sha256": {
+      "light": "f92297de068ac294363ea3b2a65a7baff80c205c41ba217360730057588779d5",
+      "dark": "257b502bf158f85a0eeceaf59891f6d4b51bfff7911f86a714cd2a1738e6dd4a"
+    }
+  },
+  {
+    "id": "machine-pec-deck-fly",
+    "name": "蝴蝶机夹胸",
+    "course": "gym-upper",
+    "courses": [
+      "gym-upper"
+    ],
+    "seconds": 3.5,
+    "frames": 210,
+    "posterFrame": 0,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/machine-pec-deck-fly.json",
+      "dark": "dark/machine-pec-deck-fly.json"
+    },
+    "sha256": {
+      "light": "fa7ee370f734dc96cf30037963164981064131d035346dc6435a61b436b19183",
+      "dark": "4c92e62b61a61c8895cd7332928f434b7b38dfd717505fab53efa98254e007a1"
+    }
+  },
+  {
+    "id": "cable-face-pull",
+    "name": "绳索面拉",
+    "course": "gym-upper",
+    "courses": [
+      "gym-upper"
+    ],
+    "seconds": 3.4,
+    "frames": 204,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "delts",
+        "name": "三角肌"
+      },
+      {
+        "key": "traps",
+        "name": "斜方肌上部"
+      }
+    ],
+    "files": {
+      "light": "light/cable-face-pull.json",
+      "dark": "dark/cable-face-pull.json"
+    },
+    "sha256": {
+      "light": "df7cca908c32dedde16fe55166fc5b0931f86148758abc04c5d52163580124d2",
+      "dark": "3fdeb30b385b364132ecc1e0bdad80a3edc8d701420e6d6cae4bb4cbb8872a89"
+    }
+  },
+  {
+    "id": "cable-rope-triceps-pushdown",
+    "name": "绳索绳把下压",
+    "course": "gym-upper",
+    "courses": [
+      "gym-upper"
+    ],
+    "seconds": 3.35,
+    "frames": 201,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      },
+      {
+        "key": "forearms",
+        "name": "前臂肌群"
+      }
+    ],
+    "files": {
+      "light": "light/cable-rope-triceps-pushdown.json",
+      "dark": "dark/cable-rope-triceps-pushdown.json"
+    },
+    "sha256": {
+      "light": "c4071c8eaf141361f2fe380251c25aca0c68d7b736be66bae430654857f266b9",
+      "dark": "f31c9864c37923ef5ddc59a16751a44ce26c2f4cfbadad4beb2288626870606d"
+    }
+  },
+  {
+    "id": "machine-leg-extension",
+    "name": "器械腿屈伸",
+    "course": "gym-lower",
+    "courses": [
+      "gym-lower"
+    ],
+    "seconds": 3.45,
+    "frames": 207,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      }
+    ],
+    "files": {
+      "light": "light/machine-leg-extension.json",
+      "dark": "dark/machine-leg-extension.json"
+    },
+    "sha256": {
+      "light": "f8214f812f1b9c82bdd442dbe536981ae6bfc3388a3fa646c3ab9d8ff1a7d866",
+      "dark": "5306e584eb1c633a98549b9bdf30bbb616f797f9be4c42db9f181ebb7eb71059"
+    }
+  },
+  {
+    "id": "machine-seated-leg-curl",
+    "name": "器械坐姿腿弯举",
+    "course": "gym-lower",
+    "courses": [
+      "gym-lower"
+    ],
+    "seconds": 3.45,
+    "frames": 207,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      },
+      {
+        "key": "calves",
+        "name": "小腿三头肌"
+      }
+    ],
+    "files": {
+      "light": "light/machine-seated-leg-curl.json",
+      "dark": "dark/machine-seated-leg-curl.json"
+    },
+    "sha256": {
+      "light": "2f8209f1a81d7e13f96de9d986ecb6ecf1b0e75eead747fe2fb5ea19108f0ecb",
+      "dark": "0190c161989b708a01a3266ecd6d1405d3bffb2249176d52d83ccf97269d07db"
+    }
+  },
+  {
+    "id": "machine-seated-hip-abduction",
+    "name": "坐姿髋外展",
+    "course": "gym-lower",
+    "courses": [
+      "gym-lower"
+    ],
+    "seconds": 3.5,
+    "frames": 210,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "abductors",
+        "name": "臀中肌和髋外展肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      }
+    ],
+    "files": {
+      "light": "light/machine-seated-hip-abduction.json",
+      "dark": "dark/machine-seated-hip-abduction.json"
+    },
+    "sha256": {
+      "light": "ce2573a8dc39723f393e8aa1dd7559dc318b63ab7e360bd579f275285b2f7b3d",
+      "dark": "149cadc7a1e7107a9832192fbea5be4fe8153be4e4675108f74e4a9b7a527e78"
+    }
+  },
+  {
+    "id": "machine-seated-hip-adduction",
+    "name": "坐姿髋内收",
+    "course": "gym-lower",
+    "courses": [
+      "gym-lower"
+    ],
+    "seconds": 3.5,
+    "frames": 210,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "adductors",
+        "name": "髋内收肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      }
+    ],
+    "files": {
+      "light": "light/machine-seated-hip-adduction.json",
+      "dark": "dark/machine-seated-hip-adduction.json"
+    },
+    "sha256": {
+      "light": "086dae4f7894ce3be3ce6d72aa318ce3ef4683f48c83a252665fa44ba381cf51",
+      "dark": "6b9acfc40aac19fb8b67c9c62d2c9c476fb483690b6d4babd72e270e1507fb56"
+    }
+  },
+  {
+    "id": "back-extension",
+    "name": "罗马椅背部伸展",
+    "course": "gym-lower",
+    "courses": [
+      "gym-lower"
+    ],
+    "seconds": 3.5,
+    "frames": 210,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "lowerBack",
+        "name": "竖脊肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      }
+    ],
+    "files": {
+      "light": "light/back-extension.json",
+      "dark": "dark/back-extension.json"
+    },
+    "sha256": {
+      "light": "6b93188bcb17cae2ab6e8aea9774f72da8133bae0e07a8396f59c7b662f03a73",
+      "dark": "f2d5e624671dba744a22847a4b3db25696aa41292038bdf9f148d4127efcc4d0"
+    }
+  },
+  {
+    "id": "standing-hamstring-stretch",
+    "name": "站姿腘绳肌拉伸",
+    "course": "stretch-lower",
+    "courses": [
+      "stretch-lower"
+    ],
+    "seconds": 7,
+    "frames": 420,
+    "posterFrame": 108,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      }
+    ],
+    "files": {
+      "light": "light/standing-hamstring-stretch.json",
+      "dark": "dark/standing-hamstring-stretch.json"
+    },
+    "sha256": {
+      "light": "02a1a85e97aa6fcff64afb4539ca1e9e3ba0cc94c659b225f7bceb94d86cf39f",
+      "dark": "1954ca69d64be7e213890e67f368c5c5ea460d8e129eb28195f0ea4cbb48488d"
+    }
+  },
+  {
+    "id": "prone-quadriceps-stretch",
+    "name": "俯卧股四头肌拉伸",
+    "course": "stretch-lower",
+    "courses": [
+      "stretch-lower"
+    ],
+    "seconds": 7.1,
+    "frames": 426,
+    "posterFrame": 198,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "hipFlexor",
+        "name": "髂腰肌"
+      }
+    ],
+    "files": {
+      "light": "light/prone-quadriceps-stretch.json",
+      "dark": "dark/prone-quadriceps-stretch.json"
+    },
+    "sha256": {
+      "light": "eb39005064e99242c1d5e6ebd0f03c77554d0d5c7e7897ab2900093e881225b8",
+      "dark": "d3c9da587802b5c0bbb1f745ad52630f4b63f187311f5c6ba38e06fdb5fd82af"
+    }
+  },
+  {
+    "id": "supine-figure-four-glute-stretch",
+    "name": "仰卧四字臀肌拉伸",
+    "course": "stretch-lower",
+    "courses": [
+      "stretch-lower"
+    ],
+    "seconds": 7,
+    "frames": 420,
+    "posterFrame": 108,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      }
+    ],
+    "files": {
+      "light": "light/supine-figure-four-glute-stretch.json",
+      "dark": "dark/supine-figure-four-glute-stretch.json"
+    },
+    "sha256": {
+      "light": "b0c132bc396fcba4739d064641b72a5498649d1505bd8a4046122a8d7e507ae8",
+      "dark": "a7fbb0bf5cd4ace08357b5dacda7d2413bc280f733eceecd117892c41fc497e8"
+    }
+  },
+  {
+    "id": "runners-lunge-stretch",
+    "name": "跑步弓步拉伸",
+    "course": "stretch-lower",
+    "courses": [
+      "stretch-lower"
+    ],
+    "seconds": 7.1,
+    "frames": 426,
+    "posterFrame": 198,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      },
+      {
+        "key": "calves",
+        "name": "小腿三头肌"
+      },
+      {
+        "key": "hipFlexor",
+        "name": "髂腰肌"
+      }
+    ],
+    "files": {
+      "light": "light/runners-lunge-stretch.json",
+      "dark": "dark/runners-lunge-stretch.json"
+    },
+    "sha256": {
+      "light": "9edbcf0aa44e2ca1f1f4bb0dec4c3dd1703da3bdd9101279add8b4fcadcd3240",
+      "dark": "2defa799dd3e32c401ccae56b1dbb338f5176a846bdb8820bc91ac18d19a2d50"
+    }
+  },
+  {
+    "id": "wall-standing-calf-stretch",
+    "name": "扶墙站姿小腿拉伸",
+    "course": "stretch-lower",
+    "courses": [
+      "stretch-lower"
+    ],
+    "seconds": 7,
+    "frames": 420,
+    "posterFrame": 108,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "calves",
+        "name": "小腿三头肌"
+      },
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      }
+    ],
+    "files": {
+      "light": "light/wall-standing-calf-stretch.json",
+      "dark": "dark/wall-standing-calf-stretch.json"
+    },
+    "sha256": {
+      "light": "9f6db7d88f561ef7b2f6151bbad6f6ac067de4a4d92bff4f063ccd2a48a0f7aa",
+      "dark": "822279b585f4b92d33a9899b77a6ae12215da0e50a2a3bc4f8c2b722ccb29802"
+    }
+  },
+  {
+    "id": "neck-side-stretch",
+    "name": "颈部侧屈拉伸",
+    "course": "stretch-desk",
+    "courses": [
+      "stretch-desk"
+    ],
+    "seconds": 10.6,
+    "frames": 636,
+    "posterFrame": 114,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "neck",
+        "name": "颈部肌群"
+      },
+      {
+        "key": "traps",
+        "name": "斜方肌上部"
+      }
+    ],
+    "files": {
+      "light": "light/neck-side-stretch.json",
+      "dark": "dark/neck-side-stretch.json"
+    },
+    "sha256": {
+      "light": "b41cac16a78b902ce5a95368dc799ce2611dcf4d7c9f60841c4440337290ff6d",
+      "dark": "d4ea2c3efa4339a6c31b323afbec3fc8adf2ce49c2be442eaa799b027e96eb10"
+    }
+  },
+  {
+    "id": "cross-body-shoulder-stretch",
+    "name": "交叉抱臂肩部拉伸",
+    "course": "stretch-desk",
+    "courses": [
+      "stretch-desk"
+    ],
+    "seconds": 10.6,
+    "frames": 636,
+    "posterFrame": 114,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/cross-body-shoulder-stretch.json",
+      "dark": "dark/cross-body-shoulder-stretch.json"
+    },
+    "sha256": {
+      "light": "ea3a55ffad31bef3582e8c1de9ba98b68d393acf8c98bd9c3263bc08a984e031",
+      "dark": "788b810eb10f3789d81bb03b1ea5f0e8b61e5378e5feae686d34c7b3279cccca"
+    }
+  },
+  {
+    "id": "overhead-triceps-stretch",
+    "name": "过顶肱三头肌拉伸",
+    "course": "stretch-desk",
+    "courses": [
+      "stretch-desk"
+    ],
+    "seconds": 10.6,
+    "frames": 636,
+    "posterFrame": 114,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      },
+      {
+        "key": "lats",
+        "name": "背阔肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/overhead-triceps-stretch.json",
+      "dark": "dark/overhead-triceps-stretch.json"
+    },
+    "sha256": {
+      "light": "682de94629e73e49fc03d57a461d75bcb90130b9c58f43b5e766a0f06012acdd",
+      "dark": "c1c45068964f9669788d8045bf3ada7d78353302f9bdcfc7964a2cb5b8d32219"
+    }
+  },
+  {
+    "id": "chair-seated-chest-and-shoulder-stretch",
+    "name": "坐椅胸肩拉伸",
+    "course": "stretch-desk",
+    "courses": [
+      "stretch-desk"
+    ],
+    "seconds": 7.1,
+    "frames": 426,
+    "posterFrame": 128,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "biceps",
+        "name": "肱二头肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/chair-seated-chest-and-shoulder-stretch.json",
+      "dark": "dark/chair-seated-chest-and-shoulder-stretch.json"
+    },
+    "sha256": {
+      "light": "8c59492d4567af979b5cececbe17b844e417422c9ee3144925e27e93fc70cc22",
+      "dark": "1f1f5bb828b9c84386fdb59bf08a5817b4b788846bd6c3e5fbda83c54f5dc861"
+    }
+  },
+  {
+    "id": "seated-chair-hamstring-stretch",
+    "name": "坐姿椅上腘绳肌拉伸",
+    "course": "stretch-desk",
+    "courses": [
+      "stretch-desk"
+    ],
+    "seconds": 7.1,
+    "frames": 426,
+    "posterFrame": 198,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      },
+      {
+        "key": "calves",
+        "name": "小腿三头肌"
+      }
+    ],
+    "files": {
+      "light": "light/seated-chair-hamstring-stretch.json",
+      "dark": "dark/seated-chair-hamstring-stretch.json"
+    },
+    "sha256": {
+      "light": "a891fbe8718e3494f7522163239a066ac903872e770d4061173c0c436b97be34",
+      "dark": "8edbc30c354c142e1e55014268c25a2c6ac232d0d8a54e4ca20e27b87d43029b"
+    }
+  },
+  {
+    "id": "worlds-greatest-stretch",
+    "name": "世界最佳拉伸",
+    "course": "morning-wake-up",
+    "courses": [
+      "morning-wake-up"
+    ],
+    "seconds": 8.4,
+    "frames": 504,
+    "posterFrame": 176,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "calves",
+        "name": "小腿三头肌"
+      }
+    ],
+    "files": {
+      "light": "light/worlds-greatest-stretch.json",
+      "dark": "dark/worlds-greatest-stretch.json"
+    },
+    "sha256": {
+      "light": "6bae8ef2bf4cf63323ca3db266750eebfa79fb36e40a01122f34c7b085850fe6",
+      "dark": "53f7a2efa58f9509994940f10583153d544e7457f5a79a63577aaf293155eaee"
+    }
+  },
+  {
+    "id": "inchworm",
+    "name": "毛毛虫爬行",
+    "course": "morning-wake-up",
+    "courses": [
+      "morning-wake-up"
+    ],
+    "seconds": 2.95,
+    "frames": 177,
+    "posterFrame": 60,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      },
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/inchworm.json",
+      "dark": "dark/inchworm.json"
+    },
+    "sha256": {
+      "light": "5e826b8d09d312a408c73acd9f317fbc6f87064fda7a8417d421f5ab11728cea",
+      "dark": "bbc197439ba7056dbc6ea4140d6e68bcb4e749642cb4f4ed0614d0bcf4f8c09b"
+    }
+  },
+  {
+    "id": "bodyweight-good-morning",
+    "name": "徒手早安式体前屈",
+    "course": "morning-wake-up",
+    "courses": [
+      "morning-wake-up"
+    ],
+    "seconds": 3.45,
+    "frames": 207,
+    "posterFrame": 0,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "lowerBack",
+        "name": "竖脊肌"
+      }
+    ],
+    "files": {
+      "light": "light/bodyweight-good-morning.json",
+      "dark": "dark/bodyweight-good-morning.json"
+    },
+    "sha256": {
+      "light": "0f940a4c877beaebc1c4d6f389f071ab2159d973c47758ce8856297f9b0601fb",
+      "dark": "a209ce4521a73b2f99d20cd3cd2de1a4fb9ab1b517f7e59d11bb27c3af6281d2"
+    }
+  },
+  {
+    "id": "knees-to-chest-stretch",
+    "name": "仰卧抱膝拉伸",
+    "course": "morning-wake-up",
+    "courses": [
+      "morning-wake-up"
+    ],
+    "seconds": 7.1,
+    "frames": 426,
+    "posterFrame": 198,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      }
+    ],
+    "files": {
+      "light": "light/knees-to-chest-stretch.json",
+      "dark": "dark/knees-to-chest-stretch.json"
+    },
+    "sha256": {
+      "light": "c9a9523e57c16de8b7514804e9fa19a4204c00779d8e208c50f332906c7e3deb",
+      "dark": "5fdb9c54088f6f6220a9b8dde8fcd6da4309e544416962ffea3994711a367db9"
+    }
+  },
+  {
+    "id": "childs-pose",
+    "name": "婴儿式",
+    "course": "morning-wake-up",
+    "courses": [
+      "morning-wake-up"
+    ],
+    "seconds": 7.6,
+    "frames": 456,
+    "posterFrame": 324,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "lowerBack",
+        "name": "竖脊肌"
+      },
+      {
+        "key": "lats",
+        "name": "背阔肌"
+      }
+    ],
+    "files": {
+      "light": "light/childs-pose.json",
+      "dark": "dark/childs-pose.json"
+    },
+    "sha256": {
+      "light": "ee43d800c5aa7b79d2d6fcbed78a3781310ea63198f115bd609b2dc008964408",
+      "dark": "49ddbc3a16e84ba5e803571d55e37d5cce1bd9e0411ba9e12404f527ceca40bb"
+    }
+  }
+]

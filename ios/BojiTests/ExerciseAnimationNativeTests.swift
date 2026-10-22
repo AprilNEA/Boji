@@ -1,3 +1,4 @@
+import Foundation
 import XCTest
 import Lottie
 import UIKit
@@ -5,14 +6,37 @@ import UIKit
 
 @MainActor
 final class ExerciseAnimationNativeTests: XCTestCase {
-    func testBundledResourcesCoverCoursesWithoutLibraryOrTemporaryFiles() throws {
-        let catalog = try ExerciseAnimationCatalog()
-        let courses = [WorkoutLibrary.home, WorkoutLibrary.homeIntermediate, WorkoutLibrary.gym, WorkoutLibrary.mobility]
-        let exercises = Set(courses.flatMap(\.exercises).map(\.id))
-        XCTAssertEqual(Set(catalog.entries.map(\.id)), exercises)
+    func testCatalogsCoverFourBundledAndTenRemoteCourses() throws {
+        let bundled = try ExerciseAnimationCatalog()
+        let remote = try ExerciseAnimationCatalog(data: try remoteIndexData())
+        let courses = WorkoutLibrary.all
+        let bundledCourses = [WorkoutLibrary.home, WorkoutLibrary.homeIntermediate, WorkoutLibrary.gym, WorkoutLibrary.mobility]
+        let bundledExercises = Set(bundledCourses.flatMap(\.exercises).map(\.id))
+        let allExercises = Set(courses.flatMap(\.exercises).map(\.id))
+
+        XCTAssertEqual(courses.count, 14)
+        XCTAssertEqual(Set(courses.map(\.id)).count, 14)
+        XCTAssertEqual(WorkoutLibrary.courses(in: .home).map(\.id), [
+            "home-beginner", "home-intermediate", "home-strength", "home-core", "home-cardio", "home-dumbbell"
+        ])
+        XCTAssertEqual(WorkoutLibrary.courses(in: .gym).map(\.id), [
+            "gym-beginner", "gym-free-weights", "gym-upper", "gym-lower"
+        ])
+        XCTAssertEqual(WorkoutLibrary.courses(in: .stretch).map(\.id), [
+            "mobility", "stretch-lower", "stretch-desk", "morning-wake-up"
+        ])
+        XCTAssertEqual(Set(bundled.entries.map(\.id)), bundledExercises)
+        XCTAssertTrue(allExercises.isSubset(of: Set(bundled.entries.map(\.id)).union(remote.entries.map(\.id))))
         XCTAssertNil(Bundle.main.url(forResource: "index", withExtension: "json", subdirectory: "lottie-library"))
         let files = FileManager.default.enumerator(atPath: Bundle.main.bundlePath)?.allObjects as? [String] ?? []
         XCTAssertFalse(files.contains { $0.hasSuffix(".tmp") })
+
+        for course in courses {
+            for exercise in course.exercises {
+                let entry = bundled.entry(for: exercise.id) ?? remote.entry(for: exercise.id)
+                XCTAssertTrue(entry?.courses.contains(course.id) == true, "\(exercise.id) must list \(course.id)")
+            }
+        }
     }
 
     func testAllBundledAnimationsDecodeAndRenderPosterFrames() async throws {
@@ -90,5 +114,10 @@ final class ExerciseAnimationNativeTests: XCTestCase {
         let first = try await loader.load(entry, theme: .light)
         let second = try await loader.load(entry, theme: .light)
         XCTAssertTrue(first === second)
+    }
+
+    private func remoteIndexData() throws -> Data {
+        let ios = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+        return try Data(contentsOf: ios.appendingPathComponent("../assets/public/animations/exercises/v1/index.json"))
     }
 }

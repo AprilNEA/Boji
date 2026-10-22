@@ -1,0 +1,206 @@
+[
+  {
+    "id": "push-up",
+    "name": "标准俯卧撑",
+    "course": "home-strength",
+    "courses": [
+      "home-strength"
+    ],
+    "seconds": 3.4,
+    "frames": 204,
+    "posterFrame": 100,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      },
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/push-up.json",
+      "dark": "dark/push-up.json"
+    },
+    "sha256": {
+      "light": "4bba1a325348916220b2d34f7220b2741b0007c28dee580f83b9d0048e2d1eed",
+      "dark": "bef6c0393031772099cfda989568511628cbd90a4e595c1e6c2a2ed69b54a2be"
+    }
+  },
+  {
+    "id": "bodyweight-split-squat",
+    "name": "徒手分腿蹲",
+    "course": "home-strength",
+    "courses": [
+      "home-strength"
+    ],
+    "seconds": 3.4,
+    "frames": 204,
+    "posterFrame": 100,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "quads",
+        "name": "股四头肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      }
+    ],
+    "files": {
+      "light": "light/bodyweight-split-squat.json",
+      "dark": "dark/bodyweight-split-squat.json"
+    },
+    "sha256": {
+      "light": "4bba1a325348916220b2d34f7220b2741b0007c28dee580f83b9d0048e2d1eed",
+      "dark": "bef6c0393031772099cfda989568511628cbd90a4e595c1e6c2a2ed69b54a2be"
+    }
+  },
+  {
+    "id": "single-leg-glute-bridge",
+    "name": "单腿臀桥",
+    "course": "home-strength",
+    "courses": [
+      "home-strength"
+    ],
+    "seconds": 3.4,
+    "frames": 204,
+    "posterFrame": 100,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      }
+    ],
+    "files": {
+      "light": "light/single-leg-glute-bridge.json",
+      "dark": "dark/single-leg-glute-bridge.json"
+    },
+    "sha256": {
+      "light": "4bba1a325348916220b2d34f7220b2741b0007c28dee580f83b9d0048e2d1eed",
+      "dark": "bef6c0393031772099cfda989568511628cbd90a4e595c1e6c2a2ed69b54a2be"
+    }
+  },
+  {
+    "id": "bench-dip",
+    "name": "凳上反向臂屈伸",
+    "course": "home-strength",
+    "courses": [
+      "home-strength"
+    ],
+    "seconds": 3.4,
+    "frames": 204,
+    "posterFrame": 100,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "triceps",
+        "name": "肱三头肌"
+      },
+      {
+        "key": "pecs",
+        "name": "胸大肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/bench-dip.json",
+      "dark": "dark/bench-dip.json"
+    },
+    "sha256": {
+      "light": "4bba1a325348916220b2d34f7220b2741b0007c28dee580f83b9d0048e2d1eed",
+      "dark": "bef6c0393031772099cfda989568511628cbd90a4e595c1e6c2a2ed69b54a2be"
+    }
+  },
+  {
+    "id": "superman",
+    "name": "俯卧超人挺身",
+    "course": "home-strength",
+    "courses": [
+      "home-strength"
+    ],
+    "seconds": 3.4,
+    "frames": 204,
+    "posterFrame": 100,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "lowerBack",
+        "name": "竖脊肌"
+      },
+      {
+        "key": "glutes",
+        "name": "臀大肌"
+      },
+      {
+        "key": "hamstrings",
+        "name": "腘绳肌"
+      }
+    ],
+    "files": {
+      "light": "light/superman.json",
+      "dark": "dark/superman.json"
+    },
+    "sha256": {
+      "light": "4bba1a325348916220b2d34f7220b2741b0007c28dee580f83b9d0048e2d1eed",
+      "dark": "bef6c0393031772099cfda989568511628cbd90a4e595c1e6c2a2ed69b54a2be"
+    }
+  },
+  {
+    "id": "bodyweight-forearm-side-plank",
+    "name": "自重前臂侧平板支撑",
+    "course": "home-strength",
+    "courses": [
+      "home-strength"
+    ],
+    "seconds": 3.4,
+    "frames": 204,
+    "posterFrame": 100,
+    "fps": 60,
+    "muscles": [
+      {
+        "key": "obliques",
+        "name": "腹斜肌"
+      },
+      {
+        "key": "abs",
+        "name": "腹直肌"
+      },
+      {
+        "key": "delts",
+        "name": "三角肌"
+      }
+    ],
+    "files": {
+      "light": "light/bodyweight-forearm-side-plank.json",
+      "dark": "dark/bodyweight-forearm-side-plank.json"
+    },
+    "sha256": {
+      "light": "4bba1a325348916220b2d34f7220b2741b0007c28dee580f83b9d0048e2d1eed",
+      "dark": "bef6c0393031772099cfda989568511628cbd90a4e595c1e6c2a2ed69b54a2be"
+    }
+  }
+]

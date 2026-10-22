@@ -1,8 +1,10 @@
-//! Apple Wallet pass signing and `boji.v1.WalletService`.
+//! Apple Wallet pass signing, `boji.v1.WalletService` and the Wallet web
+//! service.
 //!
 //! The signing tests build a private root, WWDR and signer chain, so they need
-//! no Apple credentials. The RPC tests also need the isolated PostgreSQL
-//! database named by `TEST_DATABASE_URL`, so they are ignored by default.
+//! no Apple credentials. The RPC and web service tests also need the isolated
+//! PostgreSQL database named by `TEST_DATABASE_URL`, so they are ignored by
+//! default. A recording sender replaces APNs.
 
 #[path = "support/admin_harness.rs"]
 mod admin_harness;
@@ -16,7 +18,11 @@ use base64::{
 use boji_bizserver::{
     proto::boji::v1 as p,
     rpc::Capabilities,
-    wallet::{MembershipCard, PKPASS_MIME_TYPE, PassSigner, WalletConfigError, WalletCredentials},
+    wallet::{
+        CardStatus, MembershipCard, PKPASS_MIME_TYPE, PassSigner, WalletConfigError,
+        WalletCredentials,
+        push::{ApnsSender, PushOutcome, PushSender},
+    },
 };
 use buffa::Message;
 use chrono::{DateTime, Duration, TimeZone, Utc};
@@ -48,8 +54,10 @@ use zip::{CompressionMethod, ZipArchive};
 
 const PASS_TYPE: &str = "pass.club.leanmuscle.test";
 const TEAM: &str = "TESTTEAM01";
+const WEB_SERVICE_URL: &str = "https://bizserver.test/wallet";
 const GET_PASS: &str = "boji.v1.WalletService/GetMembershipPass";
 const GET_SERVER_CONFIG: &str = "boji.v1.SystemService/GetServerConfig";
+const ADMIN_MEMBERSHIPS: &str = "boji.admin.v1.MembershipService";
 
 /// A test certificate authority.
 struct Authority {
@@ -125,11 +133,12 @@ impl Chain {
         WalletCredentials {
             pass_type_identifier: PASS_TYPE.to_owned(),
             team_identifier: TEAM.to_owned(),
-            organization_name: "Boji Test".to_owned(),
             signer_cert: pem(&self.signer),
             signer_key: key_pem(&self.signer_key),
             signer_key_passphrase: None,
             wwdr_cert: pem(&self.wwdr.certificate),
+            web_service_url: WEB_SERVICE_URL.to_owned(),
+            authentication_token_key: b"test-only-wallet-token-key-0123456789".to_vec(),
         }
     }
 
@@ -217,6 +226,9 @@ fn card(joined_at: DateTime<Utc>) -> MembershipCard<'static> {
         display_name: "小林",
         member_number: "test-member-number",
         joined_at,
+        expires_at: None,
+        status: CardStatus::Active,
+        organizations: &[],
     }
 }
 
@@ -283,6 +295,11 @@ fn signed_pass_verifies_against_the_root() {
             "icon.png",
             "icon@2x.png",
             "icon@3x.png",
+            "logo.png",
+            "logo@2x.png",
+            "logo@3x.png",
+            "en.lproj/pass.strings",
+            "zh-Hans.lproj/pass.strings",
             "manifest.json",
             "signature"
         ]
@@ -292,7 +309,17 @@ fn signed_pass_verifies_against_the_root() {
         serde_json::from_slice(&files["manifest.json"]).expect("manifest JSON");
     assert_eq!(
         manifest.keys().collect::<Vec<_>>(),
-        ["icon.png", "icon@2x.png", "icon@3x.png", "pass.json"]
+        [
+            "en.lproj/pass.strings",
+            "icon.png",
+            "icon@2x.png",
+            "icon@3x.png",
+            "logo.png",
+            "logo@2x.png",
+            "logo@3x.png",
+            "pass.json",
+            "zh-Hans.lproj/pass.strings"
+        ]
     );
     for (name, digest) in &manifest {
         assert_eq!(digest, &sha1_hex(&files[name]), "digest of {name}");
@@ -304,21 +331,22 @@ fn signed_pass_verifies_against_the_root() {
     assert_eq!(pass["teamIdentifier"], TEAM);
     assert_eq!(pass["serialNumber"], "5b0c0d7e-3f7c-4b65-9a1e-1d2a3b4c5d6e");
     assert_eq!(pass["sharingProhibited"], true);
+    assert_eq!(pass["webServiceURL"], WEB_SERVICE_URL);
+    let token = pass["authenticationToken"].as_str().expect("token");
+    assert!(
+        token.len() >= 16,
+        "Wallet requires a token of 16 or more characters"
+    );
+    assert!(signer.authenticates("5b0c0d7e-3f7c-4b65-9a1e-1d2a3b4c5d6e", token));
     let generic = &pass["generic"];
     assert_eq!(generic["primaryFields"][0]["value"], "小林");
     // The member number stays the opaque string that the server returned.
-    assert_eq!(generic["secondaryFields"][0]["value"], "test-member-number");
+    assert_eq!(generic["headerFields"][0]["value"], "test-member-number");
     assert_eq!(
-        generic["secondaryFields"][1]["value"],
+        generic["secondaryFields"][0]["value"],
         "2026-03-01T08:30:00Z"
     );
-    for key in [
-        "barcode",
-        "barcodes",
-        "webServiceURL",
-        "authenticationToken",
-        "locations",
-    ] {
+    for key in ["barcode", "barcodes", "locations", "voided"] {
         assert!(pass.get(key).is_none(), "the pass must not contain {key}");
     }
 
@@ -545,7 +573,7 @@ async fn wallet_service_signs_the_pass_of_an_active_card() {
     assert_eq!(pass["serialNumber"], card.membership_id);
     assert_eq!(pass["generic"]["primaryFields"][0]["value"], "钱包测试");
     assert_eq!(
-        pass["generic"]["secondaryFields"][0]["value"],
+        pass["generic"]["headerFields"][0]["value"],
         card.member_number
     );
     let pass_text = String::from_utf8(files["pass.json"].clone()).expect("UTF-8 pass");
@@ -618,5 +646,275 @@ async fn wallet_service_refuses_without_current_signing_material() {
         "WALLET_NOT_CONFIGURED",
     )
     .await;
+    harness.shutdown().await;
+}
+
+#[test]
+fn the_apns_client_accepts_the_signing_identity() {
+    let signer = Chain::current().signer();
+    assert!(ApnsSender::with_origin(&signer, "https://127.0.0.1:9").is_ok());
+}
+
+/// Records each notification instead of calling APNs.
+#[derive(Debug)]
+struct RecordingSender {
+    sent: tokio::sync::mpsc::UnboundedSender<String>,
+    /// APNs reports this token as no longer valid.
+    gone: &'static str,
+}
+
+#[async_trait::async_trait]
+impl PushSender for RecordingSender {
+    async fn send(&self, push_token: &str) -> PushOutcome {
+        let _ = self.sent.send(push_token.to_owned());
+        if push_token == self.gone {
+            PushOutcome::Unregistered
+        } else {
+            PushOutcome::Delivered
+        }
+    }
+}
+
+async fn next_push(pushes: &mut tokio::sync::mpsc::UnboundedReceiver<String>) -> String {
+    tokio::time::timeout(std::time::Duration::from_secs(5), pushes.recv())
+        .await
+        .expect("a push within 5 seconds")
+        .expect("an open channel")
+}
+
+/// A Wallet device that calls the web service of the test server.
+struct Device<'h> {
+    harness: &'h Harness,
+    id: &'static str,
+}
+
+impl Device<'_> {
+    fn url(&self, path: &str) -> String {
+        format!("{}/wallet/v1{path}", self.harness.origin)
+    }
+
+    fn registration(&self, serial: &str) -> String {
+        self.url(&format!(
+            "/devices/{}/registrations/{PASS_TYPE}/{serial}",
+            self.id
+        ))
+    }
+
+    async fn register(&self, serial: &str, token: Option<&str>, body: Value) -> StatusCode {
+        let mut request = self
+            .harness
+            .client
+            .post(self.registration(serial))
+            .json(&body);
+        if let Some(token) = token {
+            request = request.header("authorization", format!("ApplePass {token}"));
+        }
+        request.send().await.expect("register").status()
+    }
+
+    async fn unregister(&self, serial: &str, token: &str) -> StatusCode {
+        self.harness
+            .client
+            .delete(self.registration(serial))
+            .header("authorization", format!("ApplePass {token}"))
+            .send()
+            .await
+            .expect("unregister")
+            .status()
+    }
+
+    /// Return the status, the serial numbers and the update tag.
+    async fn updated(&self, since: Option<&str>) -> (StatusCode, Vec<String>, String) {
+        let mut url = self.url(&format!("/devices/{}/registrations/{PASS_TYPE}", self.id));
+        if let Some(since) = since {
+            url = format!("{url}?passesUpdatedSince={since}");
+        }
+        let response = self.harness.client.get(url).send().await.expect("updated");
+        let status = response.status();
+        if status != StatusCode::OK {
+            return (status, Vec::new(), String::new());
+        }
+        let body: Value = response.json().await.expect("SerialNumbers JSON");
+        let serials = body["serialNumbers"]
+            .as_array()
+            .expect("serialNumbers")
+            .iter()
+            .map(|serial| serial.as_str().expect("serial").to_owned())
+            .collect();
+        let tag = body["lastUpdated"]
+            .as_str()
+            .expect("lastUpdated")
+            .to_owned();
+        (status, serials, tag)
+    }
+
+    async fn latest(&self, serial: &str, token: &str) -> Response {
+        self.harness
+            .client
+            .get(self.url(&format!("/passes/{PASS_TYPE}/{serial}")))
+            .header("authorization", format!("ApplePass {token}"))
+            .send()
+            .await
+            .expect("latest pass")
+    }
+}
+
+async fn latest_pass_json(response: Response) -> Value {
+    assert_eq!(response.status(), StatusCode::OK);
+    assert_eq!(response.headers()["content-type"], PKPASS_MIME_TYPE);
+    assert!(response.headers().contains_key("last-modified"));
+    let archive = response.bytes().await.expect("pass body");
+    let (_, files) = unpack(&archive);
+    serde_json::from_slice(&files["pass.json"]).expect("pass JSON")
+}
+
+#[tokio::test]
+#[ignore = "requires an isolated PostgreSQL TEST_DATABASE_URL and loopback networking"]
+async fn the_web_service_registers_devices_and_reports_changes() {
+    let chain = Chain::current();
+    let (sent, mut pushes) = tokio::sync::mpsc::unbounded_channel();
+    let mut harness = Harness::with_capabilities(Capabilities {
+        wallet: Some(Arc::new(chain.signer())),
+        wallet_push: Some(Arc::new(RecordingSender { sent, gone: "dead" })),
+        ..Capabilities::default()
+    })
+    .await;
+    let operator = harness.register_verified("wallet-operator").await;
+    harness.set_role(&operator.user_id, "operator").await;
+    let owner = harness.register_verified("wallet-device-owner").await;
+    let card = harness.enroll(&owner, "钱包更新").await;
+    let body =
+        ok_json(get_pass(&harness, &owner.token, &format!("{}/pass", card.name)).await).await;
+    let archive = STANDARD
+        .decode(body["content"].as_str().expect("base64 content"))
+        .expect("standard base64");
+    let (_, files) = unpack(&archive);
+    let pass: Value = serde_json::from_slice(&files["pass.json"]).expect("pass JSON");
+    let serial = pass["serialNumber"].as_str().expect("serial").to_owned();
+    let token = pass["authenticationToken"]
+        .as_str()
+        .expect("token")
+        .to_owned();
+    let phone = Device {
+        harness: &harness,
+        id: "phone0001",
+    };
+    let push = json!({ "pushToken": "aa11" });
+
+    // Each request about one pass needs the token of that pass.
+    assert_eq!(
+        phone.register(&serial, None, push.clone()).await,
+        StatusCode::UNAUTHORIZED
+    );
+    let wrong = "0".repeat(token.len());
+    assert_eq!(
+        phone.register(&serial, Some(&wrong), push.clone()).await,
+        StatusCode::UNAUTHORIZED
+    );
+    let other = Uuid::new_v4().to_string();
+    assert_eq!(
+        phone.register(&other, Some(&token), push.clone()).await,
+        StatusCode::UNAUTHORIZED
+    );
+    assert_eq!(
+        phone
+            .register(&serial, Some(&token), json!({ "pushToken": "not/hex" }))
+            .await,
+        StatusCode::BAD_REQUEST
+    );
+    assert_eq!(phone.updated(None).await.0, StatusCode::NO_CONTENT);
+
+    assert_eq!(
+        phone.register(&serial, Some(&token), push.clone()).await,
+        StatusCode::CREATED
+    );
+    assert_eq!(
+        phone.register(&serial, Some(&token), push).await,
+        StatusCode::OK
+    );
+    let (status, serials, first_tag) = phone.updated(None).await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(serials, std::slice::from_ref(&serial));
+    assert_eq!(
+        phone.updated(Some(&first_tag)).await.0,
+        StatusCode::NO_CONTENT
+    );
+    let latest = latest_pass_json(phone.latest(&serial, &token).await).await;
+    assert_eq!(latest["serialNumber"], serial);
+    assert!(latest.get("voided").is_none());
+    assert_eq!(
+        phone.latest(&serial, &wrong).await.status(),
+        StatusCode::UNAUTHORIZED
+    );
+
+    // A suspension voids the pass and notifies the device.
+    ok_json(
+        harness
+            .rpc_json(
+                &format!("{ADMIN_MEMBERSHIPS}/SuspendMembership"),
+                Some(&operator.token),
+                json!({ "name": card.name, "reason": "wallet update test" }),
+            )
+            .await,
+    )
+    .await;
+    assert_eq!(next_push(&mut pushes).await, "aa11");
+    let (status, serials, second_tag) = phone.updated(Some(&first_tag)).await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(serials, std::slice::from_ref(&serial));
+    assert!(second_tag.parse::<i64>().unwrap() > first_tag.parse::<i64>().unwrap());
+    let latest = latest_pass_json(phone.latest(&serial, &token).await).await;
+    assert_eq!(latest["voided"], true);
+    assert_eq!(
+        latest["generic"]["auxiliaryFields"][0]["value"],
+        "Suspended"
+    );
+
+    // APNs rejects the token of the second device, so its registration goes.
+    let watch = Device {
+        harness: &harness,
+        id: "watch0001",
+    };
+    assert_eq!(
+        watch
+            .register(&serial, Some(&token), json!({ "pushToken": "dead" }))
+            .await,
+        StatusCode::CREATED
+    );
+    ok_json(
+        harness
+            .rpc_json(
+                &format!("{ADMIN_MEMBERSHIPS}/ResumeMembership"),
+                Some(&operator.token),
+                json!({ "name": card.name, "reason": "wallet update test" }),
+            )
+            .await,
+    )
+    .await;
+    let mut tokens = [next_push(&mut pushes).await, next_push(&mut pushes).await];
+    tokens.sort();
+    assert_eq!(tokens, ["aa11", "dead"]);
+    let mut forgotten = false;
+    for _ in 0..50 {
+        if watch.updated(None).await.0 == StatusCode::NO_CONTENT {
+            forgotten = true;
+            break;
+        }
+        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+    }
+    assert!(forgotten, "the rejected push token must be removed");
+    let latest = latest_pass_json(phone.latest(&serial, &token).await).await;
+    assert!(latest.get("voided").is_none());
+
+    assert_eq!(phone.unregister(&serial, &token).await, StatusCode::OK);
+    assert_eq!(phone.updated(None).await.0, StatusCode::NO_CONTENT);
+    let log = harness
+        .client
+        .post(phone.url("/log"))
+        .json(&json!({ "logs": ["a test message"] }))
+        .send()
+        .await
+        .expect("log");
+    assert_eq!(log.status(), StatusCode::OK);
     harness.shutdown().await;
 }

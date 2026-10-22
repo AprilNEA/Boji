@@ -1,0 +1,215 @@
+syntax = "proto3";
+
+package boji.admin.v1;
+
+import "boji/v1/affiliation.proto";
+import "boji/v1/organization.proto";
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "OrganizationServiceProto";
+option java_package = "club.leanmuscle.boji.admin.v1";
+
+// Lets operators review affiliations, revoke an affiliation, and freeze the
+// public counts of an organization while they review unusual growth.
+//
+// The authorization rules and errors of `EntitlementService` apply to every
+// method. The method comments name the required permissions.
+//
+// The organization lists have no operations method. The `SCHOOL` list
+// changes only through the files in `bizserver/data/schools/` and the
+// `import-schools` command.
+//
+// Every state change appends one audit event in the same database
+// transaction. The event stores the actor, the target user when there is one,
+// the action, the reason and the affected IDs. It never stores an email
+// address or its hash. Operators must keep email addresses out of the
+// free-text reason as well.
+//
+// Every state-changing request requires `reason`. The server removes leading
+// and trailing white space. The result must contain 1 to 500 Unicode scalar
+// values and no control characters.
+service OrganizationService {
+  option (google.api.default_host) = "boji.leanmuscle.club";
+
+  // Returns one affiliation of one user. Permission: `organization.read`.
+  //
+  // A user who never verified an organization of the type returns
+  // `UNAFFILIATED`.
+  rpc GetAffiliation(GetAffiliationRequest) returns (boji.v1.Affiliation) {
+    option (google.api.http) = {get: "/v1/{name=users/*/affiliations/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // Lists affiliations, newest verification first. Permission:
+  // `organization.read`.
+  //
+  // The response contains only affiliations in the `ACTIVE` or `EXPIRED`
+  // state. An affiliation that the user left or that an operator revoked has
+  // no organization, so the list omits it. Use `GetAffiliation` to read one
+  // affiliation in any state.
+  rpc ListAffiliations(ListAffiliationsRequest) returns (ListAffiliationsResponse) {
+    option (google.api.http) = {get: "/v1/{parent=users/*}/affiliations"};
+    option (google.api.method_signature) = "parent";
+  }
+
+  // Ends the active affiliation of a user. Permission: `organization.update`.
+  //
+  // The member stops counting at once, and the address can verify another
+  // account. The user can verify the same address again. To stop a misused
+  // domain, exclude it in the organization list. To stop an account, suspend
+  // its card.
+  //
+  // Errors:
+  // - `FAILED_PRECONDITION` `AFFILIATION_INACTIVE`: the user has no active
+  //   affiliation of the type. The call changed nothing and wrote no audit
+  //   event.
+  rpc RevokeAffiliation(RevokeAffiliationRequest) returns (boji.v1.Affiliation) {
+    option (google.api.http) = {
+      post: "/v1/{name=users/*/affiliations/*}:revoke"
+      body: "*"
+    };
+  }
+
+  // Freezes the public counts of an organization. Permission:
+  // `organization.update`.
+  //
+  // The server stores the member count, the weekly new member count and the
+  // time when the organization reached its count. Until the organization is
+  // unfrozen, the ranking uses the stored values, and
+  // `OrganizationStanding.frozen` is true. The stored weekly count does not
+  // reset at the start of a new week.
+  //
+  // Errors:
+  // - `NOT_FOUND` `ORGANIZATION_NOT_FOUND`.
+  // - `FAILED_PRECONDITION` `ORGANIZATION_STANDING_ALREADY_FROZEN`.
+  rpc FreezeOrganizationStanding(FreezeOrganizationStandingRequest) returns (boji.v1.OrganizationStanding) {
+    option (google.api.http) = {
+      post: "/v1/{name=organizations/*/standing}:freeze"
+      body: "*"
+    };
+  }
+
+  // Removes the freeze of an organization. Permission:
+  // `organization.update`. The ranking uses the current counts again.
+  //
+  // Errors:
+  // - `NOT_FOUND` `ORGANIZATION_NOT_FOUND`.
+  // - `FAILED_PRECONDITION` `ORGANIZATION_STANDING_NOT_FROZEN`.
+  rpc UnfreezeOrganizationStanding(UnfreezeOrganizationStandingRequest) returns (boji.v1.OrganizationStanding) {
+    option (google.api.http) = {
+      post: "/v1/{name=organizations/*/standing}:unfreeze"
+      body: "*"
+    };
+  }
+}
+
+// Request message for `OrganizationService.GetAffiliation`.
+message GetAffiliationRequest {
+  // Required. The affiliation, for example `users/u1/affiliations/school`.
+  //
+  // (-- api-linter: core::0124::reference-same-package=disabled
+  //     aip.dev/not-precedent: The owner API and the operations API share the
+  //     Affiliation resource. --)
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "boji.leanmuscle.club/Affiliation"
+  ];
+}
+
+// Request message for `OrganizationService.ListAffiliations`.
+message ListAffiliationsRequest {
+  // Required. The user, for example `users/u1`, or `users/-` for every user.
+  //
+  // (-- api-linter: core::0124::reference-same-package=disabled
+  //     aip.dev/not-precedent: The owner API and the operations API share the
+  //     Affiliation resource. --)
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).child_type = "boji.leanmuscle.club/Affiliation"
+  ];
+
+  // Optional. The maximum number of affiliations to return. Zero means the
+  // default of 50. Values above 100 are treated as 100. Negative values
+  // return `INVALID_ARGUMENT`.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The `next_page_token` of a previous call with the same
+  // `parent` and `filter`. Empty for the first page.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A subset of AIP-160: one comparison of `organization` with a
+  // quoted organization name, for example
+  // `organization = "organizations/0b6f3a8e-6f0c-4a3b-9f3e-2d1c0b9a8f7e"`.
+  // Other expressions return `INVALID_ARGUMENT` `INVALID_FILTER`.
+  string filter = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for `OrganizationService.ListAffiliations`.
+message ListAffiliationsResponse {
+  // The affiliations on this page.
+  //
+  // (-- api-linter: core::0215::foreign-type-reference=disabled
+  //     aip.dev/not-precedent: The owner API and the operations API share the
+  //     Affiliation resource. --)
+  repeated boji.v1.Affiliation affiliations = 1;
+
+  // A token for the next page. Empty when no further page exists.
+  string next_page_token = 2;
+}
+
+// Request message for `OrganizationService.RevokeAffiliation`.
+message RevokeAffiliationRequest {
+  // Required. The affiliation, for example `users/u1/affiliations/school`.
+  //
+  // (-- api-linter: core::0124::reference-same-package=disabled
+  //     aip.dev/not-precedent: The owner API and the operations API share the
+  //     Affiliation resource. --)
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "boji.leanmuscle.club/Affiliation"
+  ];
+
+  // Required. Why the operator revokes the affiliation. The audit event
+  // stores it.
+  string reason = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for `OrganizationService.FreezeOrganizationStanding`.
+message FreezeOrganizationStandingRequest {
+  // Required. The standing, for example
+  // `organizations/0b6f3a8e-6f0c-4a3b-9f3e-2d1c0b9a8f7e/standing`.
+  //
+  // (-- api-linter: core::0124::reference-same-package=disabled
+  //     aip.dev/not-precedent: The public API and the operations API share the
+  //     OrganizationStanding resource. --)
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "boji.leanmuscle.club/OrganizationStanding"
+  ];
+
+  // Required. Why the operator freezes the organization. The audit event
+  // stores it.
+  string reason = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for `OrganizationService.UnfreezeOrganizationStanding`.
+message UnfreezeOrganizationStandingRequest {
+  // Required. The standing, for example
+  // `organizations/0b6f3a8e-6f0c-4a3b-9f3e-2d1c0b9a8f7e/standing`.
+  //
+  // (-- api-linter: core::0124::reference-same-package=disabled
+  //     aip.dev/not-precedent: The public API and the operations API share the
+  //     OrganizationStanding resource. --)
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "boji.leanmuscle.club/OrganizationStanding"
+  ];
+
+  // Required. Why the operator removes the freeze. The audit event stores
+  // it.
+  string reason = 2 [(google.api.field_behavior) = REQUIRED];
+}

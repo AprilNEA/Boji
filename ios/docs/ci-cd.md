@@ -49,7 +49,9 @@ Action 使用完整提交 SHA。SwiftPM 使用仓库中的 `Package.resolved`。
 
 本机和 CI 都使用 Xcode 27.1，构建号均为 `27A9275`。`xcode-27` 是 GitHub 的 preview 镜像，可能不稳定或排队。它的底层系统是 macOS 27，默认 Xcode 是 27.0。工作流用 `DEVELOPER_DIR` 选择 `/Applications/Xcode_27.1.app`。这个路径是符号链接，指向镜像中的 Xcode 27.1 Release Candidate。镜像只带 iOS 27.0 和 watchOS 27.0 模拟器。以上信息来自 2026-10-12 的镜像清单。
 
-CI 原先使用 `macos-26` 和 Xcode 26.6。在这套工具链上，`actool` 编译 `AppIcon.icon` 时抛出异常。因此，`master` 上 2026-10-21 前的最近 3 次运行都失败了。改用 `xcode-27` 后，这个问题是否解决未验证。
+CI 原先使用 `macos-26` 和 Xcode 26.6。在这套工具链上，`actool` 编译 `AppIcon.icon` 时抛出异常。因此，`master` 上 2026-10-21 前的最近 3 次运行都失败了。
+
+改用 `xcode-27` 后，图标问题已解决。2026-10-21 的运行 [39621455089](https://github.com/AprilNEA/Boji/actions/runs/39621455089) 验证了 `2e82483`：`check.py toolchain` 通过，`actool` 编译了 `AppIcon.icon`，单元测试 129 项全部通过。UI 测试 19 项中有 1 项失败：`testSettingsLinkToLegalPages`。原因是 iOS 27 把 SwiftUI `Link` 暴露为链接，不再是按钮，测试用 `app.buttons` 找不到它。测试已改为按标识查找任意类型的元素。在本机 iOS 26.5 模拟器上，修复后的测试通过。本机的 iOS 27.1 运行时只支持 iPhone Duo。它用侧边栏代替标签栏，所以正式测试在 `onboard()` 一步就会停止。在 iPhone Duo 上，一条跳过标签栏检查的临时测试验证了同样的查询：两个入口都是链接，并且可以点击。修复在 CI 上未验证。
 
 工作流检查 Xcode 版本和构建号。不匹配就停止，不会自动换版本。GitHub 更新镜像后，`Xcode_27.1.app` 可能指向另一个构建。这时 `check.py toolchain` 会停止。先查镜像清单，再一起更新 `ci/toolchain.json` 和工作流。`ci/tests/test_pipeline.py` 检查工作流中的重复值与 `ci/toolchain.json` 一致。不要为赶上线而改用不受控的 Runner。
 

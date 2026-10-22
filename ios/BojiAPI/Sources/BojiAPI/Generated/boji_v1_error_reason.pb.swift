@@ -163,6 +163,56 @@ public nonisolated enum Boji_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
 
   /// `INTERNAL`: the server failed. The message contains no storage details.
   case internalError // = 32
+
+  /// `FAILED_PRECONDITION`: the method requires a membership card, and the
+  /// caller has none. Create a membership first.
+  case membershipRequired // = 33
+
+  /// `NOT_FOUND`: the organization does not exist.
+  case organizationNotFound // = 34
+
+  /// `INVALID_ARGUMENT`: no organization of the requested type accepts the
+  /// domain of the email address, or the domain is excluded, for example an
+  /// alumni domain. Do not retry with the same address.
+  case affiliationEmailDomainUnknown // = 35
+
+  /// `NOT_FOUND`: the affiliation email verification does not exist.
+  case affiliationEmailVerificationNotFound // = 36
+
+  /// `INVALID_ARGUMENT`: the verification code is wrong. The user can try
+  /// again until the verification expires.
+  case affiliationVerificationCodeInvalid // = 37
+
+  /// `FAILED_PRECONDITION`: the verification code expired, was already used,
+  /// or received too many wrong codes. Request a new code.
+  case affiliationVerificationExpired // = 38
+
+  /// `FAILED_PRECONDITION`: the verification would change the organization
+  /// within the cooldown period of its type after the last change.
+  case organizationChangeTooSoon // = 39
+
+  /// `FAILED_PRECONDITION`: the user has no active affiliation of the type to
+  /// end. The caller leaves an organization, or an operator revokes an
+  /// affiliation.
+  case affiliationInactive // = 40
+
+  /// `FAILED_PRECONDITION`: the server cannot verify affiliation email
+  /// addresses. Hide the verification entry and read `ServerConfig` again
+  /// later. Do not retry automatically.
+  case affiliationVerificationNotConfigured // = 41
+
+  /// `RESOURCE_EXHAUSTED`: the request exceeds a limit. The error carries
+  /// `google.rpc.RetryInfo` with the delay before the next attempt can
+  /// succeed.
+  case rateLimited // = 42
+
+  /// `FAILED_PRECONDITION`: an operator froze an organization that is already
+  /// frozen. The call changed nothing and wrote no audit event.
+  case organizationStandingAlreadyFrozen // = 43
+
+  /// `FAILED_PRECONDITION`: an operator unfroze an organization that is not
+  /// frozen. The call changed nothing and wrote no audit event.
+  case organizationStandingNotFrozen // = 44
   case UNRECOGNIZED(Int)
 
   public init() {
@@ -204,6 +254,18 @@ public nonisolated enum Boji_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
     case 30: self = .walletSigningFailed
     case 31: self = .backendUnavailable
     case 32: self = .internalError
+    case 33: self = .membershipRequired
+    case 34: self = .organizationNotFound
+    case 35: self = .affiliationEmailDomainUnknown
+    case 36: self = .affiliationEmailVerificationNotFound
+    case 37: self = .affiliationVerificationCodeInvalid
+    case 38: self = .affiliationVerificationExpired
+    case 39: self = .organizationChangeTooSoon
+    case 40: self = .affiliationInactive
+    case 41: self = .affiliationVerificationNotConfigured
+    case 42: self = .rateLimited
+    case 43: self = .organizationStandingAlreadyFrozen
+    case 44: self = .organizationStandingNotFrozen
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -243,6 +305,18 @@ public nonisolated enum Boji_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
     case .walletSigningFailed: return 30
     case .backendUnavailable: return 31
     case .internalError: return 32
+    case .membershipRequired: return 33
+    case .organizationNotFound: return 34
+    case .affiliationEmailDomainUnknown: return 35
+    case .affiliationEmailVerificationNotFound: return 36
+    case .affiliationVerificationCodeInvalid: return 37
+    case .affiliationVerificationExpired: return 38
+    case .organizationChangeTooSoon: return 39
+    case .affiliationInactive: return 40
+    case .affiliationVerificationNotConfigured: return 41
+    case .rateLimited: return 42
+    case .organizationStandingAlreadyFrozen: return 43
+    case .organizationStandingNotFrozen: return 44
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -282,6 +356,18 @@ public nonisolated enum Boji_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
     .walletSigningFailed,
     .backendUnavailable,
     .internalError,
+    .membershipRequired,
+    .organizationNotFound,
+    .affiliationEmailDomainUnknown,
+    .affiliationEmailVerificationNotFound,
+    .affiliationVerificationCodeInvalid,
+    .affiliationVerificationExpired,
+    .organizationChangeTooSoon,
+    .affiliationInactive,
+    .affiliationVerificationNotConfigured,
+    .rateLimited,
+    .organizationStandingAlreadyFrozen,
+    .organizationStandingNotFrozen,
   ]
 
 }
@@ -289,5 +375,5 @@ public nonisolated enum Boji_V1_ErrorReason: SwiftProtobuf.Enum, Swift.CaseItera
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 nonisolated extension Boji_V1_ErrorReason: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ERROR_REASON_UNSPECIFIED\0\u{1}SESSION_REQUIRED\0\u{1}EMAIL_NOT_VERIFIED\0\u{1}RESOURCE_ACCESS_DENIED\0\u{1}FRESH_SESSION_REQUIRED\0\u{1}ADMIN_FORBIDDEN\0\u{1}INVALID_INPUT\0\u{1}INVALID_PAGE_TOKEN\0\u{1}INVALID_SYNC_TOKEN\0\u{1}INVALID_FILTER\0\u{1}MEMBERSHIP_NOT_FOUND\0\u{1}MEMBERSHIP_ALREADY_EXISTS\0\u{1}TERMS_NOT_ACCEPTED\0\u{1}MEMBERSHIP_SUSPENDED\0\u{1}MEMBERSHIP_ALREADY_SUSPENDED\0\u{1}MEMBERSHIP_ALREADY_ACTIVE\0\u{1}ENTITLEMENT_NOT_FOUND\0\u{1}ENTITLEMENT_INACTIVE\0\u{1}ENTITLEMENT_GRANT_NOT_FOUND\0\u{1}ENTITLEMENT_GRANT_ALREADY_REVOKED\0\u{1}SYNC_DISABLED\0\u{1}CONSENT_REQUIRED\0\u{1}ACTIVITY_NOT_FOUND\0\u{1}ACTIVITY_ALREADY_EXISTS\0\u{1}ACTIVITY_ETAG_MISMATCH\0\u{1}ACTIVITY_DELETED\0\u{1}ACTIVITY_KIND_MISMATCH\0\u{1}SLEEP_DATE_CONFLICT\0\u{1}REQUEST_ID_REUSED\0\u{1}WALLET_NOT_CONFIGURED\0\u{1}WALLET_SIGNING_FAILED\0\u{1}BACKEND_UNAVAILABLE\0\u{1}INTERNAL_ERROR\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ERROR_REASON_UNSPECIFIED\0\u{1}SESSION_REQUIRED\0\u{1}EMAIL_NOT_VERIFIED\0\u{1}RESOURCE_ACCESS_DENIED\0\u{1}FRESH_SESSION_REQUIRED\0\u{1}ADMIN_FORBIDDEN\0\u{1}INVALID_INPUT\0\u{1}INVALID_PAGE_TOKEN\0\u{1}INVALID_SYNC_TOKEN\0\u{1}INVALID_FILTER\0\u{1}MEMBERSHIP_NOT_FOUND\0\u{1}MEMBERSHIP_ALREADY_EXISTS\0\u{1}TERMS_NOT_ACCEPTED\0\u{1}MEMBERSHIP_SUSPENDED\0\u{1}MEMBERSHIP_ALREADY_SUSPENDED\0\u{1}MEMBERSHIP_ALREADY_ACTIVE\0\u{1}ENTITLEMENT_NOT_FOUND\0\u{1}ENTITLEMENT_INACTIVE\0\u{1}ENTITLEMENT_GRANT_NOT_FOUND\0\u{1}ENTITLEMENT_GRANT_ALREADY_REVOKED\0\u{1}SYNC_DISABLED\0\u{1}CONSENT_REQUIRED\0\u{1}ACTIVITY_NOT_FOUND\0\u{1}ACTIVITY_ALREADY_EXISTS\0\u{1}ACTIVITY_ETAG_MISMATCH\0\u{1}ACTIVITY_DELETED\0\u{1}ACTIVITY_KIND_MISMATCH\0\u{1}SLEEP_DATE_CONFLICT\0\u{1}REQUEST_ID_REUSED\0\u{1}WALLET_NOT_CONFIGURED\0\u{1}WALLET_SIGNING_FAILED\0\u{1}BACKEND_UNAVAILABLE\0\u{1}INTERNAL_ERROR\0\u{1}MEMBERSHIP_REQUIRED\0\u{1}ORGANIZATION_NOT_FOUND\0\u{1}AFFILIATION_EMAIL_DOMAIN_UNKNOWN\0\u{1}AFFILIATION_EMAIL_VERIFICATION_NOT_FOUND\0\u{1}AFFILIATION_VERIFICATION_CODE_INVALID\0\u{1}AFFILIATION_VERIFICATION_EXPIRED\0\u{1}ORGANIZATION_CHANGE_TOO_SOON\0\u{1}AFFILIATION_INACTIVE\0\u{1}AFFILIATION_VERIFICATION_NOT_CONFIGURED\0\u{1}RATE_LIMITED\0\u{1}ORGANIZATION_STANDING_ALREADY_FROZEN\0\u{1}ORGANIZATION_STANDING_NOT_FROZEN\0")
 }

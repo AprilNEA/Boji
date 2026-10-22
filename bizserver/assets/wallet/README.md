@@ -1,25 +1,38 @@
 # Wallet 素材
 
-`src/wallet.rs` 在编译时把本目录的文件编入二进制。修改这里的文件后需要重新编译。
+`src/wallet.rs` 和 `src/wallet/package.rs` 在编译时把本目录的文件编入二进制。修改这里的文件后需要重新编译。
 
 | 文件 | 内容 | 来源 |
 | --- | --- | --- |
-| `icon.png`、`icon@2x.png`、`icon@3x.png` | 通行证图标，29、58 和 87 像素 | 从 `assets/public/boji-icon.png` 缩放 |
+| `icon.svg` | 通行证图标的源文件：浅色 App 图标，没有圆角，因为钱包会加自己的遮罩 | 图形取自 `ios/Boji/Resources/AppIcon.icon/Assets/mark.svg` |
+| `icon.png`、`icon@2x.png`、`icon@3x.png` | 通行证图标，38、76 和 114 像素见方，不透明。锁屏通知和邮件附件显示它 | 从 `icon.svg` 渲染 |
+| `logo.svg` | 通行证 logo 的源文件：App 图标的图形，用卡面前景色 `#F7F2E0`，背景透明 | 图形取自 `mark.svg` |
+| `logo.png`、`logo@2x.png`、`logo@3x.png` | 卡面左上角的 logo，26 × 50、52 × 100 和 78 × 150 像素。logo 右边是 `logoText` | 从 `logo.svg` 渲染 |
 | `apple-root-ca.crt` | Apple Root CA，PEM 格式，有效期到 2035-02-09 | <https://www.apple.com/appleca/AppleIncRootCertificate.cer> |
 
-## 图标
+## 图标和 logo
 
-App 图标变更后，先按根目录 `AGENTS.md` 重新导出 `assets/public/boji-icon.png`，再在仓库根目录运行：
+卡面配色与 App 内的森林绿卡面一致：背景 `rgb(33, 66, 54)`，前景 `rgb(247, 242, 224)`，标签 `rgb(183, 189, 173)`。颜色写在 `src/wallet/package.rs` 中。logo 的高度用满钱包允许的 50 pt，宽度按图形比例确定。
+
+App 图标的图形变更后，把新路径同步到 `icon.svg` 和 `logo.svg`，再在仓库根目录运行下面的命令。`rsvg-convert` 和 `magick` 不由 devenv 提供，可以用 Homebrew 安装 `librsvg` 和 `imagemagick`。
 
 ```sh
-S=assets/public/boji-icon.png
 D=bizserver/assets/wallet
-sips -s format png -z 29 29 "$S" --out "$D/icon.png"
-sips -s format png -z 58 58 "$S" --out "$D/icon@2x.png"
-sips -s format png -z 87 87 "$S" --out "$D/icon@3x.png"
+T=$(mktemp -d)
+for pair in icon:38 icon@2x:76 icon@3x:114; do
+  name=${pair%:*} size=${pair#*:}
+  rsvg-convert -w "$size" -h "$size" "$D/icon.svg" -o "$T/$name.png"
+  magick "$T/$name.png" -strip -alpha off "$D/$name.png"
+done
+for pair in logo:26x50 logo@2x:52x100 logo@3x:78x150; do
+  name=${pair%:*} size=${pair#*:}
+  rsvg-convert -w "${size%x*}" -h "${size#*x}" "$D/logo.svg" -o "$T/$name.png"
+  magick "$T/$name.png" -strip "$D/$name.png"
+done
+rm -r "$T"
 ```
 
-图标属于 App 图标，不在 `LICENSE.md` 的许可范围内。
+`-strip` 删除 PNG 元数据，所以重新渲染相同的源文件得到相同的文件。图标和 logo 属于 App 图标，不在 `LICENSE.md` 的许可范围内。
 
 ## Apple Root CA
 

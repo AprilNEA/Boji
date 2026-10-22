@@ -1,0 +1,226 @@
+syntax = "proto3";
+
+package boji.v1;
+
+import "boji/v1/affiliation.proto";
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "AffiliationServiceProto";
+option java_package = "club.leanmuscle.boji.v1";
+
+// Verifies the organizations of the caller with email addresses.
+//
+// Every method requires a signed Bearer session for a verified email address.
+// The `{user}` segment of a resource name must be `me` or the user ID of the
+// caller. Responses always use the canonical user ID. Another user ID returns
+// `PERMISSION_DENIED` with the reason `RESOURCE_ACCESS_DENIED`.
+//
+// The `{affiliation}` segment must be an organization type in lowercase, for
+// example `school`. Another value returns `INVALID_ARGUMENT` `INVALID_INPUT`.
+//
+// `ServerConfig.organization_ranking_enabled` is false when the server has no
+// key for verification email addresses. The methods that send or check codes
+// then return `FAILED_PRECONDITION` `AFFILIATION_VERIFICATION_NOT_CONFIGURED`.
+//
+// (-- api-linter: core::0121::resource-must-support-list=disabled
+//     aip.dev/not-precedent: An affiliation email verification is a
+//     short-lived code. The client keeps the name from the create call, and
+//     the server deletes verifications after 24 hours. --)
+service AffiliationService {
+  option (google.api.default_host) = "boji.leanmuscle.club";
+
+  // Returns one affiliation of the caller.
+  rpc GetAffiliation(GetAffiliationRequest) returns (Affiliation) {
+    option (google.api.http) = {get: "/v1/{name=users/*/affiliations/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // Lists the affiliations of the caller: one for each organization type, in
+  // the order of `OrganizationType`. The response always fits one page.
+  rpc ListAffiliations(ListAffiliationsRequest) returns (ListAffiliationsResponse) {
+    option (google.api.http) = {get: "/v1/{parent=users/*}/affiliations"};
+    option (google.api.method_signature) = "parent";
+  }
+
+  // Sends a verification code to an email address at an organization.
+  //
+  // The caller must hold an active membership card. The domain of the address
+  // must match an organization of the type of the parent.
+  //
+  // Errors:
+  // - `FAILED_PRECONDITION` `MEMBERSHIP_REQUIRED`: the caller has no
+  //   membership card.
+  // - `FAILED_PRECONDITION` `MEMBERSHIP_SUSPENDED`: the card is suspended.
+  // - `INVALID_ARGUMENT` `INVALID_INPUT`: `email` is not an email address.
+  // - `INVALID_ARGUMENT` `AFFILIATION_EMAIL_DOMAIN_UNKNOWN`: no organization
+  //   of the type accepts the domain, or the domain is excluded, for example
+  //   an alumni domain.
+  // - `RESOURCE_EXHAUSTED` `RATE_LIMITED`: the caller or the address reached
+  //   a sending limit. The error carries `google.rpc.RetryInfo`.
+  // - `UNAVAILABLE` `BACKEND_UNAVAILABLE`: the mail could not be sent.
+  rpc CreateAffiliationEmailVerification(CreateAffiliationEmailVerificationRequest) returns (AffiliationEmailVerification) {
+    option (google.api.http) = {
+      post: "/v1/{parent=users/*/affiliations/*}/emailVerifications"
+      body: "affiliation_email_verification"
+    };
+    option (google.api.method_signature) = "parent,affiliation_email_verification";
+  }
+
+  // Returns one email verification of the caller, for example to show
+  // `resend_time` again after the app restarts.
+  //
+  // Errors: `NOT_FOUND` `AFFILIATION_EMAIL_VERIFICATION_NOT_FOUND` when the
+  // affiliation of the caller has no verification with this ID. The server
+  // deletes verifications 24 hours after it creates them.
+  rpc GetAffiliationEmailVerification(GetAffiliationEmailVerificationRequest) returns (AffiliationEmailVerification) {
+    option (google.api.http) = {get: "/v1/{name=users/*/affiliations/*/emailVerifications/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // Checks a code and verifies the organization of the caller.
+  //
+  // The method creates the affiliation, renews it for the same organization,
+  // or changes the organization. When another account holds a valid
+  // affiliation of the same type with the same address, that affiliation
+  // ends. One address counts for one account only.
+  //
+  // Errors:
+  // - `NOT_FOUND` `AFFILIATION_EMAIL_VERIFICATION_NOT_FOUND`: the caller has
+  //   no verification with this ID.
+  // - `FAILED_PRECONDITION` `AFFILIATION_VERIFICATION_EXPIRED`: the code
+  //   expired, was used, or received 5 wrong codes. Request a new code.
+  // - `INVALID_ARGUMENT` `AFFILIATION_VERIFICATION_CODE_INVALID`: the code is
+  //   wrong.
+  // - `INVALID_ARGUMENT` `INVALID_INPUT`: `organization` is required because
+  //   the verification lists several candidates, or it names an organization
+  //   that is not a candidate.
+  // - `FAILED_PRECONDITION` `ORGANIZATION_CHANGE_TOO_SOON`: the organization
+  //   would change too soon after the last change. See
+  //   `Affiliation.organization_change_available_time`.
+  // - `FAILED_PRECONDITION` `MEMBERSHIP_REQUIRED` or `MEMBERSHIP_SUSPENDED`.
+  rpc ConfirmAffiliationEmailVerification(ConfirmAffiliationEmailVerificationRequest) returns (ConfirmAffiliationEmailVerificationResponse) {
+    option (google.api.http) = {
+      post: "/v1/{name=users/*/affiliations/*/emailVerifications/*}:confirm"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name,code";
+  }
+
+  // Ends one affiliation of the caller. The caller stops counting toward the
+  // organization immediately.
+  //
+  // Errors: `FAILED_PRECONDITION` `AFFILIATION_INACTIVE` when the caller has
+  // no organization of this type.
+  rpc LeaveOrganization(LeaveOrganizationRequest) returns (Affiliation) {
+    option (google.api.http) = {
+      post: "/v1/{name=users/*/affiliations/*}:leaveOrganization"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name";
+  }
+}
+
+// Request message for `AffiliationService.GetAffiliation`.
+message GetAffiliationRequest {
+  // Required. The affiliation, for example `users/me/affiliations/school`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "boji.leanmuscle.club/Affiliation"
+  ];
+}
+
+// Request message for `AffiliationService.ListAffiliations`.
+message ListAffiliationsRequest {
+  // Required. The user, for example `users/me`.
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).child_type = "boji.leanmuscle.club/Affiliation"
+  ];
+
+  // Optional. Negative values return `INVALID_ARGUMENT`. Other values have
+  // no effect, because the response always fits one page.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Must be empty, because the response never has a next page.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for `AffiliationService.ListAffiliations`.
+message ListAffiliationsResponse {
+  // One affiliation for each organization type.
+  repeated Affiliation affiliations = 1;
+
+  // Always empty.
+  string next_page_token = 2;
+}
+
+// Request message for
+// `AffiliationService.CreateAffiliationEmailVerification`.
+//
+// (-- api-linter: core::0133::request-id-field=disabled
+//     aip.dev/not-precedent: The server assigns the verification ID, because
+//     a verification is a short-lived code that the client cannot name. --)
+message CreateAffiliationEmailVerificationRequest {
+  // Required. The affiliation, for example `users/me/affiliations/school`.
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).child_type = "boji.leanmuscle.club/AffiliationEmailVerification"
+  ];
+
+  // Required. The verification to create. Set `email`. The server ignores
+  // `name` and every output-only field.
+  AffiliationEmailVerification affiliation_email_verification = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for
+// `AffiliationService.GetAffiliationEmailVerification`.
+message GetAffiliationEmailVerificationRequest {
+  // Required. The verification, for example
+  // `users/me/affiliations/school/emailVerifications/{email_verification}`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "boji.leanmuscle.club/AffiliationEmailVerification"
+  ];
+}
+
+// Request message for
+// `AffiliationService.ConfirmAffiliationEmailVerification`.
+message ConfirmAffiliationEmailVerificationRequest {
+  // Required. The verification, for example
+  // `users/me/affiliations/school/emailVerifications/{email_verification}`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "boji.leanmuscle.club/AffiliationEmailVerification"
+  ];
+
+  // Required. The 6-digit code from the email.
+  string code = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The chosen organization, for example
+  // `organizations/{organization}`. Required when the verification lists
+  // more than one candidate organization.
+  string organization = 3 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.resource_reference).type = "boji.leanmuscle.club/Organization"
+  ];
+}
+
+// Response message for
+// `AffiliationService.ConfirmAffiliationEmailVerification`.
+message ConfirmAffiliationEmailVerificationResponse {
+  // The affiliation of the caller after the confirmation.
+  Affiliation affiliation = 1;
+}
+
+// Request message for `AffiliationService.LeaveOrganization`.
+message LeaveOrganizationRequest {
+  // Required. The affiliation, for example `users/me/affiliations/school`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "boji.leanmuscle.club/Affiliation"
+  ];
+}

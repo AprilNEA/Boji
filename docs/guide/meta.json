@@ -1,6 +1,7 @@
 {
   "title": "用户指南",
   "description": "怎样使用 Boji App",
+  "icon": "BookOpen",
   "root": true,
   "pages": ["index", "school-ranking"]
 }

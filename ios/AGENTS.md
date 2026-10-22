@@ -94,7 +94,10 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - If a restricted terminal blocks Swift macro plugins or SwiftPM manifest loading with `sandbox_apply: Operation not permitted`, allow Xcode to run them. Do not remove `@Observable` or a package to hide the permission problem.
 - Lottie and Sentry are pinned with `exactVersion` in `project.yml`. connect-swift and swift-protobuf are pinned with `exact:` in `BojiAPI/Package.swift`. Keep the generated `Package.resolved` with the project.
 - Bundle `../animations/lottie` as a folder reference. Never bundle `lottie-library` or flatten the theme directories.
-- Load course animations by exercise ID through `ExerciseAnimationCatalog`. Use `posterFrame` for Reduce Motion; missing resources need a static fallback.
+- Load course animations by exercise ID through `ExerciseAnimationCatalog`. Load bundled IDs first and never request them from the network.
+- Remote course IDs use only the verified `ExerciseAnimationRemoteStore` disk cache. Its root is `Application Support/ExerciseAnimations/`, and it is excluded from backups. Validate the remote index, SHA-256 bytes and Lottie timing before a cache write.
+- The remote session must be ephemeral, cookie-free, cache-free and redirect-free. Do not add animation requests, URLs or errors to Sentry. The only custom request header is `If-None-Match`.
+- The detail screen may prefetch only its remote course. Limit file downloads to three. The player must not download. Use `posterFrame` for Reduce Motion; missing resources need a static fallback.
 - Keep only the current exercise player active. Pause for hidden views, inactive scenes, rests, and user pauses.
 - Exclude `*.tmp` files from generated build resources.
 - Do not edit `BojiAPI/Sources/BojiAPI/Generated/`. `buf generate` in `BojiAPI/` writes it from `../bizserver/proto/boji/v1/`. Follow "API contract" in the root `AGENTS.md` for the version rules.
@@ -134,7 +137,9 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - UI tests must not use the real backend, real HealthKit data or the user's records.
 - Membership UI tests can add `--membership-fixture=long-number`, `suspended`, or `offline`. These fixtures require the Debug `--uitesting` entry point.
 - Animation UI tests can add `--animation-reduce-motion` or `--animation-missing-asset`. These flags require Debug and `--uitesting`.
+- Remote animation UI tests can add `--animation-remote-fixture=ok|offline`. This Debug-only flag requires `--uitesting` and uses the in-process fixture transport. Do not call the asset host from tests.
 - To reveal an element in a `Form` or a `List`, drag a short distance and end the drag with a hold, as `scrollUp(_:)` in `BojiUITests/MembershipUITests.swift` does. Do not use `swipeUp()` there. In the large text layout a swipe can move a row out of the hierarchy, and a tap during the fling does not run the button action.
+- iOS 26 exposes a SwiftUI `Link` as a button, and iOS 27 exposes it as a link. Find a `Link` by its accessibility identifier in `app.descendants(matching: .any)`, as `testSettingsLinkToLegalPages` in `BojiUITests/BojiUITests.swift` does. Do not query it with `app.buttons` or `app.links`, because CI runs iOS 27 and local simulators can run iOS 26.
 
 ### Accounts and data
 

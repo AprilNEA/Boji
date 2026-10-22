@@ -1,15 +1,16 @@
 // README images of the exercise animations, in both palettes: a still of the poster frame of every course
 // exercise, and a looping GIF of every exercise in GIFS. The root README.md shows them.
 // Usage: tsx scripts/readme.ts [--out <dir>]   (default: ../assets/public/previews)
-// Deletes <out>/course/ and <out>/library/, then writes <out>/course/<palette>/<id>.png and .gif for course
-// exercises and <out>/library/<palette>/<id>.gif for library exercises. The library images stay in their own
-// directory, because the exercise library has a separate license.
-// Reads lottie/ and lottie-library/. Run `pnpm build` first, because Git does not track lottie-library/.
+// Deletes <out>/course/ and <out>/library/, then writes <out>/<group>/<palette>/<id>.png and .gif. The group is
+// the source directory of the exercise: course for src/exercises/course/, library for src/exercises/library/,
+// even when a course uses a library exercise. The library images stay in their own directory, because the
+// exercise library has a separate license.
+// Reads the asset catalog and lottie-library/. Run `pnpm build` first, because Git does not track lottie-library/.
 import fs from 'node:fs';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import gifenc from 'gifenc';
-import type { IndexEntry } from '@/build/generate.ts';
+import { DEFAULT_CATALOG_DIR, type IndexEntry } from '@/build/generate.ts';
 import type { PaletteName } from '@/draw/palettes.ts';
 import { LOTTIE_JS, launch } from './browser.ts';
 import { THEMES } from './grid.ts';
@@ -38,10 +39,12 @@ const outDir = path.resolve(values.out ?? path.join(root, '..', 'assets', 'publi
 
 interface Source { entry: IndexEntry; base: string; group: 'course' | 'library' }
 const sources = new Map<string, Source>();
-for (const [dir, group] of [['lottie', 'course'], ['lottie-library', 'library']] as const) {
-  const base = path.join(root, dir);
+/** Exercises with a script in src/exercises/course/ belong to the course group. All others are library exercises. */
+const groupOf = (id: string): Source['group'] =>
+  fs.existsSync(path.join(root, 'src', 'exercises', 'course', `${id}.ts`)) ? 'course' : 'library';
+for (const base of [DEFAULT_CATALOG_DIR, path.join(root, 'lottie-library')]) {
   const list = JSON.parse(fs.readFileSync(path.join(base, 'index.json'), 'utf8')) as IndexEntry[];
-  for (const entry of list) sources.set(entry.id, { entry, base, group });
+  for (const entry of list) sources.set(entry.id, { entry, base, group: groupOf(entry.id) });
 }
 const courseIds = [...sources.values()].filter((s) => s.entry.course !== null).map((s) => s.entry.id);
 const missing = GIFS.filter((id) => !sources.has(id));
@@ -118,7 +121,7 @@ for (const theme of Object.keys(THEMES) as PaletteName[]) {
   for (const id of courseIds) {
     const source = sources.get(id)!;
     await load(source, theme);
-    fs.writeFileSync(path.join(outDir, 'course', theme, `${id}.png`), await grab(source.entry.posterFrame, bg, 'png'));
+    fs.writeFileSync(path.join(outDir, source.group, theme, `${id}.png`), await grab(source.entry.posterFrame, bg, 'png'));
   }
   for (const id of GIFS) {
     const source = sources.get(id)!;

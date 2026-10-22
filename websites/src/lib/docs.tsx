@@ -4,6 +4,7 @@ import type { Translations } from "fumadocs-ui/i18n";
 import { GitHubIcon } from "@/components/ui/GitHubIcon";
 import { Logo } from "@/components/ui/Logo";
 import { DISCUSSIONS_URL } from "@/lib/content";
+import { DOCS_HOME } from "@/lib/source";
 
 /**
  * 支持页、隐私政策和用户协议。支持页和隐私政策的地址用作 App Store Connect 的
@@ -35,7 +36,7 @@ export function baseOptions(): BaseLayoutProps {
           <span className="font-semibold">薄肌俱乐部文档</span>
         </>
       ),
-      url: "/docs/",
+      url: DOCS_HOME,
     },
     links: [{ text: "返回官网", url: "/" }, DISCUSSIONS_LINK],
   };
@@ -53,7 +54,7 @@ export function pageOptions(): BaseLayoutProps {
       ),
       url: "/",
     },
-    links: [{ text: "文档", url: "/docs/" }, ...PAGE_LINKS, DISCUSSIONS_LINK],
+    links: [{ text: "文档", url: DOCS_HOME }, ...PAGE_LINKS, DISCUSSIONS_LINK],
   };
 }
 

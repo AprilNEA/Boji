@@ -320,6 +320,116 @@ public enum ErrorReason
    * <code>INTERNAL_ERROR = 32;</code>
    */
   INTERNAL_ERROR(32),
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: the method requires a membership card, and the
+   * caller has none. Create a membership first.
+   * </pre>
+   *
+   * <code>MEMBERSHIP_REQUIRED = 33;</code>
+   */
+  MEMBERSHIP_REQUIRED(33),
+  /**
+   * <pre>
+   * `NOT_FOUND`: the organization does not exist.
+   * </pre>
+   *
+   * <code>ORGANIZATION_NOT_FOUND = 34;</code>
+   */
+  ORGANIZATION_NOT_FOUND(34),
+  /**
+   * <pre>
+   * `INVALID_ARGUMENT`: no organization of the requested type accepts the
+   * domain of the email address, or the domain is excluded, for example an
+   * alumni domain. Do not retry with the same address.
+   * </pre>
+   *
+   * <code>AFFILIATION_EMAIL_DOMAIN_UNKNOWN = 35;</code>
+   */
+  AFFILIATION_EMAIL_DOMAIN_UNKNOWN(35),
+  /**
+   * <pre>
+   * `NOT_FOUND`: the affiliation email verification does not exist.
+   * </pre>
+   *
+   * <code>AFFILIATION_EMAIL_VERIFICATION_NOT_FOUND = 36;</code>
+   */
+  AFFILIATION_EMAIL_VERIFICATION_NOT_FOUND(36),
+  /**
+   * <pre>
+   * `INVALID_ARGUMENT`: the verification code is wrong. The user can try
+   * again until the verification expires.
+   * </pre>
+   *
+   * <code>AFFILIATION_VERIFICATION_CODE_INVALID = 37;</code>
+   */
+  AFFILIATION_VERIFICATION_CODE_INVALID(37),
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: the verification code expired, was already used,
+   * or received too many wrong codes. Request a new code.
+   * </pre>
+   *
+   * <code>AFFILIATION_VERIFICATION_EXPIRED = 38;</code>
+   */
+  AFFILIATION_VERIFICATION_EXPIRED(38),
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: the verification would change the organization
+   * within the cooldown period of its type after the last change.
+   * </pre>
+   *
+   * <code>ORGANIZATION_CHANGE_TOO_SOON = 39;</code>
+   */
+  ORGANIZATION_CHANGE_TOO_SOON(39),
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: the user has no active affiliation of the type to
+   * end. The caller leaves an organization, or an operator revokes an
+   * affiliation.
+   * </pre>
+   *
+   * <code>AFFILIATION_INACTIVE = 40;</code>
+   */
+  AFFILIATION_INACTIVE(40),
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: the server cannot verify affiliation email
+   * addresses. Hide the verification entry and read `ServerConfig` again
+   * later. Do not retry automatically.
+   * </pre>
+   *
+   * <code>AFFILIATION_VERIFICATION_NOT_CONFIGURED = 41;</code>
+   */
+  AFFILIATION_VERIFICATION_NOT_CONFIGURED(41),
+  /**
+   * <pre>
+   * `RESOURCE_EXHAUSTED`: the request exceeds a limit. The error carries
+   * `google.rpc.RetryInfo` with the delay before the next attempt can
+   * succeed.
+   * </pre>
+   *
+   * <code>RATE_LIMITED = 42;</code>
+   */
+  RATE_LIMITED(42),
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: an operator froze an organization that is already
+   * frozen. The call changed nothing and wrote no audit event.
+   * </pre>
+   *
+   * <code>ORGANIZATION_STANDING_ALREADY_FROZEN = 43;</code>
+   */
+  ORGANIZATION_STANDING_ALREADY_FROZEN(43),
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: an operator unfroze an organization that is not
+   * frozen. The call changed nothing and wrote no audit event.
+   * </pre>
+   *
+   * <code>ORGANIZATION_STANDING_NOT_FROZEN = 44;</code>
+   */
+  ORGANIZATION_STANDING_NOT_FROZEN(44),
   UNRECOGNIZED(-1),
   ;
 
@@ -612,6 +722,116 @@ public enum ErrorReason
    * <code>INTERNAL_ERROR = 32;</code>
    */
   public static final int INTERNAL_ERROR_VALUE = 32;
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: the method requires a membership card, and the
+   * caller has none. Create a membership first.
+   * </pre>
+   *
+   * <code>MEMBERSHIP_REQUIRED = 33;</code>
+   */
+  public static final int MEMBERSHIP_REQUIRED_VALUE = 33;
+  /**
+   * <pre>
+   * `NOT_FOUND`: the organization does not exist.
+   * </pre>
+   *
+   * <code>ORGANIZATION_NOT_FOUND = 34;</code>
+   */
+  public static final int ORGANIZATION_NOT_FOUND_VALUE = 34;
+  /**
+   * <pre>
+   * `INVALID_ARGUMENT`: no organization of the requested type accepts the
+   * domain of the email address, or the domain is excluded, for example an
+   * alumni domain. Do not retry with the same address.
+   * </pre>
+   *
+   * <code>AFFILIATION_EMAIL_DOMAIN_UNKNOWN = 35;</code>
+   */
+  public static final int AFFILIATION_EMAIL_DOMAIN_UNKNOWN_VALUE = 35;
+  /**
+   * <pre>
+   * `NOT_FOUND`: the affiliation email verification does not exist.
+   * </pre>
+   *
+   * <code>AFFILIATION_EMAIL_VERIFICATION_NOT_FOUND = 36;</code>
+   */
+  public static final int AFFILIATION_EMAIL_VERIFICATION_NOT_FOUND_VALUE = 36;
+  /**
+   * <pre>
+   * `INVALID_ARGUMENT`: the verification code is wrong. The user can try
+   * again until the verification expires.
+   * </pre>
+   *
+   * <code>AFFILIATION_VERIFICATION_CODE_INVALID = 37;</code>
+   */
+  public static final int AFFILIATION_VERIFICATION_CODE_INVALID_VALUE = 37;
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: the verification code expired, was already used,
+   * or received too many wrong codes. Request a new code.
+   * </pre>
+   *
+   * <code>AFFILIATION_VERIFICATION_EXPIRED = 38;</code>
+   */
+  public static final int AFFILIATION_VERIFICATION_EXPIRED_VALUE = 38;
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: the verification would change the organization
+   * within the cooldown period of its type after the last change.
+   * </pre>
+   *
+   * <code>ORGANIZATION_CHANGE_TOO_SOON = 39;</code>
+   */
+  public static final int ORGANIZATION_CHANGE_TOO_SOON_VALUE = 39;
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: the user has no active affiliation of the type to
+   * end. The caller leaves an organization, or an operator revokes an
+   * affiliation.
+   * </pre>
+   *
+   * <code>AFFILIATION_INACTIVE = 40;</code>
+   */
+  public static final int AFFILIATION_INACTIVE_VALUE = 40;
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: the server cannot verify affiliation email
+   * addresses. Hide the verification entry and read `ServerConfig` again
+   * later. Do not retry automatically.
+   * </pre>
+   *
+   * <code>AFFILIATION_VERIFICATION_NOT_CONFIGURED = 41;</code>
+   */
+  public static final int AFFILIATION_VERIFICATION_NOT_CONFIGURED_VALUE = 41;
+  /**
+   * <pre>
+   * `RESOURCE_EXHAUSTED`: the request exceeds a limit. The error carries
+   * `google.rpc.RetryInfo` with the delay before the next attempt can
+   * succeed.
+   * </pre>
+   *
+   * <code>RATE_LIMITED = 42;</code>
+   */
+  public static final int RATE_LIMITED_VALUE = 42;
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: an operator froze an organization that is already
+   * frozen. The call changed nothing and wrote no audit event.
+   * </pre>
+   *
+   * <code>ORGANIZATION_STANDING_ALREADY_FROZEN = 43;</code>
+   */
+  public static final int ORGANIZATION_STANDING_ALREADY_FROZEN_VALUE = 43;
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: an operator unfroze an organization that is not
+   * frozen. The call changed nothing and wrote no audit event.
+   * </pre>
+   *
+   * <code>ORGANIZATION_STANDING_NOT_FROZEN = 44;</code>
+   */
+  public static final int ORGANIZATION_STANDING_NOT_FROZEN_VALUE = 44;
 
 
   @java.lang.Override
@@ -667,6 +887,18 @@ public enum ErrorReason
       case 30: return WALLET_SIGNING_FAILED;
       case 31: return BACKEND_UNAVAILABLE;
       case 32: return INTERNAL_ERROR;
+      case 33: return MEMBERSHIP_REQUIRED;
+      case 34: return ORGANIZATION_NOT_FOUND;
+      case 35: return AFFILIATION_EMAIL_DOMAIN_UNKNOWN;
+      case 36: return AFFILIATION_EMAIL_VERIFICATION_NOT_FOUND;
+      case 37: return AFFILIATION_VERIFICATION_CODE_INVALID;
+      case 38: return AFFILIATION_VERIFICATION_EXPIRED;
+      case 39: return ORGANIZATION_CHANGE_TOO_SOON;
+      case 40: return AFFILIATION_INACTIVE;
+      case 41: return AFFILIATION_VERIFICATION_NOT_CONFIGURED;
+      case 42: return RATE_LIMITED;
+      case 43: return ORGANIZATION_STANDING_ALREADY_FROZEN;
+      case 44: return ORGANIZATION_STANDING_NOT_FROZEN;
       default: return null;
     }
   }

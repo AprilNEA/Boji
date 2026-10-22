@@ -4,7 +4,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -41,6 +39,7 @@ import club.leanmuscle.boji.R
 import club.leanmuscle.boji.core.model.BojiSnapshot
 import club.leanmuscle.boji.core.model.PlanKind
 import club.leanmuscle.boji.core.model.Workout
+import club.leanmuscle.boji.core.model.WorkoutGroup
 import club.leanmuscle.boji.core.model.WorkoutLibrary
 import club.leanmuscle.boji.ui.components.BojiCard
 import club.leanmuscle.boji.ui.components.BojiScaffold
@@ -81,26 +80,17 @@ fun TrainingScreen(
                 HorizontalDivider(Modifier.padding(vertical = 14.dp))
                 FootNote(stringResource(R.string.training_tip_load), icon = R.drawable.ic_self_improvement, iconTint = MaterialTheme.colorScheme.primary)
             }
-            SectionHeading(stringResource(R.string.training_progression_section), detail = null)
-            val progression = WorkoutLibrary.HomeIntermediate
-            CourseRow(
-                workout = progression,
-                icon = R.drawable.ic_fitness_center,
-                color = MaterialTheme.colorScheme.primary,
-                detail = stringResource(R.string.training_progression_meta, progression.minutes, progression.exercises.size),
-                onClick = { onOpenWorkout(progression) },
-                modifier = Modifier.testTag("progression_workout"),
-            )
-            SectionHeading(stringResource(R.string.training_mobility_section), detail = null)
-            val mobility = WorkoutLibrary.Mobility
-            CourseRow(
-                workout = mobility,
-                icon = R.drawable.ic_sports_gymnastics,
-                color = BojiThemeColors.current.calm,
-                detail = stringResource(R.string.training_mobility_meta, mobility.minutes),
-                onClick = { onOpenWorkout(mobility) },
-                modifier = Modifier.testTag("mobility_workout"),
-            )
+            trainingGroups.forEach { (group, title) ->
+                SectionHeading(stringResource(title), detail = null)
+                WorkoutLibrary.all.filter { it.group == group }.forEach { course ->
+                    CourseRow(
+                        workout = course,
+                        detail = stringResource(R.string.training_progression_meta, course.minutes, course.exercises.size),
+                        onClick = { onOpenWorkout(course) },
+                        modifier = Modifier.testTag("course_${course.id}"),
+                    )
+                }
+            }
             FootNote(stringResource(R.string.training_disclaimer), icon = R.drawable.ic_health_and_safety)
         }
     }
@@ -110,15 +100,13 @@ fun TrainingScreen(
 @Composable
 private fun CourseRow(
     workout: Workout,
-    @DrawableRes icon: Int,
-    color: Color,
     detail: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BojiCard(onClick = onClick, contentPadding = PaddingValues(16.dp), modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            SymbolTile(icon = icon, color = color)
+            SymbolTile(icon = workout.exercises.first().icon.iconRes, color = MaterialTheme.colorScheme.primary)
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(stringResource(workout.title), style = MaterialTheme.typography.titleMedium)
@@ -157,6 +145,7 @@ fun WorkoutDetailScreen(
     onBack: () -> Unit,
     onStart: () -> Unit,
     modifier: Modifier = Modifier,
+    animationPrefetch: CourseAnimationPrefetchState? = null,
 ) {
     BojiScaffold(
         title = stringResource(workout.title),
@@ -188,6 +177,19 @@ fun WorkoutDetailScreen(
                 }
             }
             Text(stringResource(workout.subtitle), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            when (animationPrefetch) {
+                CourseAnimationPrefetchState.Downloading -> FootNote(
+                    stringResource(R.string.detail_animation_downloading),
+                    icon = R.drawable.ic_more_horiz,
+                    modifier = Modifier.testTag("animation_status"),
+                )
+                CourseAnimationPrefetchState.Unavailable -> FootNote(
+                    stringResource(R.string.detail_animation_unavailable),
+                    icon = R.drawable.ic_health_and_safety,
+                    modifier = Modifier.testTag("animation_status"),
+                )
+                null -> Unit
+            }
             SectionHeading(stringResource(R.string.detail_plan_title), stringResource(R.string.detail_plan_detail))
             workout.exercises.forEachIndexed { index, exercise ->
                 BojiCard(contentPadding = PaddingValues(16.dp)) {
@@ -252,9 +254,23 @@ fun WorkoutDetailScreen(
 ) {
     val workout = viewModel.workout
     val completedToday by viewModel.completedToday.collectAsStateWithLifecycle()
+    val animationPrefetch by viewModel.animationPrefetch.collectAsStateWithLifecycle()
     if (workout == null) {
         LaunchedEffect(workoutId) { onBack() }
     } else {
-        WorkoutDetailScreen(workout, completedToday, onBack, onStart = { onStart(workout) }, modifier = modifier)
+        WorkoutDetailScreen(
+            workout = workout,
+            completedToday = completedToday,
+            animationPrefetch = animationPrefetch,
+            onBack = onBack,
+            onStart = { onStart(workout) },
+            modifier = modifier,
+        )
     }
 }
+
+private val trainingGroups = listOf(
+    WorkoutGroup.Home to R.string.training_group_home,
+    WorkoutGroup.Gym to R.string.training_group_gym,
+    WorkoutGroup.Stretch to R.string.training_group_stretch,
+)

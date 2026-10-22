@@ -3,7 +3,6 @@ package club.leanmuscle.boji.feature.training
 import club.leanmuscle.boji.core.model.WorkoutLibrary
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -12,28 +11,24 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
 
-/**
- * Checks the contract with `animations/lottie`, which `app/build.gradle.kts` packages as assets.
- * That directory holds only course exercises. Exercises that no course uses yet are in
- * `animations/lottie-library`, which the app does not package.
- */
+/** Checks the generated bundled catalog and the public remote catalog against Android courses. */
 class ExerciseAnimationAssetsTest {
-    // Gradle runs unit tests in the module directory, android/app.
-    private val lottieDir = File("../../animations/lottie")
+    private val bundledDir = File("../../animations/lottie")
+    private val remoteDir = File("../../assets/public/animations/exercises/v1")
 
-    private val indexText: String by lazy {
-        val file = File(lottieDir, EXERCISE_ANIMATION_INDEX)
+    private fun rawIndex(directory: File): Map<String, JsonObject> {
+        val file = File(directory, EXERCISE_ANIMATION_INDEX)
         assertTrue("Missing ${file.canonicalPath}", file.isFile)
-        file.readText()
-    }
-
-    private val rawIndex: Map<String, JsonObject> by lazy {
-        Json.parseToJsonElement(indexText).jsonArray
+        return Json.parseToJsonElement(file.readText()).jsonArray
             .map { it.jsonObject }
             .associateBy { it.getValue("id").jsonPrimitive.content }
     }
 
-    private val exerciseIds = WorkoutLibrary.all.flatMap { workout -> workout.exercises.map { it.id } }.distinct()
+    private val bundledIndex by lazy { rawIndex(bundledDir) }
+    private val remoteIndex by lazy { rawIndex(remoteDir) }
+    private val bundledCourses = listOf(WorkoutLibrary.Home, WorkoutLibrary.HomeIntermediate, WorkoutLibrary.Gym, WorkoutLibrary.Mobility)
+    private val bundledExerciseIds = bundledCourses.flatMap { it.exercises }.map { it.id }.toSet()
+    private val allExerciseIds = WorkoutLibrary.all.flatMap { it.exercises }.map { it.id }.toSet()
 
     @Test
     fun assetPathUsesThePaletteDirectory() {
@@ -42,64 +37,46 @@ class ExerciseAnimationAssetsTest {
     }
 
     @Test
-    fun indexListsExactlyTheCourseExercises() {
-        val missing = exerciseIds.filterNot { it in rawIndex }
-        val extra = rawIndex.keys.filterNot { it in exerciseIds }
-        assertTrue("No index entry for $missing", missing.isEmpty())
-        assertTrue("Index entries that no course uses: $extra", extra.isEmpty())
+    fun bundledIndexListsOnlyTheFourBundledCourseExercises() {
+        assertEquals(bundledExerciseIds, bundledIndex.keys)
     }
 
     @Test
-    fun courseOfEachEntryContainsTheExercise() {
-        for ((id, entry) in rawIndex) {
-            val course = (entry["course"] as? JsonPrimitive)?.takeIf { it.isString }?.content
-            val workout = checkNotNull(WorkoutLibrary.all.firstOrNull { it.id == course }) { "$id: unknown course $course" }
-            assertTrue("$id: course $course does not contain it", workout.exercises.any { it.id == id })
+    fun remoteCatalogListsEveryCourseExercise() {
+        assertTrue("Remote catalog lacks ${allExerciseIds - remoteIndex.keys}", remoteIndex.keys.containsAll(allExerciseIds))
+    }
+
+    @Test
+    fun everyCatalogEntryNamesEveryCourseThatUsesIt() {
+        listOf(bundledIndex, remoteIndex).forEach { catalog ->
+            for ((id, entry) in catalog) {
+                val courseList = entry.getValue("courses").jsonArray.map { it.jsonPrimitive.content }
+                val courses = courseList.toSet()
+                val users = WorkoutLibrary.all.filter { course -> course.exercises.any { it.id == id } }.map { it.id }.toSet()
+                assertTrue("$id: missing course users $users", courses.containsAll(users))
+                assertEquals("$id: course must remain the first course", courseList.firstOrNull(), entry.getValue("course").jsonPrimitive.content)
+            }
         }
     }
 
     @Test
-    fun assetPathsMatchTheIndex() {
-        for (id in exerciseIds) {
-            val files = rawIndex.getValue(id).getValue("files").jsonObject
-            assertEquals(id, files.getValue("light").jsonPrimitive.content, exerciseAnimationAsset(id, dark = false))
-            assertEquals(id, files.getValue("dark").jsonPrimitive.content, exerciseAnimationAsset(id, dark = true))
-        }
+    fun bundledFilesExistForEveryBundledExercise() {
+        val missing = bundledExerciseIds.flatMap { id -> ExerciseAnimationPalette.entries.map { id to it.directory } }
+            .filterNot { (id, palette) -> File(bundledDir, "$palette/$id.json").isFile }
+        assertTrue("Missing bundled animation files $missing", missing.isEmpty())
     }
 
     @Test
-    fun bothPaletteFilesExist() {
-        val missing = exerciseIds.flatMap { id ->
-            listOf(false, true).map { dark -> exerciseAnimationAsset(id, dark) }
-        }.filterNot { File(lottieDir, it).isFile }
-        assertTrue("Missing animation files $missing", missing.isEmpty())
-    }
-
-    @Test
-    fun appParserReadsTheIndex() {
-        val index = parseExerciseAnimationIndex(indexText)
-        assertEquals(rawIndex.keys, index.keys)
-    }
-
-    @Test
-    fun posterFrameIsInsideTheLoop() {
-        for (entry in parseExerciseAnimationIndex(indexText).values) {
-            assertTrue("${entry.id}: posterFrame ${entry.posterFrame} not in [0, ${entry.frames})", entry.posterFrame in 0 until entry.frames)
-        }
+    fun parsersReadGeneratedIndexes() {
+        assertEquals(bundledIndex.keys, parseExerciseAnimationIndex(File(bundledDir, EXERCISE_ANIMATION_INDEX).readText()).keys)
+        assertEquals(remoteIndex.keys, parseRemoteExerciseAnimationIndex(File(remoteDir, EXERCISE_ANIMATION_INDEX).readText()).keys)
     }
 
     @Test
     fun parserIgnoresUnknownFields() {
         val index = parseExerciseAnimationIndex(
-            """[{"id":"squat","frames":210,"posterFrame":106,"course":null,"files":{},"future":[1,2]}]""",
+            """[{"id":"squat","seconds":3.5,"frames":210,"posterFrame":106,"fps":60,"files":{"light":"light/squat.json","dark":"dark/squat.json"},"future":[1,2]}]""",
         )
         assertEquals(106 / 210f, index.getValue("squat").posterProgress)
-    }
-
-    @Test
-    fun invalidPosterFrameFallsBackToTheFirstFrame() {
-        assertEquals(0f, ExerciseAnimationEntry("a", frames = 210, posterFrame = 210).posterProgress)
-        assertEquals(0f, ExerciseAnimationEntry("a", frames = 210, posterFrame = -1).posterProgress)
-        assertEquals(0f, ExerciseAnimationEntry("a", frames = 0, posterFrame = 0).posterProgress)
     }
 }

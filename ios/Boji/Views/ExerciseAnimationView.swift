@@ -2,36 +2,109 @@ import SwiftUI
 import Lottie
 import UIKit
 
-/// Loads only validated, bundled course resources. No remote animation URLs are accepted.
+/// Loads validated bundled resources first. Remote resources can only come from the verified disk cache.
 @MainActor
 final class ExerciseAnimationLoader {
     static let shared = ExerciseAnimationLoader()
+    private static var configuredRemoteStore: ExerciseAnimationRemoteStore?
+
     let catalog: ExerciseAnimationCatalog?
     private let bundle: Bundle
+    private let remoteStore: ExerciseAnimationRemoteStore
     private let cache = NSCache<NSString, LottieAnimation>()
 
-    init(bundle: Bundle = .main) {
+    init(bundle: Bundle = .main, remoteStore: ExerciseAnimationRemoteStore? = nil) {
         self.bundle = bundle
         catalog = try? ExerciseAnimationCatalog(bundle: bundle)
+        let bundledIDs = Set(catalog?.entries.map(\.id) ?? [])
+        self.remoteStore = remoteStore ?? Self.configuredRemoteStore
+            ?? ExerciseAnimationRemoteStore(bundledExerciseIDs: bundledIDs)
         cache.countLimit = 8
     }
 
+    static func configureRemoteStore(_ store: ExerciseAnimationRemoteStore) {
+        configuredRemoteStore = store
+    }
+
+    func needsPrefetch(_ workout: Workout) async -> Bool {
+        await remoteStore.needsPrefetch(workout)
+    }
+
+    func prefetch(_ workout: Workout) async -> ExerciseAnimationPrefetchResult {
+        await remoteStore.prefetch(workout)
+    }
+
+    func descriptor(for exerciseID: String) async -> ExerciseAnimationDescriptor? {
+        if let bundled = catalog?.entry(for: exerciseID) { return bundled }
+        return await remoteStore.cachedDescriptor(for: exerciseID)
+    }
+
+    /// Keeps the bundled loading API stable for native asset tests.
     func load(_ entry: ExerciseAnimationDescriptor, theme: ExerciseAnimationTheme) async throws -> LottieAnimation {
         if ExerciseAnimationTestSettings.missingAsset { throw CocoaError(.fileNoSuchFile) }
         let path = entry.resourcePath(for: theme)
-        if let value = cache.object(forKey: path as NSString) { return value }
+        let key = "bundle/\(path)"
+        if let value = cache.object(forKey: key as NSString) { return value }
         guard let url = bundle.url(forResource: path, withExtension: nil, subdirectory: "lottie") else {
             throw CocoaError(.fileNoSuchFile)
         }
+        let animation = try await animation(from: url, entry: entry, allowsRoundedTiming: false)
+        cache.setObject(animation, forKey: key as NSString)
+        return animation
+    }
+
+    func load(exerciseID: String, theme: ExerciseAnimationTheme) async throws -> LoadedExerciseAnimation {
+        if let bundled = catalog?.entry(for: exerciseID) {
+            return LoadedExerciseAnimation(
+                key: "bundle/\(bundled.resourcePath(for: theme))",
+                descriptor: bundled,
+                animation: try await load(bundled, theme: theme),
+                theme: theme
+            )
+        }
+
+        guard !ExerciseAnimationTestSettings.missingAsset,
+              let remote = await remoteStore.cachedDescriptor(for: exerciseID),
+              let url = await remoteStore.cachedURL(for: remote, theme: theme) else {
+            throw CocoaError(.fileNoSuchFile)
+        }
+        let key = "remote/\(theme.rawValue)/\(remote.id)/\(remote.sha256.value(for: theme))"
+        if let animation = cache.object(forKey: key as NSString) {
+            return LoadedExerciseAnimation(key: key, descriptor: remote, animation: animation, theme: theme)
+        }
+        let animation = try await animation(from: url, entry: remote, allowsRoundedTiming: true)
+        cache.setObject(animation, forKey: key as NSString)
+        return LoadedExerciseAnimation(key: key, descriptor: remote, animation: animation, theme: theme)
+    }
+
+    private func animation(
+        from url: URL,
+        entry: ExerciseAnimationDescriptor,
+        allowsRoundedTiming: Bool
+    ) async throws -> LottieAnimation {
         let animation = try await Task.detached(priority: .userInitiated) {
             try LottieAnimation.from(data: Data(contentsOf: url))
         }.value
         try Task.checkCancellation()
-        guard animation.startFrame == 0, animation.endFrame == Double(entry.frames),
-              animation.framerate == entry.fps else { throw CocoaError(.fileReadCorruptFile) }
-        cache.setObject(animation, forKey: path as NSString)
+        let timingMatches: Bool
+        if allowsRoundedTiming {
+            timingMatches = abs(animation.endFrame - Double(entry.frames)) <= 1
+                && abs(animation.framerate - entry.fps) <= 0.01
+        } else {
+            timingMatches = animation.startFrame == 0
+                && animation.endFrame == Double(entry.frames)
+                && animation.framerate == entry.fps
+        }
+        guard timingMatches else { throw CocoaError(.fileReadCorruptFile) }
         return animation
     }
+}
+
+struct LoadedExerciseAnimation {
+    let key: String
+    let descriptor: ExerciseAnimationDescriptor
+    let animation: LottieAnimation
+    let theme: ExerciseAnimationTheme
 }
 
 struct ExerciseAnimationView: View {
@@ -45,37 +118,25 @@ struct ExerciseAnimationView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
     @State private var visible = false
-    @State private var loaded: LoadedAnimation?
+    @State private var loaded: LoadedExerciseAnimation?
     @State private var failedKey: String?
 
-    private struct LoadedAnimation {
-        let key: String
-        let animation: LottieAnimation
-    }
     private var theme: ExerciseAnimationTheme { colorScheme == .dark ? .dark : .light }
     private var key: String { "\(theme.rawValue)/\(exercise.id)" }
-    private var entry: ExerciseAnimationDescriptor? { ExerciseAnimationLoader.shared.catalog?.entry(for: exercise.id) }
     private var mode: ExercisePlaybackMode {
-        .resolve(reduceMotion: reduceMotion || ExerciseAnimationTestSettings.reduceMotion, isVisible: visible, isSceneActive: scenePhase == .active,
-                 wantsToPlay: isPlaying, showsPoster: showsPoster)
+        .resolve(reduceMotion: reduceMotion || ExerciseAnimationTestSettings.reduceMotion, isVisible: visible,
+                 isSceneActive: scenePhase == .active, wantsToPlay: isPlaying, showsPoster: showsPoster)
     }
 
     var body: some View {
         Group {
-            if let entry, let loaded, loaded.key.hasSuffix("/\(exercise.id)"), failedKey != key {
+            if let loaded, loaded.descriptor.id == exercise.id, failedKey != key {
                 NativeExerciseAnimation(animation: loaded.animation, key: loaded.key, exercise: exercise,
-                                        posterFrame: entry.posterFrame, mode: loaded.key == key ? mode : .hold,
-                                        speed: speed, theme: loaded.key.hasPrefix("dark/") ? .dark : .light,
-                                        isDecorative: isDecorative)
-            } else if entry == nil || failedKey == key {
-                VStack(spacing: 12) {
-                    Image(systemName: exercise.symbol).font(.system(size: 64)).foregroundStyle(BojiTheme.accent)
-                    Text("动作演示暂不可用").font(.footnote).foregroundStyle(.secondary)
-                    Text("请参考下方动作提示").font(.caption).foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .accessibilityElement(children: .combine)
-                .accessibilityIdentifier("exercise-animation-fallback")
+                                        posterFrame: loaded.descriptor.posterFrame,
+                                        mode: loaded.theme == theme ? mode : .hold,
+                                        speed: speed, theme: loaded.theme, isDecorative: isDecorative)
+            } else if failedKey == key {
+                fallback
             } else {
                 ProgressView("正在加载动作…").frame(maxWidth: .infinity, maxHeight: .infinity)
             }
@@ -83,22 +144,41 @@ struct ExerciseAnimationView: View {
         .aspectRatio(1, contentMode: .fit)
         .task(id: key) {
             let requestedKey = key
-            guard let entry else { return }
             do {
-                let animation = try await ExerciseAnimationLoader.shared.load(entry, theme: theme)
-                try Task.checkCancellation()
-                loaded = LoadedAnimation(key: requestedKey, animation: animation)
+                loaded = try await ExerciseAnimationLoader.shared.load(exerciseID: exercise.id, theme: theme)
                 failedKey = nil
             } catch is CancellationError {
                 // A newer exercise or theme owns the next result.
             } catch {
-                guard !Task.isCancelled else { return }
+                // The detail-screen prefetch can finish after the session starts. The player only retries its cache.
+                for _ in 0..<20 {
+                    guard !Task.isCancelled else { return }
+                    try? await Task.sleep(for: .milliseconds(250))
+                    if let animation = try? await ExerciseAnimationLoader.shared.load(exerciseID: exercise.id, theme: theme) {
+                        guard !Task.isCancelled, requestedKey == key else { return }
+                        loaded = animation
+                        failedKey = nil
+                        return
+                    }
+                }
+                guard !Task.isCancelled, requestedKey == key else { return }
                 failedKey = requestedKey
             }
         }
         .onAppear { visible = true }
         .onDisappear { visible = false }
         .onScrollVisibilityChange(threshold: 0.1) { visible = $0 }
+    }
+
+    private var fallback: some View {
+        VStack(spacing: 12) {
+            Image(systemName: exercise.symbol).font(.system(size: 64)).foregroundStyle(BojiTheme.accent)
+            Text("动作演示暂不可用").font(.footnote).foregroundStyle(.secondary)
+            Text("请参考下方动作提示").font(.caption).foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("exercise-animation-fallback")
     }
 }
 
@@ -195,6 +275,19 @@ final class ExerciseAnimationHost: UIView {
 enum ExerciseAnimationTestSettings {
     static var reduceMotion: Bool { enabled("--animation-reduce-motion") }
     static var missingAsset: Bool { enabled("--animation-missing-asset") }
+    static var remoteFixture: String? {
+        #if DEBUG
+        guard ProcessInfo.processInfo.arguments.contains("--uitesting"),
+              let argument = ProcessInfo.processInfo.arguments.first(where: {
+                  $0.hasPrefix("--animation-remote-fixture=")
+              }) else { return nil }
+        let value = String(argument.dropFirst("--animation-remote-fixture=".count))
+        return ["ok", "offline"].contains(value) ? value : nil
+        #else
+        return nil
+        #endif
+    }
+
     private static func enabled(_ flag: String) -> Bool {
         #if DEBUG
         return ProcessInfo.processInfo.arguments.contains("--uitesting") && ProcessInfo.processInfo.arguments.contains(flag)

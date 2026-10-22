@@ -3,6 +3,7 @@ package club.leanmuscle.boji.core.di
 import club.leanmuscle.boji.BuildConfig
 import club.leanmuscle.boji.core.network.MemberServiceConfig
 import club.leanmuscle.boji.core.network.ServerEndpoint
+import club.leanmuscle.boji.feature.training.EXERCISE_ANIMATION_BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,7 +11,18 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import java.time.Clock
 import java.util.concurrent.TimeUnit
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+/** The public asset client cannot gain member-service identity behavior. */
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class AssetAnimationClient
+
+/** The public animation endpoint is injectable so tests never reach the asset host. */
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class ExerciseAnimationBaseUrl
 
 /** The member service URL and the HTTP client. UI tests replace this module. */
 @Module
@@ -36,6 +48,22 @@ object NetworkModule {
         .connectTimeout(10, TimeUnit.SECONDS)
         .callTimeout(20, TimeUnit.SECONDS)
         .build()
+
+    /** Dedicated public-asset client. It has no cookie jar, cache, auth, or member interceptors. */
+    @Provides
+    @Singleton
+    @AssetAnimationClient
+    fun assetAnimationClient(client: OkHttpClient): OkHttpClient = client.newBuilder()
+        .followRedirects(false)
+        .followSslRedirects(false)
+        .cookieJar(okhttp3.CookieJar.NO_COOKIES)
+        .cache(null)
+        .callTimeout(15, TimeUnit.SECONDS)
+        .build()
+
+    @Provides
+    @ExerciseAnimationBaseUrl
+    fun exerciseAnimationBaseUrl(): String = EXERCISE_ANIMATION_BASE_URL
 }
 
 @Module

@@ -1,13 +1,15 @@
 # 接入说明
 
-本文说明 iOS 和 Android 怎样播放动作动画。两端都直接引用 `animations/lottie/`，不复制文件。目录和文件格式的约定见 [README 中的应用接入契约](../README.md#应用接入契约)。
+本文说明 iOS 和 Android 怎样播放动作动画。两端打包 `animations/lottie/`，不复制文件。这个目录只有 4 门内置课程的 16 个动作。其他 10 门课程的动作从资产主机下载，见[远端载入](#远端载入)。目录和文件格式的约定见 [README 中的应用接入契约](../README.md#应用接入契约)。
 
-`animations/lottie-library/` 存放尚未编入课程的动作，只用于预览和评审。禁止把这个目录打包进应用。
+`animations/lottie-library/` 存放尚未编入课程的动作，只用于预览和评审。禁止把这个目录打包进应用，应用也不下载动作库。资产目录 `assets/public/animations/exercises/v1/` 只发布到资产主机，禁止打包进正式应用。测试目标可以把其中的文件用作 fixture。
 
 两端的接入状态如下，都来自各端任务的回报：
 
 | 平台 | 状态 | 时间（UTC+8） |
 | --- | --- | --- |
+| Android | 已接入远端载入。`./gradlew assembleDebug testDebugUnitTest lintDebug` 通过，131 项单元测试全部通过。Lint 有 9 条警告，都是 `master` 原有的。`:app:connectedDebugAndroidTest` 的 47 项界面测试在 API 36 模拟器上全部通过。测试用假传输层，没有请求资产主机 | 2026-10-22 00:50 |
+| iOS | 已接入远端载入。模拟器构建通过。iPhone 17 Pro（iOS 26.5）模拟器上，132 项单元测试全部通过，22 项界面测试在 00:39 的完整运行中全部通过。测试用进程内的 fixture 传输层，没有请求资产主机 | 2026-10-22 00:50 |
 | Android | 已接入，构建、单元测试、界面测试和 Lint 都已通过。本文 Android 一节的 3 段 Kotlin 示例在 Boji 工程中编译通过，没有警告，Lint 没有问题。示例没有在设备上运行 | 2026-10-20 22:20 |
 | iOS | 已用 UIKit 的 `LottieAnimationView` 接入，Debug 和 Release 编译通过，13 项测试通过。尚未在屏幕上验收播放。本文 iOS 一节的 SwiftUI 示例没有编译 | 2026-10-20 22:14 |
 
@@ -33,6 +35,27 @@
 解析 `index.json` 时必须忽略未知字段，因为以后可能新增字段。只解码需要的字段即可，例如 `id`、`frames` 和 `posterFrame`。
 
 画布是 512×512 的正方形。显示时应保持 1:1 的宽高比，尺寸由各端决定。
+
+## 远端载入
+
+内置课程以外的动作从资产主机下载，地址和目录见 [README 中的发布到资产主机](../README.md#发布到资产主机)。两端按以下规则实现：
+
+| 环节 | 规则 |
+| --- | --- |
+| 选择来源 | 动作 ID 在打包的 `index.json` 中时，只用打包的文件，不发网络请求。其他动作从 `https://assets.leanmuscle.club/animations/exercises/v1/` 下载。正式版只用这个地址，只用 HTTPS，不跟随重定向。测试通过注入的地址和传输层使用假实现 |
+| 索引 | 请求 `index.json`，按打包索引的规则校验每一项，另外要求 `sha256.light` 和 `sha256.dark` 都是 64 个小写十六进制字符。不合格的条目丢弃，其余保留。保存最后一份有效的索引和它的 `ETag`，之后的请求带 `If-None-Match`，收到 304 时使用保存的索引。一个进程中请求成功一次后不再请求；失败后，下一次预取时重试 |
+| 动画文件 | 请求 `files` 中对应主题的路径。先比对 SHA-256，再用 Lottie 解析，并核对帧数和帧率与索引一致，允许 ±1 帧和 ±0.01 fps 的取整误差。任何一项不符就丢弃 |
+| 磁盘缓存 | iOS 存在 `Application Support/ExerciseAnimations/`，并排除备份。Android 存在 `noBackupFilesDir/exercise-animations/`。路径为 `<动作 ID>/<主题>-<sha256>.json`。先写临时文件再改名，写入成功后删除同一动作、同一主题的旧哈希文件。只有哈希与当前索引一致的文件有效。离线时使用保存的索引，所以上次校验过的文件仍然可用 |
+| 预取 | 用户打开含远端动作的课程详情页时，下载这门课程中尚未缓存的动作，两个主题都下载。最多同时 3 个请求，进行中的请求不重复发出，每个请求的超时约 15 秒。不在后台下载，不预取其他课程，不下载 14 门课程以外的动作 |
+| 播放 | 播放器从应用包或缓存取文件，自己不下载。文件缺失时显示原有的插画或图标。训练中下载完成时，可以切换为动画。关闭动画时使用提供该文件的索引中的 `posterFrame`。其他行为与[播放规则](#播放规则)相同 |
+| 详情页提示 | 预取进行中显示 `detail_animation_downloading`（正在下载动作动画）。预取结束后仍有动作不可用时，显示 `detail_animation_unavailable`（联网后可查看动作动画）。动画全部可用时不显示提示。训练不依赖动画 |
+| 隐私 | 请求不带 Cookie、令牌、账号、会员或设备标识，不带查询参数。除 `If-None-Match` 外不加自定义请求头。iOS 使用专用的 ephemeral `URLSession`，不存 Cookie，不用 `URLCache`。Android 只在 `NetworkModule` 中创建 `OkHttpClient`，下载用 `newBuilder()` 派生的客户端。不向 Sentry 发送动画数据、地址或带查询参数的错误 |
+
+资产主机由 Cloudflare 提供。下载动画时，Cloudflare 会处理设备的 IP 地址和请求信息。隐私政策和《第三方信息共享清单》还没有写明这一用途。发布包含远端载入的应用版本之前，必须更新这两份文件。以后改变请求的内容时，例如加入标识或改用其他服务商，也必须在同一变更中更新这两份文件。
+
+Boji 的实现见 iOS 的 `ios/Boji/Models/ExerciseAnimationRemoteStore.swift` 和 Android 的 `feature/training/RemoteExerciseAnimations.kt`。下文 iOS 和 Android 两节的示例只覆盖打包的动作。
+
+推送到 `master` 后，资产主机自动发布资产目录。发布前，远端课程的动作显示原有的插画或图标，详情页显示 `detail_animation_unavailable`。两端的远端载入都只用假传输层测试过，还没有请求过真实的资产主机。
 
 ## iOS
 

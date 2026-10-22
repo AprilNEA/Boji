@@ -4,7 +4,7 @@ import XCTest
 
 @MainActor
 final class BojiStoreTests: XCTestCase {
-    func testPersistenceReloadsState() throws {
+    func testPersistenceReloadsState() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let url = directory.appendingPathComponent("state.json")
@@ -18,6 +18,7 @@ final class BojiStoreTests: XCTestCase {
         firstStore.setSleep(7.5)
         firstStore.completeWorkout(WorkoutLibrary.gym)
         firstStore.addBodyEntry(weight: 68.2, waist: 78.0)
+        await firstStore.flush()
 
         let reloadedStore = BojiStore(storageURL: url)
 
@@ -100,7 +101,7 @@ final class BojiStoreTests: XCTestCase {
         XCTAssertEqual(store.today.waterML, 0)
     }
 
-    func testCorruptFileIsNotOverwritten() throws {
+    func testCorruptFileIsNotOverwritten() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let url = directory.appendingPathComponent("state.json")
@@ -112,18 +113,20 @@ final class BojiStoreTests: XCTestCase {
 
         store.displayName = "不应写入"
         store.addWater(500)
+        await store.flush()
 
         XCTAssertEqual(try Data(contentsOf: url), corruptData)
         XCTAssertNotNil(store.storageError)
     }
 
-    func testExplicitResetClearsCorruptFile() throws {
+    func testExplicitResetClearsCorruptFile() async throws {
         let directory = try makeTemporaryDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let url = directory.appendingPathComponent("state.json")
         try Data("private corrupted data".utf8).write(to: url)
         let store = BojiStore(storageURL: url)
         store.resetAll()
+        await store.flush()
         let reloaded = BojiStore(storageURL: url)
         XCTAssertNil(reloaded.storageError)
         XCTAssertTrue(reloaded.records.isEmpty)
@@ -147,6 +150,27 @@ final class BojiStoreTests: XCTestCase {
         let id = try XCTUnwrap(store.bodyEntries.first?.id)
         store.deleteBodyEntry(id: id)
         XCTAssertTrue(store.bodyEntries.isEmpty)
+    }
+
+    func testLoadingSortsBodyEntriesByDate() throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let url = directory.appendingPathComponent("state.json")
+        let json = """
+        {
+          "selectedPlan": "home", "hasOnboarded": true, "displayName": "排序", "joinedChallenge": false, "records": [],
+          "bodyEntries": [
+            { "id": "00000000-0000-0000-0000-000000000002", "date": "2026-02-01T00:00:00Z", "weight": 66, "waist": 76 },
+            { "id": "00000000-0000-0000-0000-000000000001", "date": "2026-01-01T00:00:00Z", "weight": 67, "waist": 77 }
+          ]
+        }
+        """
+        try Data(json.utf8).write(to: url)
+
+        let store = BojiStore(storageURL: url)
+
+        XCTAssertNil(store.storageError)
+        XCTAssertEqual(store.bodyEntries.map(\.weight), [67, 66])
     }
 
     private func makeTemporaryDirectory() throws -> URL {

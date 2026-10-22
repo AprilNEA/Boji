@@ -85,12 +85,28 @@ final class BojiUITests: XCTestCase {
         tapVisible(app.buttons["完成"])
     }
 
+    func testTrainingGroupsListAllCourses() {
+        onboard()
+        app.tabBars.buttons["训练"].tap()
+        for heading in ["居家", "健身房", "拉伸与放松"] {
+            XCTAssertTrue(app.staticTexts[heading].waitForExistence(timeout: 5), heading)
+        }
+        for identifier in [
+            "home-beginner", "home-intermediate", "home-strength", "home-core", "home-cardio", "home-dumbbell",
+            "gym-beginner", "gym-free-weights", "gym-upper", "gym-lower",
+            "mobility", "stretch-lower", "stretch-desk", "morning-wake-up"
+        ] {
+            XCTAssertTrue(app.buttons["course-\(identifier)"].waitForExistence(timeout: 5), identifier)
+        }
+    }
+
     /// App Review requires an easily accessible privacy policy link inside the app.
     func testSettingsLinkToLegalPages() {
         onboard()
         tapVisible(app.buttons["设置"])
         for identifier in ["privacy-policy", "terms-of-use"] {
-            let link = app.buttons[identifier]
+            // iOS 26 exposes a SwiftUI Link as a button, and iOS 27 exposes it as a link.
+            let link = app.descendants(matching: .any).matching(identifier: identifier).firstMatch
             for _ in 0..<8 where !link.isHittable { app.swipeUp() }
             XCTAssertTrue(link.isHittable, identifier)
         }

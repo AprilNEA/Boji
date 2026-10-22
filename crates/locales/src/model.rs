@@ -141,11 +141,15 @@ pub enum Target {
     Android,
     /// The iOS app, its widgets and its watch app: `Shared.xcstrings`.
     Ios,
+    /// The Apple Wallet pass that `bizserver/` signs: `bizserver/src/wallet/strings.rs`.
+    Wallet,
 }
 
 impl Target {
     /// Every target, in a stable order.
-    pub const ALL: [Self; 2] = [Self::Android, Self::Ios];
+    pub const ALL: [Self; 3] = [Self::Android, Self::Ios, Self::Wallet];
+    /// The two apps. A key without `targets` in `locales/meta/` goes to both.
+    pub const APPS: [Self; 2] = [Self::Android, Self::Ios];
 }
 
 impl fmt::Display for Target {
@@ -153,6 +157,7 @@ impl fmt::Display for Target {
         f.write_str(match self {
             Self::Android => "android",
             Self::Ios => "ios",
+            Self::Wallet => "wallet",
         })
     }
 }

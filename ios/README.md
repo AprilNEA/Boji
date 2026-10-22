@@ -7,9 +7,9 @@ Boji 的原生 iOS 客户端，本地优先。界面采用 SwiftUI 和系统 Liq
 - 首次引导：选择居家或健身房训练。
 - 今日看板：训练、饮水、睡眠的记录状态。
 - 日常记录：饮水增减、睡眠时长和输入校验。
-- 训练：4 套课程（3 套入门、1 套进阶）、动作说明和逐组训练。
+- 训练：14 套居家、健身房和拉伸课程、动作说明和逐组训练。
 - 训练计时：暂停、继续、休息倒计时和完成记录。
-- 动作演示：Lottie 本地加载、循环、暂停、慢速与代表姿势。接入和验证见[动作动画说明](docs/lottie-integration.md)。
+- 动作演示：优先加载随 App 发布的 Lottie。远程课程会验证索引、SHA-256 和帧信息后缓存。支持循环、暂停、慢速与代表姿势。接入和验证见[动作动画说明](docs/lottie-integration.md)。
 - 足迹：最近 7 天活动、身体数据和趋势图。
 - 俱乐部：本地每周挑战、免费会员身份卡和入门文章。
 - 会员：邮箱登录、验证提示、服务端领卡、状态同步和图片分享。
@@ -59,6 +59,10 @@ Debug 构建的 `--uitesting` 参数启用内存存储和会员测试服务。�
 
 受限终端可能拦截 Swift 宏插件，或拦截 SwiftPM 加载 `BojiAPI` 等包的清单。出现 `sandbox_apply: Operation not permitted` 时，需要允许 Xcode 执行它们。不要删除 `@Observable` 或包来掩盖权限问题。
 
+动画远程索引和文件只使用无 Cookie 的临时会话。该会话不跟随重定向，不带账号或设备标识。文件缓存位于 `Application Support/ExerciseAnimations/`，并排除在系统备份外。离线时会使用上次验证的索引和文件。播放器不会自行下载文件。
+
+界面测试可以在 `--uitesting` 后加入 `--animation-remote-fixture=ok` 或 `--animation-remote-fixture=offline`。该 Debug 参数使用进程内假传输。测试不会访问真实动画主机。
+
 ## 免费会员卡
 
 基础记录无需登录。免费身份卡需要登录已验证的邮箱账号，再主动同意守则并领卡。卡号、入会日期和状态由后端生成，客户端不自行签发。
@@ -101,6 +105,7 @@ TestFlight 构建从 GitHub 环境 `ios-testflight` 的同名变量读取正式�
 - [设计说明](docs/design.md)：材质分层和辅助功能策略。
 - [验证记录](docs/verification.md)：实际测试结果。
 - [界面改造验证](docs/ui-refresh-verification.md)：本轮 HIG 改造的范围和结果。
+- [手表布局验证](docs/watch-verification.md)：手表正文边距的修复和检查结果。
 
 Liquid Glass 只用于标签栏、导航栏、工具栏和底部操作栏。内容卡片使用实色，不使用玻璃。界面支持深色模式、高对比度和 Dynamic Type，iPad 上标签栏可以切换为侧边栏。
 

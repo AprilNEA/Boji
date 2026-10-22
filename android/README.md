@@ -7,8 +7,8 @@ Boji 的原生 Android 客户端，使用 Kotlin 和 Jetpack Compose。Android �
 - 首次引导：选择居家或健身房训练。
 - 今日看板：训练、饮水、睡眠的记录状态和今日推荐课程。
 - 日常记录：饮水增减、睡眠时长、体重和腰围，均有输入校验。
-- 训练：4 套课程（3 套入门、1 套进阶）、动作说明和逐组训练。
-- 动作动画：训练过程中，当前动作卡片循环播放 Lottie 动画，浅色和深色各一套。
+- 训练：14 套课程，按居家、健身房和拉伸与放松分组，支持动作说明和逐组训练。
+- 动作动画：4 套原有课程使用内置 Lottie。其余课程按需下载并校验动画。
 - 训练计时：暂停、继续、30 秒休息倒计时和完成记录。离开前台时自动暂停，旋转屏幕或切换深浅色时不暂停。
 - 足迹：累计训练次数、活跃天数、最近 7 天、身体数据趋势图和文字分享。
 - 俱乐部：本地每周挑战和 3 篇入门文章。
@@ -93,7 +93,7 @@ Baseline Profile 需要在连接的模拟器或设备（API 28 及以上）上�
 | 依赖注入 | Hilt 2.60.1、KSP 2.3.12 | 模块位于 `core/di/`。不使用 kapt |
 | 存储 | DataStore 1.2.1、kotlinx.serialization 1.12.0 | 记录保存为 JSON DataStore（`state.json`），外观偏好保存在 Preferences DataStore |
 | 并发 | kotlinx.coroutines 1.11.0 | 写入在应用级协程作用域中执行，关闭页面不会取消保存 |
-| 网络 | OkHttp 5.5.0、better-auth-kotlin-client v0.1.1（Ktor 3.6.0） | 全应用共用一个 `OkHttpClient`。Better Auth 的 JSON 接口通过 [better-auth-kotlin-client](https://github.com/better-auth-rs/better-auth-kotlin-client) 调用，不手写请求。SDK 从 JitPack 下载，它的 Ktor OkHttp 引擎使用共享的 `OkHttpClient` |
+| 网络 | OkHttp 5.5.0、better-auth-kotlin-client v0.1.1（Ktor 3.6.0） | `NetworkModule` 创建客户端。公开动画使用无 Cookie、无认证、无缓存的派生客户端。Better Auth 的 JSON 接口通过 [better-auth-kotlin-client](https://github.com/better-auth-rs/better-auth-kotlin-client) 调用，不手写请求。SDK 从 JitPack 下载，它的 Ktor OkHttp 引擎使用共享的 `OkHttpClient` |
 | RPC | connect-kotlin 0.9.0、Protobuf 4.36.2（lite） | `:rpc` 模块由 `buf generate` 从 `../bizserver/proto/` 生成客户端 |
 | 凭据 | Credential Manager 1.6.0、Android Keystore | 会话令牌和会员卡缓存用 Keystore 中的 AES-256-GCM 密钥加密，再存入 DataStore |
 | 性能 | Baseline Profile（Benchmark 1.5.0）、ProfileInstaller 1.4.1 | `:baselineprofile` 模块生成配置文件并运行启动基准测试 |
@@ -112,7 +112,7 @@ AGP 9.4.1 的内置 Kotlin 默认依赖 KGP 2.2.10。根目录的 `build.gradle.
 
 依赖由 Hilt 提供。每个页面有两个重载：无状态重载接收状态和回调；有状态重载用 `hiltViewModel()` 取得 ViewModel。可组合函数不直接接收 `BojiStore` 或仓库对象。
 
-`boji.v1` 的 RPC 使用 connect-kotlin 生成的客户端，消息格式为二进制 Protobuf。connect-kotlin 自称 beta，但它直接使用 `bizserver/proto/` 的契约，不需要手写请求和响应类型。Better Auth 的 `/api/auth/` 接口不在 proto 契约中，因此使用 Retrofit。
+`boji.v1` 的 RPC 使用 connect-kotlin 生成的客户端，消息格式为二进制 Protobuf。connect-kotlin 自称 beta，但它直接使用 `bizserver/proto/` 的契约，不需要手写请求和响应类型。Better Auth 的 `/api/auth/` 接口不在 proto 契约中，由 `MembershipRepository` 直接调用 better-auth-kotlin-client，同样不手写请求。
 
 ## 代码结构
 
@@ -154,7 +154,7 @@ AGP 9.4.1 的内置 Kotlin 默认依赖 KGP 2.2.10。根目录的 `build.gradle.
 
 ## 动作动画
 
-动画文件由 `animations/` 生成，Android 工程不保存副本。`app/build.gradle.kts` 把 `../animations/lottie` 加为 `main` 的 assets 目录，安装包中的路径为 `light/<动作 ID>.json` 和 `dark/<动作 ID>.json`。该目录只包含课程用到的动作。尚未编入课程的动作在 `animations/lottie-library/`，不会打包。文件格式和目录约定见 [animations 的 README](../animations/README.md)。
+动画文件由 `animations/` 生成。`app/build.gradle.kts` 把 `../animations/lottie` 加为 `main` 的 assets 目录。它只包含 4 套原有课程的 16 个动作。安装包路径为 `light/<动作 ID>.json` 和 `dark/<动作 ID>.json`。尚未编入课程的动作在 `animations/lottie-library/`，不会打包。文件格式和目录约定见 [animations 的 README](../animations/README.md)。
 
 播放规则如下：
 
@@ -164,20 +164,24 @@ AGP 9.4.1 的内置 Kotlin 默认依赖 KGP 2.2.10。根目录的 `build.gradle.
 - 系统关闭动画（动画时长缩放为 0）时，显示代表帧，不播放。代表帧是 `index.json` 中的 `posterFrame`，例如深蹲的最低点。如果索引中没有该动作，就显示第一帧。
 - 文件缺失或加载失败时，显示原有图标，应用不会崩溃。
 
+新课程的非内置动作从 `https://assets.leanmuscle.club/animations/exercises/v1/` 按需取得。课程详情打开时，只预取该课程的非内置动作。下载最多三个同时进行。应用先下载索引，并用 ETag 更新。随后验证 SHA-256、Lottie 帧数和帧率。验证通过的文件存于 `noBackupFilesDir/exercise-animations/<动作 ID>/<浅色或深色>-<SHA-256>.json`。新版本会删除同一动作和配色的旧哈希文件。离线时可使用已验证的索引和文件。
+
+公开动画请求不携带 Cookie、认证信息、账号信息、查询参数或设备标识。请求不跟随重定向。每个请求约 15 秒超时。内置动作永不发起网络请求。远程文件未就绪时，训练仍可开始并显示原有图标。
+
 动画文件使用 JSON，没有转换为 `.lottie`。原因是 lottie-android 读取 `.lottie` 时有已知问题，而且安装包本身会压缩 assets。
 
-`ExerciseAnimationIndex` 在第一次使用时读取 `index.json` 并缓存结果。它只读取 `id`、`frames` 和 `posterFrame`，并忽略其他字段。因此 `animations/` 新增字段时，应用不需要修改。
+`ExerciseAnimationIndex` 在第一次使用时读取内置 `index.json` 并缓存结果。远程索引会检查动作 ID、文件路径、时长、帧数、代表帧、帧率和 SHA-256。未知字段会忽略。系统关闭动画时，播放器使用提供该文件的索引代表帧。
 
 `ExerciseAnimationAssetsTest` 检查以下内容：
 
-- `index.json` 的条目与课程动作一一对应。
-- 每个条目的 `course` 是包含该动作的课程 ID。
-- `posterFrame` 在 `[0, frames)` 内。
-- 浅色和深色文件都存在。
+- 内置索引只包含 4 套内置课程的动作。
+- 公开索引包含 14 套课程的全部动作。
+- 每个条目的 `courses` 包含使用该动作的课程 ID。
+- 内置动作的浅色和深色文件都存在。
 
-界面测试 `ExerciseAnimationTest` 还会从安装包中读取 `index.json`，确认每个课程动作都有有效的代表帧。
+`RemoteExerciseAnimationStoreTest` 覆盖索引校验、哈希失败、ETag 304、离线缓存、内置动作不联网和旧哈希替换。界面测试用 Hilt 的 `TestExerciseAnimationModule` 提供离线或本地 fixture 传输层。测试不访问真实动画主机。
 
-下面的体积按 16 个课程动作计算，共 32 个动画文件和 1 个 `index.json`。Release 安装包从 1,846,795 字节增至 2,622,007 字节，增加 775,212 字节。其中动画文件压缩后占 459,232 字节，原始大小为 3,174,813 字节；`index.json` 压缩后占 1,087 字节。其余增量来自 Lottie 及其依赖的 `appcompat`。Debug 安装包从 13,379,094 字节增至 15,278,222 字节。
+安装包仍只包含 16 个内置动作和一个 `index.json`。远程动画不增加安装包体积。缓存大小随用户打开的远程课程增加，并且不参与 Android 备份。
 
 ## 身体数据趋势图
 

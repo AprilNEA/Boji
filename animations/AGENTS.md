@@ -1,6 +1,6 @@
 # animations/
 
-This directory generates the exercise Lottie animations for the iOS and Android apps. `src/` is a TypeScript generator. `lottie/` holds the generated JSON files of course exercises, which the apps load. `lottie-library/` holds the same files for library exercises; no app bundles it. Read `README.md` for the generation method, the commands and the app contract.
+This directory generates the exercise Lottie animations for the iOS and Android apps. `src/` is a TypeScript generator. `lottie/` holds the generated JSON files of the exercises of bundled courses, which the apps bundle. The asset catalog `../assets/public/animations/exercises/v1/` holds the files of every course exercise; the apps download the exercises that are not in `lottie/` from the asset host. `lottie-library/` holds the files of the library exercises that no course uses; no app bundles or downloads it. Read `README.md` for the generation method, the commands and the app contract.
 
 ## Toolchain
 
@@ -17,13 +17,13 @@ This directory generates the exercise Lottie animations for the iOS and Android 
 | Path | Content |
 | --- | --- |
 | `src/exercise.ts` | The `Exercise` contract for side-view and front-view scripts |
-| `src/courses.ts` | `COURSES` and `LIBRARY` |
+| `src/courses.ts` | `COURSES` (with `bundled` for each course) and `LIBRARY` |
 | `src/math/` | `vec2.ts` (2D vectors, angles, `lerp`, `clamp`), `vec3.ts` (3D vectors and body bases), `timeline.ts` (easing, `keyframes`, `timeline`) |
 | `src/draw/` | `lottie.ts` (Lottie shapes, paths, colors, keyframe reduction) and `palettes.ts` |
 | `src/rig/` | `ik.ts` (`ik2`, `ik3`), `side.ts` (side-view rig and figure), `front.ts` (front-view 3D rig), `anatomy.ts` (side-view joint direction checks for `scripts/inspect.ts`) |
 | `src/compose/` | `index.ts` (`compose`, which picks the view), `side.ts`, `front.ts` and `shared.ts` (zoom, props, floor, output) |
-| `src/build/` | `generate.ts` (writes `lottie/`, `lottie-library/` and the catalog), `poster.ts`, and the CLIs `cli.ts` (`pnpm build`) and `assets.ts` (`pnpm build:assets`) |
-| `src/exercises/` | `common.ts` (floor levels and shared poses such as `HIGH_PLANK`), `equipment/`, `course/` (one script per course exercise) and `library/` (families) |
+| `src/build/` | `generate.ts` (writes `lottie/`, `lottie-library/` and the asset catalog), `poster.ts`, and the CLIs `cli.ts` (`pnpm build`) and `assets.ts` (`pnpm build:assets`) |
+| `src/exercises/` | `common.ts` (floor levels and shared poses such as `HIGH_PLANK`), `equipment/`, `course/` (one script per exercise of the bundled courses) and `library/` (families) |
 
 - Imports go one way: `math/` → `draw/` → `rig/` → `compose/` → `build/`. A module never imports a later directory.
 - `exercise.ts`, `src/exercises/` and `courses.ts` may import `math/`, `draw/`, `rig/` and `exercise.ts`. They never import `compose/` or `build/`.
@@ -53,27 +53,30 @@ Use the libraries through the helpers in `src/`. Do not hand-write vector math, 
 
 ## Rules
 
-- Do not edit files in `lottie/` or `lottie-library/` by hand. Change `src/`, run `pnpm build`, and commit `lottie/` in the same commit as the source change.
-- Git ignores `lottie-library/` and the asset host output `../assets/public/animations/`. Commit only the library source. Do not commit generated library files, and do not use Git LFS for them.
+- Do not edit files in `lottie/`, `lottie-library/` or the asset catalog by hand. Change `src/`, run `pnpm build`, and commit `lottie/` and the asset catalog in the same commit as the source change.
+- Git ignores `lottie-library/`. Commit only the library source. Do not commit generated library files, and do not use Git LFS for them. Git tracks the asset catalog, because it holds only the course exercises, about 15 MB.
 - `pnpm readme` (`scripts/readme.ts`) writes the images of the root `README.md` to `../assets/public/previews/`. Git tracks them. See "README exercise images" in the root `AGENTS.md`.
 - Keep the generator deterministic. Do not use `Date`, `Math.random` or environment-dependent values in `src/`.
 - Use shape layers only: paths, ellipses, rectangles, fills and strokes. Do not add images, expressions, masks, layer parenting or text, because the native players must render the files.
-- `COURSES` in `src/courses.ts` must match the app courses. Use the IDs of `Exercise.id` in `ios/Boji/Models/BojiStore.swift` and Android `Workout.kt`, in the app order.
-- Put exercises that no app course uses yet in a family directory of `src/exercises/library/`. The generator discovers them, and `LIBRARY` includes them. Their files go to `lottie-library/`, and its `index.json` lists them with `course: null`.
-- When an app course adopts a library exercise, import its script in `src/courses.ts`, add it to `COURSES` and run `pnpm build`. `LIBRARY` leaves out course exercises, so the build moves its files to `lottie/`. Exercise IDs must be unique; `courses.ts` throws on a duplicate.
-- `pnpm sheets` reads `lottie/` only. `pnpm preview` reads `lottie/` and the library exercises whose IDs you pass. The full library is too large for one image or page. Review library exercises with `scripts/family.ts`.
-- Do not make the apps bundle `lottie-library/`.
-- Treat the paths `lottie/<palette>/<id>.json` and the `IndexEntry` fields in `src/build/generate.ts` as a contract with both apps. If you change them, update the iOS and Android consumers in the same change.
+- `COURSES` in `src/courses.ts` must match the app courses: the same course IDs, and the IDs of `Exercise.id` in `ios/Boji/Models/BojiStore.swift` and Android `Workout.kt`, in the app order.
+- `bundled: true` puts the exercises of a course in `lottie/`, which both apps bundle. Add a new course with `bundled: false` unless the user decides otherwise, because bundled animations add to both app packages. An exercise can belong to more than one course. `index.json` lists all of them in `courses`, and `course` is the first.
+- Put exercises that no app course uses yet in a family directory of `src/exercises/library/`. The generator discovers them, and `LIBRARY` includes them. Their files go to `lottie-library/`, and its `index.json` lists them with `course: null` and `courses: []`.
+- When an app course adopts a library exercise, reference it with `lib('<id>')` in `COURSES`, keep the script in its family and run `pnpm build`. `LIBRARY` leaves out course exercises, so the build moves its files to the asset catalog, and also to `lottie/` for a bundled course. Exercise IDs must be unique; `courses.ts` throws on a duplicate.
+- `pnpm sheets` reads every course exercise from the asset catalog. `pnpm preview` reads the asset catalog and the library exercises whose IDs you pass. The full library is too large for one image or page. Review library exercises with `scripts/family.ts`.
+- Do not make the apps bundle `lottie-library/` or download library exercises.
+- Treat these as a contract with both apps: the paths `<palette>/<id>.json` in `lottie/` and in the asset catalog, the catalog URL `https://assets.leanmuscle.club/animations/exercises/v1/`, and the `IndexEntry` fields in `src/build/generate.ts`. Released apps read the published catalog, so a change that they cannot read needs a new version directory, such as `v2` next to `v1`. If you change the contract, update the iOS and Android consumers in the same change.
+- `sha256` in `index.json` is the SHA-256 of each animation file. The apps use it to verify downloads and to replace cached files, so a change to the output bytes makes them download the file again.
+- The exercises of remote courses keep their scripts in `src/exercises/library/` and stay under the separate license of the exercise library. Do not move a library script to `src/exercises/course/` unless the user decides it, because the move changes its license.
 - Each exercise script in `src/exercises/course/` and `src/exercises/library/<family>/` default-exports an object that ends with `satisfies Exercise`.
 - `posterFrame` in `index.json` is the still frame that the apps show when animations are off. The generator picks the middle of the first span with the highest total muscle effort. Set `poster` in the exercise script only when that frame does not show the exercise.
 
 ## Add or change an exercise
 
-1. Edit or add the script. A course exercise is `src/exercises/course/<id>.ts`; register a new one in `COURSES` in `src/courses.ts`. Any other exercise is `src/exercises/library/<family>/<id>.ts`; the generator discovers it, and `src/exercises/library/AGENTS.md` gives the rules.
+1. Edit or add the script. An exercise of a bundled course is `src/exercises/course/<id>.ts`. Any other exercise, including the exercises of remote courses, is `src/exercises/library/<family>/<id>.ts`. Register a course exercise in `COURSES` in `src/courses.ts`. For a library script, the generator discovers it, and `src/exercises/library/AGENTS.md` gives the rules.
 2. Run `pnpm build`. A `WARN` line or exit code 1 means an IK target is out of reach. Fix the pose before you continue.
 3. Run `pnpm sheets` and inspect `docs/contact-sheet-light.jpg` and `docs/contact-sheet-dark.jpg`. The fifth column, with a dashed outline, is the poster frame.
 4. Update the exercise table in `README.md`.
-5. For a course exercise, run `pnpm readme` and commit the changed files in `../assets/public/previews/course/` in the same commit.
+5. For a course exercise, run `pnpm readme` and commit the changed files in `../assets/public/previews/` in the same commit.
 
 ## Verify
 

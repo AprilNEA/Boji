@@ -7,7 +7,7 @@ This directory holds Rust tools for the repository. It is a separate Cargo works
 | `Cargo.toml` | Workspace manifest, shared package fields and lints |
 | `rust-toolchain.toml` | The Rust version for rustup users. It must equal `../bizserver/rust-toolchain.toml` |
 | `.cargo/config.toml` | The `cargo locales` alias |
-| `locales/` | `boji-locales`: generates the client string resources from `../locales/` |
+| `locales/` | `boji-locales`: generates the client string resources and the Wallet pass copy from `../locales/` |
 
 ## Setup
 
@@ -46,6 +46,7 @@ cargo fmt --check
 | `src/model.rs` | Keys, argument names, argument types, targets and plural categories |
 | `src/android.rs` | Renders `strings_shared.xml` |
 | `src/apple.rs` | Renders `Shared.xcstrings` in the Xcode JSON style and compiles it with `xcstringstool` |
+| `src/wallet.rs` | Renders `bizserver/src/wallet/strings.rs`, the copy of the Apple Wallet pass |
 | `src/output.rs` | Compares, writes and deletes generated files |
 | `src/main.rs` | The `generate` and `check` commands |
 | `tests/pipeline.rs` | End-to-end tests on temporary `locales/` trees |
@@ -55,8 +56,11 @@ cargo fmt --check
 - Android: `android/app/src/main/res/<dir>/strings_shared.xml` for each release language. The fallback language uses `values/`. Other languages use `Locale::android_values_dir`, for example `values-en`, `values-pt-rBR` or `values-b+zh+Hans`.
 - Each Android file starts with `<string name="locale_tag">`, whose value is the language code of the file. The app formats dates in that language, so the dates always match the text, also when Android falls back to `values/`. `LOCALE_TAG_KEY` in `src/android.rs` holds the name, and validation rejects a key with that name in `locales/meta/`. The iOS catalog does not contain it.
 - iOS: `ios/Shared/Shared.xcstrings`, one catalog for all release languages. Every key has `extractionState: manual`.
-- The generator owns every `strings_shared.xml` in a `values*` directory and `ios/Shared/Shared.xcstrings`. `generate` deletes an owned file that it no longer renders.
+- Wallet: `bizserver/src/wallet/strings.rs`, a Rust table with one `Text` per key and the `.lproj` names in `LANGUAGES`, fallback language first. bizserver writes the fallback text into `pass.json` and a `pass.strings` file for each language.
+- The generator owns every `strings_shared.xml` in a `values*` directory, `ios/Shared/Shared.xcstrings` and `bizserver/src/wallet/strings.rs`. `generate` deletes an owned file that it no longer renders.
 - The generator writes only the targets in `targets` of `../locales/locales.yaml`. `check` compiles the iOS catalog with `xcstringstool` even when iOS is not a target. On a computer without Xcode, `check` skips that step and prints the reason.
+- A key without `targets` goes to `android` and `ios` only. A key reaches `wallet` only with an explicit `targets: [wallet]`, so app copy never enters the pass.
+- A `wallet` key has no arguments, because Wallet localizes literal text. Its fallback text is the localization key of the pass, so validation rejects an empty fallback text and two `wallet` keys with the same fallback text.
 - When you change a renderer, run `cargo locales generate` and commit the changed outputs in the same change.
 
 ### Rules

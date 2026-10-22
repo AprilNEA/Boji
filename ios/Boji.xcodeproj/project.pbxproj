@@ -12,6 +12,7 @@
 		1371FC0C802284889307E644 /* AppleIntegrationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81140111BAB62BAEC3D44093 /* AppleIntegrationModels.swift */; };
 		13DBEBB12BD76DD1F53E9DED /* CompanionSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 251281D9128481F09CCD0E0D /* CompanionSnapshot.swift */; };
 		160AB7711E92162E5A7181F9 /* MembershipModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19368F1E87C44FF35C2129F7 /* MembershipModels.swift */; };
+		161FC29406AED13BF47EAFF7 /* ExerciseAnimationFixtureTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6589BC1AC358F3E136C58F0 /* ExerciseAnimationFixtureTransport.swift */; };
 		16682AA352D9602639015BFB /* BojiWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8CBCF1233E64E691926F693 /* BojiWatchApp.swift */; };
 		17F48BD0B26E52C0DE53CD8D /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 583F71FA07F4AFB0262B3D19 /* ProgressView.swift */; };
 		18E47C03BDD0D0DDB4DD4F67 /* MembershipCardDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16780230A73624CD8845F927 /* MembershipCardDesign.swift */; };
@@ -28,6 +29,7 @@
 		352016E5B270E99C0DA6E065 /* MembershipRPCFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52902C7BFFB3D07FB320C4F9 /* MembershipRPCFixtures.swift */; };
 		3B0A9512235FB99171894270 /* BojiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F4EEA7892D89748155D924 /* BojiUITests.swift */; };
 		40613947F1DBA770A474CF9B /* BojiWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 661AE16B78FF2F30E57965DC /* BojiWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		46C3FC42A747EC9FACFB5B49 /* ExerciseAnimationRemoteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DDA3A08368EF5F72F3CBDE4 /* ExerciseAnimationRemoteStore.swift */; };
 		4BE11F2893AB2F064E9D90FB /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8B234B8805CB455487EB328C /* InfoPlist.xcstrings */; };
 		4DEC67005C3A8A3D36037E37 /* BojiStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8245B383B494406D2112F93C /* BojiStoreTests.swift */; };
 		4E8E4E2A2768C3C01478A6CB /* ClubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493DBDB4130FFDE702147DBF /* ClubView.swift */; };
@@ -199,6 +201,7 @@
 		8B234B8805CB455487EB328C /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		8C7720F9CD47B853B648324B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8CA2922645008844473A82C7 /* ExercisePreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExercisePreviewView.swift; sourceTree = "<group>"; };
+		8DDA3A08368EF5F72F3CBDE4 /* ExerciseAnimationRemoteStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseAnimationRemoteStore.swift; sourceTree = "<group>"; };
 		9A504B0BA20A65A1992F92D8 /* BojiWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BojiWatch.entitlements; sourceTree = "<group>"; };
 		9D0E927BAEA70844A0A902F8 /* MembershipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipView.swift; sourceTree = "<group>"; };
 		9F89A1F79C9FBE3F0434F9BA /* ExerciseAnimationCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseAnimationCatalogTests.swift; sourceTree = "<group>"; };
@@ -206,6 +209,7 @@
 		A437255836A3D9A03C3465FA /* BojiHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojiHTTPClient.swift; sourceTree = "<group>"; };
 		A54E43AA718586768EB78014 /* MembershipTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipTests.swift; sourceTree = "<group>"; };
 		A5E9DF246599905D824EBFDC /* CompanionSharingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionSharingStore.swift; sourceTree = "<group>"; };
+		A6589BC1AC358F3E136C58F0 /* ExerciseAnimationFixtureTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseAnimationFixtureTransport.swift; sourceTree = "<group>"; };
 		A8CBCF1233E64E691926F693 /* BojiWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojiWatchApp.swift; sourceTree = "<group>"; };
 		AC5C69E187FD17A2705F3713 /* TrainingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingView.swift; sourceTree = "<group>"; };
 		AD42FEF98FAC54299B80325E /* ExerciseAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseAnimationView.swift; sourceTree = "<group>"; };
@@ -283,6 +287,8 @@
 				4D4840C3365DFE332E18C11C /* BojiStore.swift */,
 				A5E9DF246599905D824EBFDC /* CompanionSharingStore.swift */,
 				4503BF115AA156DB157E50DF /* ExerciseAnimationCatalog.swift */,
+				A6589BC1AC358F3E136C58F0 /* ExerciseAnimationFixtureTransport.swift */,
+				8DDA3A08368EF5F72F3CBDE4 /* ExerciseAnimationRemoteStore.swift */,
 				21905AB8E7B0CE32504579D7 /* HealthDataStore.swift */,
 				1AAF1AB2D0AE96C9E8BFC6AB /* HealthModels.swift */,
 				1BC9E35155AD090D46105762 /* LegalDocument.swift */,
@@ -416,6 +422,13 @@
 			path = BojiTests;
 			sourceTree = "<group>";
 		};
+		"TEMP_B7AA36EC-1DFE-4BA5-863B-3A51270E99B1" /* DebugSupport */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = DebugSupport;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -459,6 +472,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F8DAE79657260C0BEA1EB53A /* Build configuration list for PBXNativeTarget "Boji" */;
 			buildPhases = (
+				A401CC9B91150F660F120D43 /* Copy Debug animation fixtures */,
 				619071933C088784E9551E07 /* Sources */,
 				709EF0C4F2A87CC5062E904F /* Resources */,
 				58955C39F61F35AA44AD2D9B /* Frameworks */,
@@ -613,6 +627,33 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		A401CC9B91150F660F120D43 /* Copy Debug animation fixtures */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Boji/DebugSupport/Fixtures/index.json",
+				"${SRCROOT}/Boji/DebugSupport/Fixtures/light.json",
+				"${SRCROOT}/Boji/DebugSupport/Fixtures/dark.json",
+			);
+			name = "Copy Debug animation fixtures";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RemoteAnimationFixtures/index.json",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RemoteAnimationFixtures/light.json",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RemoteAnimationFixtures/dark.json",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"${CONFIGURATION}\" = \"Debug\" ]; then\n  destination=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RemoteAnimationFixtures\"\n  /bin/mkdir -p \"$destination\"\n  /bin/cp \"${SRCROOT}/Boji/DebugSupport/Fixtures/\"*.json \"$destination/\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		2D62D1E2112BA4CAF053DBB1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -665,6 +706,8 @@
 				9600C25DB4B4BE52DE6D8B9F /* DesignSystem.swift in Sources */,
 				CDE9CB1C2BD58BCD11ED7F57 /* EntrySheets.swift in Sources */,
 				9B514A4607375273BABB9D12 /* ExerciseAnimationCatalog.swift in Sources */,
+				161FC29406AED13BF47EAFF7 /* ExerciseAnimationFixtureTransport.swift in Sources */,
+				46C3FC42A747EC9FACFB5B49 /* ExerciseAnimationRemoteStore.swift in Sources */,
 				9102473405E6694A905A044A /* ExerciseAnimationView.swift in Sources */,
 				942BD3F229A9427D3BF3C288 /* ExercisePreviewView.swift in Sources */,
 				2D3C6DD55721463172DA1E0D /* HealthConnectionView.swift in Sources */,

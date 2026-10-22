@@ -33,3 +33,4 @@ inputs:
       - google/rpc/error_details.proto
       - google/rpc/status.proto
       - google/type/date.proto
+      - google/type/localized_text.proto

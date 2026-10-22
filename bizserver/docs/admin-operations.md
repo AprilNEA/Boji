@@ -1,6 +1,6 @@
 # 会员运营接口
 
-会员运营使用 `boji.admin.v1` 包中的 `EntitlementService` 和 `MembershipService`。接口只操作会员卡与权益，不负责账号密码。请求与响应以[运营协议](../proto/boji/admin/v1/)为准。
+会员运营使用 `boji.admin.v1` 包中的 `EntitlementService` 和 `MembershipService`。学校排名的运营使用同一个包中的 `OrganizationService`。接口只操作会员卡、权益、学校认证和排名冻结，不负责账号密码。请求与响应以[运营协议](../proto/boji/admin/v1/)为准。
 
 ## 权限与会话
 
@@ -14,11 +14,13 @@
 
 服务忽略 Cookie 和客户端声明的角色。只有 Cookie、原始令牌或重复认证头都会失败。权限判断读取服务端当前状态，不缓存授权结果。
 
-| 角色 | 会员卡权限 | 权益权限 |
-| --- | --- | --- |
-| `user` | 无 | 无 |
-| `operator` | 查询、暂停、恢复 | 查询、授予、撤销 |
-| `admin` | 查询、暂停、恢复 | 查询、授予、撤销 |
+| 角色 | 会员卡权限 | 权益权限 | 组织权限 |
+| --- | --- | --- | --- |
+| `user` | 无 | 无 | 无 |
+| `operator` | 查询、暂停、恢复 | 查询、授予、撤销 | 查询、撤销认证、冻结、解冻 |
+| `admin` | 查询、暂停、恢复 | 查询、授予、撤销 | 查询、撤销认证、冻结、解冻 |
+
+组织权限的资源名是 `organization`。查询需要 `organization.read`，撤销认证、冻结和解冻需要 `organization.update`。
 
 `admin` 在这里不是全权账号。两个运营角色都没有删除账号、改密码或设置角色的权限。它们也没有冒充用户的权限。
 
@@ -26,7 +28,9 @@
 
 ## 业务行为
 
-两个服务共有 10 个 RPC，覆盖权益目录、会员卡和授权的查询。它们也支持暂停、恢复、授予和撤销操作。完整参数与错误见 [RPC 使用说明](connectrpc-api.md#运营接口)。
+`EntitlementService` 和 `MembershipService` 共有 10 个 RPC，覆盖权益目录、会员卡和授权的查询。它们也支持暂停、恢复、授予和撤销操作。完整参数与错误见 [RPC 使用说明](connectrpc-api.md#运营接口)。
+
+`OrganizationService` 有 5 个 RPC：查询学校认证、撤销学校认证、冻结和解冻一所学校的排名。它不能修改学校名单。完整参数与错误见 [RPC 使用说明](connectrpc-api.md#运营方法)。
 
 暂停只改变会员状态。服务不删除活动数据，不撤销登录会话。暂停期间，会员本人仍能读取卡片，但有效权益为空。客户端的免费本地功能不受影响。
 
@@ -36,7 +40,7 @@
 
 ## 事务与审计
 
-真实变更和审计事件在同一事务中提交。任何一步失败，两者都会回滚。重复请求若发现目标状态已存在，不修改数据，也不追加审计事件。暂停、恢复和撤销返回 `failed_precondition`，并带有 `MEMBERSHIP_ALREADY_SUSPENDED`、`MEMBERSHIP_ALREADY_ACTIVE` 或 `ENTITLEMENT_GRANT_ALREADY_REVOKED`。授予返回已有的授权。
+真实变更和审计事件在同一事务中提交。任何一步失败，两者都会回滚。重复请求若发现目标状态已存在，不修改数据，也不追加审计事件。暂停、恢复和撤销返回 `failed_precondition`，并带有 `MEMBERSHIP_ALREADY_SUSPENDED`、`MEMBERSHIP_ALREADY_ACTIVE` 或 `ENTITLEMENT_GRANT_ALREADY_REVOKED`。授予返回已有的授权。撤销学校认证、冻结和解冻返回 `failed_precondition`，并带有 `AFFILIATION_INACTIVE`、`ORGANIZATION_STANDING_ALREADY_FROZEN` 或 `ORGANIZATION_STANDING_NOT_FROZEN`。
 
 审计表是 `admin_audit_event`。记录包含操作者、目标用户、动作、原因和受影响标识。服务不自动复制邮箱、健康记录、令牌或密码。审计数据属于受限运营数据，不向普通会员开放。
 

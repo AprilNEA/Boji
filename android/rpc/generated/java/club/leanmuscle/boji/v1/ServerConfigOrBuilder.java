@@ -63,10 +63,22 @@ public interface ServerConfigOrBuilder extends
 
   /**
    * <pre>
+   * Output only. True when `AffiliationService` can send and check
+   * affiliation verification codes. `OrganizationService` serves the
+   * organization lists and the rankings in either case.
+   * </pre>
+   *
+   * <code>bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   * @return The organizationRankingEnabled.
+   */
+  boolean getOrganizationRankingEnabled();
+
+  /**
+   * <pre>
    * Output only. True when Sign in with Google is available under `/api/auth`.
    * </pre>
    *
-   * <code>bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   * <code>bool google_login_enabled = 6 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
    * @return The googleLoginEnabled.
    */
   boolean getGoogleLoginEnabled();

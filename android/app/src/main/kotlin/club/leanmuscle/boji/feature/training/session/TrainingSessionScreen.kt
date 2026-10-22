@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -75,6 +76,7 @@ fun TrainingSessionScreen(
         hiltViewModel<TrainingSessionViewModel, TrainingSessionViewModel.Factory>(key = workout.id) { it.create(workout) },
 ) {
     val session by viewModel.session.collectAsStateWithLifecycle()
+    val animationCacheVersion by viewModel.animationCacheVersion.collectAsStateWithLifecycle()
     var confirmEnd by rememberSaveable { mutableStateOf(false) }
 
     // Leaving the foreground pauses the session, as on iOS. A configuration change (rotation,
@@ -110,6 +112,8 @@ fun TrainingSessionScreen(
                 session = session,
                 onPrimary = viewModel::primaryAction,
                 onToggleRunning = { viewModel.setRunning(!session.running) },
+                animationCacheVersion = animationCacheVersion,
+                cachedAnimation = viewModel::cachedAnimation,
                 modifier = Modifier.padding(padding),
             )
         }
@@ -148,6 +152,8 @@ private fun ActiveContent(
     session: TrainingSession,
     onPrimary: () -> Unit,
     onToggleRunning: () -> Unit,
+    animationCacheVersion: Int,
+    cachedAnimation: (String, Boolean) -> club.leanmuscle.boji.feature.training.CachedRemoteAnimation?,
     modifier: Modifier = Modifier,
 ) {
     val workout = session.workout
@@ -182,9 +188,14 @@ private fun ActiveContent(
                         color = BojiThemeColors.current.card,
                         modifier = Modifier.fillMaxSize(),
                     ) {
+                        val dark = BojiThemeColors.isDark
+                        val remoteAnimation = remember(session.exercise.id, dark, animationCacheVersion) {
+                            cachedAnimation(session.exercise.id, dark)
+                        }
                         ExerciseAnimation(
                             exerciseId = session.exercise.id,
                             playing = session.running,
+                            remoteAnimation = remoteAnimation,
                             modifier = Modifier.fillMaxSize().padding(8.dp),
                         ) {
                             OrbitArtwork(icon = session.exercise.icon.iconRes, color = primary)

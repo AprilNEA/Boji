@@ -19,6 +19,8 @@ COPY src ./src
 COPY proto ./proto
 # src/wallet.rs embeds the Apple Root CA and the pass icons from assets/wallet.
 COPY assets ./assets
+# src/domain/organization/import.rs embeds the organization list from data/schools.
+COPY data ./data
 # The cache mounts keep the crate registry, the buf module cache and the
 # compiled dependencies between local builds. They are not part of the image.
 # Each platform has its own target cache. The binary leaves the cache in the

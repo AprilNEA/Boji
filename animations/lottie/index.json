@@ -3,6 +3,9 @@
     "id": "bodyweight-squat",
     "name": "徒手深蹲",
     "course": "home-beginner",
+    "courses": [
+      "home-beginner"
+    ],
     "seconds": 3.5,
     "frames": 210,
     "posterFrame": 106,
@@ -20,12 +23,19 @@
     "files": {
       "light": "light/bodyweight-squat.json",
       "dark": "dark/bodyweight-squat.json"
+    },
+    "sha256": {
+      "light": "409a1daaaef5a7627f89ba733a698cd26ecc5f362ec848685e7ff4a8d03c78d5",
+      "dark": "6006c6ab0ece2f14eb5c4dd4b270c4ccde4a42756d119e32f70e2cedb17f35ab"
     }
   },
   {
     "id": "wall-push-up",
     "name": "墙壁俯卧撑",
     "course": "home-beginner",
+    "courses": [
+      "home-beginner"
+    ],
     "seconds": 3.3,
     "frames": 198,
     "posterFrame": 97,
@@ -43,12 +53,19 @@
     "files": {
       "light": "light/wall-push-up.json",
       "dark": "dark/wall-push-up.json"
+    },
+    "sha256": {
+      "light": "08688ac0cf0c2e17c16c189a549ba2da0ea651cb3111716c11387d81120b9874",
+      "dark": "c2de999ee3b0f8019252459fa93d21fc8c691a01ecc3044a263081daf26b5c86"
     }
   },
   {
     "id": "glute-bridge",
     "name": "臀桥",
     "course": "home-beginner",
+    "courses": [
+      "home-beginner"
+    ],
     "seconds": 4.2,
     "frames": 252,
     "posterFrame": 72,
@@ -66,12 +83,19 @@
     "files": {
       "light": "light/glute-bridge.json",
       "dark": "dark/glute-bridge.json"
+    },
+    "sha256": {
+      "light": "102b7b8dbe032e165373c83b2e5212c8556433d194707ceefaf24bfb70c596b7",
+      "dark": "de8ed1998271c2d92a4755009711baf281d234efd010d890a17758e957a515c8"
     }
   },
   {
     "id": "bird-dog",
     "name": "鸟狗式",
     "course": "home-beginner",
+    "courses": [
+      "home-beginner"
+    ],
     "seconds": 7.4,
     "frames": 444,
     "posterFrame": 126,
@@ -93,12 +117,19 @@
     "files": {
       "light": "light/bird-dog.json",
       "dark": "dark/bird-dog.json"
+    },
+    "sha256": {
+      "light": "dbc74ed28497eb1089cbe71e9f8386c94a245352462270a1f7f5469e5c8637f5",
+      "dark": "5069c8fe787f90cf403dc3250ddd8d20bea6bca5445974fb52b5fa67f8f4c13f"
     }
   },
   {
     "id": "reverse-lunge",
     "name": "后撤步弓步蹲",
     "course": "home-intermediate",
+    "courses": [
+      "home-intermediate"
+    ],
     "seconds": 6.3,
     "frames": 378,
     "posterFrame": 94,
@@ -116,12 +147,19 @@
     "files": {
       "light": "light/reverse-lunge.json",
       "dark": "dark/reverse-lunge.json"
+    },
+    "sha256": {
+      "light": "f4adec7c0bda8569ee05886be92408d0fc1c3fb6004f30a884f54c7980bbae7d",
+      "dark": "686cfcd245c7b56dd7f322e70babce76b13b10696c6cc8abac10c24cf7d4a286"
     }
   },
   {
     "id": "knee-push-up",
     "name": "跪姿俯卧撑",
     "course": "home-intermediate",
+    "courses": [
+      "home-intermediate"
+    ],
     "seconds": 3.3,
     "frames": 198,
     "posterFrame": 97,
@@ -143,12 +181,19 @@
     "files": {
       "light": "light/knee-push-up.json",
       "dark": "dark/knee-push-up.json"
+    },
+    "sha256": {
+      "light": "ebdf2092cdb0d960b30287a8ec9c60d191d08548f98f62383e899477665c4ba6",
+      "dark": "698f10439ed6b0ef68cf4053711bf27691313b4381686198c7241b5aa181011e"
     }
   },
   {
     "id": "dead-bug",
     "name": "死虫式",
     "course": "home-intermediate",
+    "courses": [
+      "home-intermediate"
+    ],
     "seconds": 6.6,
     "frames": 396,
     "posterFrame": 108,
@@ -166,12 +211,19 @@
     "files": {
       "light": "light/dead-bug.json",
       "dark": "dark/dead-bug.json"
+    },
+    "sha256": {
+      "light": "cb3ea2b564fb5ecd1a9945d55b7a9e55076f40a70a1cee09ed94a6d1e031d574",
+      "dark": "74f8b9f090e1029e818e029718a461b1b29af4dec34b8ecb825fb0b349ac6ec8"
     }
   },
   {
     "id": "wall-sit",
     "name": "靠墙静蹲",
     "course": "home-intermediate",
+    "courses": [
+      "home-intermediate"
+    ],
     "seconds": 6.2,
     "frames": 372,
     "posterFrame": 264,
@@ -189,12 +241,20 @@
     "files": {
       "light": "light/wall-sit.json",
       "dark": "dark/wall-sit.json"
+    },
+    "sha256": {
+      "light": "59b2fd520ff55bbd4ce95d4fac4e741937c030a77c8c8d21f5da83e0fd8a3148",
+      "dark": "166a515694614b4991130f8095ed1b62426d26d241ac95c5babc7392aa605868"
     }
   },
   {
     "id": "plank",
     "name": "平板支撑",
     "course": "home-intermediate",
+    "courses": [
+      "home-intermediate",
+      "home-core"
+    ],
     "seconds": 4,
     "frames": 240,
     "posterFrame": 120,
@@ -216,12 +276,19 @@
     "files": {
       "light": "light/plank.json",
       "dark": "dark/plank.json"
+    },
+    "sha256": {
+      "light": "c735c4bab6a74fc6f9fd90717d9a55565c72ab5ccf1c23f099e5bda85b6e0b8e",
+      "dark": "ae4e89beac09de3fa77ac580f14e12a0e103eca9a3a87e05be9f0d3284562553"
     }
   },
   {
     "id": "chest-press",
     "name": "坐姿推胸",
     "course": "gym-beginner",
+    "courses": [
+      "gym-beginner"
+    ],
     "seconds": 3.4,
     "frames": 204,
     "posterFrame": 60,
@@ -243,12 +310,19 @@
     "files": {
       "light": "light/chest-press.json",
       "dark": "dark/chest-press.json"
+    },
+    "sha256": {
+      "light": "d6d5bd69c5adaddfe2feffec3ee9b7178bfb5810c9e5055d242ae973d9166d37",
+      "dark": "b8cf31699a75997a99561bbad76e218b44157a43aea734a7bae495a2d46391e8"
     }
   },
   {
     "id": "seated-row",
     "name": "坐姿划船",
     "course": "gym-beginner",
+    "courses": [
+      "gym-beginner"
+    ],
     "seconds": 3.5,
     "frames": 210,
     "posterFrame": 60,
@@ -270,12 +344,20 @@
     "files": {
       "light": "light/seated-row.json",
       "dark": "dark/seated-row.json"
+    },
+    "sha256": {
+      "light": "9a17ed941624e8a5efbd09c71bb2e294b1ce0eb4d7e1061ebed36a197a1697d7",
+      "dark": "52296ff8c402e44531bfa480c651ee572704b0b00949ad0bfa909d3e56eeb29a"
     }
   },
   {
     "id": "leg-press",
     "name": "坐姿腿举",
     "course": "gym-beginner",
+    "courses": [
+      "gym-beginner",
+      "gym-lower"
+    ],
     "seconds": 3.6,
     "frames": 216,
     "posterFrame": 66,
@@ -293,12 +375,19 @@
     "files": {
       "light": "light/leg-press.json",
       "dark": "dark/leg-press.json"
+    },
+    "sha256": {
+      "light": "f97b17f7edc59f930f8c6757e6fb0772857f98133453dc3bfcc41d6a7aafbbd2",
+      "dark": "c88951fd3833c153b211ed9d0a8f62ccd144b39a4b35af14dabd925090b17bd2"
     }
   },
   {
     "id": "lat-pulldown",
     "name": "高位下拉",
     "course": "gym-beginner",
+    "courses": [
+      "gym-beginner"
+    ],
     "seconds": 3.5,
     "frames": 210,
     "posterFrame": 60,
@@ -320,12 +409,19 @@
     "files": {
       "light": "light/lat-pulldown.json",
       "dark": "dark/lat-pulldown.json"
+    },
+    "sha256": {
+      "light": "869147735ce7563bb69209a8d6e69776ff2f2036fada251b88550b9290631e64",
+      "dark": "0c350272fc496a67eee9ec492d30650cd5e9fc06b949939e9a8c9efd1f90ff05"
     }
   },
   {
     "id": "cat-cow",
     "name": "猫牛式",
     "course": "mobility",
+    "courses": [
+      "mobility"
+    ],
     "seconds": 5,
     "frames": 300,
     "posterFrame": 75,
@@ -343,12 +439,19 @@
     "files": {
       "light": "light/cat-cow.json",
       "dark": "dark/cat-cow.json"
+    },
+    "sha256": {
+      "light": "9b590012d69c5142226896eaaf9e3eb00e6c3a759bad51bc2a6fa51c18fed79a",
+      "dark": "181f8db30dc4e34b6b33821fd6d8d7012ad03a2206509348e9200f9622f34ed4"
     }
   },
   {
     "id": "hip-flexor-stretch",
     "name": "髋屈肌拉伸",
     "course": "mobility",
+    "courses": [
+      "mobility"
+    ],
     "seconds": 5.8,
     "frames": 348,
     "posterFrame": 168,
@@ -366,12 +469,19 @@
     "files": {
       "light": "light/hip-flexor-stretch.json",
       "dark": "dark/hip-flexor-stretch.json"
+    },
+    "sha256": {
+      "light": "3f8b438f2803cea5ab0a03170dcdd545131c30af75fd5495c1c15c21c57fac01",
+      "dark": "8166b16db1e910b4289449ffa2e381c02e9824604dd264e89de91ea1c59b7dae"
     }
   },
   {
     "id": "chest-stretch",
     "name": "开胸拉伸",
     "course": "mobility",
+    "courses": [
+      "mobility"
+    ],
     "seconds": 5.4,
     "frames": 324,
     "posterFrame": 156,
@@ -389,6 +499,10 @@
     "files": {
       "light": "light/chest-stretch.json",
       "dark": "dark/chest-stretch.json"
+    },
+    "sha256": {
+      "light": "1eca8acb5222eb286d98a7cb6cf1d008b1b11f5fadf0b0785373b3ab9c1b9360",
+      "dark": "47e70b3365c4088e128d4de6e2dd96a50b5452a88af6f1c20ece88574943c1a7"
     }
   }
 ]

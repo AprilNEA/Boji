@@ -141,10 +141,39 @@ public object ServerConfigKt {
 
     /**
      * ```
+     * Output only. True when `AffiliationService` can send and check
+     * affiliation verification codes. `OrganizationService` serves the
+     * organization lists and the rankings in either case.
+     * ```
+     *
+     * `bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];`
+     */
+    public var organizationRankingEnabled: kotlin.Boolean
+      @kotlin.jvm.JvmName("getOrganizationRankingEnabled")
+        get() = _builder.organizationRankingEnabled
+      @kotlin.jvm.JvmName("setOrganizationRankingEnabled")
+        set(value) {
+        _builder.organizationRankingEnabled = value
+      }
+    /**
+     * ```
+     * Output only. True when `AffiliationService` can send and check
+     * affiliation verification codes. `OrganizationService` serves the
+     * organization lists and the rankings in either case.
+     * ```
+     *
+     * `bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];`
+     */
+    public fun clearOrganizationRankingEnabled() {
+      _builder.clearOrganizationRankingEnabled()
+    }
+
+    /**
+     * ```
      * Output only. True when Sign in with Google is available under `/api/auth`.
      * ```
      *
-     * `bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];`
+     * `bool google_login_enabled = 6 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];`
      */
     public var googleLoginEnabled: kotlin.Boolean
       @kotlin.jvm.JvmName("getGoogleLoginEnabled")
@@ -158,7 +187,7 @@ public object ServerConfigKt {
      * Output only. True when Sign in with Google is available under `/api/auth`.
      * ```
      *
-     * `bool google_login_enabled = 5 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];`
+     * `bool google_login_enabled = 6 [json_name = "googleLoginEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];`
      */
     public fun clearGoogleLoginEnabled() {
       _builder.clearGoogleLoginEnabled()

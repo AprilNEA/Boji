@@ -1,4 +1,4 @@
-// Build the offline preview: preview/data.js embeds every animation of lottie/ and the named library exercises of
+// Build the offline preview: preview/data.js embeds every course animation of the asset catalog and the named library exercises of
 // lottie-library/. The full library is too large for one page. preview/lottie.min.js is copied from node_modules.
 // Both files are git-ignored. Open preview/index.html afterwards.
 // Usage: tsx scripts/preview.ts [<library exercise id>...]
@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
-import { readIndexes } from '@/build/generate.ts';
+import { DEFAULT_CATALOG_DIR, readIndex, readIndexes } from '@/build/generate.ts';
 
 const root = path.resolve(import.meta.dirname, '..');
 const outDir = path.join(root, 'preview');
@@ -19,7 +19,7 @@ if (missing.length) {
   console.error(`not in lottie-library/index.json (run pnpm build first): ${missing.join(', ')}`);
   process.exit(2);
 }
-const items = [...readIndexes(root, ['lottie']), ...library];
+const items = [...readIndex(DEFAULT_CATALOG_DIR), ...library];
 const index = items.map(({ entry }) => entry);
 const data: Record<string, Record<string, unknown>> = {};
 for (const { entry, dir } of items) {

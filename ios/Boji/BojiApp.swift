@@ -10,6 +10,11 @@ struct BojiApp: App {
     init() {
         CrashReporting.start()
         #if DEBUG
+        if let fixture = ExerciseAnimationTestSettings.remoteFixture {
+            ExerciseAnimationLoader.configureRemoteStore(
+                ExerciseAnimationFixtureTransport.makeStore(mode: fixture)
+            )
+        }
         _store = State(initialValue: BojiStore(inMemory: ProcessInfo.processInfo.arguments.contains("--uitesting")))
         _membership = State(initialValue: ProcessInfo.processInfo.arguments.contains("--uitesting") ? MembershipStore.uiTesting() : MembershipStore.live())
         _health = State(initialValue: ProcessInfo.processInfo.arguments.contains("--uitesting") ? HealthDataStore.uiTesting() : HealthDataStore.live())
@@ -71,6 +76,13 @@ struct RootView: View {
                 companion.update(companionProgress, force: true)
                 if membership.account != nil { Task { await membership.refresh() } }
                 Task { await health.refresh() }
+            } else if phase == .background {
+                // Ask for background time, so iOS does not suspend the app before the last write finishes.
+                let task = UIApplication.shared.beginBackgroundTask(withName: "Save local data")
+                Task {
+                    await store.flush()
+                    UIApplication.shared.endBackgroundTask(task)
+                }
             }
         }
         .task {
