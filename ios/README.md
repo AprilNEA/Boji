@@ -101,6 +101,7 @@ TestFlight 构建从 GitHub 环境 `ios-testflight` 的同名变量读取正式�
 - [设计说明](docs/design.md)：材质分层和辅助功能策略。
 - [验证记录](docs/verification.md)：实际测试结果。
 - [界面改造验证](docs/ui-refresh-verification.md)：本轮 HIG 改造的范围和结果。
+- [手表布局验证](docs/watch-verification.md)：手表正文边距的修复和检查结果。
 
 Liquid Glass 只用于标签栏、导航栏、工具栏和底部操作栏。内容卡片使用实色，不使用玻璃。界面支持深色模式、高对比度和 Dynamic Type，iPad 上标签栏可以切换为侧边栏。
 
