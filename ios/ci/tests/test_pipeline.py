@@ -94,7 +94,7 @@ class ReleaseSpecTests(unittest.TestCase):
             'targets': {name: {'settings': {'base': {'PRODUCT_BUNDLE_IDENTIFIER': bundle}},
                                'sources': [{'path': name}]}
                         for name, (bundle, _, _) in signing.TARGETS.items()},
-            'packages': {'Lottie': {'exactVersion': '4.6.1'}},
+            'packages': {'Lottie': {'exactVersion': '4.6.1'}, 'BojiAPI': {'path': 'BojiAPI'}},
             'schemes': {'Boji': {'build': {'targets': {'Boji': 'all'}}}},
         }
         self.profiles = {bundle: f'test-profile-{name}'
@@ -121,11 +121,18 @@ class ReleaseSpecTests(unittest.TestCase):
                 self.assertEqual(target['CODE_SIGN_STYLE'], 'Manual')
 
     def test_generation_preserves_source_resources_packages_and_schemes(self):
+        settings = self.source['targets']['Boji']['settings']
+        settings['base']['BOJI_ANIMATION_FIXTURE_DIR'] = '$(DERIVED_FILE_DIR)/RemoteAnimationFixtures'
+        settings['configs'] = {'Debug': {'BOJI_ANIMATION_FIXTURE_DIR':
+                                        '$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/RemoteAnimationFixtures'}}
         original = deepcopy(self.source)
         spec = self.generate()
         self.assertEqual(self.source, original)
         self.assertEqual(spec['packages'], original['packages'])
         self.assertEqual(spec['schemes'], original['schemes'])
+        self.assertEqual(spec['targets']['Boji']['settings']['configs'], settings['configs'])
+        self.assertEqual(spec['targets']['Boji']['settings']['base']['BOJI_ANIMATION_FIXTURE_DIR'],
+                         settings['base']['BOJI_ANIMATION_FIXTURE_DIR'])
         for name in signing.TARGETS:
             self.assertEqual(spec['targets'][name]['sources'], original['targets'][name]['sources'])
 
@@ -230,9 +237,40 @@ class InputTests(unittest.TestCase):
             signing.validate_inputs('1.0', '8', 'https://api.leanmuscle.club')
 
 
+class BundleTests(unittest.TestCase):
+    def test_debug_animation_fixtures_are_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / 'animations/lottie'
+            app = root / 'Boji.app'
+            for path in (source / 'index.json', source / 'light/sample.json', source / 'dark/sample.json'):
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text('{}')
+                destination = app / 'lottie' / path.relative_to(source)
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_text('{}')
+            (app / 'PlugIns/BojiWidgets.appex').mkdir(parents=True)
+            (app / 'Watch/BojiWatch.app').mkdir(parents=True)
+            check.check_bundle(app, root)
+            (app / 'RemoteAnimationFixtures').mkdir()
+            with self.assertRaisesRegex(ValueError, 'Debug animation fixtures'):
+                check.check_bundle(app, root)
+
+
 class SourceTests(unittest.TestCase):
     def test_current_animation_sources(self):
         self.assertGreater(check.check_assets(), 0)
+
+    def test_generated_project_has_no_temporary_identifiers(self):
+        check.check_xcode_project()
+
+    def test_temporary_project_identifier_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            project = Path(directory) / 'ios/Boji.xcodeproj/project.pbxproj'
+            project.parent.mkdir(parents=True)
+            project.write_text('TEMP_1A2B3C4D /* DebugSupport */')
+            with self.assertRaisesRegex(ValueError, 'unstable TEMP_ identifier'):
+                check.check_xcode_project(Path(directory))
 
     def test_simulator_selection_is_not_a_local_udid(self):
         data = {'devices': {

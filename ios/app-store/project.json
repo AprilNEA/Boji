@@ -1,7 +1,7 @@
 {
   "bundleId": "club.leanmuscle.boji",
   "appId": "6824964768",
-  "version": "0.7.0",
+  "version": "1.0",
   "platform": "IOS",
   "locales": ["en-US", "zh-Hans"],
   "nameApproved": true,

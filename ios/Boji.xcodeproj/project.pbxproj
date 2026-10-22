@@ -26,6 +26,7 @@
 		27FE2609C62109FE7A50DE17 /* HealthDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21905AB8E7B0CE32504579D7 /* HealthDataStore.swift */; };
 		2A270EB8EBE2CB77EDF2F525 /* TrainingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5C69E187FD17A2705F3713 /* TrainingView.swift */; };
 		2D3C6DD55721463172DA1E0D /* HealthConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458A3077F92019074E88F6CF /* HealthConnectionView.swift */; };
+		31535C827E616094DCECA3E8 /* AccountDeletionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A73CF5CAD8690274053AB8 /* AccountDeletionView.swift */; };
 		352016E5B270E99C0DA6E065 /* MembershipRPCFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52902C7BFFB3D07FB320C4F9 /* MembershipRPCFixtures.swift */; };
 		3B0A9512235FB99171894270 /* BojiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F4EEA7892D89748155D924 /* BojiUITests.swift */; };
 		40613947F1DBA770A474CF9B /* BojiWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 661AE16B78FF2F30E57965DC /* BojiWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -62,6 +63,7 @@
 		B55214557290A8264026615F /* MembershipSharingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E83A1EEADA038A229812FF6 /* MembershipSharingView.swift */; };
 		B5E73CBB3085B0690818FEA9 /* AppleSignInSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DA81187EA829BFF5FF639A /* AppleSignInSection.swift */; };
 		BC9FCC9D20F279F305021487 /* HealthDataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E2BDA8BA4453BF2D000EFF /* HealthDataStoreTests.swift */; };
+		C088B5F758623BC014A02D92 /* AccountDeletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ECF65EC0A432B0322032069 /* AccountDeletionTests.swift */; };
 		C4DAE2AD6AE64A6575BB8A40 /* MembershipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D0E927BAEA70844A0A902F8 /* MembershipView.swift */; };
 		C8204FC7B3D31DF0611787D0 /* MembershipRPCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C7734F5BA146860613E16F /* MembershipRPCTests.swift */; };
 		CB10FCBE961A16770B5CF502 /* BojiStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4840C3365DFE332E18C11C /* BojiStore.swift */; };
@@ -146,6 +148,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		04A73CF5CAD8690274053AB8 /* AccountDeletionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionView.swift; sourceTree = "<group>"; };
 		083B8509767D09C964A00EF6 /* BojiDailyWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojiDailyWidget.swift; sourceTree = "<group>"; };
 		11FA04E52232AEB2F3737E0F /* AppleIntegrationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntegrationUITests.swift; sourceTree = "<group>"; };
 		15BEB5076A2624AF34BB855E /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
@@ -174,6 +177,7 @@
 		4AD951089E95ACCBD0D4BC85 /* CompanionSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionSnapshotTests.swift; sourceTree = "<group>"; };
 		4BCFE5FC6932EA2AA0EDEF99 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		4D4840C3365DFE332E18C11C /* BojiStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojiStore.swift; sourceTree = "<group>"; };
+		4ECF65EC0A432B0322032069 /* AccountDeletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDeletionTests.swift; sourceTree = "<group>"; };
 		52902C7BFFB3D07FB320C4F9 /* MembershipRPCFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipRPCFixtures.swift; sourceTree = "<group>"; };
 		532250876ED85B6BDAAA301C /* BetterAuthSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetterAuthSession.swift; sourceTree = "<group>"; };
 		544A88E9634042791CE6BBA0 /* MembershipStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipStore.swift; sourceTree = "<group>"; };
@@ -377,6 +381,7 @@
 		F2638C0D70364512F0C50994 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				04A73CF5CAD8690274053AB8 /* AccountDeletionView.swift */,
 				BB1CD9EE11102D933988D55A /* AccountSecurityView.swift */,
 				C5DA81187EA829BFF5FF639A /* AppleSignInSection.swift */,
 				493DBDB4130FFDE702147DBF /* ClubView.swift */,
@@ -402,6 +407,7 @@
 		FAD8E236744E5F48F7332648 /* BojiTests */ = {
 			isa = PBXGroup;
 			children = (
+				4ECF65EC0A432B0322032069 /* AccountDeletionTests.swift */,
 				2AFDF41C9C885E6DDE1070C1 /* AppleIntegrationTests.swift */,
 				C67A5E4EC28793B5ECEC4D8F /* AuthSecurityStoreTests.swift */,
 				20B01B3D23C54B54A44BED01 /* BetterAuthClientTests.swift */,
@@ -420,13 +426,6 @@
 				A54E43AA718586768EB78014 /* MembershipTests.swift */,
 			);
 			path = BojiTests;
-			sourceTree = "<group>";
-		};
-		"TEMP_B7AA36EC-1DFE-4BA5-863B-3A51270E99B1" /* DebugSupport */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = DebugSupport;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -644,13 +643,13 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RemoteAnimationFixtures/index.json",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RemoteAnimationFixtures/light.json",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RemoteAnimationFixtures/dark.json",
+				"${BOJI_ANIMATION_FIXTURE_DIR}/index.json",
+				"${BOJI_ANIMATION_FIXTURE_DIR}/light.json",
+				"${BOJI_ANIMATION_FIXTURE_DIR}/dark.json",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"${CONFIGURATION}\" = \"Debug\" ]; then\n  destination=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RemoteAnimationFixtures\"\n  /bin/mkdir -p \"$destination\"\n  /bin/cp \"${SRCROOT}/Boji/DebugSupport/Fixtures/\"*.json \"$destination/\"\nfi\n";
+			shellScript = "if [ \"${CONFIGURATION}\" = \"Debug\" ]; then\n  destination=\"${BOJI_ANIMATION_FIXTURE_DIR}\"\n  /bin/mkdir -p \"$destination\"\n  /bin/cp \"${SRCROOT}/Boji/DebugSupport/Fixtures/\"*.json \"$destination/\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -668,6 +667,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C088B5F758623BC014A02D92 /* AccountDeletionTests.swift in Sources */,
 				F763E48B2B4EC7471BB1DB5E /* AppleIntegrationTests.swift in Sources */,
 				AF870F3B98EEA238FA650EA4 /* AuthSecurityStoreTests.swift in Sources */,
 				EFC099F736E7B22B1EC279DF /* BetterAuthClientTests.swift in Sources */,
@@ -691,6 +691,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				31535C827E616094DCECA3E8 /* AccountDeletionView.swift in Sources */,
 				F48FE9F202DCDCAB1E2CD78A /* AccountSecurityView.swift in Sources */,
 				1371FC0C802284889307E644 /* AppleIntegrationModels.swift in Sources */,
 				B5E73CBB3085B0690818FEA9 /* AppleSignInSection.swift in Sources */,
@@ -784,6 +785,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				BOJI_ANIMATION_FIXTURE_DIR = "$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/RemoteAnimationFixtures";
 				CODE_SIGN_ENTITLEMENTS = Boji/Boji.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Boji/Info.plist;
@@ -864,7 +866,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 0.7.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -946,6 +948,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				BOJI_ANIMATION_FIXTURE_DIR = "$(DERIVED_FILE_DIR)/RemoteAnimationFixtures";
 				CODE_SIGN_ENTITLEMENTS = Boji/Boji.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Boji/Info.plist;
@@ -1049,7 +1052,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 0.7.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";

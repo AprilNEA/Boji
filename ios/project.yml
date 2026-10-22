@@ -9,7 +9,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: '5.0'
-    MARKETING_VERSION: '0.7.0'
+    MARKETING_VERSION: '1.0'
     CURRENT_PROJECT_VERSION: '7'
     DEVELOPMENT_TEAM: 8U3ZJ258K9
     CODE_SIGN_STYLE: Automatic
@@ -42,7 +42,9 @@ targets:
         excludes:
           - '**/*.tmp'
           - '**/.manus-*.tmp'
-          - 'DebugSupport/Fixtures/**'
+          # XcodeGen 2.46.0 emits a random TEMP_ ID for an empty DebugSupport group.
+          # Debug fixtures stay on disk and the Debug-only pre-build script copies them.
+          - 'DebugSupport/**'
       - path: Shared
       - path: ../animations/lottie
         type: folder
@@ -51,7 +53,7 @@ targets:
       - name: Copy Debug animation fixtures
         script: |
           if [ "${CONFIGURATION}" = "Debug" ]; then
-            destination="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RemoteAnimationFixtures"
+            destination="${BOJI_ANIMATION_FIXTURE_DIR}"
             /bin/mkdir -p "$destination"
             /bin/cp "${SRCROOT}/Boji/DebugSupport/Fixtures/"*.json "$destination/"
           fi
@@ -60,9 +62,9 @@ targets:
           - ${SRCROOT}/Boji/DebugSupport/Fixtures/light.json
           - ${SRCROOT}/Boji/DebugSupport/Fixtures/dark.json
         outputFiles:
-          - ${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RemoteAnimationFixtures/index.json
-          - ${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RemoteAnimationFixtures/light.json
-          - ${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RemoteAnimationFixtures/dark.json
+          - ${BOJI_ANIMATION_FIXTURE_DIR}/index.json
+          - ${BOJI_ANIMATION_FIXTURE_DIR}/light.json
+          - ${BOJI_ANIMATION_FIXTURE_DIR}/dark.json
     dependencies:
       - target: BojiWidgets
         embed: true
@@ -85,6 +87,11 @@ targets:
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: 'UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight'
         TARGETED_DEVICE_FAMILY: '1,2'
+        # Xcode creates output parents even when the script does not copy files.
+        BOJI_ANIMATION_FIXTURE_DIR: $(DERIVED_FILE_DIR)/RemoteAnimationFixtures
+      configs:
+        Debug:
+          BOJI_ANIMATION_FIXTURE_DIR: $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/RemoteAnimationFixtures
   BojiWidgets:
     type: app-extension
     platform: iOS

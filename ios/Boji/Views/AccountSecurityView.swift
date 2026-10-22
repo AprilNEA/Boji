@@ -3,8 +3,14 @@ import SwiftUI
 struct AccountSecurityView: View {
     @Environment(MembershipStore.self) private var membership
     @Environment(\.dismiss) private var dismiss
-    @State private var showPassword = false
+    @State private var presentedSheet: AccountSheet?
     @State private var confirmRevoke = false
+
+    private enum AccountSheet: String, Identifiable {
+        case password
+        case deletion
+        var id: String { rawValue }
+    }
 
     var body: some View {
         NavigationStack {
@@ -26,20 +32,29 @@ struct AccountSecurityView: View {
                         }.disabled(membership.isBusy)
                     }
                     Section {
-                        Button("修改邮箱登录密码", systemImage: "key") { showPassword = true }
+                        Button("修改邮箱登录密码", systemImage: "key") { presentedSheet = .password }
                             .accessibilityIdentifier("account-change-password")
                         Button("退出其他登录会话", systemImage: "rectangle.portrait.and.arrow.right", role: .destructive) { confirmRevoke = true }
                             .accessibilityIdentifier("account-revoke-others")
                     } header: { Text("登录安全") }
                     footer: { Text("修改密码会退出其他会话。仅适用于已设置邮箱密码的账号；Apple 登录账号可继续使用 Apple 登录。") }
                     .disabled(membership.isBusy || membership.isOffline || membership.authSession == nil)
+                    Section {
+                        Button("删除账号", systemImage: "person.crop.circle.badge.minus", role: .destructive) {
+                            presentedSheet = .deletion
+                        }
+                        .accessibilityIdentifier("account-delete-start")
+                        .disabled(membership.isBusy || membership.isOffline || membership.authSession == nil)
+                    } footer: {
+                        Text("通过账号邮箱确认后，永久删除服务器上的账号和会员资料。本机记录不受影响。")
+                    }
                 } else {
                     Section { Text("请先登录，再管理账号安全。") }
                 }
                 Section {
                     MembershipMessages()
                     if membership.isBusy { ProgressView("正在连接认证服务…") }
-                    Text("认证由 Better Auth 管理。本页不会删除账号、会员卡或本地记录。")
+                    Text("退出其他会话和修改密码不会删除账号。删除账号需要单独确认。")
                         .font(.footnote).foregroundStyle(.secondary)
                 }
             }
@@ -53,7 +68,12 @@ struct AccountSecurityView: View {
                 membership.notice = nil
                 if membership.account != nil { await membership.refreshAuthSession() }
             }
-            .sheet(isPresented: $showPassword) { ChangePasswordView() }
+            .sheet(item: $presentedSheet) { sheet in
+                switch sheet {
+                case .password: ChangePasswordView()
+                case .deletion: AccountDeletionView()
+                }
+            }
             .confirmationDialog("退出其他登录会话？", isPresented: $confirmRevoke, titleVisibility: .visible) {
                 Button("退出其他会话", role: .destructive) { Task { _ = await membership.revokeOtherSessions() } }
                 Button(.Shared.actionCancel, role: .cancel) {}

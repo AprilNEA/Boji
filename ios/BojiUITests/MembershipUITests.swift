@@ -4,25 +4,42 @@ import XCTest
 final class MembershipUITests: XCTestCase {
     override func setUpWithError() throws { continueAfterFailure = false }
 
-    private func launchApp(scenario: String = "standard", largeDark: Bool = false) -> XCUIApplication {
+    private func launchApp(scenario: String = "standard", largeDark: Bool = false, recordWater: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting", "--membership-fixture=\(scenario)", "-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance", largeDark ? "dark" : "light"]
         if largeDark {
             app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        } else {
+            app.launchArguments += ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryL"]
         }
         app.launch()
         let start = app.buttons["开始我的计划"]
         XCTAssertTrue(start.waitForExistence(timeout: 10))
         start.tap()
+        if recordWater {
+            tap(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "好好喝水")).firstMatch, in: app)
+            tap(app.buttons["保存"], in: app)
+        }
         app.tabBars.buttons["俱乐部"].tap()
         tap(app.buttons["membership-entry"], in: app)
         return app
     }
 
-    private func tap(_ element: XCUIElement, in app: XCUIApplication) {
+    private func reveal(_ element: XCUIElement, in app: XCUIApplication) {
+        for _ in 0..<20 {
+            if element.waitForExistence(timeout: 0.5), element.isHittable { break }
+            scrollUp(app)
+        }
         XCTAssertTrue(element.waitForExistence(timeout: 8))
-        for _ in 0..<20 where !element.isHittable { scrollUp(app) }
         XCTAssertTrue(element.isHittable)
+    }
+
+    private func tap(_ element: XCUIElement, in app: XCUIApplication) {
+        reveal(element, in: app)
+        if !element.isEnabled {
+            expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: element)
+            waitForExpectations(timeout: 8)
+        }
         element.tap()
     }
 
@@ -184,5 +201,64 @@ final class MembershipUITests: XCTestCase {
         tap(app.buttons["membership-share"], in: app)
         XCTAssertTrue(app.navigationBars["分享预览"].waitForExistence(timeout: 8))
         capture("membership-dark-large-share", app)
+    }
+
+    private func openAccountDeletion(_ app: XCUIApplication) {
+        tap(app.buttons["membership-account-security"], in: app)
+        let entry = app.buttons["account-delete-start"]
+        tap(entry, in: app)
+        reveal(app.buttons["account-delete-send-code"], in: app)
+    }
+
+    func testCancelAccountDeletionDoesNotDeleteAccount() {
+        let app = launchApp(largeDark: true)
+        signIn(app)
+        openAccountDeletion(app)
+        XCTAssertFalse(app.secureTextFields["account-delete-code"].exists)
+        tap(app.buttons["account-delete-send-code"], in: app)
+        XCTAssertTrue(app.secureTextFields["account-delete-code"].waitForExistence(timeout: 5))
+        reveal(app.buttons["account-delete-submit"], in: app)
+        XCTAssertFalse(app.buttons["account-delete-submit"].isEnabled)
+        capture("account-deletion-dark-large", app)
+        tap(app.buttons["account-delete-cancel"], in: app)
+        XCTAssertTrue(app.buttons["account-delete-start"].waitForExistence(timeout: 5))
+        tap(app.buttons["account-delete-start"], in: app)
+        reveal(app.buttons["account-delete-send-code"], in: app)
+        XCTAssertFalse(app.secureTextFields["account-delete-code"].exists)
+    }
+
+    func testAccountDeletionRequiresFinalConfirmationAndKeepsLocalRecords() {
+        let app = launchApp(recordWater: true)
+        signIn(app)
+        openAccountDeletion(app)
+        tap(app.buttons["account-delete-send-code"], in: app)
+        type("ci-delete-token", into: app.secureTextFields["account-delete-code"], in: app)
+        tap(app.buttons["account-delete-submit"], in: app)
+        XCTAssertTrue(app.buttons["account-delete-confirm"].waitForExistence(timeout: 5))
+        capture("account-deletion-confirmation", app)
+        app.buttons.matching(identifier: "account-delete-confirm").firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["请先登录，再管理账号安全。"].waitForExistence(timeout: 8))
+        capture("account-deletion-success", app)
+        tap(app.navigationBars["账号与安全"].buttons["关闭"], in: app)
+        XCTAssertTrue(app.buttons["membership-auth-start"].waitForExistence(timeout: 5))
+        tap(app.navigationBars["我的会员卡"].buttons["关闭"], in: app)
+        app.tabBars.buttons["今天"].tap()
+        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "250mL")).firstMatch.waitForExistence(timeout: 5))
+    }
+
+    func testRejectedAccountDeletionKeepsSession() {
+        let app = launchApp(scenario: "delete-error")
+        signIn(app)
+        openAccountDeletion(app)
+        tap(app.buttons["account-delete-send-code"], in: app)
+        type("invalid-delete-token", into: app.secureTextFields["account-delete-code"], in: app)
+        tap(app.buttons["account-delete-submit"], in: app)
+        XCTAssertTrue(app.buttons["account-delete-confirm"].waitForExistence(timeout: 5))
+        app.buttons.matching(identifier: "account-delete-confirm").firstMatch.tap()
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "membership-error").firstMatch.waitForExistence(timeout: 5))
+        capture("account-deletion-rejected", app)
+        tap(app.buttons["account-delete-cancel"], in: app)
+        XCTAssertTrue(app.buttons["account-delete-start"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["请先登录，再管理账号安全。"].exists)
     }
 }

@@ -16,6 +16,15 @@ final class MembershipStore {
         case security
         case changePassword
         case revokeOtherSessions
+        case requestAccountDeletion
+        case confirmAccountDeletion
+    }
+
+    /// A deletion code belongs only to the account and signed session that requested it.
+    private struct PendingAccountDeletion {
+        let accountID: String
+        let token: String
+        let expiresAt: Date
     }
 
     private let configuration: MembershipServiceConfiguration?
@@ -23,6 +32,8 @@ final class MembershipStore {
     @ObservationIgnored private let tokenStore: any MembershipTokenStore
     @ObservationIgnored private let cacheStore: any MembershipCacheStore
     @ObservationIgnored private var activeOperation: UUID?
+    @ObservationIgnored private var accountDeletionOperation: UUID?
+    @ObservationIgnored private var pendingAccountDeletion: PendingAccountDeletion?
     @ObservationIgnored private var hasRestored = false
 
     private(set) var account: MembershipAccount?
@@ -37,6 +48,7 @@ final class MembershipStore {
     private(set) var capabilitiesError: String?
     private(set) var requiresEmailVerification = false
     private(set) var authSession: BetterAuthSession?
+    private(set) var hasPendingAccountDeletion = false
     let isConfigured: Bool
     let serviceURL: String
     let isTestEnvironment: Bool
@@ -234,6 +246,7 @@ final class MembershipStore {
 
     private func completeAuthentication(token: String, operation: UUID, action: Action) async {
         guard isCurrent(operation) else { return }
+        clearPendingAccountDeletion()
         do { try tokenStore.saveToken(token) }
         catch { errorMessage = String(localized: "无法安全保存登录状态，请稍后重试。"); return }
         do { try cacheStore.delete() }
@@ -381,6 +394,7 @@ final class MembershipStore {
                 errorMessage = String(localized: "密码已修改，但登录状态无法安全保存。请重新登录。")
                 return true
             }
+            clearPendingAccountDeletion()
             do {
                 let session = try await api.getSession(token: newToken)
                 guard isCurrent(operation) else { return true }
@@ -420,6 +434,93 @@ final class MembershipStore {
             handle(error, action: .revokeOtherSessions, operation: operation)
             return false
         }
+    }
+
+    /// Sends a confirmation code. This does not delete the account or sign out locally.
+    func requestAccountDeletion() async -> Bool {
+        guard isConfigured, let token = tokenStore.loadToken(), let account else {
+            clearPendingAccountDeletion()
+            errorMessage = String(localized: "请先登录后再申请注销账号。")
+            return false
+        }
+        guard let operation = beginOperation() else { return false }
+        accountDeletionOperation = operation
+        clearPendingAccountDeletion()
+        defer { finishOperation(operation) }
+
+        do {
+            try await api.requestAccountDeletion(token: token)
+            guard isCurrent(operation), accountDeletionOperation == operation else { return false }
+            guard tokenStore.loadToken() == token, self.account?.id == account.id else {
+                clearPendingAccountDeletion()
+                return false
+            }
+            pendingAccountDeletion = PendingAccountDeletion(
+                accountID: account.id,
+                token: token,
+                expiresAt: Date().addingTimeInterval(15 * 60)
+            )
+            hasPendingAccountDeletion = true
+            isOffline = false
+            notice = String(localized: "注销确认邮件已发送，请检查邮箱后输入确认码。")
+            return true
+        } catch {
+            handle(error, action: .requestAccountDeletion, operation: operation)
+            return false
+        }
+    }
+
+    /// Confirms deletion with the opaque email code. It trims only outer whitespace.
+    func confirmAccountDeletion(code: String) async -> Bool {
+        let code = normalized(code)
+        guard !code.isEmpty else {
+            errorMessage = String(localized: "请输入邮件中的确认码。")
+            return false
+        }
+        guard isConfigured, let token = tokenStore.loadToken(), let account else {
+            clearPendingAccountDeletion()
+            errorMessage = String(localized: "请先登录后再申请注销账号。")
+            return false
+        }
+        guard pendingAccountDeletionMatches(accountID: account.id, token: token) else {
+            errorMessage = String(localized: "当前登录状态已变化，请重新发送注销确认邮件。")
+            return false
+        }
+        guard let operation = beginOperation() else { return false }
+        accountDeletionOperation = operation
+        defer { finishOperation(operation) }
+
+        do {
+            try await api.confirmAccountDeletion(code: code, token: token)
+            guard isCurrent(operation), accountDeletionOperation == operation else { return false }
+            guard tokenStore.loadToken() == token, self.account?.id == account.id else {
+                clearPendingAccountDeletion()
+                return false
+            }
+
+            let cleared = clearLocalSessionStorage()
+            clearPublishedIdentity()
+            hasRestored = true
+            if cleared {
+                notice = String(localized: "账号已注销。本机训练记录已保留。")
+                return true
+            } else {
+                errorMessage = String(localized: "账号已注销，但无法完全清除本机登录状态。")
+                return false
+            }
+        } catch {
+            handle(error, action: .confirmAccountDeletion, operation: operation)
+            return false
+        }
+    }
+
+    /// Discards a locally pending code and ignores any in-flight deletion reply.
+    func cancelAccountDeletion() {
+        clearPendingAccountDeletion()
+        guard activeOperation == accountDeletionOperation else { return }
+        activeOperation = nil
+        accountDeletionOperation = nil
+        isBusy = false
     }
 
     func enroll(displayName: String, acceptedTerms: Bool) async {
@@ -473,6 +574,8 @@ final class MembershipStore {
 
     /// 尽力通知服务器退出，然后始终清除本机令牌和会员缓存。
     func signOut() async {
+        clearPendingAccountDeletion()
+        accountDeletionOperation = nil
         let operation = UUID()
         activeOperation = operation
         isBusy = true
@@ -511,6 +614,8 @@ final class MembershipStore {
 
     /// 只清除本机令牌和会员缓存。此方法绝不删除服务器会员或本地身体数据。
     func clearLocalSession() {
+        clearPendingAccountDeletion()
+        accountDeletionOperation = nil
         activeOperation = nil
         isBusy = false
         let cleared = clearLocalSessionStorage()
@@ -526,6 +631,7 @@ final class MembershipStore {
             guard isCurrent(operation) else { return false }
 
             if account?.id != serverAccount.id {
+                clearPendingAccountDeletion()
                 card = nil
                 lastSyncedAt = nil
                 try? cacheStore.delete()
@@ -612,8 +718,29 @@ final class MembershipStore {
     private func handle(_ error: Error, action: Action, operation: UUID) {
         guard isCurrent(operation) else { return }
         guard let apiError = error as? MembershipAPIError else {
-            errorMessage = failureMessage(for: action)
+            if action == .confirmAccountDeletion {
+                clearPendingAccountDeletion()
+                errorMessage = networkMessage(for: action)
+            } else {
+                errorMessage = failureMessage(for: action)
+            }
             return
+        }
+
+        if action == .confirmAccountDeletion {
+            switch apiError {
+            case .invalidResponse, .network:
+                clearPendingAccountDeletion()
+                if case .network = apiError { isOffline = true }
+                errorMessage = networkMessage(for: action)
+                return
+            case .server(let statusCode, _) where statusCode >= 500:
+                clearPendingAccountDeletion()
+                errorMessage = networkMessage(for: action)
+                return
+            default:
+                break
+            }
         }
 
         if case .server(let statusCode, let code) = apiError {
@@ -636,6 +763,11 @@ final class MembershipStore {
             if code == "WALLET_NOT_CONFIGURED" {
                 capabilities = MembershipCapabilities(appleSignIn: capabilities?.appleSignIn ?? false, walletPass: false)
                 errorMessage = String(localized: "Wallet 签发服务尚未配置。")
+                return
+            }
+            if action == .confirmAccountDeletion, statusCode == 404 {
+                clearPendingAccountDeletion()
+                errorMessage = String(localized: "确认码无效或已过期，请重新发送注销确认邮件。")
                 return
             }
         }
@@ -699,6 +831,9 @@ final class MembershipStore {
     private func finishOperation(_ operation: UUID) {
         guard activeOperation == operation else { return }
         activeOperation = nil
+        if accountDeletionOperation == operation {
+            accountDeletionOperation = nil
+        }
         isBusy = false
     }
 
@@ -712,6 +847,7 @@ final class MembershipStore {
     }
 
     private func clearPublishedIdentity() {
+        clearPendingAccountDeletion()
         account = nil
         card = nil
         authSession = nil
@@ -734,6 +870,24 @@ final class MembershipStore {
             succeeded = false
         }
         return succeeded
+    }
+
+    private func clearPendingAccountDeletion() {
+        pendingAccountDeletion = nil
+        hasPendingAccountDeletion = false
+    }
+
+    private func pendingAccountDeletionMatches(accountID: String, token: String) -> Bool {
+        guard let pending = pendingAccountDeletion,
+              hasPendingAccountDeletion,
+              pending.accountID == accountID,
+              pending.token == token,
+              pending.expiresAt > Date()
+        else {
+            clearPendingAccountDeletion()
+            return false
+        }
+        return true
     }
 
     private func normalized(_ value: String) -> String {
@@ -764,6 +918,10 @@ final class MembershipStore {
             return String(localized: "密码修改结果未确认。请检查网络，必要时使用密码找回。")
         case .revokeOtherSessions:
             return String(localized: "其他会话的退出结果未确认，请稍后重试。")
+        case .requestAccountDeletion:
+            return String(localized: "无法连接认证服务，暂时无法发送注销确认邮件。")
+        case .confirmAccountDeletion:
+            return String(localized: "注销结果未确认。请不要重复提交确认码，请稍后登录确认账号状态。")
         }
     }
 
@@ -791,6 +949,10 @@ final class MembershipStore {
             return String(localized: "密码修改未确认，请检查当前密码或使用密码找回。")
         case .revokeOtherSessions:
             return String(localized: "暂时无法退出其他登录会话。")
+        case .requestAccountDeletion:
+            return String(localized: "注销确认邮件发送失败，请稍后重试。")
+        case .confirmAccountDeletion:
+            return String(localized: "注销未确认。请检查确认码后重试。")
         }
     }
 }

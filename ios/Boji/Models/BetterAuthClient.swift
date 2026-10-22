@@ -27,6 +27,20 @@ struct BetterAuthClient: Sendable {
         let revokeOtherSessions = true
     }
 
+    /// Better Auth requires an empty object, not a missing or null request body,
+    /// when it sends the account-deletion confirmation code.
+    private struct AccountDeletionRequest: Encodable {}
+
+    private struct AccountDeletionConfirmationRequest: Encodable {
+        let token: String
+    }
+
+    /// `better-auth = 1.0.0-alpha.4` returns this exact native response shape.
+    private struct AccountDeletionResponse: Decodable {
+        let success: Bool
+        let message: String
+    }
+
     private struct RevokeOtherSessionsResponse: Decodable {
         let status: Bool
     }
@@ -93,6 +107,30 @@ struct BetterAuthClient: Sendable {
         )
     }
 
+    /// Starts native account deletion by asking Better Auth to email a confirmation code.
+    func requestAccountDeletion(token: String) async throws {
+        let body = try httpClient.encodedBody(AccountDeletionRequest())
+        let response = try await httpClient.perform(
+            path: "api/auth/delete-user",
+            method: "POST",
+            token: token,
+            body: body
+        )
+        try validateAccountDeletion(response, expectedMessage: "Verification email sent")
+    }
+
+    /// Confirms native account deletion with the opaque code from the account email.
+    func confirmAccountDeletion(code: String, token: String) async throws {
+        let body = try httpClient.encodedBody(AccountDeletionConfirmationRequest(token: code))
+        let response = try await httpClient.perform(
+            path: "api/auth/delete-user",
+            method: "POST",
+            token: token,
+            body: body
+        )
+        try validateAccountDeletion(response, expectedMessage: "User deleted")
+    }
+
     func getSession(token: String) async throws -> BetterAuthSession? {
         let response = try await httpClient.perform(
             path: "api/auth/get-session",
@@ -153,5 +191,23 @@ struct BetterAuthClient: Sendable {
             throw MembershipAPIError.invalidResponse
         }
         return token
+    }
+
+    private func validateAccountDeletion(
+        _ response: MembershipHTTPResponse,
+        expectedMessage: String
+    ) throws {
+        let deletionResponse: AccountDeletionResponse
+        do {
+            deletionResponse = try MembershipDateCoding.decoder().decode(
+                AccountDeletionResponse.self,
+                from: response.data
+            )
+        } catch {
+            throw MembershipAPIError.invalidResponse
+        }
+        guard deletionResponse.success, deletionResponse.message == expectedMessage else {
+            throw MembershipAPIError.invalidResponse
+        }
     }
 }

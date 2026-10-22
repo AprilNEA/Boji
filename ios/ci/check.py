@@ -40,6 +40,12 @@ def check_assets(root: Path = ROOT) -> int:
     return len(ids)
 
 
+def check_xcode_project(root: Path = ROOT) -> None:
+    project = root / 'ios/Boji.xcodeproj/project.pbxproj'
+    if 'TEMP_' in project.read_text():
+        raise ValueError('Generated Xcode project contains an unstable TEMP_ identifier')
+
+
 def check_bundle(app: Path, root: Path = ROOT) -> None:
     source = root / 'animations/lottie'
     expected = {p.relative_to(source).as_posix() for p in source.rglob('*.json')}
@@ -51,6 +57,8 @@ def check_bundle(app: Path, root: Path = ROOT) -> None:
             raise ValueError('Built animation differs from source')
     if list(app.rglob('lottie-library')) or list(app.rglob('*.tmp')):
         raise ValueError('Built app contains excluded resources')
+    if list(app.rglob('RemoteAnimationFixtures')):
+        raise ValueError('Built app contains Debug animation fixtures')
     for name in ('PlugIns/BojiWidgets.appex', 'Watch/BojiWatch.app'):
         if not (app / name).is_dir():
             raise ValueError(f'Missing embedded target: {name}')
@@ -77,6 +85,7 @@ def main() -> None:
     parser.add_argument('--app', type=Path)
     args = parser.parse_args()
     if args.action == 'source':
+        check_xcode_project()
         config = manage.project()
         errors = manage.validate_files(manage.HERE / 'metadata', config)
         if errors:

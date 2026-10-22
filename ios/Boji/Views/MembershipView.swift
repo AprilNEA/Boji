@@ -225,6 +225,7 @@ struct MembershipCenterView: View {
                     NavigationRowLabel(title: String(localized: "账号安全"), symbol: "lock.shield")
                 }
                 .buttonStyle(RowButtonStyle())
+                .accessibilityIdentifier("membership-account-security")
                 Button("退出账号", role: .destructive) { confirmSignOut = true }
                     .buttonStyle(RowButtonStyle()).foregroundStyle(.red)
                     .disabled(membership.isBusy)
@@ -295,7 +296,7 @@ struct ClubRulesView: View {
                 }
                 Section {
                     Text("免费会员卡是俱乐部身份记录，不代表付费权益，也不能用于支付或场馆核销。图片只是纪念副本，会员状态以服务器为准。")
-                    Text("当前版本的 App 还不能在 App 内注销账号。要注销账号，用账号的邮箱发邮件到 privacy@leanmuscle.club。")
+                    Text("登录后，可在「账号与安全」中删除账号。确认邮箱后，服务器删除账号和会员资料，本机记录仍保留。无法登录时，可联系 privacy@leanmuscle.club。")
                 } header: {
                     Text("卡片的边界")
                 } footer: {

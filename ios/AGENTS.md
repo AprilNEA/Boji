@@ -100,6 +100,9 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - The detail screen may prefetch only its remote course. Limit file downloads to three. The player must not download. Use `posterFrame` for Reduce Motion; missing resources need a static fallback.
 - Keep only the current exercise player active. Pause for hidden views, inactive scenes, rests, and user pauses.
 - Exclude `*.tmp` files from generated build resources.
+- Exclude all of `Boji/DebugSupport/**` from XcodeGen source discovery. The Debug build script copies its fixtures; Release must not contain `RemoteAnimationFixtures`.
+- Set `BOJI_ANIMATION_FIXTURE_DIR` inside the app only for Debug. Release uses `DERIVED_FILE_DIR`, because Xcode creates script output parents before running the script.
+- Keep generated project identifiers deterministic. `ci/check.py source` rejects `TEMP_` identifiers; do not bypass the generated-project diff check.
 - Do not edit `BojiAPI/Sources/BojiAPI/Generated/`. `buf generate` in `BojiAPI/` writes it from `../bizserver/proto/boji/v1/`. Follow "API contract" in the root `AGENTS.md` for the version rules.
 - The `Boji` target links `BojiAPI` as a local package in `project.yml`. The widgets and the watch app do not. `Models/MembershipRPC.swift` calls `SystemService`, `MembershipService` and `WalletService` through `MembershipTransport`, so Connect calls share the cookie-free session, the redirect blocker and the test transports with the Better Auth calls. Keep account calls on `/api/auth/*` in `Models/BetterAuthClient.swift`.
 - Test targets do not import `BojiAPI`. Build Connect responses and read Connect requests with `MembershipRPCFixtures` in `Models/MembershipRPCFixtures.swift`, which compiles only in Debug. The UI test transport uses the same fixtures.
@@ -136,6 +139,7 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - Tests assert the Simplified Chinese copy. The `Boji` scheme runs tests with `language: zh-Hans` and `region: CN`, and UI tests also pass `-AppleLanguages (zh-Hans)`. Without them, a simulator in another language shows English.
 - UI tests must not use the real backend, real HealthKit data or the user's records.
 - Membership UI tests can add `--membership-fixture=long-number`, `suspended`, or `offline`. These fixtures require the Debug `--uitesting` entry point.
+- Account deletion UI tests use the in-memory confirmation code `ci-delete-token`. The `delete-error` membership fixture rejects confirmation. Never use real accounts.
 - Animation UI tests can add `--animation-reduce-motion` or `--animation-missing-asset`. These flags require Debug and `--uitesting`.
 - Remote animation UI tests can add `--animation-remote-fixture=ok|offline`. This Debug-only flag requires `--uitesting` and uses the in-process fixture transport. Do not call the asset host from tests.
 - To reveal an element in a `Form` or a `List`, drag a short distance and end the drag with a hold, as `scrollUp(_:)` in `BojiUITests/MembershipUITests.swift` does. Do not use `swipeUp()` there. In the large text layout a swipe can move a row out of the hierarchy, and a tap during the fling does not run the button action.
@@ -144,6 +148,9 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 ### Accounts and data
 
 - Read auth tokens only from the `set-auth-token` response header. Store them only in the Keychain. Do not put tokens in JSON exports.
+- Account deletion uses the native `POST /api/auth/delete-user` email-code flow. Keep sending a code separate from confirming deletion.
+- Bind pending deletion to the current account and session. Clear it on cancellation or identity changes, and never retry deletion automatically.
+- Clear account credentials and membership caches only after confirmed deletion. Keep local fitness records separate, and never persist or log deletion codes.
 - A Release build must use an HTTPS `BOJI_API_BASE_URL`. If the value is not set, keep online membership features disabled.
 - Keep `BOJI_API_BASE_URL` empty in `project.yml`, so that Debug builds connect to `http://localhost:3000`. TestFlight builds read it from the `ios-testflight` environment variable through `ci/signing.py`. To test against the production service `https://api.leanmuscle.club`, pass `BOJI_API_BASE_URL=https://api.leanmuscle.club` to `xcodebuild` or change it locally. Do not commit the production URL.
 - Show HealthKit samples in memory only. Do not save them, upload them or let them overwrite manual records.

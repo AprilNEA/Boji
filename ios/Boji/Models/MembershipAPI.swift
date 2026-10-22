@@ -59,6 +59,14 @@ struct MembershipAPI: Sendable {
         try await betterAuth.signOut(token: token)
     }
 
+    func requestAccountDeletion(token: String) async throws {
+        try await betterAuth.requestAccountDeletion(token: token)
+    }
+
+    func confirmAccountDeletion(code: String, token: String) async throws {
+        try await betterAuth.confirmAccountDeletion(code: code, token: token)
+    }
+
     func getSession(token: String) async throws -> BetterAuthSession? {
         try await betterAuth.getSession(token: token)
     }
@@ -342,6 +350,7 @@ actor UITestingMembershipTransport: MembershipTransport {
     private var card: ClubMember?
     private let scenario: String
     private var membershipReads = 0
+    private var accountDeleted = false
 
     init(scenario: String = "standard") {
         self.scenario = scenario
@@ -365,8 +374,38 @@ actor UITestingMembershipTransport: MembershipTransport {
              ("POST", "/api/auth/request-password-reset"),
              ("POST", "/api/auth/sign-out"):
             return MembershipHTTPResponse(data: Data("{}".utf8), statusCode: 200)
+        case ("POST", "/api/auth/delete-user"):
+            guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)", !accountDeleted else {
+                return errorResponse(statusCode: 401, code: "UNAUTHORIZED")
+            }
+            guard let body = request.httpBody,
+                  let object = try? JSONSerialization.jsonObject(with: body) as? [String: Any]
+            else {
+                return errorResponse(statusCode: 400, code: "INVALID_BODY")
+            }
+            if object.isEmpty {
+                return try encoded(UITestingAccountDeletionResponse(
+                    success: true,
+                    message: "Verification email sent"
+                ))
+            }
+            guard let confirmationCode = object["token"] as? String else {
+                return errorResponse(statusCode: 400, code: "INVALID_BODY")
+            }
+            if scenario == "delete-error" {
+                return errorResponse(statusCode: 400, code: "DELETE_REQUEST_REJECTED")
+            }
+            guard confirmationCode == "ci-delete-token" else {
+                return errorResponse(statusCode: 404, code: "NOT_FOUND")
+            }
+            accountDeleted = true
+            card = nil
+            return try encoded(UITestingAccountDeletionResponse(
+                success: true,
+                message: "User deleted"
+            ))
         case ("GET", "/api/auth/get-session"):
-            guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)" else {
+            guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)", !accountDeleted else {
                 return errorResponse(statusCode: 401, code: "UNAUTHORIZED")
             }
             return try encoded(UITestingSessionResponse(
@@ -393,14 +432,14 @@ actor UITestingMembershipTransport: MembershipTransport {
             }
             return try encoded(UITestingRevokeResponse(status: true))
         case ("POST", "/boji.v1.MembershipService/ListMemberships"):
-            guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)" else {
+            guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)", !accountDeleted else {
                 return MembershipRPCFixtures.error(.unauthenticated, reason: "SESSION_REQUIRED")
             }
             membershipReads += 1
             if scenario == "offline", membershipReads > 1 { throw URLError(.notConnectedToInternet) }
             return MembershipRPCFixtures.memberships(card.map { [$0] } ?? [])
         case ("POST", "/boji.v1.MembershipService/CreateMembership"):
-            guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)" else {
+            guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)", !accountDeleted else {
                 return MembershipRPCFixtures.error(.unauthenticated, reason: "SESSION_REQUIRED")
             }
             if let card {
@@ -444,6 +483,11 @@ actor UITestingMembershipTransport: MembershipTransport {
 
     private struct UITestingRevokeResponse: Encodable {
         let status: Bool
+    }
+
+    private struct UITestingAccountDeletionResponse: Encodable {
+        let success: Bool
+        let message: String
     }
 
     private func encoded<Response: Encodable>(_ response: Response) throws -> MembershipHTTPResponse {

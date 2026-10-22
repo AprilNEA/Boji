@@ -22,10 +22,14 @@ TestFlight 上传不等于外部测试发布。工作流不邀请测试员，不
 
 PR 和 `master` 推送会运行两组检查：
 
-1. 检查公开元数据和 CI 脚本。运行字符串与动画生成器的校验。重新生成 Xcode 工程，并与 Git 版本比较。
+1. 检查公开元数据和 CI 脚本。运行字符串与动画生成器的校验。来源检查拒绝 `TEMP_`，固定 XcodeGen 重新生成工程后与 Git 版本比较。
 2. 在 Runner 上发现可用的 iPhone 模拟器。运行单元测试和 UI 测试，再编译 Release。检查动画资源及嵌入的 Widget、Watch App。
 
 测试使用项目已有的隔离数据。后端地址和 Sentry DSN 均为空。工作流不访问真实账号或 HealthKit 记录。
+
+`Boji/DebugSupport/Fixtures/` 保留为仓库中的 Debug 夹具。`project.yml` 排除整个 `DebugSupport/`，避免 XcodeGen 2.46.0 为排空的组写入随机 `TEMP_` 标识符。Debug 的预构建脚本单独复制夹具。Release 不会打包这些文件。`check.py bundle` 会拒绝包含 `RemoteAnimationFixtures/` 的产物。
+
+脚本的输出目录由 `BOJI_ANIMATION_FIXTURE_DIR` 控制。Debug 指向 App 包，Release 指向 `DERIVED_FILE_DIR`。Xcode 会预先创建输出文件的父目录，因此仅在脚本中判断 Debug 不够。两个配置必须使用不同的输出目录。
 
 CI 只上传测试日志和 `.xcresult`，保留 7 天。公开仓库的读取者可能下载这些文件。测试不得写入真实账号、个人数据或凭据。
 
@@ -148,7 +152,7 @@ Sentry 在这套流程中保持关闭。启用应用崩溃上报需要另行审�
 
 成功后生成 `ios-testflight-receipt` artifact，保留 90 天。其中只有 App ID、版本、构建号、构建 ID、提交 SHA 和 IPA 摘要。该文件不包含凭据。
 
-本地版本目前为 `0.7.0`，商店草稿为 `1.0`。本轮不自动对齐两者。正式发布前需明确版本，再同步代码、元数据与验收记录。
+本地版本与商店草稿均为 `1.0`。`CURRENT_PROJECT_VERSION` 保持为 `7`。版本对齐不能凭空增加构建号。正式上传前仍需确认 Apple 中未使用目标构建号。
 
 ## 查看构建诊断
 
@@ -229,26 +233,45 @@ python3 ios/app-store/manage.py validate
 actionlint .github/workflows/ios.yml
 ```
 
+再用固定的 XcodeGen 验证工程生成：
+
+```sh
+XCODEGEN="$PWD/.work/tools/xcodegen/2.46.0/bin/xcodegen"
+first=$(mktemp)
+trap 'rm -f "$first"' EXIT
+"$XCODEGEN" generate --no-env --spec ios/project.yml
+cp ios/Boji.xcodeproj/project.pbxproj "$first"
+"$XCODEGEN" generate --no-env --spec ios/project.yml
+cmp --silent "$first" ios/Boji.xcodeproj/project.pbxproj
+! rg -n 'TEMP_' ios/Boji.xcodeproj
+git diff --exit-code -- ios/Boji.xcodeproj
+```
+
 `check.py simulator` 和签名脚本仅供 Runner 使用。本机继续用 AppSim 管理模拟器。不要伪造 Runner 环境变量绕过这个限制。
 
 ## 当前验证范围
 
-2026-10-21（UTC+08:00），在本机 macOS 完成以下验证：
+2026-10-22（UTC+08:00），在本机 macOS 完成以下验证：
 
-- 60 项 CI/CD 测试通过，含单工作流的来源与任务隔离检查。
+- 64 项 CI/CD 测试通过，含单工作流的来源与任务隔离检查。
 - 23 项元数据回归测试通过。
 - `actionlint`、Python 编译和公开元数据校验通过。
-- 固定 XcodeGen 的签名工程生成检查通过。三个目标的独立描述文件设置正确。版本、构建号和原工程未修改保护也通过。
+- 固定 XcodeGen 连续生成两次，工程逐字相同。生成结果不含 `TEMP_` 标识符。
+- 本地工程与元数据目标均为 `1.0`。发布校验仍按预期拦截 `claimsVerified=false`。
+- Debug 与 Release 模拟器构建通过。Debug 包的三个测试文件与源文件逐字相同。
+- Release 产物检查通过。包内没有测试目录，课程动画和嵌入的 Widget、Watch App 完整。
 - 签名准备、部分失败清理和日志管道退出码检查通过。
 - 在隔离钥匙环中完成真实 GPG 加密与解密往返。日志和符号打包范围检查通过。
 
-XcodeGen 安装器已通过 ZIP 摘要校验。安装器同时保留其构建预设，不只复制二进制。上述工程检查使用测试值，没有读取证书或签名。
+此前固定 XcodeGen 的签名工程生成检查已通过。三个目标使用独立描述文件，版本与构建号的覆盖检查也通过。该检查使用测试值，没有读取证书或签名。
+
+XcodeGen 安装器已通过 ZIP 摘要校验。安装器同时保留其构建预设，不只复制二进制。
 
 GPG 测试只生成一次性测试密钥。测试使用短临时路径，避免 macOS 的 socket 路径长度限制。测试结束后清理钥匙环，不读取已有私钥。
 
 已人工复核文档结构、操作顺序和发布边界。`zhlint` 未运行成功：本地缓存缺包，联网安装未获执行权限。不能将人工复核当作自动格式校验。
 
-未验证 GitHub 托管运行、真实分发签名、Apple 上传或正式提审。第一层的完整模拟器测试也未在本轮重跑。本轮不改变已有 App 功能。
+本次修复尚未在 GitHub 托管 Runner 验证。真实分发签名、Apple 上传和正式提审仍未验证。客户端注销的验证记录见 [Better Auth 接入说明](better-auth.md)。
 
 ## 参考
 

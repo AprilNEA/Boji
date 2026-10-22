@@ -1094,12 +1094,32 @@
         }
       }
     },
+    "删除后会发生什么" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What Will Be Deleted"
+          }
+        }
+      }
+    },
     "删除本机记录及会员缓存，并断开健康数据查询。不会注销账号、删除服务器会员身份或健康 App 中的数据。此操作无法撤销。" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Deletes the records and membership cache on this device and disconnects health data. It doesn’t close your account, delete your membership on the server or delete data in the Health app. This can’t be undone."
+          }
+        }
+      }
+    },
+    "删除账号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Account"
           }
         }
       }
@@ -1302,6 +1322,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Send Password Reset Email"
+          }
+        }
+      }
+    },
+    "发送注销确认邮件" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send Deletion Confirmation Email"
+          }
+        }
+      }
+    },
+    "发送邮件不会删除账号。输入邮件中的确认码后，仍需再次确认删除。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sending the email does not delete your account. After entering the code, you must confirm deletion again."
           }
         }
       }
@@ -1742,6 +1782,16 @@
         }
       }
     },
+    "已添加到 Apple 钱包的卡片不会自动从设备移除，请自行移除。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cards already added to Apple Wallet will not be removed from your device automatically. Remove them from Wallet yourself."
+          }
+        }
+      }
+    },
     "已清除本机登录状态。" : {
       "localizations" : {
         "en" : {
@@ -1879,11 +1929,22 @@
       }
     },
     "当前版本的 App 还不能在 App 内注销账号。要注销账号，用账号的邮箱发邮件到 privacy@leanmuscle.club。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "This version of the app can't delete your account yet. To delete your account, email privacy@leanmuscle.club from the email address of your account."
+          }
+        }
+      }
+    },
+    "当前登录状态已变化，请重新发送注销确认邮件。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your sign-in state changed. Send a new deletion confirmation email."
           }
         }
       }
@@ -2324,6 +2385,16 @@
         }
       }
     },
+    "无法连接认证服务，暂时无法发送注销确认邮件。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cannot connect to authentication services. The deletion confirmation email could not be confirmed."
+          }
+        }
+      }
+    },
     "无法连接认证服务，暂时无法确认会话。" : {
       "localizations" : {
         "en" : {
@@ -2564,6 +2635,16 @@
         }
       }
     },
+    "服务器上的账号、会员卡和相关记录将被删除。此操作无法撤销。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your account, membership card, and related records on the server will be deleted. This cannot be undone."
+          }
+        }
+      }
+    },
     "服务尚未启用正式凭证签发。" : {
       "localizations" : {
         "en" : {
@@ -2622,6 +2703,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The sign-in data and the cached member card on this device will be cleared. Workout records on this device stay. This doesn’t delete your account."
+          }
+        }
+      }
+    },
+    "本机训练、饮水、睡眠和身体记录仍会保留。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your local workout, water, sleep, and body records will be kept."
           }
         }
       }
@@ -2986,6 +3077,26 @@
         }
       }
     },
+    "永久删除账号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permanently Delete Account"
+          }
+        }
+      }
+    },
+    "永久删除账号？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permanently Delete Account?"
+          }
+        }
+      }
+    },
     "没有订阅费用" : {
       "localizations" : {
         "en" : {
@@ -3062,6 +3173,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Registered. Verify your email, then sign in."
+          }
+        }
+      }
+    },
+    "注销未确认。请检查确认码后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deletion was not confirmed. Check the confirmation code and try again."
+          }
+        }
+      }
+    },
+    "注销确认邮件发送失败，请稍后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The deletion confirmation email could not be confirmed. Try again later."
+          }
+        }
+      }
+    },
+    "注销确认邮件已发送，请检查邮箱后输入确认码。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The deletion confirmation email was sent. Check your inbox and enter the code."
+          }
+        }
+      }
+    },
+    "注销结果未确认。请不要重复提交确认码，请稍后登录确认账号状态。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The deletion result is unconfirmed. Do not submit the code again. Sign in later to check the account status."
           }
         }
       }
@@ -3266,6 +3417,16 @@
         }
       }
     },
+    "登录后，可在「账号与安全」中删除账号。确认邮箱后，服务器删除账号和会员资料，本机记录仍保留。无法登录时，可联系 privacy@leanmuscle.club。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After signing in, delete your account in Account & Security. After email confirmation, your account and membership data are deleted from the server. Local records are kept. If you cannot sign in, contact privacy@leanmuscle.club."
+          }
+        }
+      }
+    },
     "登录失败，请检查邮箱和密码。" : {
       "localizations" : {
         "en" : {
@@ -3372,6 +3533,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Update"
+          }
+        }
+      }
+    },
+    "确认码无效或已过期，请重新发送注销确认邮件。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The confirmation code is invalid or expired. Send a new deletion confirmation email."
+          }
+        }
+      }
+    },
+    "确认账号邮箱" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm Account Email"
           }
         }
       }
@@ -3526,7 +3707,18 @@
         }
       }
     },
+    "要删除的账号" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account to Delete"
+          }
+        }
+      }
+    },
     "认证由 Better Auth 管理。本页不会删除账号、会员卡或本地记录。" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3676,6 +3868,16 @@
         }
       }
     },
+    "请先登录后再申请注销账号。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in before requesting account deletion."
+          }
+        }
+      }
+    },
     "请先登录后再管理会话。" : {
       "localizations" : {
         "en" : {
@@ -3756,6 +3958,16 @@
         }
       }
     },
+    "请输入邮件中的确认码。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter the confirmation code from the email."
+          }
+        }
+      }
+    },
     "请输入邮箱和密码。" : {
       "localizations" : {
         "en" : {
@@ -3826,6 +4038,26 @@
         }
       }
     },
+    "账号已注销。本机训练记录已保留。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your account was deleted. Your training records remain on this device."
+          }
+        }
+      }
+    },
+    "账号已注销，但无法完全清除本机登录状态。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your account was deleted, but this device could not fully clear its local sign-in state."
+          }
+        }
+      }
+    },
     "账号操作" : {
       "localizations" : {
         "en" : {
@@ -3888,6 +4120,16 @@
         }
       }
     },
+    "输入确认邮件中的完整确认码。确认码在 15 分钟后失效。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter the full code from the confirmation email. The code expires after 15 minutes."
+          }
+        }
+      }
+    },
     "这个邮箱已有俱乐部账号。请用邮箱和密码登录。" : {
       "localizations" : {
         "en" : {
@@ -3938,6 +4180,16 @@
         }
       }
     },
+    "退出其他会话和修改密码不会删除账号。删除账号需要单独确认。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signing out other sessions or changing your password does not delete your account. Account deletion requires separate confirmation."
+          }
+        }
+      }
+    },
     "退出其他登录会话" : {
       "localizations" : {
         "en" : {
@@ -3974,6 +4226,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sign Out"
+          }
+        }
+      }
+    },
+    "通过账号邮箱确认后，永久删除服务器上的账号和会员资料。本机记录不受影响。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm through your account email to permanently delete your account and membership data from the server. Local records are not affected."
+          }
+        }
+      }
+    },
+    "邮件中的确认码" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirmation Code from Email"
           }
         }
       }
@@ -4084,6 +4356,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resend Verification Email"
+          }
+        }
+      }
+    },
+    "重新发送确认邮件" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resend Confirmation Email"
           }
         }
       }
