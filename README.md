@@ -230,7 +230,7 @@ I have read the CLA Document and I hereby sign the CLA
 
 | 内容 | 目录 |
 | --- | --- |
-| App 图标 | `ios/Boji/Resources/AppIcon.icon`、`assets/public/boji-icon.png`、`assets/public/boji-icon-dark.png`、`bizserver/assets/wallet/icon*.png` |
+| App 图标 | `ios/Boji/Resources/AppIcon.icon`、`assets/public/boji-icon.png`、`assets/public/boji-icon-dark.png`、`bizserver/assets/wallet/icon*`、`bizserver/assets/wallet/logo*` |
 | 网站媒体 | `websites/public/media/` |
 | 人像照片 | `websites/public/images/portraits/` |
 | App 截图 | `ios/app-store/screenshots/`、`assets/public/screenshots/` |

@@ -22,6 +22,9 @@ use tracing_subscriber::{layer::Context, registry::LookupSpan};
 const REDACTED: &str = "[Filtered]";
 /// Path segments whose next segment is a credential.
 const SECRET_PARENTS: &[&str] = &["reset-password"];
+/// Path segments after which every segment is an identifier: the device
+/// library identifiers and the pass serial numbers of the Wallet web service.
+const SECRET_TAILS: &[&str] = &["devices", "passes"];
 /// Sentry drops tag values longer than 200 characters.
 const MAX_TAG_CHARS: usize = 200;
 /// The `sentry-tracing` context that holds the fields of a log event.
@@ -153,20 +156,27 @@ pub fn describe_request(request_id: &str, method: &Method, path: &str) {
     });
 }
 
-/// Replace each path segment that follows a segment in [`SECRET_PARENTS`].
+/// Replace each path segment that follows a segment in [`SECRET_PARENTS`],
+/// and every segment after a segment in [`SECRET_TAILS`].
 fn redact_path(path: &str) -> Cow<'_, str> {
-    if !SECRET_PARENTS.iter().any(|parent| path.contains(parent)) {
+    if !SECRET_PARENTS
+        .iter()
+        .chain(SECRET_TAILS)
+        .any(|parent| path.contains(parent))
+    {
         return Cow::Borrowed(path);
     }
     let mut redact_next = false;
+    let mut redact_rest = false;
     let mut segments = Vec::new();
     for segment in path.split('/') {
-        if redact_next && !segment.is_empty() {
+        if (redact_rest || redact_next) && !segment.is_empty() {
             segments.push(REDACTED);
             redact_next = false;
         } else {
             segments.push(segment);
             redact_next |= SECRET_PARENTS.contains(&segment);
+            redact_rest |= SECRET_TAILS.contains(&segment);
         }
     }
     Cow::Owned(segments.join("/"))
@@ -246,6 +256,19 @@ mod tests {
         );
         let rpc = "/boji.v1.MembershipService/GetMembership";
         assert!(matches!(redact_path(rpc), Cow::Borrowed(path) if path == rpc));
+    }
+
+    #[test]
+    fn redaction_removes_wallet_device_and_serial_segments() {
+        assert_eq!(
+            redact_path("/wallet/v1/devices/abc123/registrations/pass.club.example/serial-1"),
+            "/wallet/v1/devices/[Filtered]/[Filtered]/[Filtered]/[Filtered]"
+        );
+        assert_eq!(
+            redact_path("/wallet/v1/passes/pass.club.example/serial-1"),
+            "/wallet/v1/passes/[Filtered]/[Filtered]"
+        );
+        assert_eq!(redact_path("/wallet/v1/log"), "/wallet/v1/log");
     }
 
     #[test]

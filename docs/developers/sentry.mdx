@@ -75,11 +75,13 @@ NEXT_PUBLIC_SENTRY_DSN='https://<公钥>@<主机>/<项目编号>' pnpm build
 - panic。
 - 导致进程退出的启动错误。只上报最外层的错误消息，与标准错误输出相同，不上报含数据库细节的错误链。
 
-每个请求使用独立的 Sentry Hub，事件带有以下标签：`request_id`、`http.method`、`http.path`，事务名为 `方法 路径`。`/reset-password/` 之后的路径段是重置令牌，上报前替换为 `[Filtered]`。同一请求内 `INFO` 和 `WARN` 级别的日志成为面包屑（breadcrumb）。
+每个请求使用独立的 Sentry Hub，事件带有以下标签：`request_id`、`http.method`、`http.path`，事务名为 `方法 路径`。`/reset-password/` 之后的路径段是重置令牌，上报前替换为 `[Filtered]`。钱包更新服务的路径中，`/devices/` 和 `/passes/` 之后的每一段都替换为 `[Filtered]`，因为这些段是设备库标识、Pass Type ID 和序列号。同一请求内 `INFO` 和 `WARN` 级别的日志成为面包屑（breadcrumb）。
 
 事件不含请求头、请求体、查询串、Cookie、用户 ID 和 IP 地址。代码设置了 `send_default_pii(false)`，也没有使用 `sentry-tower` 的 `http` 特性。
 
 学校认证的错误事件只有 `event` 字段，例如 `affiliation_verification_mail_failed`、`organization_storage_failed` 和 `organization_crypto_failed`。事件不含学校邮箱、邮箱 HMAC、验证码和学校。验证码只出现在请求体中，不出现在路径中，所以事务名也不包含验证码。
+
+钱包更新服务的事件只有 `event` 字段和计数，例如 `wallet_web_service_failed`、`wallet_push_tokens_failed` 和 `wallet_push_failed`。事件不含推送令牌、设备库标识、认证令牌和会员卡 ID。钱包通过 `/wallet/v1/log` 上报的日志可能含有标识，所以 `INFO` 级别只记录条数。日志文本只在 `DEBUG` 级别输出，不进入面包屑。
 
 服务端没有开启性能追踪。外层路由看不到路由模板，事务名会包含原始路径，例如重置令牌。
 

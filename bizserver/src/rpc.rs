@@ -25,7 +25,10 @@ use crate::{
         boji::{admin::v1 as a, v1 as p},
         google,
     },
-    wallet::PassSigner,
+    wallet::{
+        PassSigner,
+        push::{PassUpdates, PushSender},
+    },
 };
 use connectrpc::{
     ConnectError, ErrorCode, RequestContext, Response, ServiceRequest, ServiceResult,
@@ -41,22 +44,26 @@ pub struct BusinessService {
     wallet: Option<Arc<PassSigner>>,
     affiliation_verification: Option<AffiliationVerification>,
     ranking: RankingCache,
+    pass_updates: PassUpdates,
 }
 
 impl BusinessService {
     /// Construct a transport over the existing SeaORM pool and authentication service.
     ///
     /// `capabilities.wallet` signs Apple Wallet passes. `None` disables
-    /// `WalletService`. `capabilities.affiliation_verification` sends organization
+    /// `WalletService`. `capabilities.wallet_push` tells devices that a pass
+    /// changed. `capabilities.affiliation_verification` sends organization
     /// verification codes. `None` disables the methods of
     /// `AffiliationService` that send or check codes.
     pub fn new(db: DatabaseConnection, auth: Arc<Auth>, capabilities: &Capabilities) -> Self {
+        let pass_updates = PassUpdates::new(db.clone(), capabilities.wallet_push.clone());
         Self {
             db,
             auth,
             wallet: capabilities.wallet.clone(),
             affiliation_verification: capabilities.affiliation_verification.clone(),
             ranking: RankingCache::default(),
+            pass_updates,
         }
     }
 
@@ -91,6 +98,9 @@ pub struct Capabilities {
     pub apple_sign_in: bool,
     /// Apple Wallet pass signing. `None` when the `WALLET_*` variables are unset.
     pub wallet: Option<Arc<PassSigner>>,
+    /// Pass update notifications. `None` records pass changes but sends no
+    /// notification. `main.rs` sets it whenever `wallet` is set.
+    pub wallet_push: Option<Arc<dyn PushSender>>,
     /// Organization email verification. `None` when `AFFILIATION_EMAIL_HMAC_KEY` is unset.
     pub affiliation_verification: Option<AffiliationVerification>,
 }

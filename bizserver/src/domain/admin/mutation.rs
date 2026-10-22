@@ -117,6 +117,8 @@ async fn change_status_in_transaction(
     let mut active: membership::ActiveModel = card.into();
     active.status = Set(input.status.as_str().to_owned());
     let membership = active.update(transaction).await?;
+    // The pass shows the status, so registered devices must fetch it again.
+    crate::domain::wallet::touch(transaction, membership_id).await?;
     let audit_event_id = append_audit(
         transaction,
         AuditEntry {

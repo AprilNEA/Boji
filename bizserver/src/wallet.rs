@@ -1,10 +1,18 @@
 //! Apple Wallet passes for membership cards.
 //!
 //! Input: the `WALLET_*` credentials and one membership card.
-//! Output: a signed `.pkpass` archive.
-//! Pos: signing only. `rpc/wallet.rs` checks ownership and membership state.
+//! Output: a signed `.pkpass` archive, the Wallet web service routes and pass
+//! update notifications.
+//! Pos: `rpc/wallet.rs` checks ownership and membership state before it signs.
+//! `web.rs` serves the Apple web service protocol, and `push.rs` tells devices
+//! that a pass changed.
 
 mod package;
+pub mod push;
+#[rustfmt::skip]
+mod strings;
+mod token;
+pub mod web;
 
 use chrono::{DateTime, Utc};
 use openssl::asn1::{Asn1Time, Asn1TimeRef};
@@ -16,6 +24,8 @@ use openssl::x509::store::X509StoreBuilder;
 use openssl::x509::verify::X509VerifyFlags;
 use openssl::x509::{X509, X509Ref, X509StoreContext, X509VerifyResult};
 use thiserror::Error;
+
+use token::AuthenticationTokens;
 
 /// Media type of a `.pkpass` archive.
 pub const PKPASS_MIME_TYPE: &str = "application/vnd.apple.pkpass";
@@ -31,8 +41,6 @@ pub struct WalletCredentials {
     pub pass_type_identifier: String,
     /// Apple Developer Team ID.
     pub team_identifier: String,
-    /// Organization name that Wallet shows.
-    pub organization_name: String,
     /// PEM signing certificate of the Pass Type ID.
     pub signer_cert: String,
     /// PEM private key of the signing certificate. Never log this field.
@@ -41,6 +49,11 @@ pub struct WalletCredentials {
     pub signer_key_passphrase: Option<String>,
     /// PEM Apple WWDR intermediate certificate that issued `signer_cert`.
     pub wwdr_cert: String,
+    /// Base URL of the Wallet web service, for example
+    /// `https://api.example.club/wallet`. Wallet appends `/v1/...`.
+    pub web_service_url: String,
+    /// Key of the pass authentication tokens. Never log this field.
+    pub authentication_token_key: Vec<u8>,
 }
 
 /// A rejected Wallet credential. The messages name variables, not values.
@@ -73,6 +86,9 @@ pub enum WalletConfigError {
          and WALLET_WWDR_CERT by Apple Root CA: {0}"
     )]
     Chain(String),
+    /// OpenSSL rejected the token key.
+    #[error("WALLET_AUTH_TOKEN_KEY cannot be used as an HMAC key")]
+    AuthenticationTokenKey,
 }
 
 /// A pass could not be built or signed.
@@ -92,6 +108,56 @@ pub enum SigningError {
     Json(#[from] serde_json::Error),
 }
 
+/// The status that a pass shows.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum CardStatus {
+    /// The card is active.
+    Active,
+    /// Operations suspended the card. The pass is void until the card resumes.
+    Suspended,
+}
+
+/// The kind of an organization that a pass shows.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum OrganizationKind {
+    /// A school. The pass labels it with `wallet_label_school`.
+    School,
+}
+
+/// A display name in one language.
+#[derive(Clone, Copy, Debug)]
+pub struct LocalizedName<'a> {
+    /// BCP 47 code, such as `en` or `zh-Hans`.
+    pub language: &'a str,
+    /// The name in that language.
+    pub text: &'a str,
+}
+
+/// A verified organization of the member, such as a school.
+///
+/// The pass shows the first organization in a secondary field. The pass does
+/// not read organization affiliations yet, so every caller passes none.
+#[derive(Clone, Copy, Debug)]
+pub struct PassOrganization<'a> {
+    /// The kind, which selects the field label.
+    pub kind: OrganizationKind,
+    /// The names of the organization. Wallet shows the name in the language of
+    /// the device, or else the name in the fallback language of the pass.
+    pub names: &'a [LocalizedName<'a>],
+}
+
+impl<'a> PassOrganization<'a> {
+    /// The name in the fallback language of the pass, or else the first name.
+    fn fallback_name(&self) -> Option<&'a str> {
+        self.names
+            .iter()
+            .find(|name| name.language == strings::LANGUAGES[0])
+            .or_else(|| self.names.first())
+            .map(|name| name.text.trim())
+            .filter(|text| !text.is_empty())
+    }
+}
+
 /// The membership values that a pass shows.
 pub struct MembershipCard<'a> {
     /// Membership ID. It becomes the pass serial number.
@@ -102,18 +168,26 @@ pub struct MembershipCard<'a> {
     pub member_number: &'a str,
     /// Time the membership started.
     pub joined_at: DateTime<Utc>,
+    /// Time the membership ends, if it ends.
+    pub expires_at: Option<DateTime<Utc>>,
+    /// The status of the card.
+    pub status: CardStatus,
+    /// The verified organizations of the member. Empty until the organization
+    /// model ships.
+    pub organizations: &'a [PassOrganization<'a>],
 }
 
 /// Checked Wallet credentials that sign passes.
 pub struct PassSigner {
     pass_type_identifier: String,
     team_identifier: String,
-    organization_name: String,
     signer: X509,
     key: PKey<Private>,
     wwdr: X509,
     valid_from: DateTime<Utc>,
     valid_until: DateTime<Utc>,
+    web_service_url: String,
+    tokens: AuthenticationTokens,
 }
 
 impl std::fmt::Debug for PassSigner {
@@ -123,6 +197,7 @@ impl std::fmt::Debug for PassSigner {
             .field("team_identifier", &self.team_identifier)
             .field("valid_from", &self.valid_from)
             .field("valid_until", &self.valid_until)
+            .field("web_service_url", &self.web_service_url)
             .finish_non_exhaustive()
     }
 }
@@ -176,15 +251,18 @@ impl PassSigner {
         verify_chain(&signer, &wwdr, anchors)?;
         let valid_from = later(timestamp(signer.not_before()), timestamp(wwdr.not_before()))?;
         let valid_until = earlier(timestamp(signer.not_after()), timestamp(wwdr.not_after()))?;
+        let tokens = AuthenticationTokens::new(&credentials.authentication_token_key)
+            .map_err(|_| WalletConfigError::AuthenticationTokenKey)?;
         Ok(Self {
             pass_type_identifier: credentials.pass_type_identifier,
             team_identifier: credentials.team_identifier,
-            organization_name: credentials.organization_name,
             signer,
             key,
             wwdr,
             valid_from,
             valid_until,
+            web_service_url: credentials.web_service_url,
+            tokens,
         })
     }
 
@@ -193,17 +271,40 @@ impl PassSigner {
         self.valid_from <= now && now < self.valid_until
     }
 
+    /// The Pass Type ID. It is also the APNs topic of pass updates.
+    pub fn pass_type_identifier(&self) -> &str {
+        &self.pass_type_identifier
+    }
+
+    /// Whether `token` is the authentication token of the pass `serial_number`.
+    pub fn authenticates(&self, serial_number: &str, token: &str) -> bool {
+        self.tokens.verify(serial_number, token)
+    }
+
+    /// The private key, the signing certificate and the WWDR certificate in PEM.
+    ///
+    /// The APNs client authenticates with the Pass Type ID certificate. The
+    /// result holds the private key, so never log it.
+    pub fn client_identity_pem(&self) -> Result<Vec<u8>, SigningError> {
+        let mut pem = self.key.private_key_to_pem_pkcs8()?;
+        pem.extend(self.signer.to_pem()?);
+        pem.extend(self.wwdr.to_pem()?);
+        Ok(pem)
+    }
+
     /// Build and sign the pass of `card`.
     pub fn sign(&self, card: &MembershipCard<'_>) -> Result<Vec<u8>, SigningError> {
+        let authentication_token = self.tokens.issue(card.membership_id)?;
         let pass = package::pass_json(
             &package::Issuer {
                 pass_type_identifier: &self.pass_type_identifier,
                 team_identifier: &self.team_identifier,
-                organization_name: &self.organization_name,
+                web_service_url: &self.web_service_url,
+                authentication_token: &authentication_token,
             },
             card,
         )?;
-        let mut files = package::files(pass);
+        let mut files = package::files(pass, card);
         let manifest = package::manifest(&files)?;
         let mut chain = Stack::new()?;
         chain.push(self.wwdr.clone())?;
@@ -216,8 +317,8 @@ impl PassSigner {
             Pkcs7Flags::DETACHED | Pkcs7Flags::BINARY,
         )?
         .to_der()?;
-        files.push(("manifest.json", manifest));
-        files.push(("signature", signature));
+        files.push(("manifest.json".to_owned(), manifest));
+        files.push(("signature".to_owned(), signature));
         package::archive(&files)
     }
 }

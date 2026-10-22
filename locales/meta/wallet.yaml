@@ -1,0 +1,51 @@
+# bizserver/ 签发的 Apple 钱包会员卡的文案。
+# crates/locales 把它生成到 bizserver/src/wallet/strings.rs。
+# 通行证用英文文案作本地化键，所以每个键的英文文案必须唯一。文案只能是纯文本，不能有参数。
+wallet_app_name:
+  comment: logo 旁边的 App 名称。钱包添加通行证和发送通知时，也用它作发行方名称
+  targets: [wallet]
+wallet_pass_description:
+  comment: 通行证的无障碍描述，VoiceOver 朗读它
+  targets: [wallet]
+wallet_label_card_number:
+  comment: 卡面顶部会员卡号的标签。通行证叠放时，顶部这一行仍然可见
+  targets: [wallet]
+wallet_label_nickname:
+  comment: 卡面昵称的标签。昵称是卡面上最大的文字
+  targets: [wallet]
+wallet_label_join_date:
+  comment: 入会日期的标签。钱包按设备语言格式化日期
+  targets: [wallet]
+wallet_label_school:
+  comment: 已认证学校名称的标签。只在会员有生效的学校认证时显示
+  targets: [wallet]
+wallet_label_expiry:
+  comment: 会员卡到期日期的标签。只在会员卡有到期日期时显示
+  targets: [wallet]
+wallet_label_status:
+  comment: 会员卡状态的标签。只在会员卡不是有效状态时显示
+  targets: [wallet]
+wallet_status_suspended:
+  comment: 已暂停的会员卡的状态值。钱包同时把通行证标为已失效
+  targets: [wallet]
+wallet_back_about_label:
+  comment: 通行证背面第一项的标题
+  targets: [wallet]
+wallet_back_about:
+  comment: 通行证背面第一项的正文
+  targets: [wallet]
+wallet_back_usage_label:
+  comment: 说明这张卡用途的一项的标题
+  targets: [wallet]
+wallet_back_usage:
+  comment: 说明这张卡不是支付或核销凭证
+  targets: [wallet]
+wallet_back_status_label:
+  comment: 会员状态一项的标题
+  targets: [wallet]
+wallet_back_status:
+  comment: 有效会员卡的会员状态说明
+  targets: [wallet]
+wallet_back_suspended:
+  comment: 已暂停会员卡的会员状态说明，替换 wallet_back_status
+  targets: [wallet]

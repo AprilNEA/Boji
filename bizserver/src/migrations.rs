@@ -6,6 +6,7 @@ pub mod admin_auth;
 pub mod auth;
 pub mod business;
 pub mod organization;
+pub mod wallet;
 
 use sea_orm::{ConnectionTrait, DatabaseConnection, DbErr, Statement};
 use sea_orm_migration::prelude::*;
@@ -21,6 +22,7 @@ impl MigratorTrait for Migrator {
             Box::new(ActivityMigration),
             Box::new(AdminMigration),
             Box::new(OrganizationMigration),
+            Box::new(WalletMigration),
         ]
     }
 }
@@ -145,6 +147,24 @@ impl MigrationName for OrganizationMigration {
 impl MigrationTrait for OrganizationMigration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         organization::up(manager).await
+    }
+    async fn down(&self, _: &SchemaManager) -> Result<(), DbErr> {
+        Err(DbErr::Custom(
+            "Destructive rollback is deliberately disabled".into(),
+        ))
+    }
+}
+
+struct WalletMigration;
+impl MigrationName for WalletMigration {
+    fn name(&self) -> &str {
+        "m20261021_000006_wallet"
+    }
+}
+#[async_trait::async_trait]
+impl MigrationTrait for WalletMigration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        wallet::up(manager).await
     }
     async fn down(&self, _: &SchemaManager) -> Result<(), DbErr> {
         Err(DbErr::Custom(

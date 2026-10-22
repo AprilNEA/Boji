@@ -11,7 +11,7 @@
 - 认证邮件经 SMTP 中继发送。开发环境未设置 `SMTP_HOST` 时写入本地文件。
 - Apple 登录：原生身份令牌和网页 `form_post` 流程。设置全部 `APPLE_*` 变量后启用。账号关联由 `ACCOUNT_LINKING` 控制，默认关闭。详见[认证迁移说明](docs/migration-auth.md)。
 - 免费会员卡与结构化权益。每个用户最多持有一张会员卡。
-- Apple Wallet 会员卡。设置 `WALLET_*` 变量后，服务端为有效会员卡签发通行证。
+- Apple Wallet 会员卡。设置 `WALLET_*` 变量后，服务端为有效会员卡签发通行证，并提供通行证更新服务。会员卡状态变化后，已添加的通行证随之更新。
 - 主动授权的活动同步、冲突检测和每日汇总。
 - 会员运营：列表、查询、暂停、恢复和权益管理。变更与审计原子提交。
 - 学校排名：学校名单、学校邮箱验证码认证、公开的学校人数排名和运营的撤销与冻结。接口使用通用的组织模型，学校是 `SCHOOL` 类型的组织。设置 `AFFILIATION_EMAIL_HMAC_KEY` 后启用认证。名单数据见 [`data/schools/`](data/schools/README.md)，规则见[大学排名设计](../docs/developers/school-ranking.mdx)。
@@ -22,7 +22,8 @@
 以下内容不在本服务中：
 
 - 可靠发件箱。服务端不保存待发邮件，也不自动重发。
-- 通行证更新和 Google Wallet。已保存的通行证不会随会员卡状态更新。
+- Google Wallet。
+- 通行证推送的重试。APNs 推送失败时，服务端只记录日志，不重发。用户在钱包的通行证详情中下拉刷新时，钱包仍会请求更新服务。
 - 注销账号时撤销 Apple 令牌。这一步需要 iOS 客户端提供授权码，详见[迁移状态](docs/migration-status.md)。
 - 请求限流、代理信任和压力测试。这些由 CDN 和网关负责。学校验证码的发送上限是业务规则，不是请求限流。
 - 学校排名的网站页面和 App 入口。
@@ -39,7 +40,7 @@
 | `MAIL_FROM`、`SMTP_*`、`MAIL_OUTPUT_DIR` | 认证邮件 | 必须设置 `SMTP_HOST` 和 `MAIL_FROM`，`SMTP_TLS` 不能为 `none` |
 | `CLIENT_IP_HEADER`、`TRUSTED_PROXIES` | 会话记录的客户端 IP | 可选。留空时不记录 IP |
 | `APPLE_*`、`ACCOUNT_LINKING` | Apple 登录 | 可选。全部填写或全部留空 |
-| `WALLET_*` | Apple Wallet 签名材料 | 可选。全部填写或全部留空 |
+| `WALLET_*` | Apple Wallet 签名材料和通行证认证令牌密钥 | 可选。全部填写或全部留空。启用时必须设置 `BETTER_AUTH_URL` |
 | `AFFILIATION_EMAIL_HMAC_KEY` | 学校认证 | 可选。留空时关闭学校认证 |
 
 `CLIENT_IP_HEADER` 必须是网关覆盖写入的请求头，例如 `cf-connecting-ip`。客户端能自行设置的请求头会让会话记录伪造的 IP。
@@ -49,8 +50,25 @@
 - 私钥与 `WALLET_SIGNER_CERT` 匹配。
 - 签名证书主题的 UID 等于 `WALLET_PASS_TYPE_IDENTIFIER`，OU 等于 `WALLET_TEAM_IDENTIFIER`。
 - 签名证书由 `WALLET_WWDR_CERT` 签发，WWDR 证书由内置的 Apple Root CA 签发。
+- `WALLET_AUTH_TOKEN_KEY` 至少 32 字节，并且不同于 `BETTER_AUTH_SECRET`。
 
 证书过期或尚未生效不会阻止启动。此时 `walletPassEnabled` 为 `false`，签发请求返回 `WALLET_NOT_CONFIGURED`。
+
+### 通行证更新服务
+
+启用 Wallet 后，服务在 `/wallet` 下挂载 Apple 定义的更新服务。通行证的 `webServiceURL` 是 `BETTER_AUTH_URL` 的源站加 `/wallet`，例如 `https://api.example.com/wallet`。网关必须把 `/wallet/v1/*` 转发到本服务。这组接口是 Apple 规定的 HTTP 和 JSON 接口，不是 ConnectRPC。
+
+| 方法 | 路径 | 作用 |
+| --- | --- | --- |
+| POST | `/wallet/v1/devices/{设备}/registrations/{Pass Type ID}/{序列号}` | 设备登记推送令牌。新登记返回 `201`，已登记返回 `200` |
+| DELETE | 同上 | 设备删除通行证后注销登记 |
+| GET | `/wallet/v1/devices/{设备}/registrations/{Pass Type ID}` | 返回 `passesUpdatedSince` 之后变化的序列号。没有变化时返回 `204` |
+| GET | `/wallet/v1/passes/{Pass Type ID}/{序列号}` | 返回重新签名的最新通行证 |
+| POST | `/wallet/v1/log` | 钱包上报的错误。日志只记录条数 |
+
+每张通行证带一个认证令牌。令牌由 `WALLET_AUTH_TOKEN_KEY` 和序列号经 HMAC-SHA256 派生，数据库不保存令牌。更换 `WALLET_AUTH_TOKEN_KEY` 后，已添加的通行证全部无法更新，用户需要重新添加。所以首次部署后不要更换这个密钥。
+
+运营暂停或恢复会员卡后，服务端标记通行证已变化，再通过 APNs 向登记的设备发送空推送。推送使用通行证签名证书和生产环境 APNs，不需要单独的推送证书。APNs 报告令牌失效时，服务端删除这条登记。暂停的会员卡返回已失效（`voided`）的通行证，恢复后通行证重新生效。
 
 ## 本地启动
 

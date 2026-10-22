@@ -1,7 +1,7 @@
 use anyhow::{Context, Result, bail};
 use boji_bizserver::{
     app, auth, config::Config, domain::organization::import, mail::Mailer, migrations, rpc,
-    telemetry,
+    telemetry, wallet,
 };
 use sea_orm::{ConnectOptions, Database};
 use std::{process::ExitCode, sync::Arc, time::Duration};
@@ -93,9 +93,17 @@ async fn run(sentry: bool) -> Result<()> {
         }),
         None => None,
     };
+    // Pass updates use the certificate that signs the passes.
+    let wallet_push = wallet
+        .as_deref()
+        .map(wallet::push::ApnsSender::new)
+        .transpose()
+        .context("Apple Wallet push client initialization failed")?
+        .map(|sender| Arc::new(sender) as Arc<dyn wallet::push::PushSender>);
     let capabilities = rpc::Capabilities {
         apple_sign_in: config.apple.is_some(),
         wallet,
+        wallet_push,
         affiliation_verification,
     };
     let auth = auth::build(

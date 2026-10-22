@@ -3,7 +3,7 @@
 use crate::{
     auth::{self, Auth},
     rpc::{self, Capabilities},
-    telemetry,
+    telemetry, wallet,
 };
 use anyhow::Result;
 use axum::{
@@ -24,6 +24,8 @@ use uuid::Uuid;
 /// Build the HTTP router without opening a port or mutating the database.
 ///
 /// `capabilities` must describe the integrations installed in `auth`.
+/// With Wallet signing, `/wallet` serves the Apple Wallet web service that the
+/// `webServiceURL` of each pass names.
 pub fn router(
     db: DatabaseConnection,
     auth: Arc<Auth>,
@@ -59,6 +61,10 @@ pub fn router(
             ]
             .map(axum::http::HeaderName::from_static),
         );
+    let wallet_service = capabilities
+        .wallet
+        .clone()
+        .map(|signer| wallet::web::router(db.clone(), signer));
     let connect = rpc::router(db.clone(), auth.clone(), capabilities)
         .into_axum_service()
         .with_limits(
@@ -66,7 +72,7 @@ pub fn router(
                 .with_max_message_size(65_536)
                 .with_max_request_body_size(65_536),
         );
-    Ok(Router::new()
+    let mut router = Router::new()
         .route(
             "/healthz",
             get(|| async { Json(serde_json::json!({"status":"ok"})) }),
@@ -78,7 +84,11 @@ pub fn router(
                 auth,
                 crate::auth_policy::verified_session_response,
             )),
-        )
+        );
+    if let Some(wallet_service) = wallet_service {
+        router = router.nest(wallet::web::PATH, wallet_service);
+    }
+    Ok(router
         .fallback_service(connect)
         .layer(cors)
         .layer(middleware::from_fn(request_metadata))

@@ -11,10 +11,10 @@ Do not reimplement Connect framing or password and session algorithms. Use `app:
 | `src/config.rs`, `src/config/` | Service configuration through `figment`: the only reader of service environment variables |
 | `src/auth*`, `src/mail*` | Native authentication, application-owned entities, and mail delivery: SMTP relay or local files |
 | `src/apple.rs` | Sign in with Apple provider assembly and the stored-email fallback |
-| `src/wallet.rs`, `src/wallet/` | Apple Wallet signing material checks, pass packaging, and PKCS #7 signatures |
-| `assets/wallet/` | Pass icons and the Apple Root CA that `src/wallet.rs` embeds at build time |
+| `src/wallet.rs`, `src/wallet/` | Apple Wallet signing material checks, pass packaging, PKCS #7 signatures, authentication tokens (`token.rs`), the web service (`web.rs`) and APNs update notifications (`push.rs`). `strings.rs` is generated |
+| `assets/wallet/` | Pass icon and logo sources and PNG files, and the Apple Root CA that `src/wallet.rs` embeds at build time |
 | `data/schools/` | The school list: the pinned Hipo snapshot, its MIT notice and local corrections, which `src/domain/organization/import.rs` embeds at build time. See `data/schools/README.md` |
-| `src/domain/` | Transport-independent membership, administration, activity and organization-ranking rules |
+| `src/domain/` | Transport-independent membership, administration, activity, organization-ranking and Wallet registration rules |
 | `src/admin_auth.rs`, `src/admin_permissions.rs` | Native permission checks and application-owned business role grants |
 | `src/entities/` | SeaORM business entities |
 | `src/migrations*` | Versioned PostgreSQL migrations |
@@ -70,6 +70,18 @@ The API models a school as an organization of type `SCHOOL`. `Organization`, `Or
 `WalletService` is always registered. `PassSigner::new` rejects a key that does not match the signer certificate, a signer subject whose UID or OU differs from the configuration, and a chain that does not end at the embedded Apple Root CA. A failed check stops startup. Expired or not-yet-valid certificates do not stop startup: `ServerConfig.wallet_pass_enabled` is false and the service returns `WALLET_NOT_CONFIGURED`. Keep both checks on the same `PassSigner::is_current`.
 
 Never commit a real Pass Type ID certificate, private key, or `.pkpass` file. `tests/wallet_contract.rs` creates a private test chain at run time. When the app icon changes, regenerate the pass icons with the commands in `assets/wallet/README.md`.
+
+The pass copy comes from `../locales/`: keys with `targets: [wallet]` in `../locales/meta/wallet.yaml`. `cargo locales generate` in `../crates/` writes `src/wallet/strings.rs`. Do not edit that file, and do not write pass text in Rust. `pass.json` holds the English text, and each `<language>.lproj/pass.strings` maps it to the text of that language.
+
+Keep the pass layout in `src/wallet/package.rs`: the card number in `headerFields`, the nickname in `primaryFields`, the join date and one organization in `secondaryFields`, and the expiry and status in `auxiliaryFields`. `MembershipCard::organizations` is a reserved slot. The pass does not read organization affiliations yet, so every caller passes an empty slice. When you connect it, also mark the pass as changed when an affiliation changes or expires.
+
+The web service in `src/wallet/web.rs` is Apple's HTTP and JSON protocol, so it is not ConnectRPC. `app::router` mounts it at `wallet::web::PATH` only when Wallet is configured. `webServiceURL` is the origin of `BETTER_AUTH_URL` followed by that path. Follow these rules:
+
+- Derive each `authenticationToken` from `WALLET_AUTH_TOKEN_KEY` and the serial number with HMAC-SHA256, and compare it in constant time. Do not store tokens. A new key breaks every installed pass, so never rotate it without a re-issue plan.
+- Return `401` without a reason for every failed check on a pass request. Log the count of `/v1/log` lines at `INFO`, and the text only at `DEBUG`.
+- A change to anything that a pass shows must update `wallet_pass.update_time` in the same transaction as the change, then call `PassUpdates::pass_changed` after the commit. `domain::admin::mutation` does this for suspend and resume. Add the same two steps when a new mutation changes pass content.
+- `wallet_pass` references `membership`, and `wallet_registration` references `wallet_pass`. Both use `ON DELETE CASCADE`, so account deletion removes them.
+- APNs uses the pass signing certificate, the production origin `https://api.push.apple.com` and an empty JSON payload. `reqwest` uses `rustls` with HTTP/2. Do not enable `native-tls`. Do not log push tokens or device identifiers. Tests replace APNs with a `PushSender`.
 
 ## API design
 
@@ -145,7 +157,7 @@ Sentry starts only when `SENTRY_DSN` is set. `main.rs` starts it before the Toki
 
 - Keep `send_default_pii(false)`. Do not enable the `http` feature of `sentry-tower`, because it attaches request headers and query strings.
 - Do not enable performance tracing. The outer router cannot see route templates, so a transaction would contain raw paths such as password-reset tokens.
-- When you add a route whose path holds a credential, add the parent segment to `SECRET_PARENTS` in `src/telemetry.rs` and add a test.
+- When you add a route whose path holds a credential, add the parent segment to `SECRET_PARENTS` in `src/telemetry.rs` and add a test. When every segment after a segment is an identifier, as in the Wallet web service paths, add that segment to `SECRET_TAILS`.
 - Log errors with an `event` field and no user data. The Sentry layer uses `event` as the title of an `ERROR` event and turns `INFO` and `WARN` events into breadcrumbs.
 - Keep the `sentry` features minimal and on `ureq` with `rustls`, which uses `ring` like the other dependencies. Do not enable the default features, because they add `reqwest` with `native-tls`.
 - See `../docs/developers/sentry.mdx` for the data that each event holds.

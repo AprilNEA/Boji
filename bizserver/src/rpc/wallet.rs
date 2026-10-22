@@ -13,7 +13,7 @@ use super::{
 use crate::{
     domain::membership::{self, MembershipStatus},
     proto::boji::v1 as p,
-    wallet::{MembershipCard, PKPASS_MIME_TYPE},
+    wallet::{CardStatus, MembershipCard, PKPASS_MIME_TYPE},
 };
 use connectrpc::{
     ConnectError, ErrorCode, RequestContext, Response, ServiceRequest, ServiceResult,
@@ -64,6 +64,10 @@ impl p::WalletService for BusinessService {
                 display_name: &card.display_name,
                 member_number: &card.member_number,
                 joined_at: card.joined_at,
+                expires_at: card.expires_at,
+                status: CardStatus::Active,
+                // Reserved: the pass does not read organization affiliations yet.
+                organizations: &[],
             })
             .map_err(|failure| {
                 tracing::error!(event = "wallet_signing_failed", error = %failure);

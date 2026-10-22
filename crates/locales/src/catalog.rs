@@ -56,13 +56,14 @@ pub struct Entry {
     /// The arguments in position order. Android passes arguments in this order.
     #[serde(default)]
     pub args: IndexMap<ArgName, ArgType>,
-    /// The consumers that show the string. Omitted means every target.
-    #[serde(default = "all_targets")]
+    /// The consumers that show the string. Omitted means both apps, Android and
+    /// iOS. The `wallet` target must be named.
+    #[serde(default = "app_targets")]
     pub targets: BTreeSet<Target>,
 }
 
-fn all_targets() -> BTreeSet<Target> {
-    Target::ALL.into_iter().collect()
+fn app_targets() -> BTreeSet<Target> {
+    Target::APPS.into_iter().collect()
 }
 
 impl Entry {
@@ -119,12 +120,12 @@ impl Catalog {
 
 impl Entry {
     /// The entry of a key written as `key:` with no value: no comment, no
-    /// arguments, every target.
+    /// arguments, both apps.
     fn without_metadata() -> Self {
         Self {
             comment: None,
             args: IndexMap::new(),
-            targets: all_targets(),
+            targets: app_targets(),
         }
     }
 }

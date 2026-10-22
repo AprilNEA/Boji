@@ -12,6 +12,9 @@ release:
   - zh-Hans
 
 # 已接入的使用方。生成器只为这里列出的使用方写文件。
+# meta 中没有写 targets 的键进入 android 和 ios。
+# wallet 是 bizserver/ 签发的 Apple 钱包会员卡，只收写明 targets: [wallet] 的键。
 targets:
   - android
   - ios
+  - wallet

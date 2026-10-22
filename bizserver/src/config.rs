@@ -96,6 +96,7 @@ impl Config {
             None => "http://localhost:3000".into(),
         };
         let auth_origin = validate_origin(&auth_url, production)?;
+        let auth_origin_for_wallet = auth_origin.clone();
         let cors_origins = origins(settings.cors_origins.as_deref(), production)?;
         let mut trusted_origins = origins(settings.trusted_origins.as_deref(), production)?;
         trusted_origins.push(auth_origin);
@@ -119,6 +120,11 @@ impl Config {
             .map_err(|_| anyhow!("RUST_LOG must contain tracing filter directives"))?;
         let affiliation_email_key =
             affiliation_email_key(settings.affiliation_email_hmac_key, &auth_secret)?;
+        // The checks run in this order, so the first error stays the same.
+        let client_ip = client_ip(settings.client_ip_header, settings.trusted_proxies)?;
+        let mail = mail(settings.mail, settings.smtp, production)?;
+        let apple = apple(settings.apple)?;
+        let wallet = wallet(settings.wallet, &auth_origin_for_wallet, &auth_secret)?;
         Ok(Self {
             database_url,
             bind: SocketAddr::new(host, port),
@@ -128,10 +134,10 @@ impl Config {
             cors_origins,
             production,
             log_filter,
-            client_ip: client_ip(settings.client_ip_header, settings.trusted_proxies)?,
-            mail: mail(settings.mail, settings.smtp, production)?,
-            apple: apple(settings.apple)?,
-            wallet: wallet(settings.wallet)?,
+            client_ip,
+            mail,
+            apple,
+            wallet,
             account_linking: account_linking(settings.account_linking.as_deref())?,
             affiliation_email_key,
         })
@@ -331,15 +337,23 @@ fn apple(settings: AppleSettings) -> Result<Option<AppleSignIn>> {
 }
 
 /// Check the Wallet settings and the certificate chain.
-fn wallet(settings: WalletSettings) -> Result<Option<PassSigner>> {
+///
+/// `auth_origin` is the public origin of the service. Passes name
+/// `<auth_origin>/wallet` as their web service. `auth_secret` is
+/// `BETTER_AUTH_SECRET`, which the token key must not reuse.
+fn wallet(
+    settings: WalletSettings,
+    auth_origin: &str,
+    auth_secret: &str,
+) -> Result<Option<PassSigner>> {
     let WalletSettings {
         pass_type_identifier,
         team_identifier,
-        organization_name,
         signer_cert,
         signer_key,
         signer_key_passphrase,
         wwdr_cert,
+        auth_token_key,
     } = settings;
     let missing = missing([
         (
@@ -347,10 +361,10 @@ fn wallet(settings: WalletSettings) -> Result<Option<PassSigner>> {
             pass_type_identifier.is_some(),
         ),
         ("WALLET_TEAM_IDENTIFIER", team_identifier.is_some()),
-        ("WALLET_ORGANIZATION_NAME", organization_name.is_some()),
         ("WALLET_SIGNER_CERT", signer_cert.is_some()),
         ("WALLET_SIGNER_KEY", signer_key.is_some()),
         ("WALLET_WWDR_CERT", wwdr_cert.is_some()),
+        ("WALLET_AUTH_TOKEN_KEY", auth_token_key.is_some()),
     ]);
     if missing.len() == 6 && signer_key_passphrase.is_none() {
         return Ok(None);
@@ -358,17 +372,17 @@ fn wallet(settings: WalletSettings) -> Result<Option<PassSigner>> {
     let (
         Some(pass_type_identifier),
         Some(team_identifier),
-        Some(organization_name),
         Some(signer_cert),
         Some(signer_key),
         Some(wwdr_cert),
+        Some(auth_token_key),
     ) = (
         pass_type_identifier,
         team_identifier,
-        organization_name,
         signer_cert,
         signer_key,
         wwdr_cert,
+        auth_token_key,
     )
     else {
         bail!(
@@ -377,14 +391,21 @@ fn wallet(settings: WalletSettings) -> Result<Option<PassSigner>> {
             missing.join(", ")
         );
     };
+    if auth_token_key.len() < 32 {
+        bail!("WALLET_AUTH_TOKEN_KEY must contain at least 32 bytes");
+    }
+    if auth_token_key == auth_secret {
+        bail!("WALLET_AUTH_TOKEN_KEY must differ from BETTER_AUTH_SECRET");
+    }
     let signer = PassSigner::new(WalletCredentials {
         pass_type_identifier: pass_type_identifier.trim().to_owned(),
         team_identifier: team_identifier.trim().to_owned(),
-        organization_name: organization_name.trim().to_owned(),
         signer_cert,
         signer_key,
         signer_key_passphrase,
         wwdr_cert,
+        web_service_url: format!("{auth_origin}{}", crate::wallet::web::PATH),
+        authentication_token_key: auth_token_key.into_bytes(),
     })?;
     Ok(Some(signer))
 }
@@ -658,18 +679,29 @@ mod tests {
             error(&[("WALLET_SIGNER_KEY_PASSPHRASE", "x")]),
             "Apple Wallet requires every WALLET_* variable except \
              WALLET_SIGNER_KEY_PASSPHRASE; missing WALLET_PASS_TYPE_IDENTIFIER, \
-             WALLET_TEAM_IDENTIFIER, WALLET_ORGANIZATION_NAME, WALLET_SIGNER_CERT, \
-             WALLET_SIGNER_KEY, WALLET_WWDR_CERT"
+             WALLET_TEAM_IDENTIFIER, WALLET_SIGNER_CERT, WALLET_SIGNER_KEY, \
+             WALLET_WWDR_CERT, WALLET_AUTH_TOKEN_KEY"
         );
-        assert_eq!(
-            error(&[
+        let wallet = |token_key: &'static str| {
+            [
                 ("WALLET_PASS_TYPE_IDENTIFIER", "pass.club.example"),
                 ("WALLET_TEAM_IDENTIFIER", "TEAM123456"),
-                ("WALLET_ORGANIZATION_NAME", "Boji"),
                 ("WALLET_SIGNER_CERT", "not a certificate"),
                 ("WALLET_SIGNER_KEY", "not a key"),
                 ("WALLET_WWDR_CERT", "not a certificate"),
-            ]),
+                ("WALLET_AUTH_TOKEN_KEY", token_key),
+            ]
+        };
+        assert_eq!(
+            error(&wallet("short")),
+            "WALLET_AUTH_TOKEN_KEY must contain at least 32 bytes"
+        );
+        assert_eq!(
+            error(&wallet(BASE[1].1)),
+            "WALLET_AUTH_TOKEN_KEY must differ from BETTER_AUTH_SECRET"
+        );
+        assert_eq!(
+            error(&wallet("fedcba9876543210fedcba9876543210")),
             "WALLET_SIGNER_CERT must be a PEM certificate"
         );
     }

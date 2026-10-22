@@ -350,3 +350,114 @@ fn reserves_the_locale_tag_key() {
         "locales/meta/common.yaml: locale_tag: is reserved, because the generator writes it to every Android file",
     );
 }
+
+const WALLET_CONFIG: &str = "\
+source: zh-Hans
+fallback: en
+release: [en, zh-Hans]
+targets: [android, ios, wallet]
+";
+
+const WALLET_PATH: &str = "bizserver/src/wallet/strings.rs";
+
+#[test]
+fn renders_the_wallet_table_with_the_fallback_language_first() {
+    let fixture = Fixture::new(&[
+        ("locales/locales.yaml", WALLET_CONFIG),
+        (
+            "locales/meta/wallet.yaml",
+            "wallet_label_nickname:\n  comment: |\n    Label of the nickname.\n\n    Shown on the front.\n  targets: [wallet]\n",
+        ),
+        ("locales/meta/common.yaml", "tab_today:\n"),
+        (
+            "locales/zh-Hans/wallet.yaml",
+            "wallet_label_nickname: \"昵称\"\n",
+        ),
+        ("locales/zh-Hans/common.yaml", "tab_today: \"今天\"\n"),
+        (
+            "locales/en/wallet.yaml",
+            "wallet_label_nickname: \"Nick \\\"name\\\"\"\n",
+        ),
+        ("locales/en/common.yaml", "tab_today: \"Today\"\n"),
+    ]);
+    let catalog = Catalog::load(fixture.root()).expect("fixture loads");
+    let validated = catalog.validate().expect("fixture is valid");
+    let outputs = Outputs::render(&validated, fixture.root()).expect("render");
+    outputs.apply(fixture.root()).expect("write outputs");
+
+    let table = fixture.read(WALLET_PATH);
+    assert!(table.contains("pub(crate) const LANGUAGES: [&str; 2] = [\"en\", \"zh-Hans\"];"));
+    assert!(table.contains(
+        "/// `wallet_label_nickname`: Label of the nickname.\n\
+         ///\n\
+         /// Shown on the front.\n\
+         pub(crate) const WALLET_LABEL_NICKNAME: Text = Text {\n\
+         \x20   values: [\n\
+         \x20       \"Nick \\\"name\\\"\",\n\
+         \x20       \"昵称\",\n\
+         \x20   ],\n\
+         };\n"
+    ));
+    assert!(
+        table.contains("pub(crate) const ALL: [&Text; 1] = [\n    &WALLET_LABEL_NICKNAME,\n];\n")
+    );
+    // A key without `targets` goes to both apps and not to the pass.
+    assert!(!table.contains("TAB_TODAY"));
+    assert!(fixture.read(apple::PATH).contains("tab_today"));
+    assert!(!fixture.read(apple::PATH).contains("wallet_label_nickname"));
+    let android = fixture.read("android/app/src/main/res/values/strings_shared.xml");
+    assert!(android.contains("tab_today") && !android.contains("wallet_label_nickname"));
+
+    fixture.write(
+        "locales/locales.yaml",
+        "source: zh-Hans\nfallback: en\nrelease: [en, zh-Hans]\ntargets: [android, ios]\n",
+    );
+    let catalog = Catalog::load(fixture.root()).expect("fixture loads");
+    let validated = catalog.validate().expect("fixture is valid");
+    let outputs = Outputs::render(&validated, fixture.root()).expect("render");
+    let changes = outputs.apply(fixture.root()).expect("write outputs");
+    assert!(changes.contains(&Change::Delete(PathBuf::from(WALLET_PATH))));
+}
+
+#[test]
+fn wallet_keys_hold_unique_literal_text() {
+    let fixture = Fixture::new(&[
+        ("locales/locales.yaml", WALLET_CONFIG),
+        (
+            "locales/meta/wallet.yaml",
+            "\
+wallet_title:
+  targets: [wallet]
+wallet_heading:
+  targets: [wallet]
+wallet_greeting:
+  args:
+    name: string
+  targets: [wallet]
+wallet_blank:
+  targets: [wallet]
+",
+        ),
+        (
+            "locales/zh-Hans/wallet.yaml",
+            "wallet_title: \"会员卡\"\nwallet_heading: \"会员卡片\"\nwallet_greeting: \"你好，{name}\"\nwallet_blank: \"空\"\n",
+        ),
+        (
+            "locales/en/wallet.yaml",
+            "wallet_title: \"Card\"\nwallet_heading: \"Card\"\nwallet_greeting: \"Hello, {name}\"\nwallet_blank: \" \"\n",
+        ),
+    ]);
+    let problems = problems(&fixture);
+    assert_problem(
+        &problems,
+        "locales/en/wallet.yaml: wallet_heading: has the same `en` text as `wallet_title`",
+    );
+    assert_problem(
+        &problems,
+        "locales/meta/wallet.yaml: wallet_greeting: declares arguments, but the wallet target takes literal text only",
+    );
+    assert_problem(
+        &problems,
+        "locales/en/wallet.yaml: wallet_blank: is empty; the pass uses the fallback text as the localization key",
+    );
+}

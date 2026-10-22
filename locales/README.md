@@ -1,11 +1,12 @@
 # locales
 
-`locales/` 存放 Android 和 iOS 都显示的文案。文案用 ICU MessageFormat 写在 YAML 文件中，每种语言一个目录。`crates/locales/` 中的生成器读取这些文件，生成两端的资源文件：
+`locales/` 存放 Android 和 iOS 都显示的文案，以及 bizserver 签发的钱包会员卡的文案。文案用 ICU MessageFormat 写在 YAML 文件中，每种语言一个目录。`crates/locales/` 中的生成器读取这些文件，生成各使用方的资源文件：
 
 | 使用方 | 生成的文件 | 状态 |
 | --- | --- | --- |
 | Android | `android/app/src/main/res/values*/strings_shared.xml` | 已接入 |
 | iOS | `ios/Shared/Shared.xcstrings` | 已接入。App、小组件和手表 App 共用这个 String Catalog |
+| 钱包会员卡（`wallet`） | `bizserver/src/wallet/strings.rs` | 已接入。bizserver 把它写入通行证的 `pass.json` 和各语言的 `pass.strings` |
 
 禁止手工编辑生成的文件。修改文案时，编辑 `locales/`，再运行生成器。
 
@@ -79,7 +80,9 @@ session_set: "第 {current} / {total} 组 · {reps}"
 
 `args` 的顺序就是参数的位置。Android 必须按这个顺序传参。参数名用小驼峰命名，例如 `activeDays`，因为 Xcode 用它作 Swift 参数标签。参数类型有两种：`string` 和 `int`。
 
-`targets` 可以限定使用方，例如 `targets: [android]`。省略 `targets` 时，两端都使用这个键。
+`targets` 可以限定使用方，例如 `targets: [android]`。省略 `targets` 时，Android 和 iOS 都使用这个键。钱包会员卡只使用写明 `targets: [wallet]` 的键，所以 App 的文案不会进入通行证。
+
+`wallet` 分组的键还有两条限制。钱包只翻译纯文本，所以这些键不能有参数。通行证用英文文案作本地化键，所以每个键的英文文案必须唯一，并且不能为空。
 
 `locale_tag` 是保留键名，禁止在 `meta/` 中声明。生成器在每个 Android 文件中写入这个键，值是该文件的语言代码，例如 `zh-Hans`。Android 用它格式化日期和数字，所以它们的语言总与文字的语言一致。
 

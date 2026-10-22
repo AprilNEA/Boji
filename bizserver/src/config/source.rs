@@ -44,7 +44,6 @@ pub const VARIABLES: [(&str, &str); 32] = [
     ("APPLE_PRIVATE_KEY", "apple.private_key"),
     ("WALLET_PASS_TYPE_IDENTIFIER", "wallet.pass_type_identifier"),
     ("WALLET_TEAM_IDENTIFIER", "wallet.team_identifier"),
-    ("WALLET_ORGANIZATION_NAME", "wallet.organization_name"),
     ("WALLET_SIGNER_CERT", "wallet.signer_cert"),
     ("WALLET_SIGNER_KEY", "wallet.signer_key"),
     (
@@ -52,6 +51,7 @@ pub const VARIABLES: [(&str, &str); 32] = [
         "wallet.signer_key_passphrase",
     ),
     ("WALLET_WWDR_CERT", "wallet.wwdr_cert"),
+    ("WALLET_AUTH_TOKEN_KEY", "wallet.auth_token_key"),
     ("AFFILIATION_EMAIL_HMAC_KEY", "affiliation_email_hmac_key"),
 ];
 
@@ -207,11 +207,11 @@ pub struct AppleSettings {
 pub struct WalletSettings {
     pub pass_type_identifier: Option<String>,
     pub team_identifier: Option<String>,
-    pub organization_name: Option<String>,
     pub signer_cert: Option<String>,
     pub signer_key: Option<String>,
     pub signer_key_passphrase: Option<String>,
     pub wwdr_cert: Option<String>,
+    pub auth_token_key: Option<String>,
 }
 
 #[cfg(test)]

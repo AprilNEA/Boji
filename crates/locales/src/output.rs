@@ -7,7 +7,7 @@ use std::path::{Path, PathBuf};
 
 use crate::model::Target;
 use crate::validate::Validated;
-use crate::{android, apple};
+use crate::{android, apple, wallet};
 
 /// A rendered file, relative to the repository root.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -76,6 +76,12 @@ impl Outputs {
             files.push(GeneratedFile {
                 path: PathBuf::from(apple::PATH),
                 contents: apple::render(validated),
+            });
+        }
+        if config.targets.contains(&Target::Wallet) {
+            files.push(GeneratedFile {
+                path: PathBuf::from(wallet::PATH),
+                contents: wallet::render(validated),
             });
         }
         let stale = owned_files(root)?
@@ -151,7 +157,7 @@ fn write_file(root: &Path, file: &GeneratedFile) -> Result<(), OutputError> {
 }
 
 /// Lists the generated files on disk: `strings_shared.xml` in any `values*`
-/// directory of the Android app, and the iOS String Catalog.
+/// directory of the Android app, the iOS String Catalog and the Wallet table.
 fn owned_files(root: &Path) -> Result<Vec<PathBuf>, OutputError> {
     let mut owned = Vec::new();
     let res = Path::new(android::RES_DIR);
@@ -181,6 +187,9 @@ fn owned_files(root: &Path) -> Result<Vec<PathBuf>, OutputError> {
     }
     if root.join(apple::PATH).is_file() {
         owned.push(PathBuf::from(apple::PATH));
+    }
+    if root.join(wallet::PATH).is_file() {
+        owned.push(PathBuf::from(wallet::PATH));
     }
     owned.sort();
     Ok(owned)
