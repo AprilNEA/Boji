@@ -1,26 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The home screen widget, the sharing switch in Settings and the watch status. Only the Android client shows this copy. -->
+<!-- The unavailable state of the home screen widget, the sharing switch in Settings and the watch status. Only the Android client shows this copy. The other widget copy is in locales/, group widget. -->
 <resources>
-    <string name="widget_name">Lean Muscle Today</string>
-    <string name="widget_description">See whether today\'s workout, water and sleep are logged.</string>
-    <string name="widget_title_current">Today\'s Logs</string>
-    <string name="widget_title_disabled">Sharing Is Off</string>
     <string name="widget_title_unavailable">Logs Unavailable</string>
-    <string name="widget_detail_current">Manual check-ins</string>
-    <string name="widget_detail_disabled">Turn it on in the app settings</string>
     <string name="widget_detail_unavailable">Open the app to check</string>
-    <string name="widget_subtitle">Workout · Water · Sleep</string>
-    <string name="widget_training">Workout</string>
-    <string name="widget_water">Water</string>
-    <string name="widget_sleep">Sleep</string>
-    <string name="widget_logged">Done</string>
-    <string name="widget_pending">To do</string>
-    <string name="widget_item_logged_a11y">%1$s logged</string>
-    <string name="widget_item_pending_a11y">%1$s not logged yet</string>
-    <string name="widget_current_a11y">Today\'s logs. %1$s. %2$s. %3$s.</string>
-    <string name="widget_disabled_a11y">Sharing is off. Turn it on in the app settings.</string>
     <string name="widget_unavailable_a11y">Logs unavailable. Open the app to check.</string>
-    <string name="widget_open_training_a11y">%1$s. Opens Training.</string>
 
     <string name="settings_companion_header">Widget and Watch</string>
     <string name="settings_companion_toggle">Share Today\'s Check-ins</string>

@@ -255,7 +255,7 @@ Health Connect 的可用状态分三种：
 
 Android 15 及以上版本的小组件选择器显示 Glance 生成的预览，内容为示例数据，不含用户记录。`DailyWidgetSync` 对每个应用版本和语言发布一次预览。系统限制每小时约 2 次，被限流时下次启动再试。工程没有静态预览图，Android 14 及以下版本的选择器显示什么由启动器决定（未验证）。
 
-小组件文案位于 `res/values/strings_widget.xml` 和 `res/values-b+zh+Hans/strings_widget.xml`。iOS 小组件显示相同的文案，按根目录的规则应移到 `../locales/`，目前尚未移动。
+小组件文案位于 `../locales/` 的 `widget` 分组，生成在 `strings_shared.xml` 中，英文措辞与 iOS 小组件一致。只有 Android 显示的「无法读取」状态，以及设置中的共享开关和手表状态，留在 `res/values/strings_widget.xml` 和 `res/values-b+zh+Hans/strings_widget.xml`。iOS 小组件目前仍读取 `../ios/BojiWidgets/Localizable.xcstrings`，尚未改用 `Shared.xcstrings` 中的 `widget` 键。
 
 ## 手表（Wear OS）
 

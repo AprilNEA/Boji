@@ -373,4 +373,22 @@
     <string name="welcome_privacy">No account needed. Your records stay on your device by default.</string>
     <string name="welcome_start">Start My Plan</string>
     <string name="welcome_disclaimer">Everyday exercise tracking for adults. Not a substitute for professional medical advice.</string>
+    <!-- widget -->
+    <string name="widget_name">Lean Muscle Today</string>
+    <string name="widget_description">See whether today’s training, water and sleep are logged.</string>
+    <string name="widget_title_current">Today’s Log</string>
+    <string name="widget_title_disabled">Log Sharing Is Off</string>
+    <string name="widget_detail_current">Manual log status</string>
+    <string name="widget_detail_disabled">Turn it on in app settings</string>
+    <string name="widget_subtitle">Training · Water · Sleep</string>
+    <string name="widget_training">Training</string>
+    <string name="widget_water">Water</string>
+    <string name="widget_sleep">Sleep</string>
+    <string name="widget_logged">Done</string>
+    <string name="widget_pending">To Do</string>
+    <string name="widget_item_logged_a11y">%1$s logged</string>
+    <string name="widget_item_pending_a11y">%1$s not logged</string>
+    <string name="widget_current_a11y">Today’s log. %1$s. %2$s. %3$s.</string>
+    <string name="widget_disabled_a11y">Log sharing is off. Turn it on in the app settings.</string>
+    <string name="widget_open_training_a11y">%1$s. Open Training.</string>
 </resources>

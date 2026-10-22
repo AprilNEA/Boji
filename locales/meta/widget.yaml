@@ -1,0 +1,35 @@
+widget_name:
+  comment: 主屏幕小组件在小组件选择器中的名称
+widget_description:
+  comment: 主屏幕小组件在小组件选择器中的说明
+widget_title_current:
+widget_title_disabled:
+widget_detail_current:
+widget_detail_disabled:
+widget_subtitle:
+widget_training:
+widget_water:
+widget_sleep:
+widget_logged:
+  comment: 小组件中一项打卡的状态标签，空间很小
+widget_pending:
+  comment: 小组件中一项打卡的状态标签，空间很小
+widget_item_logged_a11y:
+  comment: 读屏软件朗读的一项打卡状态。item 是 widget_training、widget_water 或 widget_sleep
+  args:
+    item: string
+widget_item_pending_a11y:
+  comment: 读屏软件朗读的一项打卡状态。item 是 widget_training、widget_water 或 widget_sleep
+  args:
+    item: string
+widget_current_a11y:
+  comment: 读屏软件朗读的整个小组件。每个参数是 widget_item_logged_a11y 或 widget_item_pending_a11y
+  args:
+    training: string
+    water: string
+    sleep: string
+widget_disabled_a11y:
+widget_open_training_a11y:
+  comment: 读屏软件朗读的训练项，点按后打开训练页。item 是 widget_item_logged_a11y 或 widget_item_pending_a11y
+  args:
+    item: string
