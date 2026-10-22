@@ -8,32 +8,37 @@
 
 | 层级 | 手动 `action` | 触发方式 | 结果 |
 | --- | --- | --- | --- |
-| 代码校验 | `ci`（默认） | PR、`master` 推送或手动运行 | 检查生成产物，运行测试，编译 Release |
+| 代码校验 | `ci`（默认） | PR、`master` 推送或手动运行 | 校验源码与生成物，运行 Python 回归、模拟器构建和完整测试 |
 | TestFlight | `testflight` | `master` 手动运行并审批 | 先跑 CI，再签名、上传并等待处理 |
 | App Store 审核 | `review` | `master` 手动运行并审批 | 检查或提交已有构建，不重新编译 |
 
 唯一工作流是 [`.github/workflows/ios.yml`](../../.github/workflows/ios.yml)。后两层共享并发组，不能同时写入商店。新的 CI 运行不会取消正在执行的发布。
 
-PR 和推送只执行 `validate`、`build`。手动上传还需通过 `release-gate`，才执行 `testflight`。手动提审只执行 `release-gate` 和 `review`。上传成功不会自动触发提审。
+`validate` 先检查源码、生成物并运行 Python 回归。`build` 和 `test` 都依赖 `validate`。两者在独立 Runner 并行执行。PR 和推送运行这三个 CI job。手动上传默认要求它们和 `release-gate` 全部成功。手动提审执行 `release-gate` 和 `review`。上传成功不会自动触发提审。
+
+`skip_tests` 默认为 `false`。只有手动 TestFlight 运行可以显式设为 `true`。此时跳过 Python 回归和 `test` 任务。源码检查、编译、产物校验和本人审批仍须通过。标题和运行摘要会标明跳过测试。此类运行不能通过本流程直接提审。
 
 TestFlight 上传不等于外部测试发布。工作流不邀请测试员，不自动分发测试组。提审工作流也不会执行正式发布。
 
 ## 第一层：校验代码
 
-PR 和 `master` 推送会运行两组检查：
+PR 和 `master` 推送会运行三个任务：
 
-1. 检查公开元数据和 CI 脚本。运行字符串与动画生成器的校验。来源检查拒绝 `TEMP_`，固定 XcodeGen 重新生成工程后与 Git 版本比较。
-2. 在 Runner 上发现可用的 iPhone 模拟器。运行单元测试和 UI 测试，再编译 Release。检查动画资源及嵌入的 Widget、Watch App。
+1. `validate` 检查公开元数据和 CI 脚本，运行字符串、动画生成器及 Python 回归校验。来源检查拒绝 `TEMP_`，固定 XcodeGen 重新生成工程后与 Git 版本比较。
+2. `build` 在完成工具链和依赖准备后，分别编译模拟器 Debug 与 Release，并保存编译日志。它不发现或启动模拟器，不运行 `xcodebuild test`、任何 unittest，也不校验产物。超时为 30 分钟。
+3. `test` 在独立 Runner 执行完整单元和 UI 测试，保留截图测试与隔离数据，不删除或跳过覆盖。日志和 `.xcresult` 保存 7 天，超时为 60 分钟。
 
 测试使用项目已有的隔离数据。后端地址和 Sentry DSN 均为空。工作流不访问真实账号或 HealthKit 记录。
 
-`validate`、`build` 和 `release-gate` 不读取 1Password service account。它们不进入发布 Environment。
+`validate`、`build`、`test` 和 `release-gate` 不读取 1Password service account。它们不进入发布 Environment。
 
-`Boji/DebugSupport/Fixtures/` 保留为仓库中的 Debug 夹具。`project.yml` 排除整个 `DebugSupport/`，避免 XcodeGen 2.46.0 为排空的组写入随机 `TEMP_` 标识符。Debug 的预构建脚本单独复制夹具。Release 不会打包这些文件。`check.py bundle` 会拒绝包含 `RemoteAnimationFixtures/` 的产物。
+`Boji/DebugSupport/Fixtures/` 保留为仓库中的 Debug 夹具。`project.yml` 排除整个 `DebugSupport/`，避免 XcodeGen 2.46.0 为排空的组写入随机 `TEMP_` 标识符。Debug 的预构建脚本单独复制夹具。Release 不会打包这些文件。TestFlight 在归档后、导出 IPA 前运行 `check.py bundle`，检查 `$ARCHIVE_PATH/Products/Applications/Boji.app`。该检查保持 fail closed；移动检查位置不表示移除测试或产物检查。
 
 脚本的输出目录由 `BOJI_ANIMATION_FIXTURE_DIR` 控制。Debug 指向 App 包，Release 指向 `DERIVED_FILE_DIR`。Xcode 会预先创建输出文件的父目录，因此仅在脚本中判断 Debug 不够。两个配置必须使用不同的输出目录。
 
-CI 只上传测试日志和 `.xcresult`，保留 7 天。公开仓库的读取者可能下载这些文件。测试不得写入真实账号、个人数据或凭据。
+`build` 上传 `ios-build-evidence-{run_id}-{attempt}` 编译日志，保留 7 天。`test` 日志和 `.xcresult` 使用 `ios-ci-evidence-*`，保留 7 天。公开仓库的读取者可能下载这些文件。测试不得写入真实账号、个人数据或凭据。
+
+本次结构调整只拆分构建与测试任务，不修复先前记录的 UI 查询超时。历史验收数字和既有运行结果不因任务拆分而改变。
 
 CI 不使用 `pull_request_target`。PR 不进入带凭据的 Environment。不要将这个工作流改到个人自托管 Mac。
 
@@ -156,7 +161,7 @@ Sentry 在这套流程中保持关闭。启用应用崩溃上报需要另行审�
 
 ## 第二层：上传构建
 
-先将目标提交合并到 `master`。`testflight` 模式会在同次运行中重新执行 CI。两个 CI job 都通过后，才允许进入签名和上传。输入版本必须与 `ios/project.yml` 和 `app-store/project.json` 一致。
+先将目标提交合并到 `master`。`testflight` 模式默认在同次运行中执行完整 CI。只有显式设置 `skip_tests=true` 才跳过测试。失败或取消的测试不能用这个选项放行。输入版本必须与 `ios/project.yml` 和 `app-store/project.json` 一致。
 
 先查询 Apple 中的构建及上传记录。再输入未使用的构建号。脚本不会自动改变营销版本。允许的构建号使用 Apple 数字版本格式。
 
@@ -164,18 +169,20 @@ Sentry 在这套流程中保持关闭。启用应用崩溃上报需要另行审�
 
 1. 打开 Actions 中的 `iOS`。
 2. 选择 `master`，将 `action` 设为 `testflight`。
-3. 填写 `version` 和 `build_number`，等待 CI 通过并审批环境。
-4. 等待 Apple 完成构建处理。
-5. 保存运行 ID，进入 TestFlight 验收。
+3. 填写 `version` 和 `build_number`。默认保留测试；仅在明确选择内测例外时勾选 `skip_tests`。
+4. 等待构建与检查通过，并由本人审批环境。
+5. 等待 Apple 完成构建处理。
+6. 保存运行 ID，进入 TestFlight 验收。
 
 `testflight` 任务将关键操作显示为独立步骤：
 
 1. `Prepare signing certificates and profiles` 校验并安装签名材料。
 2. `Archive signed iOS app` 直接执行 `xcodebuild archive`。
-3. `Export IPA` 直接执行 `xcodebuild -exportArchive`。
-4. `Validate exported IPA before loading upload credentials` 离线检查最终 IPA，不读取上传密钥。
-5. `Upload IPA to App Store Connect and wait for processing` 上传并等待处理。
-6. 加密保存诊断产物，再清理签名材料和明文文件。
+3. `Verify archived resources` 对 `$ARCHIVE_PATH/Products/Applications/Boji.app` 运行 `check.py bundle`。检查失败即停止。
+4. `Export IPA` 直接执行 `xcodebuild -exportArchive`。
+5. `Validate exported IPA before loading upload credentials` 离线检查最终 IPA，不读取上传密钥。
+6. `Upload IPA to App Store Connect and wait for processing` 上传并等待处理。
+7. 加密保存诊断产物，再清理签名材料和明文文件。
 
 `signing.py` 不再执行构建或上传。它只负责参数校验、签名准备和清理。`Export IPA` 生成 `$RUNNER_TEMP/boji-export/Boji.ipa`。上传仍使用 `store.py` 的精确构建校验和防重传规则。
 
@@ -244,7 +251,7 @@ gpg --output release-evidence.tar --decrypt release-evidence.tar.gpg
 4. 检查通过后，使用同一运行 ID，设 `submit=true`。
 5. 再次审批 `ios-appstore-review` 环境，提交审核。
 
-运行 ID 必须来自成功的 `testflight` 模式。仅有 CI 或提审成功的运行不能提供构建回执。脚本检查该次运行的四个 job 是否全部成功：`validate`、`build`、`release-gate`、`testflight`。
+运行 ID 必须来自成功的 `testflight` 模式。仅有 CI 或提审成功的运行不能提供构建回执。脚本检查该次运行的五个 job 是否全部成功：`validate`、`build`、`test`、`release-gate`、`testflight`。
 
 脚本还检查回执所属的工作流、分支、仓库和提交。它从回执选择 Apple 构建，不接受任意 IPA。脚本再次核对版本、构建号与 `VALID` 处理状态。
 
@@ -328,6 +335,17 @@ GPG 测试只生成一次性测试密钥。测试使用短临时路径，避免 
 - 工程连续生成两次，输出逐字相同。GPG 隔离加密与解密回归通过。
 
 修复后的签名 IPA、Apple 再次接收和 TestFlight 安装仍未验证。正式提审验收项保持关闭；HealthKit 写入授权仍为空。本次修复没有重传旧构建。
+
+### 2026-10-23：分离编译与测试
+
+本机于 2026-10-23 02:47（UTC+08:00）完成本轮校验。
+
+- 94 项 CI/CD 回归通过，含 7 项任务隔离测试。
+- 23 项元数据回归通过。
+- `actionlint`、源码检查和 `git diff --check` 通过。
+- 文档本地链接检查通过。
+
+新结构尚未在 GitHub Runner 执行。本次没有修复注销测试的 UI 查询超时。
 
 ## 参考
 

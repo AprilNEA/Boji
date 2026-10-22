@@ -322,7 +322,7 @@ class SourceTests(unittest.TestCase):
         uploads = re.findall(
             r'uses: actions/upload-artifact@[^\n]+\n        with:\n(.*?)(?=      - |\n  [a-z]|\Z)',
             source, re.DOTALL)
-        self.assertEqual(len(uploads), 3)
+        self.assertEqual(len(uploads), 4)
         for upload in uploads:
             self.assertIn('          archive: true\n', upload)
             self.assertNotIn('include-hidden-files: true', upload)
@@ -335,13 +335,13 @@ class SourceTests(unittest.TestCase):
         self.assertEqual(set(jobs), guard.TESTFLIGHT_JOBS | {'review'})
         for name in guard.TESTFLIGHT_JOBS:
             self.assertIn(f'    name: {name}\n', jobs[name])
-        for name in ('validate', 'build', 'release-gate'):
+        for name in ('validate', 'build', 'test', 'release-gate'):
             self.assertNotIn('secrets.', jobs[name])
             self.assertNotIn('environment:', jobs[name])
         self.assertIn("github.event_name == 'workflow_dispatch'", jobs['release-gate'])
         self.assertIn("github.ref == 'refs/heads/master'", jobs['release-gate'])
         self.assertIn("github.repository == 'AprilNEA/Boji'", jobs['release-gate'])
-        self.assertIn('needs: [release-gate, build]', jobs['testflight'])
+        self.assertIn('needs: [release-gate, build, test]', jobs['testflight'])
         self.assertIn('environment: ios-testflight', jobs['testflight'])
         self.assertIn("inputs.action == 'testflight'", jobs['testflight'])
         self.assertIn('needs: release-gate', jobs['review'])
@@ -358,7 +358,7 @@ class SourceTests(unittest.TestCase):
         sections = re.split(r'^  ([a-z-]+):\n', source.split('\njobs:\n', 1)[1], flags=re.MULTILINE)
         jobs = dict(zip(sections[1::2], sections[2::2]))
         macos = {name for name, body in jobs.items() if 'DEVELOPER_DIR:' in body}
-        self.assertEqual(macos, {'validate', 'build', 'testflight'})
+        self.assertEqual(macos, {'validate', 'build', 'test', 'testflight'})
         for name in macos:
             self.assertIn(f"    runs-on: {config['runner']}\n", jobs[name])
             self.assertIn(f"      DEVELOPER_DIR: {config['xcodePath']}\n", jobs[name])

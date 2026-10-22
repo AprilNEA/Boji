@@ -71,8 +71,14 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - Store `OP_SERVICE_ACCOUNT_TOKEN` as an Environment secret. Store `OP_IOS_SIGNING_ITEM` and `OP_ASC_SECRET_ITEM` as Environment variables.
 - Each item variable must be exactly `op://vault-id/item-id`, without a field. Validate it before the corresponding loader step.
 - The signing item holds five named fields and uses an Apple Distribution P12. The App Store Connect item holds the three `ASC_*` fields.
-- `validate`, `build` and `release-gate` must not read a service account token or enter a release Environment.
-- TestFlight requires successful CI jobs in the same run. Review must verify successful `validate`, `build`, `release-gate` and `testflight` jobs in the source run.
+- `validate`, `build`, `test` and `release-gate` must not read a service account token or enter a release Environment.
+- `validate` checks source/generated artifacts and runs Python regression tests. `build` and `test` both need `validate` and run on independent runners in parallel.
+- `build` prepares the toolchain and dependencies, builds Debug and Release for the simulator, and saves build logs. It must not discover or boot simulators, run `xcodebuild test`, run any unittest, or validate products. Its timeout is 30 minutes.
+- `test` runs the complete unit and UI test suite, including screenshot tests and isolated test data. Its timeout is 60 minutes; keep test logs and `.xcresult` in the seven-day `ios-ci-evidence-*` artifact.
+- `skip_tests` defaults to false. Only an explicit manual TestFlight dispatch may skip `test` and the Python regression step. Never apply this exception to PR or ordinary CI.
+- Save build logs in `ios-build-evidence-{run_id}-{attempt}` for seven days. Keep `ci/check.py bundle` fail-closed validation in TestFlight after `Archive signed iOS app` and before `Export IPA`; it checks `$ARCHIVE_PATH/Products/Applications/Boji.app` and is not a removed test.
+- TestFlight requires successful `release-gate` and `build` jobs. Require `test` success unless `skip_tests` explicitly allows its skipped result. Never accept a failed or cancelled job.
+- Preserve the user's deployment approval. Label skipped-test beta runs in their title and summary. Review still requires successful `validate`, `build`, `test`, `release-gate` and `testflight` jobs; skipped tests cannot authorize App Store submission.
 - TestFlight may be used to validate production login and membership. Require a public HTTPS API origin, but do not claim backend acceptance before testing.
 - App Store review still requires all build-bound checks in `ci/release-approval.json`, including `backend`. A successful TestFlight upload does not satisfy them.
 - Preserve those job names or update `ci/guard.py` with them. A successful workflow conclusion alone does not prove that an upload occurred.

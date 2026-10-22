@@ -115,7 +115,7 @@ class OnePasswordWorkflowTests(unittest.TestCase):
             self.assertIn(f'{field}: ${{{{ steps.asc-secrets.outputs.{field} }}}}', submit)
 
     def test_ci_and_release_gate_cannot_read_service_account_or_item_references(self):
-        for name in ('validate', 'build', 'release-gate'):
+        for name in ('validate', 'build', 'test', 'release-gate'):
             with self.subTest(job=name):
                 job = self.job(name)
                 self.assertNotIn('1password/', job)

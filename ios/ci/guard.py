@@ -12,7 +12,7 @@ import urllib.request
 
 REPOSITORY = 'AprilNEA/Boji'
 WORKFLOW = '.github/workflows/ios.yml'
-TESTFLIGHT_JOBS = {'validate', 'build', 'release-gate', 'testflight'}
+TESTFLIGHT_JOBS = {'validate', 'build', 'test', 'release-gate', 'testflight'}
 
 
 def github(path: str) -> dict:
@@ -48,7 +48,7 @@ def validate_run(run: dict, path: str, event: str, sha: str | None = None) -> No
 
 def require_testflight_jobs(run: dict) -> None:
     # A successful ci/review run now has the same workflow path. Require the
-    # actual upload job and both CI jobs, not only the workflow conclusion.
+    # actual upload job and every CI job, not only the workflow conclusion.
     run_id, attempt = run.get('id'), run.get('run_attempt')
     if type(run_id) is not int or run_id < 1 or type(attempt) is not int or attempt < 1:
         raise ValueError('Invalid workflow run or attempt')

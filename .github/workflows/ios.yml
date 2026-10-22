@@ -1,5 +1,5 @@
 name: iOS
-run-name: iOS / ${{ inputs.action || 'ci' }}
+run-name: iOS / ${{ inputs.action || 'ci' }}${{ inputs.action == 'testflight' && inputs.skip_tests && ' / tests skipped' || '' }}
 
 on:
   pull_request:
@@ -20,6 +20,11 @@ on:
         type: choice
         default: ci
         options: [ci, testflight, review]
+      skip_tests:
+        description: 'testflight only: skip tests for this beta; not eligible for App Store review'
+        type: boolean
+        default: false
+        required: true
       version:
         description: 'testflight only: must match both project versions'
         required: false
@@ -68,10 +73,13 @@ jobs:
         run: |
           python3 ios/ci/check.py toolchain
           python3 ios/ci/check.py source
-          python3 -m unittest discover -s ios/ci/tests -v
-          python3 -m unittest discover -s ios/app-store/tests -v
           python3 ios/app-store/manage.py install
           python3 ios/app-store/manage.py validate
+      - name: Run CI script regression tests
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.action == 'testflight' && inputs.skip_tests) }}
+        run: |
+          python3 -m unittest discover -s ios/ci/tests -v
+          python3 -m unittest discover -s ios/app-store/tests -v
       - name: Check generated strings
         working-directory: crates
         run: cargo run --locked --package boji-locales -- check
@@ -90,6 +98,57 @@ jobs:
   build:
     name: build
     needs: validate
+    runs-on: xcode-27
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
+      BOJI_SENTRY_DSN: ''
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check build toolchain
+        run: python3 ios/ci/check.py toolchain
+      - name: Resolve only locked Swift packages
+        run: |
+          xcodebuild -resolvePackageDependencies -project ios/Boji.xcodeproj -scheme Boji \
+            -derivedDataPath .work/boji-ios/ci/DerivedData \
+            -onlyUsePackageVersionsFromResolvedFile
+          git diff --exit-code -- ios/Boji.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+      - name: Build Debug
+        run: |
+          mkdir -p .work/boji-ios/ci/build-logs
+          set -o pipefail
+          xcodebuild -project ios/Boji.xcodeproj -scheme Boji -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath .work/boji-ios/ci/DerivedData \
+            -disableAutomaticPackageResolution -onlyUsePackageVersionsFromResolvedFile \
+            CODE_SIGNING_ALLOWED=NO BOJI_API_BASE_URL= BOJI_SENTRY_DSN= build \
+            2>&1 | tee .work/boji-ios/ci/build-logs/debug.log
+      - name: Build Release
+        run: |
+          mkdir -p .work/boji-ios/ci/build-logs
+          set -o pipefail
+          xcodebuild -project ios/Boji.xcodeproj -scheme Boji -configuration Release \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath .work/boji-ios/ci/DerivedData \
+            -disableAutomaticPackageResolution -onlyUsePackageVersionsFromResolvedFile \
+            CODE_SIGNING_ALLOWED=NO BOJI_API_BASE_URL= BOJI_SENTRY_DSN= build \
+            2>&1 | tee .work/boji-ios/ci/build-logs/release.log
+      - name: Save build logs
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          archive: true
+          name: ios-build-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .work/boji-ios/ci/build-logs/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  test:
+    name: test
+    needs: validate
+    if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.action == 'testflight' && inputs.skip_tests) }}
     runs-on: xcode-27
     timeout-minutes: 60
     env:
@@ -124,17 +183,6 @@ jobs:
             -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=NO \
             BOJI_API_BASE_URL= BOJI_SENTRY_DSN= test \
             | tee .work/boji-ios/ci/reports/tests.log
-      - name: Build Release and verify bundled resources
-        run: |
-          set -o pipefail
-          xcodebuild -project ios/Boji.xcodeproj -scheme Boji -configuration Release \
-            -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath .work/boji-ios/ci/DerivedData \
-            -disableAutomaticPackageResolution -onlyUsePackageVersionsFromResolvedFile \
-            CODE_SIGNING_ALLOWED=NO BOJI_API_BASE_URL= BOJI_SENTRY_DSN= build \
-            | tee .work/boji-ios/ci/reports/release.log
-          python3 ios/ci/check.py bundle \
-            --app .work/boji-ios/ci/DerivedData/Build/Products/Release-iphonesimulator/Boji.app
       - name: Save isolated test evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -163,8 +211,8 @@ jobs:
 
   testflight:
     name: testflight
-    needs: [release-gate, build]
-    if: github.event_name == 'workflow_dispatch' && inputs.action == 'testflight'
+    needs: [release-gate, build, test]
+    if: ${{ !cancelled() && github.event_name == 'workflow_dispatch' && inputs.action == 'testflight' && needs.release-gate.result == 'success' && needs.build.result == 'success' && (needs.test.result == 'success' || (inputs.skip_tests && needs.test.result == 'skipped')) }}
     runs-on: xcode-27
     environment: ios-testflight
     timeout-minutes: 90
@@ -173,6 +221,11 @@ jobs:
       VERSION: ${{ inputs.version }}
       BUILD_NUMBER: ${{ inputs.build_number }}
     steps:
+      - name: Record explicitly skipped beta tests
+        if: inputs.skip_tests
+        run: |
+          echo '::warning::Tests were explicitly skipped for this TestFlight beta. This run is not eligible for App Store review.'
+          echo 'Tests were explicitly skipped for this beta. Build, package validation and deployment approval remain required.' >> "$GITHUB_STEP_SUMMARY"
       - name: Initialize release paths
         run: |
           {
@@ -250,6 +303,10 @@ jobs:
             -disableAutomaticPackageResolution -onlyUsePackageVersionsFromResolvedFile \
             archive 2>&1 \
             | python3 ios/ci/artifacts.py log --file "$PRIVATE_DIR/logs/archive.log"
+      - name: Verify archived resources
+        run: |
+          python3 ios/ci/check.py bundle \
+            --app "$ARCHIVE_PATH/Products/Applications/Boji.app"
       - name: Export IPA
         run: |
           umask 077
