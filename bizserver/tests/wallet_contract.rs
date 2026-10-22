@@ -16,6 +16,7 @@ use base64::{
     engine::general_purpose::{STANDARD, STANDARD_NO_PAD},
 };
 use boji_bizserver::{
+    domain::membership_code::MembershipCodes,
     proto::boji::v1 as p,
     rpc::Capabilities,
     wallet::{
@@ -229,6 +230,7 @@ fn card(joined_at: DateTime<Utc>) -> MembershipCard<'static> {
         expires_at: None,
         status: CardStatus::Active,
         organizations: &[],
+        code: None,
     }
 }
 
@@ -514,7 +516,13 @@ fn wallet_capabilities(signer: PassSigner) -> Capabilities {
 #[ignore = "requires an isolated PostgreSQL TEST_DATABASE_URL and loopback networking"]
 async fn wallet_service_signs_the_pass_of_an_active_card() {
     let chain = Chain::current();
-    let mut harness = Harness::with_capabilities(wallet_capabilities(chain.signer())).await;
+    let codes = MembershipCodes::new(b"wallet-contract-membership-code-key-0123".as_slice())
+        .expect("test key");
+    let mut harness = Harness::with_capabilities(Capabilities {
+        membership_codes: Some(Arc::new(codes.clone())),
+        ..wallet_capabilities(chain.signer())
+    })
+    .await;
     let config = ok_json(
         harness
             .rpc_json(GET_SERVER_CONFIG, None, json!({ "name": "serverConfig" }))
@@ -575,6 +583,15 @@ async fn wallet_service_signs_the_pass_of_an_active_card() {
     assert_eq!(
         pass["generic"]["headerFields"][0]["value"],
         card.member_number
+    );
+    let membership = Uuid::parse_str(&card.membership_id).expect("membership UUID");
+    assert_eq!(
+        pass["barcodes"],
+        json!([{
+            "format": "PKBarcodeFormatQR",
+            "message": codes.static_value(membership).expect("static value"),
+            "messageEncoding": "iso-8859-1"
+        }])
     );
     let pass_text = String::from_utf8(files["pass.json"].clone()).expect("UTF-8 pass");
     assert!(!pass_text.contains(&owner.email));

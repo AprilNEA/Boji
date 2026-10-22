@@ -55,6 +55,14 @@ struct BetterAuthClient: Sendable {
         let status: Bool
     }
 
+    private struct PermissionRequest: Encodable {
+        let permissions: [String: [String]]
+    }
+
+    private struct PermissionResponse: Decodable {
+        let success: Bool
+    }
+
     private let httpClient: BojiHTTPClient
 
     init(configuration: MembershipServiceConfiguration?, transport: any MembershipTransport) {
@@ -208,6 +216,20 @@ struct BetterAuthClient: Sendable {
         guard response.status else {
             throw MembershipAPIError.invalidResponse
         }
+    }
+
+    /// 询问 Better Auth 管理插件：当前账号的运营角色是否授予这些权限。
+    ///
+    /// 结果只决定 App 是否显示运营入口。bizserver 在每次运营调用时重新授权。
+    func hasPermission(_ permissions: [String: [String]], token: String) async throws -> Bool {
+        let body = try httpClient.encodedBody(PermissionRequest(permissions: permissions))
+        let response: PermissionResponse = try await httpClient.request(
+            path: "api/auth/admin/has-permission",
+            method: "POST",
+            token: token,
+            body: body
+        )
+        return response.success
     }
 
     private func authenticationToken(from response: MembershipHTTPResponse) throws -> String {

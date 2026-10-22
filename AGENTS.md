@@ -65,9 +65,9 @@ ICTOOL="/Applications/Xcode.app/Contents/Applications/Icon Composer.app/Contents
 
 ### README screenshots
 
-The `## 功能` section of the root `README.md` shows six iPhone screenshots and two framed Apple Watch screenshots from `assets/public/screenshots/`. Each path has the form `screenshots/<platform>/<device>/<locale>/<screen>.png`, for example `screenshots/apple/iphone/zh-Hans/today.png`. Use the platform, device and locale names of `ios/app-store/screenshots/public/screenshots/`, and `watch` for Apple Watch. Name each file after the screen that it shows, not after its App Store position. The framed Apple Watch files add a model and a bezel variant: `<screen>/<model>/<variant>.png`.
+The `## 功能` section of the root `README.md` shows six iPhone screenshots in a table, one Apple Wallet screenshot and two framed Apple Watch screenshots from `assets/public/screenshots/`. Each path has the form `screenshots/<platform>/<device>/<locale>/<screen>.png`, for example `screenshots/apple/iphone/zh-Hans/today.png`. Use the platform, device and locale names of `ios/app-store/screenshots/public/screenshots/`, and `watch` for Apple Watch. Name each file after the screen that it shows, not after its App Store position. The framed Apple Watch files add a model and a bezel variant: `<screen>/<model>/<variant>.png`.
 
-The iPhone files are the simulator captures of the App Store screenshot editor in `ios/app-store/screenshots/`, scaled to 603 pixels wide. They show isolated test data. Use the raw iPhone captures, not the App Store exports, because the exports add captions and backgrounds. Before you add a capture, check it for personal data.
+The six iPhone files in the table are the simulator captures of the App Store screenshot editor in `ios/app-store/screenshots/`, scaled to 603 pixels wide. They show isolated test data. Use the raw iPhone captures, not the App Store exports, because the exports add captions and backgrounds. Before you add a capture, check it for personal data. `wallet.png` is a capture of the Wallet app. See "README Wallet screenshot" below.
 
 When the editor gets new captures, run these commands at the repository root in the devenv shell. The script uses Pillow from devenv:
 
@@ -156,6 +156,20 @@ EOF
 
 For Series 11, use `.work/bezels/Series-11-2025`, the filter `" - 46mm - "` or `" - 42mm - "`, and the model directory and screen opening from the table.
 
+### README Wallet screenshot
+
+`screenshots/apple/iphone/zh-Hans/wallet.png` shows a sample member card in the Wallet app of an iPhone 17 Pro simulator. The 俱乐部与会员卡 section of `README.md` shows it at 260 pixels wide. The sample card has the nickname 薄肌同学, the card number `1`, the reserved school field 西交利物浦大学 and a QR code. The QR code holds a static membership code from a preview key in the example, so no server accepts it. The caption says that the school field appears only after organization data reaches the pass. Update the caption when that changes.
+
+Wallet accepts a pass only when an Apple-issued Pass Type ID certificate signs it. A test chain fails with Safari 浏览器无法下载此文件. Get the `WALLET_*` values of the production Pass Type ID certificate from the maintainer, and do not write the key to disk. To capture the card again:
+
+1. In `bizserver/`, run `cargo run --example wallet_preview -- ../.work/wallet-preview` with `WALLET_PASS_TYPE_IDENTIFIER`, `WALLET_TEAM_IDENTIFIER`, `WALLET_SIGNER_CERT`, `WALLET_SIGNER_KEY` and `WALLET_WWDR_CERT` set. Use `op run --env-file` with `op://` references, so that one 1Password prompt covers all five values. Separate `op read` calls each need a prompt and can time out. The example writes `active.pkpass`, `school.pkpass` and `suspended.pkpass`. Their `webServiceURL` is `https://example.invalid/wallet`, so the simulator never registers with a real server.
+2. Serve `.work/wallet-preview/` on `127.0.0.1` with the `application/vnd.apple.pkpass` content type. Safari does not offer the pass to Wallet with another content type.
+3. Create a new iPhone 17 Pro simulator, so that Wallet holds no other passes. Set it to Simplified Chinese as in step 2 of the Apple Watch steps above, and restart it.
+4. Open `http://127.0.0.1:<port>/school.pkpass` with `xcrun simctl openurl`, tap 允许 and then 添加.
+5. Go to the Home screen and open Wallet from there. When Wallet opens from Safari, the status bar shows a 返回 breadcrumb. Tap 不允许 on the location prompt. Set the status bar with `xcrun simctl status_bar <udid> override --time 9:41`.
+6. Open the card, and capture the card view with `xcrun simctl io <udid> screenshot --type=png`. Capture the card view, not the Wallet home screen, because the home screen hides the QR code.
+7. Scale the capture to 603 pixels wide with the script above, with `wallet` as the output name. Check that the QR code in the scaled file still decodes, for example with `VNDetectBarcodesRequest` of the Vision framework.
+
 ### README exercise images
 
 The `## 功能` section of the root `README.md` also shows exercise images from `assets/public/previews/`. `animations/scripts/readme.ts` renders them from the Lottie files in both palettes:
@@ -190,7 +204,7 @@ The iOS code is the local Swift package `ios/BojiAPI/`. Its `buf.gen.yaml` pins 
 
 The Android code is the library module `android/rpc/`. Its `buf.gen.yaml` pins the plugin versions, and `android/gradle/libs.versions.toml` pins the runtime versions. Keep `protocolbuffers/java` and `protocolbuffers/kotlin` at the protoc release of `protobuf`, and `connectrpc/kotlin` equal to `connectKotlin`.
 
-Keep the googleapis commit in each `buf.gen.yaml` equal to `bizserver/buf.lock`. After a change to `bizserver/proto/boji/v1/`, run `buf generate` in `ios/BojiAPI/` and in `android/rpc/`. Commit the regenerated files of both clients in the same change.
+Keep the googleapis commit in each `buf.gen.yaml` equal to `bizserver/buf.lock`. Both clients also generate `bizserver/proto/boji/admin/v1/membership_code_service.proto`, because staff scan membership codes in the apps. Do not add other `boji.admin.v1` files to a client. After a change to `bizserver/proto/boji/v1/` or to that file, run `buf generate` in `ios/BojiAPI/` and in `android/rpc/`. Commit the regenerated files of both clients in the same change.
 
 ### Asset host
 

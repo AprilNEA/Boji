@@ -197,4 +197,18 @@ enum ErrorReason {
   // `FAILED_PRECONDITION`: an operator unfroze an organization that is not
   // frozen. The call changed nothing and wrote no audit event.
   ORGANIZATION_STANDING_NOT_FROZEN = 44;
+
+  // `FAILED_PRECONDITION`: the server has no membership code key. Hide
+  // membership codes and read `ServerConfig` again later. Do not retry
+  // automatically.
+  MEMBERSHIP_CODE_NOT_CONFIGURED = 45;
+
+  // `INVALID_ARGUMENT`: the scanned value is not a membership code of this
+  // server, or its proof is wrong. Ask the member to show the code again. The
+  // member app should fetch its code again, because the server key can change.
+  MEMBERSHIP_CODE_INVALID = 46;
+
+  // `FAILED_PRECONDITION`: the scanned value is a dynamic membership code
+  // whose time window has ended. Ask the member to show the current code.
+  MEMBERSHIP_CODE_EXPIRED = 47;
 }

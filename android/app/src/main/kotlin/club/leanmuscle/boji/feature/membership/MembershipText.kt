@@ -8,7 +8,9 @@ import club.leanmuscle.boji.core.membership.AccountAction
 import club.leanmuscle.boji.core.membership.AccountMessage
 import club.leanmuscle.boji.core.membership.CardCondition
 import club.leanmuscle.boji.core.membership.MembershipRules
+import club.leanmuscle.boji.core.membership.MembershipVerification
 import club.leanmuscle.boji.core.membership.PasswordRules
+import club.leanmuscle.boji.core.membership.ScanProblem
 
 @Composable
 fun accountMessageText(message: AccountMessage): String {
@@ -67,6 +69,9 @@ fun accountMessageText(message: AccountMessage): String {
         AccountMessage.VerifyEmailBeforeChange -> stringResource(R.string.msg_verify_before_email_change)
         AccountMessage.EmailChangeDisabled -> stringResource(R.string.msg_email_change_disabled)
         AccountMessage.EmailChangeRejected -> stringResource(R.string.msg_email_change_rejected)
+        AccountMessage.MembershipCodeNotConfigured -> stringResource(R.string.membership_code_not_configured)
+        AccountMessage.MembershipCodeNeedsActiveCard -> stringResource(R.string.membership_code_needs_active_card)
+        AccountMessage.MembershipCodeCardChanged -> stringResource(R.string.membership_code_card_changed)
         is AccountMessage.Network -> stringResource(networkMessage(message.action))
         is AccountMessage.Failed -> stringResource(failureMessage(message.action))
     }
@@ -87,6 +92,7 @@ private fun networkMessage(action: AccountAction): Int = when (action) {
     AccountAction.CHANGE_EMAIL -> R.string.msg_network_change_email
     AccountAction.REQUEST_ACCOUNT_DELETION -> R.string.msg_network_deletion_code
     AccountAction.DELETE_ACCOUNT -> R.string.msg_network_delete_account
+    AccountAction.MEMBERSHIP_CODE -> R.string.membership_code_network
 }
 
 @StringRes
@@ -104,6 +110,7 @@ private fun failureMessage(action: AccountAction): Int = when (action) {
     AccountAction.CHANGE_EMAIL -> R.string.msg_failed_change_email
     AccountAction.REQUEST_ACCOUNT_DELETION -> R.string.msg_failed_deletion_code
     AccountAction.DELETE_ACCOUNT -> R.string.msg_failed_delete_account
+    AccountAction.MEMBERSHIP_CODE -> R.string.membership_code_failed
 }
 
 @Composable
@@ -143,4 +150,29 @@ fun MembershipRules.Pledge.textRes(): Int = when (this) {
     MembershipRules.Pledge.BELONGING -> R.string.pledge_belonging_text
     MembershipRules.Pledge.PACE -> R.string.pledge_pace_text
     MembershipRules.Pledge.PRIVACY -> R.string.pledge_privacy_text
+}
+
+@StringRes
+fun ScanProblem.messageRes(): Int = when (this) {
+    ScanProblem.INVALID -> R.string.membership_scan_invalid
+    ScanProblem.CODE_EXPIRED -> R.string.membership_scan_code_expired
+    ScanProblem.NOT_FOUND -> R.string.membership_scan_not_found
+    ScanProblem.NOT_CONFIGURED -> R.string.membership_code_not_configured
+    ScanProblem.SIGN_IN_AGAIN -> R.string.membership_scan_sign_in_again
+    ScanProblem.FORBIDDEN -> R.string.membership_scan_forbidden
+    ScanProblem.NETWORK -> R.string.membership_scan_network
+    ScanProblem.FAILED -> R.string.membership_scan_failed
+}
+
+@StringRes
+fun MembershipVerification.Standing.titleRes(): Int = when (this) {
+    MembershipVerification.Standing.VALID -> R.string.membership_scan_valid
+    MembershipVerification.Standing.SUSPENDED -> R.string.membership_scan_suspended
+    MembershipVerification.Standing.EXPIRED -> R.string.membership_scan_card_expired
+}
+
+@StringRes
+fun MembershipVerification.Kind.labelRes(): Int = when (this) {
+    MembershipVerification.Kind.APP -> R.string.membership_scan_kind_dynamic
+    MembershipVerification.Kind.WALLET_PASS -> R.string.membership_scan_kind_static
 }

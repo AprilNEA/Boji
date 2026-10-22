@@ -13,6 +13,7 @@ final class MembershipStore {
         case enroll
         case appleSignIn
         case wallet
+        case code
         case security
         case changePassword
         case revokeOtherSessions
@@ -45,6 +46,10 @@ final class MembershipStore {
     var errorMessage: String?
     var notice: String?
     private(set) var capabilities: MembershipCapabilities?
+    /// 最近一次取得的会员码。它只保存在内存中，App 退出后需要重新取得。
+    @ObservationIgnored private var membershipCode: MembershipCode?
+    /// 当前有效会员卡的会员码。会员卡变化、暂停或退出登录后为 nil。
+    private(set) var activeMembershipCode: MembershipCode?
     private(set) var isLoadingCapabilities = false
     private(set) var capabilitiesError: String?
     private(set) var requiresEmailVerification = false
@@ -53,6 +58,9 @@ final class MembershipStore {
     /// The new address of a requested email change. The session shows the old
     /// address until both links are opened, so this stays in memory only.
     private(set) var pendingEmailChange: String?
+
+    /// 工作人员扫码校验会员码。退出登录或换账号时清空。
+    let verifier: MembershipVerifier
     let isConfigured: Bool
     let serviceURL: String
     let isTestEnvironment: Bool
@@ -65,9 +73,11 @@ final class MembershipStore {
         isTestEnvironment: Bool
     ) {
         self.configuration = configuration
-        self.api = MembershipAPI(configuration: configuration, transport: transport)
+        let api = MembershipAPI(configuration: configuration, transport: transport)
+        self.api = api
         self.tokenStore = tokenStore
         self.cacheStore = cacheStore
+        self.verifier = MembershipVerifier(api: api, tokenStore: tokenStore)
         self.isConfigured = configuration != nil
         self.serviceURL = configuration?.baseURL.absoluteString ?? ""
         self.isTestEnvironment = isTestEnvironment
@@ -246,6 +256,39 @@ final class MembershipStore {
             guard isCurrent(operation), self.card?.id == card.id, self.card?.isActive == true else { return nil }
             return data
         } catch { handle(error, action: .wallet, operation: operation); return nil }
+    }
+
+    /// 取得当前会员卡的会员码。已经取得的会员码在本次运行中继续有效，断网后也能显示。
+    @discardableResult
+    func prepareMembershipCode() async -> MembershipCode? {
+        if let activeMembershipCode { return activeMembershipCode }
+        guard capabilities?.membershipCode == true else {
+            errorMessage = String(localized: .Shared.membershipCodeNotConfigured)
+            return nil
+        }
+        guard let token = tokenStore.loadToken(), let card, card.isActive else {
+            errorMessage = String(localized: .Shared.membershipCodeNeedsActiveCard)
+            return nil
+        }
+        guard let operation = beginOperation() else { return nil }
+        defer { finishOperation(operation) }
+        do {
+            let code = try await api.membershipCode(membershipID: card.id, token: token)
+            guard isCurrent(operation), self.card?.id == card.id, self.card?.isActive == true else { return nil }
+            membershipCode = code
+            publishMembershipCode()
+            return activeMembershipCode
+        } catch { handle(error, action: .code, operation: operation); return nil }
+    }
+
+    /// 只在会员码属于当前有效会员卡时公开它。否则丢弃内存中的密钥。
+    private func publishMembershipCode() {
+        guard let code = membershipCode, let card, card.isActive, card.id == code.membershipID else {
+            membershipCode = nil
+            activeMembershipCode = nil
+            return
+        }
+        activeMembershipCode = code
     }
 
     private func completeAuthentication(token: String, operation: UUID, action: Action) async {
@@ -604,6 +647,7 @@ final class MembershipStore {
             guard isCurrent(operation) else { return }
             guard enrolledCard.userId == account.id else {
                 card = nil
+                publishMembershipCode()
                 lastSyncedAt = nil
                 try? cacheStore.delete()
                 errorMessage = String(localized: "会员数据校验失败，请重新登录后重试。")
@@ -681,6 +725,7 @@ final class MembershipStore {
             if account?.id != serverAccount.id {
                 clearPendingAccountDeletion()
                 card = nil
+                publishMembershipCode()
                 lastSyncedAt = nil
                 try? cacheStore.delete()
             }
@@ -689,6 +734,7 @@ final class MembershipStore {
 
             guard serverAccount.emailVerified else {
                 card = nil
+                publishMembershipCode()
                 lastSyncedAt = nil
                 try? cacheStore.delete()
                 errorMessage = String(localized: "邮箱尚未验证，请先完成验证。")
@@ -699,6 +745,7 @@ final class MembershipStore {
             guard isCurrent(operation) else { return false }
             guard serverCard?.userId == nil || serverCard?.userId == serverAccount.id else {
                 card = nil
+                publishMembershipCode()
                 lastSyncedAt = nil
                 try? cacheStore.delete()
                 errorMessage = String(localized: "会员数据校验失败，请重新登录后重试。")
@@ -706,6 +753,7 @@ final class MembershipStore {
             }
 
             card = serverCard
+            publishMembershipCode()
             lastSyncedAt = Date()
             requiresEmailVerification = false
             isOffline = false
@@ -817,13 +865,30 @@ final class MembershipStore {
                 return
             }
             if code == "WALLET_NOT_CONFIGURED" {
-                capabilities = MembershipCapabilities(appleSignIn: capabilities?.appleSignIn ?? false, walletPass: false)
+                capabilities = MembershipCapabilities(
+                    appleSignIn: capabilities?.appleSignIn ?? false,
+                    walletPass: false,
+                    membershipCode: capabilities?.membershipCode ?? false
+                )
                 errorMessage = String(localized: "Wallet 签发服务尚未配置。")
+                return
+            }
+            if code == "MEMBERSHIP_CODE_NOT_CONFIGURED" {
+                capabilities = MembershipCapabilities(
+                    appleSignIn: capabilities?.appleSignIn ?? false,
+                    walletPass: capabilities?.walletPass ?? false,
+                    membershipCode: false
+                )
+                errorMessage = String(localized: .Shared.membershipCodeNotConfigured)
                 return
             }
             if action == .confirmAccountDeletion, statusCode == 404 {
                 clearPendingAccountDeletion()
                 errorMessage = String(localized: "确认码无效或已过期，请重新发送注销确认邮件。")
+                return
+            }
+            if action == .code, code == "MEMBERSHIP_SUSPENDED" || code == "MEMBERSHIP_NOT_FOUND" {
+                errorMessage = String(localized: .Shared.membershipCodeCardChanged)
                 return
             }
         }
@@ -841,6 +906,7 @@ final class MembershipStore {
            code == "EMAIL_NOT_VERIFIED" {
             requiresEmailVerification = true
             card = nil
+            publishMembershipCode()
             lastSyncedAt = nil
             try? cacheStore.delete()
             errorMessage = String(localized: "邮箱尚未验证，请先完成验证。")
@@ -864,6 +930,7 @@ final class MembershipStore {
 
         if case .server(let statusCode, _) = apiError, statusCode == 403 {
             card = nil
+            publishMembershipCode()
             lastSyncedAt = nil
             try? cacheStore.delete()
             errorMessage = String(localized: "当前账户没有执行此操作的权限。")
@@ -907,6 +974,9 @@ final class MembershipStore {
         pendingEmailChange = nil
         account = nil
         card = nil
+        membershipCode = nil
+        activeMembershipCode = nil
+        verifier.reset()
         authSession = nil
         lastSyncedAt = nil
         requiresEmailVerification = false
@@ -969,6 +1039,8 @@ final class MembershipStore {
             return String(localized: "无法连接会员服务，Apple 登录未完成。")
         case .wallet:
             return String(localized: "无法连接会员服务，暂时无法取得钱包凭证。")
+        case .code:
+            return String(localized: .Shared.membershipCodeNetwork)
         case .security:
             return String(localized: "无法连接认证服务，暂时无法确认会话。")
         case .changePassword:
@@ -1002,6 +1074,8 @@ final class MembershipStore {
             return String(localized: "Apple 登录失败。若已有邮箱账号，请先使用原方式登录。")
         case .wallet:
             return String(localized: "钱包凭证获取失败，签发服务可能尚未配置。")
+        case .code:
+            return String(localized: .Shared.membershipCodeFailed)
         case .security:
             return String(localized: "无法确认当前登录会话，请刷新后重试。")
         case .changePassword:

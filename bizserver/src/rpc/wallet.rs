@@ -8,7 +8,7 @@ use super::{
     BusinessService,
     error::{self, resource_type},
     membership::map_error,
-    names,
+    membership_code, names,
 };
 use crate::{
     domain::membership::{self, MembershipStatus},
@@ -19,6 +19,7 @@ use connectrpc::{
     ConnectError, ErrorCode, RequestContext, Response, ServiceRequest, ServiceResult,
 };
 use p::ErrorReason;
+use uuid::Uuid;
 
 const PASS_FORM: &str = "users/{user}/memberships/{membership}/pass";
 
@@ -58,6 +59,15 @@ impl p::WalletService for BusinessService {
             .as_deref()
             .filter(|signer| signer.is_current(chrono::Utc::now()))
             .ok_or_else(not_configured)?;
+        let code = self
+            .membership_codes
+            .as_deref()
+            .map(|codes| {
+                let id = Uuid::parse_str(&card.id)
+                    .map_err(|_| error::internal("membership_id_invalid"))?;
+                codes.static_value(id).map_err(membership_code::failed)
+            })
+            .transpose()?;
         let content = signer
             .sign(&MembershipCard {
                 membership_id: &card.id,
@@ -68,6 +78,7 @@ impl p::WalletService for BusinessService {
                 status: CardStatus::Active,
                 // Reserved: the pass does not read organization affiliations yet.
                 organizations: &[],
+                code: code.as_deref(),
             })
             .map_err(|failure| {
                 tracing::error!(event = "wallet_signing_failed", error = %failure);

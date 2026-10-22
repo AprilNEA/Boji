@@ -16,7 +16,7 @@ This directory holds the native iOS app, its watchOS app and its widgets. The pr
 | `Shared/Shared.xcstrings` | Generated String Catalog of the copy that Android also shows. All three targets bundle it |
 | `BojiTests/` | Unit tests |
 | `BojiUITests/` | UI tests |
-| `BojiAPI/` | Local Swift package with the generated messages and Connect clients of the `boji.v1` API |
+| `BojiAPI/` | Local Swift package with the generated messages and Connect clients of the `boji.v1` API and of `boji.admin.v1.MembershipCodeService` |
 | `docs/` | Design notes, integration notes and verification records |
 | `app-store/` | Public App Store copy, pinned asc tooling and offline checks |
 | `app-store/screenshots/` | Local-only screenshot editor and source captures; see its `AGENTS.md` |
@@ -114,8 +114,8 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - Exclude all of `Boji/DebugSupport/**` from XcodeGen source discovery. The Debug build script copies its fixtures; Release must not contain `RemoteAnimationFixtures`.
 - Set `BOJI_ANIMATION_FIXTURE_DIR` inside the app only for Debug. Release uses `DERIVED_FILE_DIR`, because Xcode creates script output parents before running the script.
 - Keep generated project identifiers deterministic. `ci/check.py source` rejects `TEMP_` identifiers; do not bypass the generated-project diff check.
-- Do not edit `BojiAPI/Sources/BojiAPI/Generated/`. `buf generate` in `BojiAPI/` writes it from `../bizserver/proto/boji/v1/`. Follow "API contract" in the root `AGENTS.md` for the version rules.
-- The `Boji` target links `BojiAPI` as a local package in `project.yml`. The widgets and the watch app do not. `Models/MembershipRPC.swift` calls `SystemService`, `MembershipService` and `WalletService` through `MembershipTransport`, so Connect calls share the cookie-free session, the redirect blocker and the test transports with the Better Auth calls. Keep account calls on `/api/auth/*` in `Models/BetterAuthClient.swift`.
+- Do not edit `BojiAPI/Sources/BojiAPI/Generated/`. `buf generate` in `BojiAPI/` writes it from `../bizserver/proto/boji/v1/` and `../bizserver/proto/boji/admin/v1/membership_code_service.proto`. Do not add other `boji.admin.v1` files. Follow "API contract" in the root `AGENTS.md` for the version rules.
+- The `Boji` target links `BojiAPI` as a local package in `project.yml`. The widgets and the watch app do not. `Models/MembershipRPC.swift` calls `SystemService`, `MembershipService`, `MembershipCodeService` and `WalletService` through `MembershipTransport`, so Connect calls share the cookie-free session, the redirect blocker and the test transports with the Better Auth calls. Keep account calls on `/api/auth/*` in `Models/BetterAuthClient.swift`.
 - Test targets do not import `BojiAPI`. Build Connect responses and read Connect requests with `MembershipRPCFixtures` in `Models/MembershipRPCFixtures.swift`, which compiles only in Debug. The UI test transport uses the same fixtures.
 
 ### Shared copy
@@ -163,6 +163,8 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - Account deletion uses the native `POST /api/auth/delete-user` email-code flow. Keep sending a code separate from confirming deletion.
 - Bind pending deletion to the current account and session. Clear it on cancellation or identity changes, and never retry deletion automatically.
 - Clear account credentials and membership caches only after confirmed deletion. Keep local fitness records separate, and never persist or log deletion codes.
+- `MembershipStore` keeps the TOTP parameters of `MembershipCode` in memory only. Do not store them in the Keychain, the card cache, logs, Sentry or share images. The store drops them on sign-out, when the card changes and when the card is no longer active. Show the member code button only when `MembershipCapabilities.membershipCode` is true or the store already holds a code for the active card.
+- `Models/MembershipVerifier.swift` is the staff scanner model. It asks Better Auth `admin/has-permission` for `membership.read` and calls `boji.admin.v1.MembershipCodeService`. The answer only shows or hides the scan button in the member center; the server checks the permission again on every scan. The verifier keeps the permission and the result in memory and clears them when the account changes. `Views/MembershipScannerView.swift` reads QR codes on the device with VisionKit `DataScannerViewController` and sends only the decoded text. Do not capture, save or upload camera images. When the device has no scanner or camera access is denied, staff use manual entry. `NSCameraUsageDescription` in `Info.plist` and `Boji/Resources/InfoPlist.xcstrings` explains the camera use in both languages.
 - A Release build must use an HTTPS `BOJI_API_BASE_URL`. If the value is not set, keep online membership features disabled.
 - Keep `BOJI_API_BASE_URL` empty in `project.yml`, so that Debug builds connect to `http://localhost:3000`. TestFlight builds read it from the `ios-testflight` environment variable through `ci/signing.py`. To test against the production service `https://api.leanmuscle.club`, pass `BOJI_API_BASE_URL=https://api.leanmuscle.club` to `xcodebuild` or change it locally. Do not commit the production URL.
 - Show HealthKit samples in memory only. Do not save them, upload them or let them overwrite manual records.

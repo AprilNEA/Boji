@@ -61,10 +61,9 @@ pub fn router(
             ]
             .map(axum::http::HeaderName::from_static),
         );
-    let wallet_service = capabilities
-        .wallet
-        .clone()
-        .map(|signer| wallet::web::router(db.clone(), signer));
+    let wallet_service = capabilities.wallet.clone().map(|signer| {
+        wallet::web::router(db.clone(), signer, capabilities.membership_codes.clone())
+    });
     let connect = rpc::router(db.clone(), auth.clone(), capabilities)
         .into_axum_service()
         .with_limits(

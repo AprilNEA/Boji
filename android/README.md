@@ -15,6 +15,8 @@ Boji 的原生 Android 客户端，使用 Kotlin 和 Jetpack Compose。Android �
 - 账号：邮箱注册、登录、重发验证邮件、密码重置邮件、修改密码、退出其他会话和删除账号。登录后可以用 Credential Manager 保存密码。构建和服务端都开启时，可以用 Google 账号登录。
 - 会员卡：昵称、三条共识和核对三步领取免费会员卡；显示服务端返回的会员状态、加入日期和权益；离线时显示上次同步的副本。
 - 会员卡分享：选择三种配色之一生成图片，默认隐藏卡号，通过系统分享面板发送。
+- 会员码：服务端开启会员码后，有效会员卡可以出示动态二维码，每 30 秒更新一次。App 在本机计算，TOTP 参数只保存在内存中。
+- 扫码校验：账号拥有 `membership.read` 运营权限时，会员中心显示扫码入口。扫码结果显示会员卡号、昵称、会员卡状态和会员码来源。没有相机时可以手动输入。
 - 健康数据：通过 Health Connect 只读查询近 30 天的体重和睡眠，与手动记录分开显示。连接后，今天页和足迹页显示摘要卡片。
 - 主屏幕小组件：开启「共享当天打卡状态」后，显示今天的训练、饮水、睡眠是否已记录。点按小组件打开今天页，宽布局中的训练磁贴打开训练页。
 - Wear OS 手表：开启同一开关后，手表显示今天的三项打卡状态、计划名称和同步时间。手机经 Wear OS Data Layer 发送数据，手表不联网。
@@ -125,7 +127,7 @@ AGP 9.4.1 的内置 Kotlin 默认依赖 KGP 2.2.10。根目录的 `build.gradle.
 | `core/di/` | Hilt 模块：协程作用域、数据文件、账户文件、网络和系统服务 |
 | `core/network/` | 服务地址校验 `ServerEndpoint`、Better Auth 客户端、会员 RPC 客户端和错误类型 |
 | `core/auth/` | Keystore 加密器、加密的 JSON 序列化器和会话存储 |
-| `core/membership/` | 会员卡模型、领卡规则、会员卡缓存和 `MembershipRepository`。账户规则与 iOS 的 `MembershipStore` 一致 |
+| `core/membership/` | 会员卡模型、领卡规则、会员卡缓存、`MembershipRepository` 和扫码校验 `MembershipVerifier`。账户规则与 iOS 的 `MembershipStore` 一致 |
 | `core/health/` | Health Connect 数据源、样本模型、连接开关和 `HealthRepository`。查询规则与 iOS 的 `HealthDataStore` 一致 |
 | `core/companion/` | 共享开关 `CompanionSettings`、今日打卡状态 `DailyStatus`、小组件状态、`boji://` 路由 `CompanionRoute`、手表同步 `WearCompanionSync`、Data Layer 封装 `WatchLink` 和回答手表请求的 `CompanionWearService`。规则与 iOS 的 `CompanionSnapshot.swift` 和 `CompanionSharingStore.swift` 一致 |
 | `feature/` | 各页面：`onboarding`、`today`、`entry`（记录弹层）、`training`（含 `session`）、`progress`、`club`、`membership`、`health`、`settings`、`widget`（主屏幕小组件） |
@@ -139,7 +141,7 @@ AGP 9.4.1 的内置 Kotlin 默认依赖 KGP 2.2.10。根目录的 `build.gradle.
 
 | 目录 | 类型 | 覆盖范围 |
 | --- | --- | --- |
-| `app/src/test/` | 单元测试 | `BojiStore`、训练状态机、导航目的地、动作动画资源、身体趋势图数据、服务地址校验、领卡规则、会员卡模型、加密序列化器、`MembershipRepository`、健康样本规则、`HealthRepository`、小组件状态、路由解析、手表同步 `WearCompanionSync` |
+| `app/src/test/` | 单元测试 | `BojiStore`、训练状态机、导航目的地、动作动画资源、身体趋势图数据、服务地址校验、领卡规则、会员卡模型、加密序列化器、`MembershipRepository`、会员码 TOTP、扫码校验 `MembershipVerifier`、健康样本规则、`HealthRepository`、小组件状态、路由解析、手表同步 `WearCompanionSync` |
 | `app/src/androidTest/` | 界面测试 | 引导、标签切换、记录、训练、动作动画、身体趋势图、挑战、数据删除、会员中心、Keystore 加密、健康数据页面、Health Connect 的清单声明、小组件内容、共享开关、小组件路由、手表连接状态 |
 | `shared/src/test/` | 单元测试 | 用 iOS 格式的 JSON 测试快照契约 |
 | `wear/src/test/` | 单元测试 | 手表的 `WatchCompanionRepository` |
@@ -408,6 +410,7 @@ Credential Manager 对密码只是强烈建议声明 Digital Asset Links，对�
 - **固定品牌色**：未启用 Android 12 的动态取色，以保持与 iOS 版一致。
 - **不锁定竖屏**：iOS 版在 iPhone 上只支持竖屏。Android 16 起，target 36 及以上的应用在最小宽度不小于 600dp 的屏幕上，方向和尺寸限制不再生效。target 37 时无法再退出该行为，因此界面适配横屏和大屏。内容区最大宽度为 680dp，在宽屏上居中。
 - **申请网络权限**：会员服务和 Sentry 崩溃上报需要 `INTERNET` 权限。没有会员服务地址时，应用不发出会员请求；没有 DSN 时，Sentry 不发出网络请求。
+- **申请相机权限**：只有工作人员打开扫码校验时，应用才申请 `CAMERA` 权限。CameraX 只开启图像分析，ZXing 在本机识别二维码，应用只把识别出的文本发给会员服务，不拍照、不保存也不上传画面。清单把相机声明为可选硬件，没有相机的设备仍能安装，并使用手动输入。
 - **界面语言**：应用有简体中文和英文，英文是回退语言。Material 组件自带的无障碍文字（例如底部弹层的「Close sheet」）跟随系统语言。
 
 ## 尚未移植的功能

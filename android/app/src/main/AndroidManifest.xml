@@ -13,6 +13,14 @@
     <uses-permission android:name="android.permission.health.READ_WEIGHT" />
     <uses-permission android:name="android.permission.health.READ_SLEEP" />
 
+    <!--
+        Staff with the verify permission scan member codes with the camera. The app asks for it only
+        when the scanner opens, and the frames stay on the device. A device without a camera can still
+        install the app, and staff type the code instead.
+    -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera.any" android:required="false" />
+
     <queries>
         <!-- Android 11-13: getSdkStatus can find the Health Connect app only when it is visible. -->
         <package android:name="com.google.android.apps.healthdata" />

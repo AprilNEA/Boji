@@ -23,6 +23,7 @@
 | `boji/v1/membership_service.proto` | 会员本人的 `MembershipService` | 已注册 |
 | `boji/v1/activity_service.proto` | `ActivityService`、资源 `Activity` 与 `SyncState` | 已注册 |
 | `boji/v1/wallet_service.proto` | `WalletService` 与资源 `MembershipPass` | 已注册 |
+| `boji/v1/membership_code_service.proto` | `MembershipCodeService` 与资源 `MembershipCode` | 已注册 |
 | `boji/v1/organization.proto` | 资源 `Organization`、`OrganizationStanding` 与枚举 `OrganizationType`，两个包共用 | 已使用 |
 | `boji/v1/organization_service.proto` | 公开的 `OrganizationService` | 已注册 |
 | `boji/v1/affiliation.proto` | 资源 `Affiliation` 与 `AffiliationEmailVerification`，两个包共用 | 已使用 |
@@ -56,7 +57,7 @@ Authorization: Bearer <signed-session-token>
 
 业务接口只接受已验证邮箱的有效会话。客户端必须使用登录响应的 `set-auth-token`。服务不接受原始会话 token 或仅 Cookie 的业务请求。
 
-`SystemService/GetServerConfig` 和 `boji.v1.OrganizationService` 的方法不要求登录。`GetServerConfig` 的请求为 `{"name":"serverConfig"}`。服务设置全部 `APPLE_*` 变量后，`appleLoginEnabled` 为 `true`。服务设置 `GOOGLE_CLIENT_ID` 后，`googleLoginEnabled` 为 `true`。服务配置了 Wallet 签名材料，并且签名证书和 WWDR 证书都在有效期内时，`walletPassEnabled` 为 `true`。`activitySyncEnabled` 为 `true`。服务设置了 `AFFILIATION_EMAIL_HMAC_KEY` 时，`organizationRankingEnabled` 为 `true`。
+`SystemService/GetServerConfig` 和 `boji.v1.OrganizationService` 的方法不要求登录。`GetServerConfig` 的请求为 `{"name":"serverConfig"}`。服务设置全部 `APPLE_*` 变量后，`appleLoginEnabled` 为 `true`。服务设置 `GOOGLE_CLIENT_ID` 后，`googleLoginEnabled` 为 `true`。服务配置了 Wallet 签名材料，并且签名证书和 WWDR 证书都在有效期内时，`walletPassEnabled` 为 `true`。`activitySyncEnabled` 为 `true`。服务设置了 `AFFILIATION_EMAIL_HMAC_KEY` 时，`organizationRankingEnabled` 为 `true`。服务设置了 `MEMBERSHIP_CODE_KEY` 时，`membershipCodeEnabled` 为 `true`。
 
 ## 资源名
 
@@ -67,6 +68,7 @@ Authorization: Bearer <signed-session-token>
 | `ServerConfig` | `serverConfig` |
 | `Membership` | `users/{user}/memberships/{membership}` |
 | `MembershipPass` | `users/{user}/memberships/{membership}/pass` |
+| `MembershipCode` | `users/{user}/memberships/{membership}/code` |
 | `SyncState` | `users/{user}/syncState` |
 | `Activity` | `users/{user}/activities/{activity}` |
 | `Organization` | `organizations/{organization}` |
@@ -96,6 +98,7 @@ Authorization: Bearer <signed-session-token>
 | `boji.v1.ActivityService` | `SyncActivities` | 增量拉取变更，包括删除 |
 | `boji.v1.ActivityService` | `SummarizeActivities` | 读取日期范围内的每日汇总 |
 | `boji.v1.WalletService` | `GetMembershipPass` | 下载 Apple Wallet 会员卡 |
+| `boji.v1.MembershipCodeService` | `GetMembershipCode` | 读取本人会员卡的会员码 |
 | `boji.v1.OrganizationService` | `ListOrganizations` | 按类型、名称、域名或地区查找组织 |
 | `boji.v1.OrganizationService` | `GetOrganization` | 读取一个组织 |
 | `boji.v1.OrganizationService` | `ListOrganizationStandings` | 按名次分页列出一种类型的公开排名，或读取一个组织的排名 |
@@ -260,9 +263,9 @@ Connect JSON 中的详情是 base64 编码的 protobuf。会员卡不存在时�
 
 ### 访问控制
 
-每个方法都要求已验证邮箱的签名 Bearer 会话。会话必须创建于 15 分钟内。调用者的 Better Auth 角色必须拥有方法对应的权限。服务端先检查会话和权限，再检查邮箱与会话时效。所有检查通过后，服务端才读取业务输入。因此，无权限的调用者无法探测目标是否存在。
+每个方法都要求已验证邮箱的签名 Bearer 会话。会话必须创建于 15 分钟内。唯一的例外是 `MembershipCodeService/VerifyMembershipCode`，它接受 12 小时内创建的会话，见[扫码校验](#扫码校验)。调用者的 Better Auth 角色必须拥有方法对应的权限。服务端先检查会话和权限，再检查邮箱与会话时效。所有检查通过后，服务端才读取业务输入。因此，无权限的调用者无法探测目标是否存在。
 
-运营接口拒绝封禁账号和冒充其他用户的会话，统一返回 `ADMIN_FORBIDDEN`。角色检查使用 Better Auth 的权威会话读取，不能通过客户端声明角色绕过。会话超过 15 分钟时，服务端返回 `FRESH_SESSION_REQUIRED`。
+运营接口拒绝封禁账号和冒充其他用户的会话，统一返回 `ADMIN_FORBIDDEN`。角色检查使用 Better Auth 的权威会话读取，不能通过客户端声明角色绕过。会话超过方法允许的时长时，服务端返回 `FRESH_SESSION_REQUIRED`。
 
 | 服务 | 方法 | 权限 |
 | --- | --- | --- |
@@ -272,6 +275,7 @@ Connect JSON 中的详情是 base64 编码的 protobuf。会员卡不存在时�
 | `MembershipService` | `SuspendMembership`、`ResumeMembership` | `membership.update` |
 | `MembershipService` | `GrantEntitlement` | `entitlement.grant` |
 | `MembershipService` | `RevokeEntitlementGrant` | `entitlement.revoke` |
+| `MembershipCodeService` | `VerifyMembershipCode` | `membership.read` |
 | `OrganizationService` | `GetAffiliation`、`ListAffiliations` | `organization.read` |
 | `OrganizationService` | `RevokeAffiliation`、`FreezeOrganizationStanding`、`UnfreezeOrganizationStanding` | `organization.update` |
 
@@ -346,7 +350,7 @@ Connect JSON 中的详情是 base64 编码的 protobuf。会员卡不存在时�
 
 响应设置 `Cache-Control: no-store`。卡片使用 `generic` 样式，`serialNumber` 等于会员卡 ID，并且禁止通过 Wallet 分享。重复下载使用同一序列号，签名时间可以不同。
 
-卡面显示会员卡号、卡面昵称和入会日期。会员卡有到期时间时，卡面还显示有效期。卡片背面注明会员状态以 App 为准，并说明本卡不是付款或核销凭证。卡片不包含邮箱、用户 ID、会话令牌、条码或健康数据。卡面文案有中文和英文，钱包按设备语言显示。
+卡面显示会员卡号、卡面昵称和入会日期。会员卡有到期时间时，卡面还显示有效期。服务设置了 `MEMBERSHIP_CODE_KEY` 时，卡面底部还有一个二维码，内容是这张卡的静态会员码，见[会员码接口](#会员码接口)。卡片背面注明会员状态以 App 为准，并说明本卡不是付款或核销凭证。有二维码时，背面的使用说明改为「工作人员可以扫描二维码，确认你的会员身份」。卡片不包含邮箱、用户 ID、会话令牌或健康数据。卡面文案有中文和英文，钱包按设备语言显示。
 
 卡片带有 `webServiceURL` 和 `authenticationToken`。钱包通过 `/wallet/v1/*` 的更新服务登记设备和取回新卡。这组接口是 Apple 规定的 HTTP 接口，不属于 ConnectRPC，详见 [README](../README.md) 的「通行证更新服务」。会员卡暂停后，更新服务返回已失效的卡片；恢复后返回有效的卡片。
 
@@ -362,6 +366,69 @@ Wallet 错误使用与其他方法相同的 `ErrorInfo`。服务端完成会话�
 | `unavailable` | `WALLET_SIGNING_FAILED` | 稍后可以重试 |
 
 客户端收到其他 `reason` 时，按错误码处理。
+
+## 会员码接口
+
+会员码是会员卡上的二维码，供有校验权限的工作人员扫码确认会员身份。会员码有两种：
+
+| 类型 | 出现位置 | 内容 | 有效期 |
+| --- | --- | --- | --- |
+| 静态码 | Apple Wallet 会员卡 | 固定值，只取决于会员卡和服务端密钥 | 到服务端更换密钥为止 |
+| 动态码 | App 内的会员卡 | 固定前缀加上 RFC 6238 TOTP 值，App 每 30 秒算出一个新值 | 所在时间步及前后各一步，共约 90 秒 |
+
+Apple Wallet 的条码只能随整张卡片更新，不能按时间轮换，所以钱包卡只放静态码。动态码在 App 内计算，截图转发后很快失效。两种码都不包含会员卡号、昵称、邮箱或用户 ID。
+
+客户端必须先检查 `membershipCodeEnabled`，再显示会员码。`boji.v1.MembershipCodeService/GetMembershipCode` 返回会员本人一张卡的会员码，请求为 `{"name":"users/me/memberships/<id>/code"}`。响应是资源 `MembershipCode`：
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `name` | `string` | 会员码的资源名 |
+| `staticValue` | `string` | 静态码，只含大写字母、数字、`.` 和 `-`，二维码可以使用字母数字模式 |
+| `dynamicValuePrefix` | `string` | 动态码中 TOTP 数字之前的固定部分 |
+| `totp.secret` | `bytes` | TOTP 共享密钥，20 字节 |
+| `totp.digits` | `int32` | TOTP 值的位数，当前为 8 |
+| `totp.period` | `Duration` | 时间步长，当前为 `"30s"` |
+
+动态码等于 `dynamicValuePrefix` 加上 `totp.digits` 位十进制数字，位数不足时补前导零。TOTP 使用 HMAC-SHA1，时间步从 Unix 纪元开始计数。客户端把这些字段当作不透明值，不解析前缀和静态码的格式。
+
+`totp.secret` 是凭据。客户端只能把它保存在内存、Keychain 或加密存储中，不能备份，也不能写入日志。当前的 iOS 和 Android App 只把它保存在内存中。响应设置 `Cache-Control: no-store`。会员码的值只取决于会员卡和服务端密钥，所以重复请求返回相同的值。服务端更换 `MEMBERSHIP_CODE_KEY` 后，已签发的静态码和动态码全部失效，客户端需要重新读取会员码，钱包卡也需要重新下载。
+
+`GetMembershipCode` 在会话和邮箱检查后，按下表顺序检查：
+
+| Connect 错误码 | `reason` | 客户端处理 |
+| --- | --- | --- |
+| `not_found` | `MEMBERSHIP_NOT_FOUND` | 引导用户领卡 |
+| `failed_precondition` | `MEMBERSHIP_SUSPENDED` | 刷新会员卡，删除已保存的 TOTP 密钥，不重试 |
+| `failed_precondition` | `MEMBERSHIP_CODE_NOT_CONFIGURED` | 隐藏会员码，稍后重新读取 `ServerConfig`，不自动重试 |
+
+### 扫码校验
+
+`boji.admin.v1.MembershipCodeService/VerifyMembershipCode` 供工作人员校验扫到或手动输入的会员码。它是运营方法，要求 `membership.read` 权限，并遵循[访问控制](#访问控制)的其他规则。因为它只读取一张会员卡且不修改数据，所以接受 12 小时内创建的会话，前台工作人员每个工作日登录一次即可。服务端在读取会员码之前完成授权检查，因此无权限的调用者不能借此试探会员码。这个方法不写审计事件。
+
+请求只有一个字段：`{"code":"<扫到的文本>"}`。服务端忽略首尾空白，不区分大小写。超过 256 字节的值直接视为无效。响应如下：
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `membership` | `boji.v1.Membership` | 会员码对应的会员卡，与运营查询的 `MEMBERSHIP_VIEW_BASIC` 视图相同，`entitlements` 为空 |
+| `codeKind` | `MembershipCodeKind` | `MEMBERSHIP_CODE_KIND_STATIC` 表示钱包会员卡的静态码，`MEMBERSHIP_CODE_KIND_DYNAMIC` 表示 App 的动态码 |
+
+暂停或过期的会员卡也会正常返回，客户端根据 `state` 和 `expireTime` 显示状态。静态码可能是截图，客户端应该提示工作人员核对本人。动态码在所在时间步及前后各一步内有效。比这个窗口早 10 个时间步（5 分钟）以内的值返回已过期，更早的值和格式错误的值都返回无效。
+
+授权检查失败时，客户端按以下方式处理：
+
+- `unauthenticated`，或 `permission_denied` 加 `FRESH_SESSION_REQUIRED`：提示工作人员退出后重新登录。
+- 其他 `permission_denied`：提示没有校验权限，并隐藏扫码入口。
+
+授权检查通过后，`VerifyMembershipCode` 按下表顺序检查：
+
+| Connect 错误码 | `reason` | 客户端处理 |
+| --- | --- | --- |
+| `failed_precondition` | `MEMBERSHIP_CODE_NOT_CONFIGURED` | 提示服务未开启会员码 |
+| `invalid_argument` | `MEMBERSHIP_CODE_INVALID` | 提示这不是有效的会员码 |
+| `failed_precondition` | `MEMBERSHIP_CODE_EXPIRED` | 提示会员刷新后重新出示 |
+| `not_found` | `MEMBERSHIP_NOT_FOUND` | 提示会员卡已不存在 |
+
+客户端可以先调用 Better Auth 的 `POST /api/auth/admin/has-permission`，请求体为 `{"permissions":{"membership":["read"]}}`，以决定是否显示扫码入口。这个结果只用于界面，服务端每次校验时都重新检查权限。
 
 ## 组织排名接口
 

@@ -26,11 +26,13 @@ public interface WalletServiceClientInterface {
    *  card name, so repeated downloads keep the serial number. The signature
    *  time can differ between downloads.
    *
-   *  The pass face shows the holder name, the member number and the
-   *  enrollment date. The back states that the app shows the current state of
-   *  the card, and that the pass is not a payment or redemption credential.
-   *  The pass contains no email address, user ID, session token, barcode or
-   *  health data. A saved pass does not update or disappear after suspension.
+   *  The pass face shows the card nickname, the member number and the
+   *  enrollment date. When `ServerConfig.membership_code_enabled` is true, it
+   *  also shows a QR code with `MembershipCode.static_value`. The back states
+   *  that the app shows the current state of the card, and that the pass is not
+   *  a payment credential. The pass contains no email address, user ID or
+   *  health data. Wallet updates a saved pass through the Wallet web service:
+   *  after suspension, the saved pass becomes void.
    *
    *  The server checks these conditions in this order after authentication:
    *  - `NOT_FOUND` `MEMBERSHIP_NOT_FOUND`: the user has no card with this ID.

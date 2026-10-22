@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package boji.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/duration.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "MembershipCodeServiceProto";
+option java_package = "club.leanmuscle.boji.v1";
+
+// Serves the membership code of a card to its holder.
+//
+// Staff scan a membership code to check a card. A code has two forms:
+// - The static code is the QR code on the Apple Wallet pass. It does not
+//   change.
+// - The dynamic code is the QR code in the app. The app computes a new value
+//   for each TOTP step from `MembershipCode.totp`. A dynamic value is valid
+//   from one step before to one step after the step of its time.
+//
+// `ServerConfig.membership_code_enabled` is true when the server can issue and
+// check membership codes. Clients must read it before they show a code.
+//
+// Every method requires a signed Bearer session for a verified email address.
+// The `{user}` segment must be `me` or the user ID of the caller.
+service MembershipCodeService {
+  option (google.api.default_host) = "boji.leanmuscle.club";
+
+  // Returns the code of one card.
+  //
+  // The values depend only on the card and a server key, so repeated calls
+  // return the same values until the server key changes. A new server key
+  // invalidates every static and dynamic value. Clients should fetch the code
+  // again when a scan reports `MEMBERSHIP_CODE_INVALID`.
+  //
+  // The server checks these conditions in this order after authentication:
+  // - `NOT_FOUND` `MEMBERSHIP_NOT_FOUND`: the user has no card with this ID.
+  //   Offer enrollment.
+  // - `FAILED_PRECONDITION` `MEMBERSHIP_SUSPENDED`: the card is not active.
+  //   Refresh the card, and delete a stored TOTP secret. Do not retry.
+  // - `FAILED_PRECONDITION` `MEMBERSHIP_CODE_NOT_CONFIGURED`: the server has
+  //   no membership code key. Hide the code, and read `ServerConfig` again
+  //   later. Do not retry automatically.
+  rpc GetMembershipCode(GetMembershipCodeRequest) returns (MembershipCode) {
+    option (google.api.http) = {get: "/v1/{name=users/*/memberships/*/code}"};
+    option (google.api.method_signature) = "name";
+  }
+}
+
+// The membership code of one card. It is a singleton child of `Membership`.
+message MembershipCode {
+  option (google.api.resource) = {
+    type: "boji.leanmuscle.club/MembershipCode"
+    pattern: "users/{user}/memberships/{membership}/code"
+    singular: "membershipCode"
+    plural: "membershipCodes"
+  };
+
+  // Identifier. The resource name, for example
+  // `users/u1/memberships/m1/code`.
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // Output only. The static code, the message of the QR code on the Wallet
+  // pass. It contains only uppercase ASCII letters, digits, `.` and `-`, so a
+  // QR code can use the alphanumeric mode. Treat the value as opaque.
+  string static_value = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The text before the digits of a dynamic value. A dynamic
+  // value is this prefix followed by the TOTP value with exactly
+  // `totp.digits` decimal digits, including leading zeros. Treat the prefix as
+  // opaque.
+  string dynamic_value_prefix = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The parameters of the dynamic value.
+  Totp totp = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// The RFC 6238 parameters of a dynamic membership code. The algorithm is
+// HMAC-SHA1, and the steps count from the Unix epoch.
+message Totp {
+  // Output only. The shared secret, 20 bytes. It is a credential: store it
+  // only in the keychain or in encrypted app storage, exclude it from
+  // backups, and never log it.
+  bytes secret = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The number of decimal digits of a value. The current value
+  // is 8.
+  int32 digits = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The length of one step. The current value is 30 seconds.
+  google.protobuf.Duration period = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// Request message for `MembershipCodeService.GetMembershipCode`.
+message GetMembershipCodeRequest {
+  // Required. The name of the code, for example
+  // `users/me/memberships/m1/code`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "boji.leanmuscle.club/MembershipCode"
+  ];
+}

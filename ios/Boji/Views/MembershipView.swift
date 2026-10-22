@@ -35,7 +35,14 @@ struct MembershipCenterView: View {
     @State private var showSecurity = false
     @State private var confirmSignOut = false
     @State private var showShare = false
+    @State private var showCode = false
+    @State private var showScanner = false
     @State private var copiedNumber = false
+
+    /// 账号或会员码服务变化时，重新查询扫码权限。
+    private var scanPermissionKey: String {
+        "\(membership.account?.id ?? "")|\(membership.capabilities?.membershipCode == true)"
+    }
 
     var body: some View {
         NavigationStack {
@@ -50,6 +57,13 @@ struct MembershipCenterView: View {
                     }
                 } else {
                     unissuedContent
+                }
+                if membership.verifier.canVerify {
+                    // 工作人员入口。权限来自运营角色，与本人有没有会员卡无关。
+                    CardButton(title: String(localized: .Shared.membershipScanOpen), symbol: "qrcode.viewfinder") {
+                        showScanner = true
+                    }
+                    .accessibilityIdentifier("membership-scan")
                 }
                 MembershipMessages()
                 if membership.isBusy { ProgressView("正在连接俱乐部…").frame(maxWidth: .infinity) }
@@ -74,6 +88,10 @@ struct MembershipCenterView: View {
                 if membership.account != nil { await membership.refresh() }
                 else { await membership.restore() }
                 await membership.loadCapabilities()
+                await membership.verifier.refreshPermission(serviceEnabled: membership.capabilities?.membershipCode == true)
+            }
+            .task(id: scanPermissionKey) {
+                await membership.verifier.refreshPermission(serviceEnabled: membership.capabilities?.membershipCode == true)
             }
             .sheet(isPresented: $showAuthentication) { MembershipAuthenticationView() }
             .sheet(isPresented: $showEnrollment) { MembershipEnrollmentView() }
@@ -82,7 +100,11 @@ struct MembershipCenterView: View {
             .sheet(isPresented: $showShare) {
                 if let card = membership.card { MembershipSharingView(cardID: card.id) }
             }
-            .onChange(of: membership.account?.id) { _, _ in copiedNumber = false; showShare = false }
+            .sheet(isPresented: $showCode) { MembershipCodeView() }
+            .sheet(isPresented: $showScanner) { MembershipScannerView() }
+            .onChange(of: membership.account?.id) { _, _ in
+                copiedNumber = false; showShare = false; showCode = false; showScanner = false
+            }
             .onChange(of: membership.card?.memberNumber) { _, _ in copiedNumber = false }
             .confirmationDialog("退出此账号？", isPresented: $confirmSignOut, titleVisibility: .visible) {
                 Button("退出账号", role: .destructive) { Task { await membership.signOut() } }
@@ -168,6 +190,10 @@ struct MembershipCenterView: View {
             }
             if condition == .active || condition == .offline {
                 VStack(alignment: .leading, spacing: 12) {
+                    if membership.capabilities?.membershipCode == true || membership.activeMembershipCode != nil {
+                        CardButton(title: String(localized: .Shared.membershipCodeShow), symbol: "qrcode") { showCode = true }
+                            .accessibilityIdentifier("membership-code").disabled(membership.isBusy)
+                    }
                     CardButton(title: String(localized: "制作会员分享卡"), symbol: "square.and.arrow.up") { showShare = true }
                         .accessibilityIdentifier("membership-share").disabled(membership.isBusy)
                     MembershipWalletView()

@@ -145,6 +145,12 @@ dependencies {
     implementation(libs.lottie.compose)
     implementation(libs.vico.compose)
     implementation(libs.vico.compose.m3)
+    // Encodes the member code QR code and decodes the frames of the staff scanner on the device.
+    implementation(libs.zxing.core)
+    // The camera preview and frames of the staff scanner. Frames stay on the device.
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
     // Reads weight and sleep from Health Connect. Read-only, like the iOS HealthKit integration.
     implementation(libs.androidx.health.connect.client)
     // The home screen widget, like the iOS WidgetKit widget. Glance has its own composables.

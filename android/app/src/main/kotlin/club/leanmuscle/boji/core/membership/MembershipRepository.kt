@@ -61,6 +61,19 @@ class MembershipRepository @Inject constructor(
     private val mutableBusy = MutableStateFlow(false)
     val busy: StateFlow<Boolean> = mutableBusy.asStateFlow()
 
+    private val storedCode = MutableStateFlow<MembershipCode?>(null)
+
+    /**
+     * The member code of the active card, or null. It lives in memory only and stays when the device
+     * goes offline. It disappears when the card changes or stops being active, and on sign-out.
+     */
+    val membershipCode: StateFlow<MembershipCode?> = storedCode.asStateFlow()
+
+    private val mutableCodeEnabled = MutableStateFlow(false)
+
+    /** True when the server issues member codes. [loadCapabilities] reads it. */
+    val membershipCodeEnabled: StateFlow<Boolean> = mutableCodeEnabled.asStateFlow()
+
     private val mutex = Mutex()
 
     /** The member service URL of this build, for the debug hint on the sign-in screen. */
@@ -72,6 +85,8 @@ class MembershipRepository @Inject constructor(
     init {
         // Without a stored session this reads one file and makes no request.
         if (origin != null) scope.launch(io) { operation { restore() } }
+        // Drop the TOTP secret as soon as the code stops belonging to the active card.
+        scope.launch { mutableState.collect { current -> storedCode.update { it?.takeIf { code -> code.belongsTo(current) } } } }
     }
 
     /** Reads the account and the card from the server again. */
@@ -139,6 +154,24 @@ class MembershipRepository @Inject constructor(
      * card cache. Local records stay, as after a sign-out.
      */
     suspend fun deleteAccount(code: String): AccountMessage? = operation { deleteAccountNow(code) }
+
+    /** Reads whether the server issues member codes. A failure keeps the last known value. */
+    suspend fun loadCapabilities() {
+        if (origin == null) return
+        scope.async(io) {
+            try {
+                mutableCodeEnabled.value = service.system().serverConfig().membershipCodeEnabled
+            } catch (e: MemberApiError) {
+                // The member center works without it. The member code button keeps its last state.
+            }
+        }.await()
+    }
+
+    /**
+     * Fetches the member code of the active card. A code that this run already fetched stays valid,
+     * also offline. Returns a problem, or null when [membershipCode] holds the code.
+     */
+    suspend fun prepareMembershipCode(): AccountMessage? = operation { prepareMembershipCodeNow() }
 
     /** Signs out on the server when possible, and always clears the session and the card cache. */
     suspend fun signOut(): AccountMessage? = operation { signOutNow() }
@@ -450,9 +483,44 @@ class MembershipRepository @Inject constructor(
         return if (serverConfirmed) AccountMessage.SignedOut else AccountMessage.SignedOutLocally
     }
 
+    /** The checks of `MembershipStore.prepareMembershipCode` on iOS. */
+    private suspend fun prepareMembershipCodeNow(): AccountMessage? {
+        if (storedCode.value?.belongsTo(mutableState.value) == true) return null
+        if (!mutableCodeEnabled.value) return AccountMessage.MembershipCodeNotConfigured
+        val stored = readSession()
+        val card = (mutableState.value as? AccountState.SignedIn)?.card
+        val membershipId = card?.membershipId
+        if (stored == null || card == null || membershipId == null || !card.isActiveAt(clock.instant())) {
+            return AccountMessage.MembershipCodeNeedsActiveCard
+        }
+        return try {
+            val code = service.memberships().code(stored.token, membershipId)
+            storedCode.value = code.takeIf { it.belongsTo(mutableState.value) }
+            null
+        } catch (e: MemberApiError) {
+            when (e.serverCode) {
+                "MEMBERSHIP_CODE_NOT_CONFIGURED" -> {
+                    mutableCodeEnabled.value = false
+                    AccountMessage.MembershipCodeNotConfigured
+                }
+                "MEMBERSHIP_SUSPENDED", "MEMBERSHIP_NOT_FOUND" -> AccountMessage.MembershipCodeCardChanged
+                else -> handle(e, AccountAction.MEMBERSHIP_CODE)
+            }
+        }
+    }
+
     // endregion
 
     // region Helpers
+
+    /** True when this code belongs to the active card of [current]. Being offline does not matter. */
+    private fun MembershipCode.belongsTo(current: AccountState): Boolean {
+        val card = (current as? AccountState.SignedIn)?.card ?: return false
+        return card.membershipId == membershipId && card.isActiveAt(clock.instant())
+    }
+
+    private fun MembershipCard.isActiveAt(now: java.time.Instant): Boolean =
+        condition(isOffline = false, now = now) == CardCondition.ACTIVE
 
     /**
      * Confirms the session, then reads the card. Returns a problem, or null on success.
@@ -565,6 +633,7 @@ class MembershipRepository @Inject constructor(
 
     private suspend fun dropCard(emailVerified: Boolean?) {
         clearCacheQuietly()
+        storedCode.value = null
         mutableState.update { current ->
             if (current !is AccountState.SignedIn) return@update current
             val account = if (emailVerified == null) current.account else current.account.copy(emailVerified = emailVerified)
@@ -594,6 +663,7 @@ class MembershipRepository @Inject constructor(
             cleared = false
         }
         if (!clearCacheQuietly()) cleared = false
+        storedCode.value = null
         mutableState.value = if (origin == null) AccountState.NotConfigured else AccountState.SignedOut
         return cleared
     }
@@ -666,5 +736,5 @@ class MembershipRepository @Inject constructor(
 }
 
 /** File and Keystore failures. Other exceptions, including cancellation, are bugs and propagate. */
-private fun Exception.isStorageFailure(): Boolean =
+internal fun Exception.isStorageFailure(): Boolean =
     this is IOException || this is GeneralSecurityException || this is ProviderException

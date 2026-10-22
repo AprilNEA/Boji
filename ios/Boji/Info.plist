@@ -14,6 +14,7 @@
     </dict></array>
     <key>NSHealthShareUsageDescription</key><string>读取你选择授权的睡眠、体重和腰围，在薄肌展示近期变化。数据不会上传到俱乐部，也不会覆盖手动记录。</string>
     <key>NSHealthUpdateUsageDescription</key><string>Lean Muscle only reads the health data you allow. It does not save or change data in Apple Health.</string>
+    <key>NSCameraUsageDescription</key><string>扫描会员出示的会员码，确认会员身份。相机画面只在本机识别，不会上传。</string>
     <key>NSAppTransportSecurity</key>
     <dict>
         <key>NSAllowsLocalNetworking</key><true/>

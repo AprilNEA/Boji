@@ -61,11 +61,25 @@ class AccountHarness(
 
     private val httpClient = OkHttpClient.Builder().callTimeout(10, TimeUnit.SECONDS).build()
 
+    private val service = MemberService(MemberServiceConfig(endpoint, googleServerClientId), Lazy { httpClient })
+
     val repository: MembershipRepository by lazy {
         MembershipRepository(
-            service = MemberService(MemberServiceConfig(endpoint, googleServerClientId), Lazy { httpClient }),
+            service = service,
             sessions = sessions,
             cache = cache,
+            clock = clock,
+            scope = scope,
+            io = Dispatchers.IO,
+        )
+    }
+
+    /** The staff verifier, wired to the same service, stores and [repository] as in the app. */
+    val verifier: MembershipVerifier by lazy {
+        MembershipVerifier(
+            service = service,
+            sessions = sessions,
+            repository = repository,
             clock = clock,
             scope = scope,
             io = Dispatchers.IO,

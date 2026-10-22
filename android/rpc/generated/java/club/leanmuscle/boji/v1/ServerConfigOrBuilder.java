@@ -82,4 +82,15 @@ public interface ServerConfigOrBuilder extends
    * @return The googleLoginEnabled.
    */
   boolean getGoogleLoginEnabled();
+
+  /**
+   * <pre>
+   * Output only. True when `MembershipCodeService` serves membership codes,
+   * Wallet passes carry a QR code, and the server can check scanned codes.
+   * </pre>
+   *
+   * <code>bool membership_code_enabled = 7 [json_name = "membershipCodeEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   * @return The membershipCodeEnabled.
+   */
+  boolean getMembershipCodeEnabled();
 }

@@ -58,6 +58,9 @@ message ServerConfig {
 
   // Output only. True when Sign in with Google is available under `/api/auth`.
   bool google_login_enabled = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Output only. True when `MembershipCodeService` serves membership codes,
+  // Wallet passes carry a QR code, and the server can check scanned codes.
+  bool membership_code_enabled = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // Request message for `SystemService.GetServerConfig`.

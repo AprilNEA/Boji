@@ -430,6 +430,35 @@ public enum ErrorReason
    * <code>ORGANIZATION_STANDING_NOT_FROZEN = 44;</code>
    */
   ORGANIZATION_STANDING_NOT_FROZEN(44),
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: the server has no membership code key. Hide
+   * membership codes and read `ServerConfig` again later. Do not retry
+   * automatically.
+   * </pre>
+   *
+   * <code>MEMBERSHIP_CODE_NOT_CONFIGURED = 45;</code>
+   */
+  MEMBERSHIP_CODE_NOT_CONFIGURED(45),
+  /**
+   * <pre>
+   * `INVALID_ARGUMENT`: the scanned value is not a membership code of this
+   * server, or its proof is wrong. Ask the member to show the code again. The
+   * member app should fetch its code again, because the server key can change.
+   * </pre>
+   *
+   * <code>MEMBERSHIP_CODE_INVALID = 46;</code>
+   */
+  MEMBERSHIP_CODE_INVALID(46),
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: the scanned value is a dynamic membership code
+   * whose time window has ended. Ask the member to show the current code.
+   * </pre>
+   *
+   * <code>MEMBERSHIP_CODE_EXPIRED = 47;</code>
+   */
+  MEMBERSHIP_CODE_EXPIRED(47),
   UNRECOGNIZED(-1),
   ;
 
@@ -832,6 +861,35 @@ public enum ErrorReason
    * <code>ORGANIZATION_STANDING_NOT_FROZEN = 44;</code>
    */
   public static final int ORGANIZATION_STANDING_NOT_FROZEN_VALUE = 44;
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: the server has no membership code key. Hide
+   * membership codes and read `ServerConfig` again later. Do not retry
+   * automatically.
+   * </pre>
+   *
+   * <code>MEMBERSHIP_CODE_NOT_CONFIGURED = 45;</code>
+   */
+  public static final int MEMBERSHIP_CODE_NOT_CONFIGURED_VALUE = 45;
+  /**
+   * <pre>
+   * `INVALID_ARGUMENT`: the scanned value is not a membership code of this
+   * server, or its proof is wrong. Ask the member to show the code again. The
+   * member app should fetch its code again, because the server key can change.
+   * </pre>
+   *
+   * <code>MEMBERSHIP_CODE_INVALID = 46;</code>
+   */
+  public static final int MEMBERSHIP_CODE_INVALID_VALUE = 46;
+  /**
+   * <pre>
+   * `FAILED_PRECONDITION`: the scanned value is a dynamic membership code
+   * whose time window has ended. Ask the member to show the current code.
+   * </pre>
+   *
+   * <code>MEMBERSHIP_CODE_EXPIRED = 47;</code>
+   */
+  public static final int MEMBERSHIP_CODE_EXPIRED_VALUE = 47;
 
 
   @java.lang.Override
@@ -899,6 +957,9 @@ public enum ErrorReason
       case 42: return RATE_LIMITED;
       case 43: return ORGANIZATION_STANDING_ALREADY_FROZEN;
       case 44: return ORGANIZATION_STANDING_NOT_FROZEN;
+      case 45: return MEMBERSHIP_CODE_NOT_CONFIGURED;
+      case 46: return MEMBERSHIP_CODE_INVALID;
+      case 47: return MEMBERSHIP_CODE_EXPIRED;
       default: return null;
     }
   }

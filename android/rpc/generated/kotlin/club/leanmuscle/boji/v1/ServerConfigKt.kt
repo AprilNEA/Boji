@@ -192,6 +192,33 @@ public object ServerConfigKt {
     public fun clearGoogleLoginEnabled() {
       _builder.clearGoogleLoginEnabled()
     }
+
+    /**
+     * ```
+     * Output only. True when `MembershipCodeService` serves membership codes,
+     * Wallet passes carry a QR code, and the server can check scanned codes.
+     * ```
+     *
+     * `bool membership_code_enabled = 7 [json_name = "membershipCodeEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];`
+     */
+    public var membershipCodeEnabled: kotlin.Boolean
+      @kotlin.jvm.JvmName("getMembershipCodeEnabled")
+        get() = _builder.membershipCodeEnabled
+      @kotlin.jvm.JvmName("setMembershipCodeEnabled")
+        set(value) {
+        _builder.membershipCodeEnabled = value
+      }
+    /**
+     * ```
+     * Output only. True when `MembershipCodeService` serves membership codes,
+     * Wallet passes carry a QR code, and the server can check scanned codes.
+     * ```
+     *
+     * `bool membership_code_enabled = 7 [json_name = "membershipCodeEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];`
+     */
+    public fun clearMembershipCodeEnabled() {
+      _builder.clearMembershipCodeEnabled()
+    }
   }
 }
 public inline fun club.leanmuscle.boji.v1.ServerConfig.copy(block: `club.leanmuscle.boji.v1`.ServerConfigKt.Dsl.() -> kotlin.Unit): club.leanmuscle.boji.v1.ServerConfig =

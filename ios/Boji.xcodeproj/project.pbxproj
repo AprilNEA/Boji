@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		000A692A240D66CF400CF662 /* MembershipCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA3BE6B2E759D849F1ECB57C /* MembershipCode.swift */; };
 		0429AE9B0601F71CE17E404F /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B593CBD0DE4FCBB630D2DFFB /* TodayView.swift */; };
 		07BFAABA6BD1ECF2781F8220 /* MembershipPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 222CF8D8C8A70FCD67F93991 /* MembershipPresentationTests.swift */; };
 		1371FC0C802284889307E644 /* AppleIntegrationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81140111BAB62BAEC3D44093 /* AppleIntegrationModels.swift */; };
@@ -41,10 +42,14 @@
 		60987045AF5F5E131593E45B /* BetterAuthSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532250876ED85B6BDAAA301C /* BetterAuthSession.swift */; };
 		612D6F52AC64C1F976F8291C /* StoreScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670551344EB1A3043C1C22E4 /* StoreScreenshotTests.swift */; };
 		641A1BA8053D06572B18470A /* MembershipRPC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24F35FB8FDA9D385BDEE9F1F /* MembershipRPC.swift */; };
+		6B39D16107EF02E2E45CD23F /* MembershipVerifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC1DEFAFF80FB966723F65C1 /* MembershipVerifierTests.swift */; };
 		7055CB37DA9468F8256E9218 /* MembershipWalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22C5C88414598B9A653BD08 /* MembershipWalletView.swift */; };
 		70DFD9ED3418E6CA8812A330 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 211607BD7F6AC18DAEDF5277 /* PrivacyInfo.xcprivacy */; };
 		71AA5771B94005956B486FCA /* MembershipPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43252989887EE4615826FA3F /* MembershipPresentation.swift */; };
+		7360EFA5948BE4DFC6B3F47E /* MembershipVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58AB28B51134A2DF473C29F3 /* MembershipVerifier.swift */; };
 		81DE6F25DCF9F167418BF64E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCFE5FC6932EA2AA0EDEF99 /* SettingsView.swift */; };
+		83293F8087BCA6EEF6D9052F /* MembershipCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 831F7299818FF765CA9F55D9 /* MembershipCodeView.swift */; };
+		89EB0655CDCE009DC7EDE7F7 /* MembershipScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288FDAFDA8D447DB48BC7F66 /* MembershipScannerView.swift */; };
 		8C96FA440A2C94FC7CC0FE09 /* AppleIntegrationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11FA04E52232AEB2F3737E0F /* AppleIntegrationUITests.swift */; };
 		8DCA575CDB2F453DEBBABF2E /* BojiDailyWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 083B8509767D09C964A00EF6 /* BojiDailyWidget.swift */; };
 		9102473405E6694A905A044A /* ExerciseAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD42FEF98FAC54299B80325E /* ExerciseAnimationView.swift */; };
@@ -89,6 +94,7 @@
 		F48FE9F202DCDCAB1E2CD78A /* AccountSecurityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1CD9EE11102D933988D55A /* AccountSecurityView.swift */; };
 		F6B7625E452F04C099BB12D7 /* MembershipAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491E8393498E63062E9C40F4 /* MembershipAPI.swift */; };
 		F763E48B2B4EC7471BB1DB5E /* AppleIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFDF41C9C885E6DDE1070C1 /* AppleIntegrationTests.swift */; };
+		FB49861BEEEAB388283DA840 /* MembershipCodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B35DC21436315BA9461D6416 /* MembershipCodeTests.swift */; };
 		FDE6A3431DB880ECE117A593 /* BojiWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 695BD58AC8435E8F125079AF /* BojiWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		FE1ACBA75261A323B7A40AD6 /* lottie in Resources */ = {isa = PBXBuildFile; fileRef = DE0C6305908AC8BA3562C575 /* lottie */; };
 /* End PBXBuildFile section */
@@ -166,6 +172,7 @@
 		24F35FB8FDA9D385BDEE9F1F /* MembershipRPC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipRPC.swift; sourceTree = "<group>"; };
 		251281D9128481F09CCD0E0D /* CompanionSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionSnapshot.swift; sourceTree = "<group>"; };
 		26ED9E884634733D489F5BD6 /* MembershipBoundaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipBoundaryTests.swift; sourceTree = "<group>"; };
+		288FDAFDA8D447DB48BC7F66 /* MembershipScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipScannerView.swift; sourceTree = "<group>"; };
 		289FEADA3B5814EB470D4F4B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2AFDF41C9C885E6DDE1070C1 /* AppleIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntegrationTests.swift; sourceTree = "<group>"; };
 		37AD3A872C22D2EEEB321535 /* BojiUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BojiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -187,6 +194,7 @@
 		559E32ADE93BAC9FEFAF3107 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		5603FBE9B60558248690ABBC /* BetterAuthClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetterAuthClient.swift; sourceTree = "<group>"; };
 		583F71FA07F4AFB0262B3D19 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
+		58AB28B51134A2DF473C29F3 /* MembershipVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipVerifier.swift; sourceTree = "<group>"; };
 		5E83A1EEADA038A229812FF6 /* MembershipSharingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipSharingView.swift; sourceTree = "<group>"; };
 		62C7734F5BA146860613E16F /* MembershipRPCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipRPCTests.swift; sourceTree = "<group>"; };
 		64E2BDA8BA4453BF2D000EFF /* HealthDataStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthDataStoreTests.swift; sourceTree = "<group>"; };
@@ -201,6 +209,7 @@
 		80A0A478621B74FB3ACE6C3E /* BojiWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BojiWidgets.entitlements; sourceTree = "<group>"; };
 		81140111BAB62BAEC3D44093 /* AppleIntegrationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntegrationModels.swift; sourceTree = "<group>"; };
 		8245B383B494406D2112F93C /* BojiStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojiStoreTests.swift; sourceTree = "<group>"; };
+		831F7299818FF765CA9F55D9 /* MembershipCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipCodeView.swift; sourceTree = "<group>"; };
 		83488134D6C16836BDF6F1A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8402B1E44C2D1E89E8CF0193 /* EntrySheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntrySheets.swift; sourceTree = "<group>"; };
 		86890533E48BB7931E9497D0 /* CrashReporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrashReporting.swift; sourceTree = "<group>"; };
@@ -222,6 +231,7 @@
 		AD42FEF98FAC54299B80325E /* ExerciseAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseAnimationView.swift; sourceTree = "<group>"; };
 		AECB5A96CC8814C5CE035628 /* BojiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojiApp.swift; sourceTree = "<group>"; };
 		B15C9B68AF3F3BA6693740F2 /* HealthModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthModelsTests.swift; sourceTree = "<group>"; };
+		B35DC21436315BA9461D6416 /* MembershipCodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipCodeTests.swift; sourceTree = "<group>"; };
 		B593CBD0DE4FCBB630D2DFFB /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
 		B8BA1903CA55018029EC3DB9 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		BB1CD9EE11102D933988D55A /* AccountSecurityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSecurityView.swift; sourceTree = "<group>"; };
@@ -234,6 +244,8 @@
 		D10F7EF26E239B652E0E2AF9 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		D6C0F9DD2994DC068057E65C /* Boji.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Boji.entitlements; sourceTree = "<group>"; };
 		D9FCBE76E0C8017D6AB44D93 /* Shared.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Shared.xcstrings; sourceTree = "<group>"; };
+		DA3BE6B2E759D849F1ECB57C /* MembershipCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipCode.swift; sourceTree = "<group>"; };
+		DC1DEFAFF80FB966723F65C1 /* MembershipVerifierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipVerifierTests.swift; sourceTree = "<group>"; };
 		DE0C6305908AC8BA3562C575 /* lottie */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lottie; path = ../animations/lottie; sourceTree = SOURCE_ROOT; };
 		FFA90D104250EADC353989B5 /* MembershipAuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipAuthenticationView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -301,11 +313,13 @@
 				1AAF1AB2D0AE96C9E8BFC6AB /* HealthModels.swift */,
 				1BC9E35155AD090D46105762 /* LegalDocument.swift */,
 				491E8393498E63062E9C40F4 /* MembershipAPI.swift */,
+				DA3BE6B2E759D849F1ECB57C /* MembershipCode.swift */,
 				19368F1E87C44FF35C2129F7 /* MembershipModels.swift */,
 				43252989887EE4615826FA3F /* MembershipPresentation.swift */,
 				24F35FB8FDA9D385BDEE9F1F /* MembershipRPC.swift */,
 				52902C7BFFB3D07FB320C4F9 /* MembershipRPCFixtures.swift */,
 				544A88E9634042791CE6BBA0 /* MembershipStore.swift */,
+				58AB28B51134A2DF473C29F3 /* MembershipVerifier.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -396,7 +410,9 @@
 				458A3077F92019074E88F6CF /* HealthConnectionView.swift */,
 				FFA90D104250EADC353989B5 /* MembershipAuthenticationView.swift */,
 				16780230A73624CD8845F927 /* MembershipCardDesign.swift */,
+				831F7299818FF765CA9F55D9 /* MembershipCodeView.swift */,
 				736340937938B43AC99C0B3C /* MembershipEnrollmentView.swift */,
+				288FDAFDA8D447DB48BC7F66 /* MembershipScannerView.swift */,
 				5E83A1EEADA038A229812FF6 /* MembershipSharingView.swift */,
 				9D0E927BAEA70844A0A902F8 /* MembershipView.swift */,
 				A22C5C88414598B9A653BD08 /* MembershipWalletView.swift */,
@@ -424,10 +440,12 @@
 				B15C9B68AF3F3BA6693740F2 /* HealthModelsTests.swift */,
 				6BEFC24EA81BB69F3C8B0B39 /* LegalDocumentTests.swift */,
 				26ED9E884634733D489F5BD6 /* MembershipBoundaryTests.swift */,
+				B35DC21436315BA9461D6416 /* MembershipCodeTests.swift */,
 				C8C48E60EA9F78C658B0715F /* MembershipEntitlementTests.swift */,
 				222CF8D8C8A70FCD67F93991 /* MembershipPresentationTests.swift */,
 				62C7734F5BA146860613E16F /* MembershipRPCTests.swift */,
 				A54E43AA718586768EB78014 /* MembershipTests.swift */,
+				DC1DEFAFF80FB966723F65C1 /* MembershipVerifierTests.swift */,
 			);
 			path = BojiTests;
 			sourceTree = "<group>";
@@ -686,10 +704,12 @@
 				ECC0752898E65CD0B3F38B60 /* HealthModelsTests.swift in Sources */,
 				E32A200EE0CEDFEF2DC9E6FF /* LegalDocumentTests.swift in Sources */,
 				EA839609A4BF2A3352AFBC3A /* MembershipBoundaryTests.swift in Sources */,
+				FB49861BEEEAB388283DA840 /* MembershipCodeTests.swift in Sources */,
 				52D821C4FFA537D6BA2D7277 /* MembershipEntitlementTests.swift in Sources */,
 				07BFAABA6BD1ECF2781F8220 /* MembershipPresentationTests.swift in Sources */,
 				C8204FC7B3D31DF0611787D0 /* MembershipRPCTests.swift in Sources */,
 				AADC71F00D5FDCF324AE65C6 /* MembershipTests.swift in Sources */,
+				6B39D16107EF02E2E45CD23F /* MembershipVerifierTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -724,13 +744,17 @@
 				F6B7625E452F04C099BB12D7 /* MembershipAPI.swift in Sources */,
 				54672DA0B79BD336B41FFC31 /* MembershipAuthenticationView.swift in Sources */,
 				18E47C03BDD0D0DDB4DD4F67 /* MembershipCardDesign.swift in Sources */,
+				000A692A240D66CF400CF662 /* MembershipCode.swift in Sources */,
+				83293F8087BCA6EEF6D9052F /* MembershipCodeView.swift in Sources */,
 				A51B69FE6782240E140B3BBA /* MembershipEnrollmentView.swift in Sources */,
 				160AB7711E92162E5A7181F9 /* MembershipModels.swift in Sources */,
 				71AA5771B94005956B486FCA /* MembershipPresentation.swift in Sources */,
 				641A1BA8053D06572B18470A /* MembershipRPC.swift in Sources */,
 				352016E5B270E99C0DA6E065 /* MembershipRPCFixtures.swift in Sources */,
+				89EB0655CDCE009DC7EDE7F7 /* MembershipScannerView.swift in Sources */,
 				B55214557290A8264026615F /* MembershipSharingView.swift in Sources */,
 				5F4B361E84F5BB9CBCD33F13 /* MembershipStore.swift in Sources */,
+				7360EFA5948BE4DFC6B3F47E /* MembershipVerifier.swift in Sources */,
 				C4DAE2AD6AE64A6575BB8A40 /* MembershipView.swift in Sources */,
 				7055CB37DA9468F8256E9218 /* MembershipWalletView.swift in Sources */,
 				17F48BD0B26E52C0DE53CD8D /* ProgressView.swift in Sources */,

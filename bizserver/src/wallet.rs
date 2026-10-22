@@ -175,6 +175,9 @@ pub struct MembershipCard<'a> {
     /// The verified organizations of the member. Empty until the organization
     /// model ships.
     pub organizations: &'a [PassOrganization<'a>],
+    /// The static membership code, the message of the QR code. `None` leaves
+    /// the pass without a barcode.
+    pub code: Option<&'a str>,
 }
 
 /// Checked Wallet credentials that sign passes.

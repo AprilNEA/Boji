@@ -7,8 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import club.leanmuscle.boji.core.membership.AccountMessage
 import club.leanmuscle.boji.core.membership.AccountState
+import club.leanmuscle.boji.core.membership.MembershipCode
 import club.leanmuscle.boji.core.membership.MembershipRepository
 import club.leanmuscle.boji.core.membership.MembershipRules
+import club.leanmuscle.boji.core.membership.MembershipVerifier
+import club.leanmuscle.boji.core.membership.ScanOutcome
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,7 +46,21 @@ abstract class AccountViewModel(protected val repository: MembershipRepository) 
 class MembershipViewModel @Inject constructor(
     repository: MembershipRepository,
     private val shareImage: MembershipShareImage,
+    private val verifier: MembershipVerifier,
 ) : AccountViewModel(repository) {
+
+    /** The member code of the active card. It lives in memory only. */
+    val membershipCode: StateFlow<MembershipCode?> = repository.membershipCode
+
+    /** True when the server issues member codes, so the screen shows the member code button. */
+    val membershipCodeEnabled: StateFlow<Boolean> = repository.membershipCodeEnabled
+
+    /** True when the signed-in account may verify member codes, so the screen shows the scanner. */
+    val canVerify: StateFlow<Boolean> = verifier.canVerify
+    val verifying: StateFlow<Boolean> = verifier.verifying
+
+    /** The latest verification result. It lives in memory only. */
+    val scanOutcome: StateFlow<ScanOutcome?> = verifier.outcome
 
     init {
         // Opening the member center confirms the card, as on iOS. A running restore wins.
@@ -51,9 +68,22 @@ class MembershipViewModel @Inject constructor(
             val result = repository.refreshQuietly()
             if (result != null && result.isError) launchAction({ result })
         }
+        viewModelScope.launch { repository.loadCapabilities() }
+        // The role can change on the server, so the member center asks again each time it opens.
+        viewModelScope.launch { verifier.refreshPermission() }
     }
 
     fun refresh() = launchAction(repository::refresh)
+
+    /** Fetches the member code of the active card, unless this run already has it. */
+    fun prepareMembershipCode() = launchAction(repository::prepareMembershipCode)
+
+    /** Verifies a scanned or typed member code. */
+    fun verify(value: String) {
+        viewModelScope.launch { verifier.verify(value) }
+    }
+
+    fun clearScanOutcome() = verifier.clearOutcome()
 
     fun resendVerification() {
         val email = (state.value as? AccountState.SignedIn)?.account?.email ?: return

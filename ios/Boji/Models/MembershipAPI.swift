@@ -1,7 +1,7 @@
 import Foundation
 import Security
 
-/// 会员服务入口。账号认证使用 Better Auth 的 `/api/auth/*` 端点，会员卡、服务能力和钱包凭证使用 Connect 服务。
+/// 会员服务入口。账号认证使用 Better Auth 的 `/api/auth/*` 端点，会员卡、服务能力、钱包凭证和会员码使用 Connect 服务。
 struct MembershipAPI: Sendable {
     private let betterAuth: BetterAuthClient
     private let rpc: MembershipRPCClient
@@ -41,6 +41,19 @@ struct MembershipAPI: Sendable {
 
     func walletPass(membershipID: String, token: String) async throws -> Data {
         try await rpc.membershipPass(membershipID: membershipID, token: token)
+    }
+
+    func membershipCode(membershipID: String, token: String) async throws -> MembershipCode {
+        try await rpc.membershipCode(membershipID: membershipID, token: token)
+    }
+
+    /// 当前账号的运营角色是否允许校验会员码。校验需要 `membership.read` 权限。
+    func canVerifyMembershipCodes(token: String) async throws -> Bool {
+        try await betterAuth.hasPermission(["membership": ["read"]], token: token)
+    }
+
+    func verifyMembershipCode(_ value: String, token: String) async throws -> MembershipVerification {
+        try await rpc.verifyMembershipCode(value, token: token)
     }
 
     func register(name: String, email: String, password: String) async throws {
@@ -372,7 +385,7 @@ actor UITestingMembershipTransport: MembershipTransport {
         case ("POST", "/api/auth/sign-in/email"):
             return MembershipHTTPResponse(data: Data("{}".utf8), statusCode: 200, headers: ["set-auth-token": token])
         case ("POST", "/boji.v1.SystemService/GetServerConfig"):
-            return MembershipRPCFixtures.serverConfig(appleSignIn: false, walletPass: false)
+            return MembershipRPCFixtures.serverConfig(appleSignIn: false, walletPass: false, membershipCode: true)
         case ("POST", "/api/auth/sign-up/email"),
              ("POST", "/api/auth/send-verification-email"),
              ("POST", "/api/auth/request-password-reset"),
@@ -421,6 +434,9 @@ actor UITestingMembershipTransport: MembershipTransport {
                     expiresAt: Date().addingTimeInterval(60 * 60)
                 )
             ))
+        case ("POST", "/api/auth/admin/has-permission"):
+            // 界面测试账号没有运营角色，所以不显示扫码入口。
+            return MembershipHTTPResponse(data: Data(#"{"success":false}"#.utf8), statusCode: 200)
         case ("POST", "/api/auth/change-password"):
             guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)" else {
                 return errorResponse(statusCode: 401, code: "UNAUTHORIZED")
@@ -468,6 +484,17 @@ actor UITestingMembershipTransport: MembershipTransport {
             )
             card = created
             return MembershipRPCFixtures.membership(created)
+        case ("POST", "/boji.v1.MembershipCodeService/GetMembershipCode"):
+            guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)" else {
+                return MembershipRPCFixtures.error(.unauthenticated, reason: "SESSION_REQUIRED")
+            }
+            guard let card, MembershipRPCFixtures.membershipCodeName(from: request.httpBody) == "users/me/memberships/\(card.id)/code" else {
+                return MembershipRPCFixtures.error(.notFound, reason: "MEMBERSHIP_NOT_FOUND")
+            }
+            guard card.isActive else {
+                return MembershipRPCFixtures.error(.failedPrecondition, reason: "MEMBERSHIP_SUSPENDED")
+            }
+            return MembershipRPCFixtures.membershipCode(name: "users/\(account.id)/memberships/\(card.id)/code")
         default:
             return errorResponse(statusCode: 404, code: "NOT_FOUND")
         }

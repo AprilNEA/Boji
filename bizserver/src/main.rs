@@ -106,6 +106,7 @@ async fn run(sentry: bool) -> Result<()> {
         wallet,
         wallet_push,
         affiliation_verification,
+        membership_codes: config.membership_codes.map(Arc::new),
     };
     let auth = auth::build(
         database.clone(),

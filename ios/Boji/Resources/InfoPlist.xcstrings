@@ -19,6 +19,24 @@
         }
       }
     },
+    "NSCameraUsageDescription" : {
+      "comment" : "Camera permission prompt for staff who scan member codes.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lean Muscle scans the member code that a member shows you, to confirm the membership. The camera image is processed on this device and is not uploaded."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "扫描会员出示的会员码，确认会员身份。相机画面只在本机识别，不会上传。"
+          }
+        }
+      }
+    },
     "NSHealthUpdateUsageDescription" : {
       "comment" : "Required HealthKit purpose string. Authorization remains read-only; the app never requests write types.",
       "extractionState" : "manual",

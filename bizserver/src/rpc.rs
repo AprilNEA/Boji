@@ -11,6 +11,7 @@ mod conversion;
 pub(crate) mod error;
 mod filter;
 mod membership;
+mod membership_code;
 mod names;
 mod organization;
 mod organization_admin;
@@ -19,7 +20,10 @@ mod wallet;
 
 use crate::{
     auth::{self, Auth, AuthFailure, Principal},
-    domain::organization::{AffiliationEmailKey, RankingCache},
+    domain::{
+        membership_code::MembershipCodes,
+        organization::{AffiliationEmailKey, RankingCache},
+    },
     mail::Mailer,
     proto::{
         boji::{admin::v1 as a, v1 as p},
@@ -45,6 +49,7 @@ pub struct BusinessService {
     affiliation_verification: Option<AffiliationVerification>,
     ranking: RankingCache,
     pass_updates: PassUpdates,
+    membership_codes: Option<Arc<MembershipCodes>>,
 }
 
 impl BusinessService {
@@ -55,6 +60,8 @@ impl BusinessService {
     /// changed. `capabilities.affiliation_verification` sends organization
     /// verification codes. `None` disables the methods of
     /// `AffiliationService` that send or check codes.
+    /// `capabilities.membership_codes` issues and checks membership codes.
+    /// `None` disables `MembershipCodeService` and the QR code of passes.
     pub fn new(db: DatabaseConnection, auth: Arc<Auth>, capabilities: &Capabilities) -> Self {
         let pass_updates = PassUpdates::new(db.clone(), capabilities.wallet_push.clone());
         Self {
@@ -64,6 +71,7 @@ impl BusinessService {
             affiliation_verification: capabilities.affiliation_verification.clone(),
             ranking: RankingCache::default(),
             pass_updates,
+            membership_codes: capabilities.membership_codes.clone(),
         }
     }
 
@@ -105,6 +113,8 @@ pub struct Capabilities {
     pub wallet_push: Option<Arc<dyn PushSender>>,
     /// Organization email verification. `None` when `AFFILIATION_EMAIL_HMAC_KEY` is unset.
     pub affiliation_verification: Option<AffiliationVerification>,
+    /// Membership codes. `None` when `MEMBERSHIP_CODE_KEY` is unset.
+    pub membership_codes: Option<Arc<MembershipCodes>>,
 }
 
 /// The key and the mail transport of organization email verification.
@@ -147,6 +157,7 @@ impl p::SystemService for SystemService {
                 .is_some_and(|signer| signer.is_current(chrono::Utc::now())),
             activity_sync_enabled: true,
             organization_ranking_enabled: self.capabilities.affiliation_verification.is_some(),
+            membership_code_enabled: self.capabilities.membership_codes.is_some(),
             ..Default::default()
         })
     }
@@ -173,7 +184,8 @@ fn install_type_registry() {
 /// Register generated service traits with the official ConnectRPC runtime.
 ///
 /// `WalletService` is always registered. Without valid signing material it
-/// returns `WALLET_NOT_CONFIGURED`. `AffiliationService` is always
+/// returns `WALLET_NOT_CONFIGURED`. `MembershipCodeService` is always
+/// registered. Without a key it returns `MEMBERSHIP_CODE_NOT_CONFIGURED`. `AffiliationService` is always
 /// registered too. Without a key it returns
 /// `AFFILIATION_VERIFICATION_NOT_CONFIGURED` from the methods that send or check
 /// codes.
@@ -188,9 +200,11 @@ pub fn router(
     let router = p::MembershipServiceExt::register(service.clone(), router);
     let router = p::ActivityServiceExt::register(service.clone(), router);
     let router = p::WalletServiceExt::register(service.clone(), router);
+    let router = p::MembershipCodeServiceExt::register(service.clone(), router);
     let router = p::OrganizationServiceExt::register(service.clone(), router);
     let router = p::AffiliationServiceExt::register(service.clone(), router);
     let router = a::EntitlementServiceExt::register(service.clone(), router);
     let router = a::MembershipServiceExt::register(service.clone(), router);
+    let router = a::MembershipCodeServiceExt::register(service.clone(), router);
     a::OrganizationServiceExt::register(service, router)
 }

@@ -3,6 +3,8 @@
 //! Every method authorizes the caller before it looks up any target, so a
 //! caller without permission learns nothing about the targets (AIP-211).
 
+mod code;
+
 use super::{
     BusinessService,
     conversion::{optional_timestamp, request_time, timestamp},

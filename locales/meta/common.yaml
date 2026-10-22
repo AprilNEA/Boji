@@ -8,6 +8,7 @@ action_cancel:
 action_save:
 action_done:
 action_ok:
+action_retry:
 storage_error_a11y:
   args:
     message: string

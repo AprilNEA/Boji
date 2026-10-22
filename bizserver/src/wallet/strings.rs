@@ -115,11 +115,19 @@ pub(crate) const WALLET_BACK_USAGE_LABEL: Text = Text {
     ],
 };
 
-/// `wallet_back_usage`: 说明这张卡不是支付或核销凭证
+/// `wallet_back_usage`: 说明这张卡不是支付或核销凭证。卡面没有二维码时使用
 pub(crate) const WALLET_BACK_USAGE: Text = Text {
     values: [
         "This card only shows your membership. It isn’t a payment card or an entry pass.",
         "本卡只展示会员身份，不是支付或核销凭证。",
+    ],
+};
+
+/// `wallet_back_usage_code`: 卡面有会员码二维码时的使用说明：工作人员扫码确认会员身份，本卡不是支付凭证
+pub(crate) const WALLET_BACK_USAGE_CODE: Text = Text {
+    values: [
+        "Staff can scan the QR code to confirm your membership. This card isn’t a payment card.",
+        "工作人员可以扫描二维码，确认你的会员身份。本卡不是支付凭证。",
     ],
 };
 
@@ -148,7 +156,7 @@ pub(crate) const WALLET_BACK_SUSPENDED: Text = Text {
 };
 
 /// Every string of the pass, in the order of `locales/meta/`.
-pub(crate) const ALL: [&Text; 16] = [
+pub(crate) const ALL: [&Text; 17] = [
     &WALLET_APP_NAME,
     &WALLET_PASS_DESCRIPTION,
     &WALLET_LABEL_CARD_NUMBER,
@@ -162,6 +170,7 @@ pub(crate) const ALL: [&Text; 16] = [
     &WALLET_BACK_ABOUT,
     &WALLET_BACK_USAGE_LABEL,
     &WALLET_BACK_USAGE,
+    &WALLET_BACK_USAGE_CODE,
     &WALLET_BACK_STATUS_LABEL,
     &WALLET_BACK_STATUS,
     &WALLET_BACK_SUSPENDED,

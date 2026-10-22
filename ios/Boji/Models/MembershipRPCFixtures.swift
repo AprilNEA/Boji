@@ -10,6 +10,7 @@ import SwiftProtobuf
 enum MembershipRPCFixtures {
     /// Connect 错误码，以及 Connect 协议为它规定的 HTTP 状态。
     enum ErrorCode: String, Sendable {
+        case invalidArgument = "invalid_argument"
         case unauthenticated
         case permissionDenied = "permission_denied"
         case notFound = "not_found"
@@ -21,6 +22,7 @@ enum MembershipRPCFixtures {
 
         var httpStatus: Int {
             switch self {
+            case .invalidArgument: return 400
             case .unauthenticated: return 401
             case .permissionDenied: return 403
             case .notFound: return 404
@@ -40,11 +42,12 @@ enum MembershipRPCFixtures {
         let termsVersion: String
     }
 
-    static func serverConfig(appleSignIn: Bool, walletPass: Bool) -> MembershipHTTPResponse {
+    static func serverConfig(appleSignIn: Bool, walletPass: Bool, membershipCode: Bool = false) -> MembershipHTTPResponse {
         var config = Boji_V1_ServerConfig()
         config.name = "serverConfig"
         config.appleLoginEnabled = appleSignIn
         config.walletPassEnabled = walletPass
+        config.membershipCodeEnabled = membershipCode
         return success(config)
     }
 
@@ -86,6 +89,39 @@ enum MembershipRPCFixtures {
         return success(pass)
     }
 
+    /// RFC 6238 附录 B 的 SHA-1 测试密钥。只用于测试。
+    static let testTOTPSecret = Data("12345678901234567890".utf8)
+
+    /// `MembershipCode` 消息。参数可以改成不合契约的值，用于测试客户端的校验。
+    static func membershipCode(
+        name: String,
+        staticValue: String = "BOJI1.S.TEST.0123456789ABCDEF0123456789ABCDEF",
+        dynamicValuePrefix: String = "BOJI1.D.TEST.",
+        secret: Data = testTOTPSecret,
+        digits: Int32 = 8,
+        periodSeconds: Int64 = 30,
+        hasTotp: Bool = true
+    ) -> MembershipHTTPResponse {
+        var code = Boji_V1_MembershipCode()
+        code.name = name
+        code.staticValue = staticValue
+        code.dynamicValuePrefix = dynamicValuePrefix
+        if hasTotp {
+            code.totp.secret = secret
+            code.totp.digits = digits
+            code.totp.period = Google_Protobuf_Duration(seconds: periodSeconds)
+        }
+        return success(code)
+    }
+
+    /// 运营端 `VerifyMembershipCode` 的响应。`card` 为 nil 时不带会员卡，用于测试客户端的校验。
+    static func verification(_ card: ClubMember?, kind: Boji_Admin_V1_MembershipCodeKind) -> MembershipHTTPResponse {
+        var response = Boji_Admin_V1_VerifyMembershipCodeResponse()
+        if let card { response.membership = message(for: card) }
+        response.codeKind = kind
+        return success(response)
+    }
+
     /// Connect 错误响应。`reason` 非空时，响应带有 bizserver 域的 `ErrorInfo`。
     static func error(_ code: ErrorCode, reason: String?) -> MembershipHTTPResponse {
         var body: [String: Any] = ["code": code.rawValue, "message": "test error"]
@@ -121,6 +157,16 @@ enum MembershipRPCFixtures {
     static func membershipPassName(from body: Data?) -> String? {
         guard let body, let request = try? Boji_V1_GetMembershipPassRequest(serializedBytes: body) else { return nil }
         return request.name
+    }
+
+    static func membershipCodeName(from body: Data?) -> String? {
+        guard let body, let request = try? Boji_V1_GetMembershipCodeRequest(serializedBytes: body) else { return nil }
+        return request.name
+    }
+
+    static func verifiedCode(from body: Data?) -> String? {
+        guard let body, let request = try? Boji_Admin_V1_VerifyMembershipCodeRequest(serializedBytes: body) else { return nil }
+        return request.code
     }
 
     private static func message(for card: ClubMember) -> Boji_V1_Membership {

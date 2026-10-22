@@ -54,6 +54,7 @@
     <string name="action_save">Save</string>
     <string name="action_done">Done</string>
     <string name="action_ok">OK</string>
+    <string name="action_retry">Try Again</string>
     <string name="storage_error_a11y">Storage error: %1$s</string>
     <string name="storage_read_failed">Can’t read local data. The original file was not overwritten: %1$s</string>
     <string name="storage_write_failed">Can’t save local data: %1$s</string>
@@ -259,6 +260,42 @@
         <item quantity="one">%1$d second per side</item>
         <item quantity="other">%1$d seconds per side</item>
     </plurals>
+    <!-- membership -->
+    <string name="membership_code_show">Show Member Code</string>
+    <string name="membership_code_title">Member Code</string>
+    <string name="membership_code_hint">Show this to staff. The QR code changes every 30 seconds, so a screenshot won’t work.</string>
+    <plurals name="membership_code_refresh">
+        <item quantity="one">Updates in %1$d second</item>
+        <item quantity="other">Updates in %1$d seconds</item>
+    </plurals>
+    <string name="membership_code_card_number">Card Number</string>
+    <string name="membership_code_unavailable">The member code can’t be shown right now. Try again later.</string>
+    <string name="membership_code_not_configured">The member code service is not set up.</string>
+    <string name="membership_code_needs_active_card">Refresh your active card before you show the member code.</string>
+    <string name="membership_code_card_changed">Your card status has changed. Refresh and try again.</string>
+    <string name="membership_code_network">Can’t reach the member service, so the member code can’t be shown right now.</string>
+    <string name="membership_code_failed">Couldn’t get the member code. Try again later.</string>
+    <string name="membership_scan_open">Scan Member Code</string>
+    <string name="membership_scan_title">Verify Member Code</string>
+    <string name="membership_scan_hint">Fit the member’s QR code inside the frame.</string>
+    <string name="membership_scan_manual_placeholder">Enter member code</string>
+    <string name="membership_scan_manual_submit">Verify</string>
+    <string name="membership_scan_camera_unavailable">This device can’t scan with the camera. Enter the member code instead.</string>
+    <string name="membership_scan_camera_denied">Camera access is off. Allow Lean Muscle to use the camera in Settings, or enter the member code.</string>
+    <string name="membership_scan_valid">Card Valid</string>
+    <string name="membership_scan_suspended">Card Suspended</string>
+    <string name="membership_scan_card_expired">Card Expired</string>
+    <string name="membership_scan_kind_dynamic">App dynamic code</string>
+    <string name="membership_scan_kind_static">Wallet pass QR code. It doesn’t change and can be a screenshot, so check the member in person.</string>
+    <string name="membership_scan_nickname">Nickname</string>
+    <string name="membership_scan_next">Scan Next</string>
+    <string name="membership_scan_invalid">This isn’t a valid Lean Muscle member code.</string>
+    <string name="membership_scan_code_expired">This member code has expired. Ask the member to refresh it and show it again.</string>
+    <string name="membership_scan_not_found">This membership card no longer exists.</string>
+    <string name="membership_scan_sign_in_again">Sign out and sign in again to keep scanning. Verification needs a sign-in from the last 12 hours.</string>
+    <string name="membership_scan_forbidden">This account can’t verify member codes.</string>
+    <string name="membership_scan_network">Can’t reach the member service, so the code can’t be verified right now.</string>
+    <string name="membership_scan_failed">Couldn’t verify the code. Try again later.</string>
     <!-- plans -->
     <string name="plan_home_title">Home Workouts</string>
     <string name="plan_home_subtitle">Start with bodyweight and build up step by step</string>

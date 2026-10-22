@@ -1,5 +1,6 @@
 package club.leanmuscle.boji.core.network
 
+import club.leanmuscle.boji.v1.MembershipCodeServiceClient
 import club.leanmuscle.boji.v1.MembershipServiceClient
 import club.leanmuscle.boji.v1.SystemServiceClient
 import com.connectrpc.ProtocolClientConfig
@@ -9,10 +10,12 @@ import com.connectrpc.okhttp.ConnectOkHttpClient
 import com.connectrpc.protocols.NetworkProtocol
 import dagger.Lazy
 import io.github.betterauth.client.BetterAuthClient
+import io.github.betterauth.client.plugins.admin.adminClient
 import io.ktor.client.engine.okhttp.OkHttp
 import okhttp3.OkHttpClient
 import javax.inject.Inject
 import javax.inject.Singleton
+import club.leanmuscle.boji.admin.v1.MembershipCodeServiceClient as StaffCodeServiceClient
 
 /**
  * The member service URL of this build, or null when the build has none.
@@ -50,6 +53,8 @@ class MemberService @Inject constructor(
             // A blank origin sends no Origin header. The app is not a browser origin.
             origin = ""
             engine = OkHttp.create { preconfigured = sharedClient }
+            // `admin.hasPermission` shows the staff scanner to accounts with `membership.read`.
+            plugins(adminClient())
         }
     }
 
@@ -66,7 +71,13 @@ class MemberService @Inject constructor(
     }
 
     private val membershipClient: MembershipClient? by lazy {
-        protocolClient?.let { MembershipClient(MembershipServiceClient(it)) }
+        protocolClient?.let {
+            MembershipClient(
+                service = MembershipServiceClient(it),
+                codes = MembershipCodeServiceClient(it),
+                staffCodes = StaffCodeServiceClient(it),
+            )
+        }
     }
 
     private val systemClient: SystemClient? by lazy {

@@ -54,6 +54,7 @@
     <string name="action_save">保存</string>
     <string name="action_done">完成</string>
     <string name="action_ok">好</string>
+    <string name="action_retry">重试</string>
     <string name="storage_error_a11y">存储错误：%1$s</string>
     <string name="storage_read_failed">无法读取本地数据，原文件未被覆盖：%1$s</string>
     <string name="storage_write_failed">无法保存本地数据：%1$s</string>
@@ -255,6 +256,41 @@
     <plurals name="exercise_reps_seconds_per_side">
         <item quantity="other">每侧 %1$d 秒</item>
     </plurals>
+    <!-- membership -->
+    <string name="membership_code_show">出示会员码</string>
+    <string name="membership_code_title">会员码</string>
+    <string name="membership_code_hint">请向工作人员出示。二维码每 30 秒更新一次，截图无法使用。</string>
+    <plurals name="membership_code_refresh">
+        <item quantity="other">%1$d 秒后更新</item>
+    </plurals>
+    <string name="membership_code_card_number">会员卡号</string>
+    <string name="membership_code_unavailable">暂时无法显示会员码，请稍后重试。</string>
+    <string name="membership_code_not_configured">会员码服务尚未配置。</string>
+    <string name="membership_code_needs_active_card">请先刷新有效会员卡，再出示会员码。</string>
+    <string name="membership_code_card_changed">会员卡状态已变化，请刷新后再试。</string>
+    <string name="membership_code_network">无法连接会员服务，暂时无法显示会员码。</string>
+    <string name="membership_code_failed">会员码获取失败，请稍后重试。</string>
+    <string name="membership_scan_open">扫码校验会员</string>
+    <string name="membership_scan_title">校验会员码</string>
+    <string name="membership_scan_hint">把会员出示的二维码放进取景框。</string>
+    <string name="membership_scan_manual_placeholder">手动输入会员码</string>
+    <string name="membership_scan_manual_submit">校验</string>
+    <string name="membership_scan_camera_unavailable">此设备无法用相机扫码，请手动输入会员码。</string>
+    <string name="membership_scan_camera_denied">相机权限已关闭。请在系统设置中允许薄肌使用相机，或手动输入会员码。</string>
+    <string name="membership_scan_valid">会员卡有效</string>
+    <string name="membership_scan_suspended">会员卡已暂停</string>
+    <string name="membership_scan_card_expired">会员卡已过期</string>
+    <string name="membership_scan_kind_dynamic">App 动态码</string>
+    <string name="membership_scan_kind_static">钱包会员卡二维码。它不会变化，可能是截图，请核对本人。</string>
+    <string name="membership_scan_nickname">昵称</string>
+    <string name="membership_scan_next">继续扫码</string>
+    <string name="membership_scan_invalid">这不是有效的薄肌会员码。</string>
+    <string name="membership_scan_code_expired">会员码已过期。请会员刷新后重新出示。</string>
+    <string name="membership_scan_not_found">这张会员卡已不存在。</string>
+    <string name="membership_scan_sign_in_again">请退出后重新登录，再继续扫码。校验需要 12 小时内登录的账号。</string>
+    <string name="membership_scan_forbidden">当前账号没有校验会员码的权限。</string>
+    <string name="membership_scan_network">无法连接会员服务，暂时无法校验。</string>
+    <string name="membership_scan_failed">校验失败，请稍后重试。</string>
     <!-- plans -->
     <string name="plan_home_title">居家训练</string>
     <string name="plan_home_subtitle">徒手开始，循序渐进</string>

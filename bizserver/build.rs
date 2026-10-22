@@ -16,6 +16,7 @@ const FILES: &[&str] = &[
     "boji/v1/membership.proto",
     "boji/v1/membership_service.proto",
     "boji/v1/wallet_service.proto",
+    "boji/v1/membership_code_service.proto",
     "boji/v1/activity_service.proto",
     "boji/v1/organization.proto",
     "boji/v1/organization_service.proto",
@@ -23,6 +24,7 @@ const FILES: &[&str] = &[
     "boji/v1/affiliation_service.proto",
     "boji/admin/v1/entitlement_service.proto",
     "boji/admin/v1/membership_service.proto",
+    "boji/admin/v1/membership_code_service.proto",
     "boji/admin/v1/organization_service.proto",
     // The googleapis types that appear in Boji messages.
     "google/type/date.proto",

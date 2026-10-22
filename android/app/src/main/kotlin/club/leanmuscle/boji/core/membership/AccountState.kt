@@ -62,6 +62,7 @@ enum class AccountAction {
     CHANGE_EMAIL,
     REQUEST_ACCOUNT_DELETION,
     DELETE_ACCOUNT,
+    MEMBERSHIP_CODE,
 }
 
 /**
@@ -140,6 +141,15 @@ sealed interface AccountMessage {
     data object EmailNotVerified : Problem
     data object OfflineShowingCard : Problem
     data object PermissionDenied : Problem
+
+    /** The server does not issue member codes. */
+    data object MembershipCodeNotConfigured : Problem
+
+    /** The device has no active card to show a member code for. */
+    data object MembershipCodeNeedsActiveCard : Problem
+
+    /** The server reports that the card is suspended or gone. */
+    data object MembershipCodeCardChanged : Problem
     data class Network(val action: AccountAction) : Problem
     data class Failed(val action: AccountAction) : Problem
 }

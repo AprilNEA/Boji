@@ -13,6 +13,7 @@
 - Google 登录：原生 ID 令牌。设置 `GOOGLE_CLIENT_ID` 后启用，账号关联规则与 Apple 相同。
 - 免费会员卡与结构化权益。每个用户最多持有一张会员卡。
 - Apple Wallet 会员卡。设置 `WALLET_*` 变量后，服务端为有效会员卡签发通行证，并提供通行证更新服务。会员卡状态变化后，已添加的通行证随之更新。
+- 会员码：设置 `MEMBERSHIP_CODE_KEY` 后，钱包会员卡带静态二维码，App 可以读取 TOTP 参数显示动态二维码。拥有 `membership.read` 运营权限的工作人员可以扫码校验，校验接受 12 小时内创建的会话。格式和错误见 [ConnectRPC 业务接口](docs/connectrpc-api.md#会员码接口)。
 - 主动授权的活动同步、冲突检测和每日汇总。
 - 会员运营：列表、查询、暂停、恢复和权益管理。变更与审计原子提交。
 - 学校排名：学校名单、学校邮箱验证码认证、公开的学校人数排名和运营的撤销与冻结。接口使用通用的组织模型，学校是 `SCHOOL` 类型的组织。设置 `AFFILIATION_EMAIL_HMAC_KEY` 后启用认证。名单数据见 [`data/schools/`](data/schools/README.md)，规则见[大学排名设计](../docs/developers/school-ranking.mdx)。
@@ -44,6 +45,9 @@
 | `GOOGLE_*` | Google 登录 | 可选。填写 `GOOGLE_CLIENT_ID` 即启用，另外两项依赖它 |
 | `WALLET_*` | Apple Wallet 签名材料和通行证认证令牌密钥 | 可选。全部填写或全部留空。启用时必须设置 `BETTER_AUTH_URL` |
 | `AFFILIATION_EMAIL_HMAC_KEY` | 学校认证 | 可选。留空时关闭学校认证 |
+| `MEMBERSHIP_CODE_KEY` | 会员码 | 可选。留空时关闭会员码。至少 32 字节，并且不同于 `BETTER_AUTH_SECRET`、`WALLET_AUTH_TOKEN_KEY` 和 `AFFILIATION_EMAIL_HMAC_KEY` |
+
+会员码由 `MEMBERSHIP_CODE_KEY` 和会员卡 ID 经 HMAC-SHA256 派生，数据库不保存会员码。更换这个密钥后，钱包卡上的静态码和 App 保存的 TOTP 密钥全部失效：用户需要重新下载钱包卡，App 需要重新读取会员码。
 
 `CLIENT_IP_HEADER` 必须是网关覆盖写入的请求头，例如 `cf-connecting-ip`。客户端能自行设置的请求头会让会话记录伪造的 IP。
 

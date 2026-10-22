@@ -26,6 +26,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use super::{CardStatus, MembershipCard, PKPASS_MIME_TYPE, PassSigner};
+use crate::domain::membership_code::MembershipCodes;
 use crate::domain::wallet::{self as store, Registration};
 
 /// Where `app::router` mounts the web service. `webServiceURL` is the public
@@ -45,10 +46,16 @@ const MAX_LOG_LINES: usize = 20;
 struct WebService {
     db: DatabaseConnection,
     signer: Arc<PassSigner>,
+    codes: Option<Arc<MembershipCodes>>,
 }
 
-/// The routes of the web service, relative to `webServiceURL`.
-pub fn router(db: DatabaseConnection, signer: Arc<PassSigner>) -> Router {
+/// The routes of the web service, relative to `webServiceURL`. `codes` adds
+/// the QR code to each pass; `None` leaves passes without a barcode.
+pub fn router(
+    db: DatabaseConnection,
+    signer: Arc<PassSigner>,
+    codes: Option<Arc<MembershipCodes>>,
+) -> Router {
     Router::new()
         .route(
             "/v1/devices/{device}/registrations/{pass_type}/{serial}",
@@ -61,7 +68,7 @@ pub fn router(db: DatabaseConnection, signer: Arc<PassSigner>) -> Router {
         .route("/v1/passes/{pass_type}/{serial}", get(latest_pass))
         .route("/v1/log", post(log))
         .layer(DefaultBodyLimit::max(MAX_BODY_BYTES))
-        .with_state(WebService { db, signer })
+        .with_state(WebService { db, signer, codes })
 }
 
 #[derive(Deserialize)]
@@ -254,6 +261,15 @@ async fn latest_pass(
     }
     let membership = &content.membership;
     let membership_id = membership.id.to_string();
+    let code = service
+        .codes
+        .as_deref()
+        .map(|codes| codes.static_value(membership.id))
+        .transpose()
+        .map_err(|failure| {
+            tracing::error!(event = "membership_code_failed", error = %failure);
+            Refusal::Internal("membership_code")
+        })?;
     let card = MembershipCard {
         membership_id: &membership_id,
         display_name: &membership.display_name,
@@ -267,6 +283,7 @@ async fn latest_pass(
         },
         // Reserved: the pass does not read organization affiliations yet.
         organizations: &[],
+        code: code.as_deref(),
     };
     let pass = service.signer.sign(&card).map_err(|failure| {
         tracing::error!(event = "wallet_signing_failed", error = %failure);

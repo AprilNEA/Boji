@@ -12,15 +12,35 @@ use crate::auth::{self, Auth};
 use crate::proto::boji::v1::ErrorReason;
 use crate::rpc::{error, session_required};
 
+/// The longest session age, in minutes, that operations methods accept.
+pub const OPERATION_SESSION_MINUTES: i64 = 15;
+
+/// The longest session age, in minutes, that membership-code verification
+/// accepts. It covers one business day, so that front-desk staff sign in
+/// once per day. The method reads one card and changes no state.
+pub const VERIFICATION_SESSION_MINUTES: i64 = 12 * 60;
+
 /// Require a signed Bearer, native permissions, verified email, and fresh session.
 ///
 /// Credentials only come from one Authorization header. Cookies, asserted user
 /// IDs, and asserted roles never participate. Results must not be cached.
 /// Permission changes after this check are not serialized with business writes.
+/// The session must be at most [`OPERATION_SESSION_MINUTES`] old.
 pub async fn authorize(
     auth: &Auth,
     headers: &HeaderMap,
     permissions: &[(&str, &[&str])],
+) -> Result<String, ConnectError> {
+    authorize_within(auth, headers, permissions, OPERATION_SESSION_MINUTES).await
+}
+
+/// Apply the checks of [`authorize`] with a session at most
+/// `max_session_minutes` old.
+pub async fn authorize_within(
+    auth: &Auth,
+    headers: &HeaderMap,
+    permissions: &[(&str, &[&str])],
+    max_session_minutes: i64,
 ) -> Result<String, ConnectError> {
     let credential = auth::signed_bearer(headers).map_err(|_| session_required())?;
     let native_headers =
@@ -41,7 +61,7 @@ pub async fn authorize(
         .authorize_request(&native_headers, &required)
         .await
         .map_err(permission_error)?;
-    require_fresh_verified(caller.user(), caller.session())?;
+    require_fresh_verified(caller.user(), caller.session(), max_session_minutes)?;
     caller
         .user()
         .id
@@ -50,7 +70,11 @@ pub async fn authorize(
         .ok_or_else(authorization_failed)
 }
 
-fn require_fresh_verified(user: &UserView, session: &SessionView) -> Result<(), ConnectError> {
+fn require_fresh_verified(
+    user: &UserView,
+    session: &SessionView,
+    max_session_minutes: i64,
+) -> Result<(), ConnectError> {
     // A field that a replacement schema stores with another type fails closed.
     if *user.banned.typed().map_err(|_| authorization_failed())? {
         let expires = user
@@ -85,11 +109,13 @@ fn require_fresh_verified(user: &UserView, session: &SessionView) -> Result<(), 
         .map_err(|_| authorization_failed())?
         .ok_or_else(authorization_failed)?;
     let age = Utc::now().signed_duration_since(created);
-    if age < Duration::zero() || age > Duration::minutes(15) {
+    if age < Duration::zero() || age > Duration::minutes(max_session_minutes) {
         return Err(error::error(
             ErrorCode::PermissionDenied,
             ErrorReason::FRESH_SESSION_REQUIRED,
-            "Sign in again. Operations require a session created within 15 minutes.",
+            &format!(
+                "Sign in again. This method requires a session created within {max_session_minutes} minutes."
+            ),
         ));
     }
     if !session.impersonated_by.is_absent() {

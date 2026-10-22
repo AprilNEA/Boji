@@ -38,7 +38,10 @@ wallet_back_usage_label:
   comment: 说明这张卡用途的一项的标题
   targets: [wallet]
 wallet_back_usage:
-  comment: 说明这张卡不是支付或核销凭证
+  comment: 说明这张卡不是支付或核销凭证。卡面没有二维码时使用
+  targets: [wallet]
+wallet_back_usage_code:
+  comment: 卡面有会员码二维码时的使用说明：工作人员扫码确认会员身份，本卡不是支付凭证
   targets: [wallet]
 wallet_back_status_label:
   comment: 会员状态一项的标题

@@ -15,15 +15,16 @@ Do not reimplement Connect framing or password and session algorithms. Use `app:
 | `src/wallet.rs`, `src/wallet/` | Apple Wallet signing material checks, pass packaging, PKCS #7 signatures, authentication tokens (`token.rs`), the web service (`web.rs`) and APNs update notifications (`push.rs`). `strings.rs` is generated |
 | `assets/wallet/` | Pass icon and logo sources and PNG files, and the Apple Root CA that `src/wallet.rs` embeds at build time |
 | `data/schools/` | The school list: the pinned Hipo snapshot, its MIT notice and local corrections, which `src/domain/organization/import.rs` embeds at build time. See `data/schools/README.md` |
-| `src/domain/` | Transport-independent membership, administration, activity, organization-ranking and Wallet registration rules |
+| `src/domain/` | Transport-independent membership, administration, activity, organization-ranking, Wallet registration and membership code rules |
 | `src/admin_auth.rs`, `src/admin_permissions.rs` | Native permission checks and application-owned business role grants |
 | `src/entities/` | SeaORM business entities |
 | `src/migrations*` | Versioned PostgreSQL migrations |
 | `src/rpc*` | ConnectRPC adapters: errors, resource names, page tokens, filters and conversions |
 | `src/telemetry.rs` | Optional Sentry error reporting: settings, the tracing layer, request tags and path redaction |
-| `proto/boji/v1/` | Canonical owner API: system, membership, activity, Wallet and school contracts, and `ErrorReason` |
-| `proto/boji/admin/v1/` | Canonical operations API: entitlement catalog and membership administration |
+| `proto/boji/v1/` | Canonical owner API: system, membership, activity, Wallet, membership code and school contracts, and `ErrorReason` |
+| `proto/boji/admin/v1/` | Canonical operations API: entitlement catalog, membership administration, organization operations and membership code verification |
 | `tests/` | Contract and database integration tests |
+| `examples/` | `wallet_preview.rs` signs the sample passes of the README Wallet screenshot with the production Pass Type ID certificate. See "README Wallet screenshot" in the root `AGENTS.md` |
 | `docs/` | Chinese interface and migration documents |
 | `buf.yaml`, `buf.lock` | buf workspace of `proto/` and the pinned googleapis dependency from the BSR |
 | `Dockerfile`, `compose.yml` | Service image for local services and GHCR releases, and isolated local services |
@@ -34,7 +35,7 @@ The previous service at `/Users/Xuan/Developer/AprilNEA/bojifit/bizserver` never
 
 `APP_ENV=production` requires the production checks in `src/config.rs`: an HTTPS `BETTER_AUTH_URL`, HTTPS origins, `SMTP_HOST` with `MAIL_FROM`, and SMTP over TLS or STARTTLS. Add a check there when a new setting is unsafe in production. Never present an unimplemented capability as available.
 
-`boji.admin.v1.EntitlementService` and `boji.admin.v1.MembershipService` are registered. Their handlers require a signed Bearer, verified email, fresh authoritative session, and native Admin permissions before target lookup. Deny banned accounts and impersonation. Keep business writes and audit inserts in one transaction. When an implementation changes a contract rule, update the proto comments and `docs/connectrpc-api.md` in the same change.
+`boji.admin.v1.EntitlementService`, `boji.admin.v1.MembershipService` and `boji.admin.v1.MembershipCodeService` are registered. Their handlers require a signed Bearer, verified email, fresh authoritative session, and native Admin permissions before target lookup. `admin_auth::authorize` accepts a session of at most `OPERATION_SESSION_MINUTES` (15). Only `VerifyMembershipCode` uses `authorize_within` with `VERIFICATION_SESSION_MINUTES` (12 hours), because it reads one card and changes no state. Do not give a longer session to a method that writes. Deny banned accounts and impersonation. Keep business writes and audit inserts in one transaction. When an implementation changes a contract rule, update the proto comments and `docs/connectrpc-api.md` in the same change.
 
 ## Configuration
 
@@ -83,6 +84,16 @@ The web service in `src/wallet/web.rs` is Apple's HTTP and JSON protocol, so it 
 - A change to anything that a pass shows must update `wallet_pass.update_time` in the same transaction as the change, then call `PassUpdates::pass_changed` after the commit. `domain::admin::mutation` does this for suspend and resume. Add the same two steps when a new mutation changes pass content.
 - `wallet_pass` references `membership`, and `wallet_registration` references `wallet_pass`. Both use `ON DELETE CASCADE`, so account deletion removes them.
 - APNs uses the pass signing certificate, the production origin `https://api.push.apple.com` and an empty JSON payload. `reqwest` uses `rustls` with HTTP/2. Do not enable `native-tls`. Do not log push tokens or device identifiers. Tests replace APNs with a `PushSender`.
+
+## Membership codes
+
+A membership code is the QR code that staff scan to check a card. `src/domain/membership_code.rs` holds the only code rules, and `MembershipCodes` is the only type that derives or checks a value. The static code is on the Wallet pass. The dynamic code is an RFC 6238 TOTP value that the apps compute: HMAC-SHA1, 8 digits, 30-second steps, valid one step before and after the current step. The contract is the "会员码接口" section of `docs/connectrpc-api.md`.
+
+- Derive the static proof and the TOTP secret from `MEMBERSHIP_CODE_KEY` and the membership ID with HMAC-SHA256 and a separate context for each. Do not store codes or TOTP secrets. Compare proofs in constant time.
+- `MEMBERSHIP_CODE_KEY` must differ from `BETTER_AUTH_SECRET`, `WALLET_AUTH_TOKEN_KEY` and `AFFILIATION_EMAIL_HMAC_KEY`. A new key invalidates every static and dynamic value at once, and installed passes keep the old static code until they are downloaded again. Values carry the `BOJI1` version prefix, but the service accepts only one key. Add key versions before you support rotation.
+- `MembershipCodeService.GetMembershipCode` serves only the owner's active card. Without the key, `ServerConfig.membership_code_enabled` is false, the method returns `MEMBERSHIP_CODE_NOT_CONFIGURED`, and passes have no barcode.
+- Never log, report or return in an error a code value, a proof or a TOTP secret.
+- `boji.admin.v1.MembershipCodeService.VerifyMembershipCode` in `src/rpc/admin/code.rs` is the scan method. It requires `membership.read` and authorizes the caller before it reads the scanned value. It returns the basic view of the card, also when the card is suspended or expired, and the code kind. It writes no audit event. A dynamic value from up to 10 steps before the window returns `MEMBERSHIP_CODE_EXPIRED`; every other failed value returns `MEMBERSHIP_CODE_INVALID`. The apps show the card number, as `../docs/developers/membership.mdx` describes.
 
 ## API design
 

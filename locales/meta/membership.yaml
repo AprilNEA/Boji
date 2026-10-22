@@ -1,0 +1,67 @@
+# 会员卡在 App 内显示、两个客户端共用的文案。
+membership_code_show:
+  comment: 会员卡页面上的按钮，打开会员码页面
+membership_code_title:
+  comment: 会员码页面的标题。会员码是供工作人员扫描的二维码
+membership_code_hint:
+  comment: 会员码页面的说明。二维码每 30 秒更新，截图会很快失效
+membership_code_refresh:
+  comment: 二维码下一次更新前的剩余秒数，例如「12 秒后更新」
+  args:
+    seconds: int
+membership_code_card_number:
+  comment: 会员码下方的标签，后面显示完整会员卡号
+membership_code_unavailable:
+  comment: 会员码页面在还没有取得会员码时显示的说明，下面有重试按钮
+membership_code_not_configured:
+  comment: 服务端没有启用会员码时的提示
+membership_code_needs_active_card:
+  comment: 本机没有有效会员卡时点击出示会员码的提示
+membership_code_card_changed:
+  comment: 服务端报告会员卡已暂停或不存在时的提示
+membership_code_network:
+  comment: 取得会员码时无法连接服务端的提示
+membership_code_failed:
+  comment: 取得会员码时出现其他错误的提示
+membership_scan_open:
+  comment: 会员卡页面上的按钮，只对有校验权限的工作人员显示，打开扫码校验页面
+membership_scan_title:
+  comment: 扫码校验页面的标题。工作人员在这里扫描会员出示的会员码
+membership_scan_hint:
+  comment: 扫码校验页面取景框下方的说明
+membership_scan_manual_placeholder:
+  comment: 手动输入会员码的输入框占位文字。相机不可用或二维码损坏时使用
+membership_scan_manual_submit:
+  comment: 手动输入会员码后点击的校验按钮
+membership_scan_camera_unavailable:
+  comment: 设备不支持相机扫码时的说明，例如模拟器
+membership_scan_camera_denied:
+  comment: 用户关闭了相机权限时的说明
+membership_scan_valid:
+  comment: 校验结果的标题：会员卡有效
+membership_scan_suspended:
+  comment: 校验结果的标题：会员码真实，但会员卡已暂停
+membership_scan_card_expired:
+  comment: 校验结果的标题：会员码真实，但会员卡已过有效期
+membership_scan_kind_dynamic:
+  comment: 校验结果中的码类型说明：会员在 App 中出示的动态码
+membership_scan_kind_static:
+  comment: 校验结果中的码类型说明：钱包会员卡上的静态二维码。它不变化，可能是截图
+membership_scan_nickname:
+  comment: 校验结果中的标签，后面显示会员卡上的昵称
+membership_scan_next:
+  comment: 校验结果下方的按钮，关闭结果并继续扫描下一个会员码
+membership_scan_invalid:
+  comment: 扫描的内容不是有效会员码时的提示
+membership_scan_code_expired:
+  comment: 动态码已过期时的提示，例如会员出示了几分钟前的截图
+membership_scan_not_found:
+  comment: 会员码真实，但会员卡已被删除时的提示
+membership_scan_sign_in_again:
+  comment: 工作人员的会话无效或登录已超过 12 小时，服务端要求重新登录时的提示
+membership_scan_forbidden:
+  comment: 当前账号没有校验权限时的提示
+membership_scan_network:
+  comment: 校验时无法连接服务端的提示
+membership_scan_failed:
+  comment: 校验时出现其他错误的提示

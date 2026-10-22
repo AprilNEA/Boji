@@ -291,6 +291,47 @@ public  final class ServerConfig extends
     googleLoginEnabled_ = false;
   }
 
+  public static final int MEMBERSHIP_CODE_ENABLED_FIELD_NUMBER = 7;
+  private boolean membershipCodeEnabled_;
+  /**
+   * <pre>
+   * Output only. True when `MembershipCodeService` serves membership codes,
+   * Wallet passes carry a QR code, and the server can check scanned codes.
+   * </pre>
+   *
+   * <code>bool membership_code_enabled = 7 [json_name = "membershipCodeEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   * @return The membershipCodeEnabled.
+   */
+  @java.lang.Override
+  public boolean getMembershipCodeEnabled() {
+    return membershipCodeEnabled_;
+  }
+  /**
+   * <pre>
+   * Output only. True when `MembershipCodeService` serves membership codes,
+   * Wallet passes carry a QR code, and the server can check scanned codes.
+   * </pre>
+   *
+   * <code>bool membership_code_enabled = 7 [json_name = "membershipCodeEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   * @param value The membershipCodeEnabled to set.
+   */
+  private void setMembershipCodeEnabled(boolean value) {
+    
+    membershipCodeEnabled_ = value;
+  }
+  /**
+   * <pre>
+   * Output only. True when `MembershipCodeService` serves membership codes,
+   * Wallet passes carry a QR code, and the server can check scanned codes.
+   * </pre>
+   *
+   * <code>bool membership_code_enabled = 7 [json_name = "membershipCodeEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   */
+  private void clearMembershipCodeEnabled() {
+
+    membershipCodeEnabled_ = false;
+  }
+
   public static club.leanmuscle.boji.v1.ServerConfig parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -674,6 +715,49 @@ public  final class ServerConfig extends
       return this;
     }
 
+    /**
+     * <pre>
+     * Output only. True when `MembershipCodeService` serves membership codes,
+     * Wallet passes carry a QR code, and the server can check scanned codes.
+     * </pre>
+     *
+     * <code>bool membership_code_enabled = 7 [json_name = "membershipCodeEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return The membershipCodeEnabled.
+     */
+    @java.lang.Override
+    public boolean getMembershipCodeEnabled() {
+      return instance.getMembershipCodeEnabled();
+    }
+    /**
+     * <pre>
+     * Output only. True when `MembershipCodeService` serves membership codes,
+     * Wallet passes carry a QR code, and the server can check scanned codes.
+     * </pre>
+     *
+     * <code>bool membership_code_enabled = 7 [json_name = "membershipCodeEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param value The membershipCodeEnabled to set.
+     * @return This builder for chaining.
+     */
+    public Builder setMembershipCodeEnabled(boolean value) {
+      copyOnWrite();
+      instance.setMembershipCodeEnabled(value);
+      return this;
+    }
+    /**
+     * <pre>
+     * Output only. True when `MembershipCodeService` serves membership codes,
+     * Wallet passes carry a QR code, and the server can check scanned codes.
+     * </pre>
+     *
+     * <code>bool membership_code_enabled = 7 [json_name = "membershipCodeEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearMembershipCodeEnabled() {
+      copyOnWrite();
+      instance.clearMembershipCodeEnabled();
+      return this;
+    }
+
     // @@protoc_insertion_point(builder_scope:boji.v1.ServerConfig)
   }
   @java.lang.Override
@@ -696,10 +780,11 @@ public  final class ServerConfig extends
             "activitySyncEnabled_",
             "organizationRankingEnabled_",
             "googleLoginEnabled_",
+            "membershipCodeEnabled_",
           };
           java.lang.String info =
-              "\u0000\u0006\u0000\u0000\u0001\u0006\u0006\u0000\u0000\u0000\u0001\u0208\u0002\u0007" +
-              "\u0003\u0007\u0004\u0007\u0005\u0007\u0006\u0007";
+              "\u0000\u0007\u0000\u0000\u0001\u0007\u0007\u0000\u0000\u0000\u0001\u0208\u0002\u0007" +
+              "\u0003\u0007\u0004\u0007\u0005\u0007\u0006\u0007\u0007\u0007";
           return newMessageInfo(DEFAULT_INSTANCE, info, objects);
       }
       case GET_DEFAULT_INSTANCE: {

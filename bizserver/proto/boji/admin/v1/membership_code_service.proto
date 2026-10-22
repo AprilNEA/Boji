@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package boji.admin.v1;
+
+import "boji/v1/membership.proto";
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "MembershipCodeServiceProto";
+option java_package = "club.leanmuscle.boji.admin.v1";
+
+// Lets staff check the membership codes that members show.
+//
+// Members read their codes through `boji.v1.MembershipCodeService`. This
+// service is separate from `MembershipService`, so that the apps generate a
+// client for verification only and not for the state-changing operations.
+service MembershipCodeService {
+  option (google.api.default_host) = "boji.leanmuscle.club";
+
+  // Checks a scanned membership code and returns the card that the code
+  // names. Permission: `membership.read`.
+  //
+  // This method accepts a session created within 12 hours, so that staff at
+  // a front desk do not sign in again for each scan. The other authorization
+  // rules of `EntitlementService` apply. The method changes no state and
+  // writes no audit event.
+  //
+  // A genuine code of a suspended card still verifies. Read
+  // `membership.state` and `membership.expire_time` to decide whether the
+  // card is valid.
+  //
+  // Errors:
+  // - `FAILED_PRECONDITION` `MEMBERSHIP_CODE_NOT_CONFIGURED`.
+  // - `INVALID_ARGUMENT` `MEMBERSHIP_CODE_INVALID`.
+  // - `FAILED_PRECONDITION` `MEMBERSHIP_CODE_EXPIRED`.
+  // - `NOT_FOUND` `MEMBERSHIP_NOT_FOUND`: the code is genuine, but the card
+  //   no longer exists.
+  rpc VerifyMembershipCode(VerifyMembershipCodeRequest) returns (VerifyMembershipCodeResponse) {
+    option (google.api.http) = {
+      post: "/v1/memberships:verifyMembershipCode"
+      body: "*"
+    };
+  }
+}
+
+// Request message for `MembershipCodeService.VerifyMembershipCode`.
+message VerifyMembershipCodeRequest {
+  // Required. The scanned value. The server ignores leading and trailing
+  // white space and letter case.
+  string code = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for `MembershipCodeService.VerifyMembershipCode`.
+message VerifyMembershipCodeResponse {
+  // The card that the code names, in the basic view.
+  //
+  // (-- api-linter: core::0215::foreign-type-reference=disabled
+  //     aip.dev/not-precedent: The owner API and the operations API share the
+  //     Membership resource. --)
+  boji.v1.Membership membership = 1;
+
+  // The kind of the scanned code.
+  MembershipCodeKind code_kind = 2;
+}
+
+// The kind of a membership code.
+enum MembershipCodeKind {
+  // Not used.
+  MEMBERSHIP_CODE_KIND_UNSPECIFIED = 0;
+
+  // The static code of the Apple Wallet pass. It does not change, so a
+  // screenshot of it also verifies.
+  MEMBERSHIP_CODE_KIND_STATIC = 1;
+
+  // The dynamic code of the apps. It changes every 30 seconds.
+  MEMBERSHIP_CODE_KIND_DYNAMIC = 2;
+}

@@ -1,9 +1,17 @@
 package club.leanmuscle.boji.core.membership
 
+import club.leanmuscle.boji.admin.v1.MembershipCodeKind
+import club.leanmuscle.boji.admin.v1.VerifyMembershipCodeResponse
 import club.leanmuscle.boji.core.network.MembershipClient
 import club.leanmuscle.boji.core.network.ServerEndpoint
+import club.leanmuscle.boji.core.network.SystemClient
 import club.leanmuscle.boji.v1.ListMembershipsResponse
 import club.leanmuscle.boji.v1.Membership
+import club.leanmuscle.boji.v1.MembershipCode
+import club.leanmuscle.boji.v1.ServerConfig
+import club.leanmuscle.boji.v1.Totp
+import com.google.protobuf.ByteString
+import com.google.protobuf.Duration
 import com.google.protobuf.MessageLite
 import com.google.protobuf.Timestamp
 import com.google.rpc.ErrorInfo
@@ -65,9 +73,15 @@ class FakeMemberServer : Closeable {
         const val DELETE_USER = "/api/auth/delete-user"
         const val LIST_MEMBERSHIPS = "/boji.v1.MembershipService/ListMemberships"
         const val CREATE_MEMBERSHIP = "/boji.v1.MembershipService/CreateMembership"
+        const val GET_MEMBERSHIP_CODE = "/boji.v1.MembershipCodeService/GetMembershipCode"
+        const val HAS_PERMISSION = "/api/auth/admin/has-permission"
+        const val VERIFY_MEMBERSHIP_CODE = "/boji.admin.v1.MembershipCodeService/VerifyMembershipCode"
 
         const val USER_ID = "user-1"
         const val EMAIL = "member@example.com"
+
+        /** The SHA-1 secret of the RFC 6238 test vectors. */
+        val RFC6238_SECRET: ByteArray = "12345678901234567890".toByteArray(Charsets.US_ASCII)
 
         fun json(body: String, code: Int = 200, authToken: String? = null): MockResponse =
             MockResponse.Builder()
@@ -141,5 +155,37 @@ class FakeMemberServer : Closeable {
 
         fun list(vararg memberships: Membership): ListMembershipsResponse =
             ListMembershipsResponse.newBuilder().addAllMemberships(memberships.asList()).build()
+
+        fun serverConfig(membershipCode: Boolean): ServerConfig =
+            ServerConfig.newBuilder().setName(SystemClient.SERVER_CONFIG).setMembershipCodeEnabled(membershipCode).build()
+
+        /** The member code of card m1, with the RFC 6238 secret, 8 digits and 30 seconds. */
+        fun membershipCode(
+            name: String = "users/$USER_ID/memberships/m1/code",
+            secret: ByteArray = RFC6238_SECRET,
+            digits: Int = 8,
+            periodSeconds: Long = 30,
+        ): MembershipCode =
+            MembershipCode.newBuilder()
+                .setName(name)
+                .setStaticValue("BJ1.S.static")
+                .setDynamicValuePrefix("BJ1.D.m1.")
+                .setTotp(
+                    Totp.newBuilder()
+                        .setSecret(ByteString.copyFrom(secret))
+                        .setDigits(digits)
+                        .setPeriod(Duration.newBuilder().setSeconds(periodSeconds)),
+                )
+                .build()
+
+        /** A Better Auth `admin/has-permission` body. */
+        fun permissionJson(granted: Boolean): String = """{"error":null,"success":$granted}"""
+
+        /** The staff verification of [membership], found through a code of [kind]. */
+        fun verification(
+            membership: Membership = membership(),
+            kind: MembershipCodeKind = MembershipCodeKind.MEMBERSHIP_CODE_KIND_DYNAMIC,
+        ): VerifyMembershipCodeResponse =
+            VerifyMembershipCodeResponse.newBuilder().setMembership(membership).setCodeKind(kind).build()
     }
 }

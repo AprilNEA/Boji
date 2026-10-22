@@ -13,6 +13,10 @@ kotlinxCoroutines = "1.11.0"
 lottie = "6.7.1"
 # Vico chart library for Compose, checked against Maven Central on 2026-10-21. compose and compose-m3 share one version.
 vico = "3.3.1"
+zxing = "3.5.4"
+# CameraX for the staff scanner, checked against Google Maven on 2026-10-22. camera-camera2,
+# camera-lifecycle and camera-view share one version.
+camerax = "1.6.2"
 # Health Connect client, checked against Google Maven on 2026-10-21. 1.1.0 is the latest stable release; 1.2.0 is alpha.
 healthConnect = "1.1.0"
 # Glance for the home screen widget, checked against Google Maven on 2026-10-21. 1.2.0 is the latest
@@ -94,6 +98,10 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie" }
 vico-compose = { module = "com.patrykandpatrick.vico:compose", version.ref = "vico" }
 vico-compose-m3 = { module = "com.patrykandpatrick.vico:compose-m3", version.ref = "vico" }
+zxing-core = { module = "com.google.zxing:core", version.ref = "zxing" }
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camerax" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camerax" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "camerax" }
 androidx-health-connect-client = { module = "androidx.health.connect:connect-client", version.ref = "healthConnect" }
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
 androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glance" }

@@ -2,9 +2,11 @@ import Foundation
 import CryptoKit
 import Security
 
-struct MembershipCapabilities: Decodable, Equatable, Sendable {
+struct MembershipCapabilities: Equatable, Sendable {
     let appleSignIn: Bool
     let walletPass: Bool
+    /// 服务端能否签发会员码。为 false 时，钱包会员卡没有二维码，App 也不显示动态码。
+    var membershipCode = false
 }
 
 struct AppleIdentity: Encodable, Sendable {

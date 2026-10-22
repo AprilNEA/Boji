@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import club.leanmuscle.boji.R
 import club.leanmuscle.boji.core.membership.AccountMessage
 import club.leanmuscle.boji.core.membership.AccountState
+import club.leanmuscle.boji.core.membership.CardCondition
 import club.leanmuscle.boji.core.membership.MembershipCard
 import club.leanmuscle.boji.ui.components.BojiCard
 import club.leanmuscle.boji.ui.components.BojiScaffold
@@ -53,6 +55,8 @@ import kotlinx.coroutines.launch
 import java.time.Instant
 
 const val MEMBERSHIP_SCREEN_TAG = "membership_screen"
+const val MEMBERSHIP_CODE_BUTTON_TAG = "membership_code_button"
+const val MEMBERSHIP_SCAN_BUTTON_TAG = "membership_scan_button"
 
 /** Actions of the member center. Navigation stays with the caller. */
 data class MembershipActions(
@@ -65,6 +69,10 @@ data class MembershipActions(
     val onResendVerification: () -> Unit,
     val onSignOut: () -> Unit,
     val onShare: () -> Unit,
+    /** Opens the member code. Null when the server issues no member codes. */
+    val onShowCode: (() -> Unit)? = null,
+    /** Opens the staff scanner. Null when the operator role of the account cannot verify codes. */
+    val onOpenScanner: (() -> Unit)? = null,
 )
 
 @Composable
@@ -80,7 +88,14 @@ fun MembershipScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val busy by viewModel.busy.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
+    val membershipCode by viewModel.membershipCode.collectAsStateWithLifecycle()
+    val membershipCodeEnabled by viewModel.membershipCodeEnabled.collectAsStateWithLifecycle()
+    val canVerify by viewModel.canVerify.collectAsStateWithLifecycle()
+    val verifying by viewModel.verifying.collectAsStateWithLifecycle()
+    val scanOutcome by viewModel.scanOutcome.collectAsStateWithLifecycle()
     var sharing by rememberSaveable { mutableStateOf(false) }
+    var showingCode by rememberSaveable { mutableStateOf(false) }
+    var scanning by rememberSaveable { mutableStateOf(false) }
 
     MembershipContent(
         state = state,
@@ -96,6 +111,20 @@ fun MembershipScreen(
             onResendVerification = viewModel::resendVerification,
             onSignOut = viewModel::signOut,
             onShare = { sharing = true },
+            // As on iOS: a code that this run already fetched still shows when the capability is gone.
+            onShowCode = if (membershipCodeEnabled || membershipCode != null) {
+                {
+                    showingCode = true
+                    viewModel.prepareMembershipCode()
+                }
+            } else {
+                null
+            },
+            onOpenScanner = if (canVerify) {
+                { scanning = true }
+            } else {
+                null
+            },
         ),
         modifier = modifier,
     )
@@ -107,6 +136,32 @@ fun MembershipScreen(
             isOffline = signedIn.isOffline,
             onDismiss = { sharing = false },
             writeImage = viewModel::shareImageUri,
+        )
+    }
+    if (showingCode && card != null) {
+        MembershipCodeSheet(
+            code = membershipCode,
+            memberNumber = card.memberNumber,
+            busy = busy,
+            message = message,
+            onRetry = viewModel::prepareMembershipCode,
+            onDismiss = { showingCode = false },
+        )
+    }
+    // Signing out closes the scanner. The verifier clears its result for the next account.
+    LaunchedEffect(signedIn == null) {
+        if (signedIn == null) scanning = false
+    }
+    if (scanning && signedIn != null) {
+        MembershipScanSheet(
+            outcome = scanOutcome,
+            verifying = verifying,
+            onVerify = viewModel::verify,
+            onNext = viewModel::clearScanOutcome,
+            onDismiss = {
+                scanning = false
+                viewModel.clearScanOutcome()
+            },
         )
     }
 }
@@ -247,6 +302,15 @@ private fun CardSection(card: MembershipCard, state: AccountState.SignedIn, acti
             )
         }
     }
+    val onShowCode = actions.onShowCode
+    if (onShowCode != null && (condition == CardCondition.ACTIVE || condition == CardCondition.OFFLINE)) {
+        PrimaryButton(
+            text = stringResource(R.string.membership_code_show),
+            icon = R.drawable.ic_qr_code,
+            onClick = onShowCode,
+            modifier = Modifier.testTag(MEMBERSHIP_CODE_BUTTON_TAG),
+        )
+    }
     PrimaryButton(text = stringResource(R.string.membership_make_share_card), icon = R.drawable.ic_share, onClick = actions.onShare)
 
     SectionHeading(stringResource(R.string.membership_details), null)
@@ -335,6 +399,15 @@ private fun AccountSection(state: AccountState.SignedIn, busy: Boolean, actions:
             Icon(painterResource(R.drawable.ic_key), contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(R.string.membership_security), modifier = Modifier.padding(start = 8.dp).weight(1f))
             Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.size(18.dp))
+        }
+        // Staff only. bizserver checks the operator role again for every code.
+        actions.onOpenScanner?.let { onOpenScanner ->
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            TextButton(onClick = onOpenScanner, modifier = Modifier.fillMaxWidth().testTag(MEMBERSHIP_SCAN_BUTTON_TAG)) {
+                Icon(painterResource(R.drawable.ic_qr_code), contentDescription = null, modifier = Modifier.size(18.dp))
+                Text(stringResource(R.string.membership_scan_open), modifier = Modifier.padding(start = 8.dp).weight(1f))
+                Icon(painterResource(R.drawable.ic_chevron_right), contentDescription = null, modifier = Modifier.size(18.dp))
+            }
         }
     }
     OutlinedButton(onClick = { confirmSignOut = true }, enabled = !busy, modifier = Modifier.fillMaxWidth()) {

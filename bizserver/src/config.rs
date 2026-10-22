@@ -8,6 +8,7 @@ pub mod source;
 
 use crate::apple::AppleSignIn;
 use crate::auth::{AccountLinking, ClientIp};
+use crate::domain::membership_code::MembershipCodes;
 use crate::domain::organization::AffiliationEmailKey;
 use crate::google::GoogleSignIn;
 use crate::mail::{MailTransport, SmtpCredentials, SmtpRelay, SmtpSecurity};
@@ -62,6 +63,9 @@ pub struct Config {
     /// `AFFILIATION_EMAIL_HMAC_KEY` is unset, which turns affiliation off.
     /// Never log this field.
     pub affiliation_email_key: Option<AffiliationEmailKey>,
+    /// The key of membership codes. `None` when `MEMBERSHIP_CODE_KEY` is
+    /// unset, which turns membership codes off. Never log this field.
+    pub membership_codes: Option<MembershipCodes>,
 }
 
 impl Config {
@@ -124,6 +128,20 @@ impl Config {
             .unwrap_or_else(|| DEFAULT_LOG_FILTER.to_owned());
         tracing_subscriber::EnvFilter::try_new(&log_filter)
             .map_err(|_| anyhow!("RUST_LOG must contain tracing filter directives"))?;
+        let membership_codes = membership_codes(
+            settings.membership_code_key,
+            &[
+                ("BETTER_AUTH_SECRET", Some(auth_secret.as_str())),
+                (
+                    "WALLET_AUTH_TOKEN_KEY",
+                    settings.wallet.auth_token_key.as_deref(),
+                ),
+                (
+                    "AFFILIATION_EMAIL_HMAC_KEY",
+                    settings.affiliation_email_hmac_key.as_deref(),
+                ),
+            ],
+        )?;
         let affiliation_email_key =
             affiliation_email_key(settings.affiliation_email_hmac_key, &auth_secret)?;
         // The checks run in this order, so the first error stays the same.
@@ -148,6 +166,7 @@ impl Config {
             wallet,
             account_linking: account_linking(settings.account_linking.as_deref())?,
             affiliation_email_key,
+            membership_codes,
         })
     }
 }
@@ -171,6 +190,29 @@ fn affiliation_email_key(
     AffiliationEmailKey::new(value.into_bytes())
         .map(Some)
         .map_err(|_| anyhow!("AFFILIATION_EMAIL_HMAC_KEY must contain at least 32 bytes"))
+}
+
+/// Parse `MEMBERSHIP_CODE_KEY`. An unset value turns membership codes off.
+///
+/// The key must differ from each secret in `others`, so that rotating one
+/// secret never changes another. A new key invalidates the static code of every
+/// Wallet pass and the TOTP secret of every app, so members must refresh both.
+fn membership_codes(
+    value: Option<String>,
+    others: &[(&str, Option<&str>)],
+) -> Result<Option<MembershipCodes>> {
+    let Some(value) = value else {
+        return Ok(None);
+    };
+    if let Some((name, _)) = others
+        .iter()
+        .find(|(_, other)| *other == Some(value.as_str()))
+    {
+        bail!("MEMBERSHIP_CODE_KEY must differ from {name}");
+    }
+    MembershipCodes::new(value.into_bytes())
+        .map(Some)
+        .map_err(|_| anyhow!("MEMBERSHIP_CODE_KEY must contain at least 32 bytes"))
 }
 
 /// Parse `ACCOUNT_LINKING`. An unset value keeps linking disabled.
@@ -845,6 +887,37 @@ mod tests {
                 "0123456789abcdef0123456789abcdef"
             )]),
             "AFFILIATION_EMAIL_HMAC_KEY must differ from BETTER_AUTH_SECRET"
+        );
+    }
+
+    #[test]
+    fn the_membership_code_key_is_optional_long_and_separate() {
+        assert!(load(&[]).unwrap().membership_codes.is_none());
+        let key = "membership-code-key-0123456789abcdef";
+        assert!(
+            load(&[("MEMBERSHIP_CODE_KEY", key)])
+                .unwrap()
+                .membership_codes
+                .is_some()
+        );
+        assert_eq!(
+            error(&[("MEMBERSHIP_CODE_KEY", "short")]),
+            "MEMBERSHIP_CODE_KEY must contain at least 32 bytes"
+        );
+        assert_eq!(
+            error(&[("MEMBERSHIP_CODE_KEY", BASE[1].1)]),
+            "MEMBERSHIP_CODE_KEY must differ from BETTER_AUTH_SECRET"
+        );
+        assert_eq!(
+            error(&[
+                ("MEMBERSHIP_CODE_KEY", key),
+                ("AFFILIATION_EMAIL_HMAC_KEY", key)
+            ]),
+            "MEMBERSHIP_CODE_KEY must differ from AFFILIATION_EMAIL_HMAC_KEY"
+        );
+        assert_eq!(
+            error(&[("MEMBERSHIP_CODE_KEY", key), ("WALLET_AUTH_TOKEN_KEY", key)]),
+            "MEMBERSHIP_CODE_KEY must differ from WALLET_AUTH_TOKEN_KEY"
         );
     }
 

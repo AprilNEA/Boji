@@ -105,6 +105,11 @@ pub(super) fn pass_json(
     } else {
         &strings::WALLET_BACK_STATUS
     };
+    let usage_text = if card.code.is_some() {
+        &strings::WALLET_BACK_USAGE_CODE
+    } else {
+        &strings::WALLET_BACK_USAGE
+    };
     let mut pass = json!({
         "formatVersion": 1,
         "passTypeIdentifier": issuer.pass_type_identifier,
@@ -134,13 +139,22 @@ pub(super) fn pass_json(
             "auxiliaryFields": auxiliary,
             "backFields": [
                 back_field("about", &strings::WALLET_BACK_ABOUT_LABEL, &strings::WALLET_BACK_ABOUT),
-                back_field("usage", &strings::WALLET_BACK_USAGE_LABEL, &strings::WALLET_BACK_USAGE),
+                back_field("usage", &strings::WALLET_BACK_USAGE_LABEL, usage_text),
                 back_field("status", &strings::WALLET_BACK_STATUS_LABEL, status_text)
             ]
         }
     });
     if suspended {
         pass["voided"] = Value::Bool(true);
+    }
+    if let Some(code) = card.code {
+        // The value is ASCII, so ISO 8859-1 encodes it byte for byte. A voided
+        // pass keeps the code, so a scan reports the suspension.
+        pass["barcodes"] = json!([{
+            "format": "PKBarcodeFormatQR",
+            "message": code,
+            "messageEncoding": "iso-8859-1"
+        }]);
     }
     if let Some(expires_at) = card.expires_at {
         pass["expirationDate"] = Value::String(date(expires_at));
@@ -294,6 +308,7 @@ mod tests {
             expires_at: None,
             status,
             organizations,
+            code: None,
         }
     }
 
@@ -366,6 +381,31 @@ mod tests {
         assert_eq!(
             pass["generic"]["backFields"][2]["value"],
             strings::WALLET_BACK_SUSPENDED.key()
+        );
+    }
+
+    #[test]
+    fn a_membership_code_becomes_a_qr_code() {
+        let mut card = card(CardStatus::Active, &[]);
+        let plain = pass(&card);
+        assert!(plain.get("barcodes").is_none());
+        assert_eq!(
+            plain["generic"]["backFields"][1]["value"],
+            strings::WALLET_BACK_USAGE.key()
+        );
+        card.code = Some("BOJI1.S.ID.PROOF");
+        let coded = pass(&card);
+        assert_eq!(
+            coded["barcodes"],
+            json!([{
+                "format": "PKBarcodeFormatQR",
+                "message": "BOJI1.S.ID.PROOF",
+                "messageEncoding": "iso-8859-1"
+            }])
+        );
+        assert_eq!(
+            coded["generic"]["backFields"][1]["value"],
+            strings::WALLET_BACK_USAGE_CODE.key()
         );
     }
 

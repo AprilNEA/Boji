@@ -3,9 +3,10 @@ import Connect
 import Foundation
 import SwiftProtobuf
 
-/// 调用 bizserver 的 `boji.v1` Connect 服务：系统配置、会员卡和钱包凭证。
+/// 调用 bizserver 的 Connect 服务：`boji.v1` 的系统配置、会员卡、钱包凭证和会员码，
+/// 以及工作人员校验会员码的 `boji.admin.v1.MembershipCodeService`。
 ///
-/// 请求类型来自 `BojiAPI` 的生成代码，契约以 `bizserver/proto/boji/v1/` 为准。
+/// 请求类型来自 `BojiAPI` 的生成代码，契约以 `bizserver/proto/boji/` 为准。
 /// 请求经过 `MembershipTransport`，与 Better Auth 端点共用无 Cookie 会话、重定向拦截和测试传输层。
 struct MembershipRPCClient: Sendable {
     /// bizserver 错误的 `ErrorInfo.domain`。
@@ -18,12 +19,16 @@ struct MembershipRPCClient: Sendable {
     private let system: Boji_V1_SystemServiceClient?
     private let memberships: Boji_V1_MembershipServiceClient?
     private let wallet: Boji_V1_WalletServiceClient?
+    private let codes: Boji_V1_MembershipCodeServiceClient?
+    private let staffCodes: Boji_Admin_V1_MembershipCodeServiceClient?
 
     init(configuration: MembershipServiceConfiguration?, transport: any MembershipTransport) {
         guard let configuration else {
             system = nil
             memberships = nil
             wallet = nil
+            codes = nil
+            staffCodes = nil
             return
         }
         // URLSession 已解码 Content-Encoding，所以 Connect 不再声明或解压响应压缩。
@@ -39,6 +44,8 @@ struct MembershipRPCClient: Sendable {
         system = Boji_V1_SystemServiceClient(client: client)
         memberships = Boji_V1_MembershipServiceClient(client: client)
         wallet = Boji_V1_WalletServiceClient(client: client)
+        codes = Boji_V1_MembershipCodeServiceClient(client: client)
+        staffCodes = Boji_Admin_V1_MembershipCodeServiceClient(client: client)
     }
 
     /// 读取服务端开关。此调用不需要登录。
@@ -47,7 +54,11 @@ struct MembershipRPCClient: Sendable {
         var request = Boji_V1_GetServerConfigRequest()
         request.name = "serverConfig"
         let config = try Self.output(of: await system.getServerConfig(request: request, headers: [:]))
-        return MembershipCapabilities(appleSignIn: config.appleLoginEnabled, walletPass: config.walletPassEnabled)
+        return MembershipCapabilities(
+            appleSignIn: config.appleLoginEnabled,
+            walletPass: config.walletPassEnabled,
+            membershipCode: config.membershipCodeEnabled
+        )
     }
 
     /// 返回当前用户的会员卡。没有会员卡时返回 nil。
@@ -102,6 +113,40 @@ struct MembershipRPCClient: Sendable {
             throw MembershipAPIError.invalidResponse
         }
         return pass.content
+    }
+
+    /// 取得会员卡的会员码：静态码和动态码的 TOTP 参数。
+    func membershipCode(membershipID: String, token: String) async throws -> MembershipCode {
+        guard let codes else { throw MembershipAPIError.notConfigured }
+        guard !membershipID.isEmpty, !membershipID.contains("/") else { throw MembershipAPIError.invalidResponse }
+        var request = Boji_V1_GetMembershipCodeRequest()
+        request.name = "users/me/memberships/\(membershipID)/code"
+        let code = try Self.output(of: await codes.getMembershipCode(
+            request: request,
+            headers: Self.authorization(token)
+        ))
+        return try MembershipCode(rpc: code, membershipID: membershipID)
+    }
+
+    /// 工作人员校验扫描到的会员码，返回会员码指向的会员卡。
+    ///
+    /// 需要有 `membership.read` 权限、12 小时内登录的会话。
+    func verifyMembershipCode(_ value: String, token: String) async throws -> MembershipVerification {
+        guard let staffCodes else { throw MembershipAPIError.notConfigured }
+        var request = Boji_Admin_V1_VerifyMembershipCodeRequest()
+        request.code = value
+        let response = try Self.output(of: await staffCodes.verifyMembershipCode(
+            request: request,
+            headers: Self.authorization(token)
+        ))
+        let kind: MembershipVerification.Kind
+        switch response.codeKind {
+        case .static: kind = .walletPass
+        case .dynamic: kind = .app
+        case .unspecified, .UNRECOGNIZED: throw MembershipAPIError.invalidResponse
+        }
+        guard response.hasMembership else { throw MembershipAPIError.invalidResponse }
+        return MembershipVerification(member: try ClubMember(rpc: response.membership), kind: kind)
     }
 
     private static func authorization(_ token: String) -> Headers {
@@ -300,6 +345,41 @@ extension ClubMember {
             status: status,
             grantedEntitlements: entitlements,
             expiresAt: membership.hasExpireTime ? membership.expireTime.date : nil
+        )
+    }
+}
+
+extension MembershipCode {
+    /// 把 bizserver 的 `MembershipCode` 转换为 App 的会员码，并校验 TOTP 参数。
+    ///
+    /// 资源名必须属于请求的会员卡，以免把另一张卡的码显示在这张卡上。
+    init(rpc code: Boji_V1_MembershipCode, membershipID: String) throws {
+        let segments = code.name.split(separator: "/", omittingEmptySubsequences: false)
+        let period = code.totp.period
+        guard segments.count == 5,
+              segments[0] == "users",
+              segments[2] == "memberships",
+              segments[3] == membershipID,
+              segments[4] == "code",
+              !code.staticValue.isEmpty,
+              !code.dynamicValuePrefix.isEmpty,
+              code.hasTotp,
+              code.totp.secret.count >= Self.minimumSecretBytes,
+              Self.allowedDigits.contains(Int(code.totp.digits)),
+              code.totp.hasPeriod,
+              period.seconds > 0,
+              period.seconds <= 300,
+              period.nanos == 0
+        else {
+            throw MembershipAPIError.invalidResponse
+        }
+        self.init(
+            membershipID: membershipID,
+            staticValue: code.staticValue,
+            dynamicValuePrefix: code.dynamicValuePrefix,
+            secret: code.totp.secret,
+            digits: Int(code.totp.digits),
+            period: Int(period.seconds)
         )
     }
 }
