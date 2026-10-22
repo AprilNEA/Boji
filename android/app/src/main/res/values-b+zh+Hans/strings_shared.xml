@@ -367,4 +367,22 @@
     <string name="welcome_privacy">无需账号，记录默认留在你的设备。</string>
     <string name="welcome_start">开始我的计划</string>
     <string name="welcome_disclaimer">适合成年人的日常运动记录，不替代专业医疗建议。</string>
+    <!-- widget -->
+    <string name="widget_name">薄肌今日记录</string>
+    <string name="widget_description">查看今天的训练、饮水和睡眠记录状态。</string>
+    <string name="widget_title_current">今日记录</string>
+    <string name="widget_title_disabled">未开启记录共享</string>
+    <string name="widget_detail_current">手动记录状态</string>
+    <string name="widget_detail_disabled">请到 App 设置开启</string>
+    <string name="widget_subtitle">训练・饮水・睡眠</string>
+    <string name="widget_training">训练</string>
+    <string name="widget_water">饮水</string>
+    <string name="widget_sleep">睡眠</string>
+    <string name="widget_logged">已记</string>
+    <string name="widget_pending">待记</string>
+    <string name="widget_item_logged_a11y">%1$s已记录</string>
+    <string name="widget_item_pending_a11y">%1$s待记录</string>
+    <string name="widget_current_a11y">今日记录。%1$s。%2$s。%3$s。</string>
+    <string name="widget_disabled_a11y">未开启记录共享。请到 App 设置开启。</string>
+    <string name="widget_open_training_a11y">%1$s。打开训练。</string>
 </resources>

@@ -1,26 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 主屏幕小组件、设置中的共享开关和手表状态。只有 Android 客户端显示这些文案。 -->
+<!-- 主屏幕小组件的读取失败状态、设置中的共享开关和手表状态。只有 Android 客户端显示这些文案。小组件的其他文案位于 locales/ 的 widget 分组。 -->
 <resources>
-    <string name="widget_name">薄肌今日记录</string>
-    <string name="widget_description">查看今天的训练、饮水和睡眠记录状态。</string>
-    <string name="widget_title_current">今日记录</string>
-    <string name="widget_title_disabled">未开启记录共享</string>
     <string name="widget_title_unavailable">暂时无法读取记录</string>
-    <string name="widget_detail_current">手动记录状态</string>
-    <string name="widget_detail_disabled">请到 App 设置开启</string>
     <string name="widget_detail_unavailable">请打开 App 查看</string>
-    <string name="widget_subtitle">训练・饮水・睡眠</string>
-    <string name="widget_training">训练</string>
-    <string name="widget_water">饮水</string>
-    <string name="widget_sleep">睡眠</string>
-    <string name="widget_logged">已记</string>
-    <string name="widget_pending">待记</string>
-    <string name="widget_item_logged_a11y">%1$s已记录</string>
-    <string name="widget_item_pending_a11y">%1$s待记录</string>
-    <string name="widget_current_a11y">今日记录。%1$s。%2$s。%3$s。</string>
-    <string name="widget_disabled_a11y">未开启记录共享。请到 App 设置开启。</string>
     <string name="widget_unavailable_a11y">暂时无法读取记录。请打开 App 查看。</string>
-    <string name="widget_open_training_a11y">%1$s。打开训练。</string>
 
     <string name="settings_companion_header">小组件与手表</string>
     <string name="settings_companion_toggle">共享当天打卡状态</string>
