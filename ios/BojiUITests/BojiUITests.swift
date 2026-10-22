@@ -90,7 +90,8 @@ final class BojiUITests: XCTestCase {
         onboard()
         tapVisible(app.buttons["设置"])
         for identifier in ["privacy-policy", "terms-of-use"] {
-            let link = app.buttons[identifier]
+            // SwiftUI `Link` is a link element, not a button.
+            let link = app.descendants(matching: .any).matching(identifier: identifier).firstMatch
             for _ in 0..<8 where !link.isHittable { app.swipeUp() }
             XCTAssertTrue(link.isHittable, identifier)
         }
