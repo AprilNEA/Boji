@@ -74,9 +74,9 @@
 
 ## 本地启动
 
-在仓库根目录进入 devenv（`devenv shell`，或用 direnv 加载 `.envrc`）。devenv 按 `rust-toolchain.toml` 提供 Rust 1.99.0，并提供 `buf`、OpenSSL 和 `pkg-config`。PostgreSQL 由 `compose.yml` 提供。编译期间，`build.rs` 对本目录的 buf workspace（`buf.yaml`）运行 `buf build`，再生成 RPC 代码。googleapis 依赖从 BSR 获取，由 `buf.lock` 固定版本。首次编译需要访问 BSR 和 crates.io。
+在仓库根目录进入 devenv（`devenv shell`，或用 direnv 加载 `.envrc`）。devenv 按 `rust-toolchain.toml` 提供 Rust 1.99.0，并提供 `buf`、OpenSSL、`pkg-config` 和 ICU 78。认证框架通过 `rust_icu` 链接 ICU4C，编译时读取 devenv 设置的 `RUST_ICU_MAJOR_VERSION_NUMBER` 和 `RUST_ICU_LINK_SEARCH_DIR`。Docker 镜像在 `icu` 构建阶段从官方源码编译 ICU 78.3。当前二进制不调用 ICU 函数，链接器不会保留 ICU 依赖。运行镜像仍带上 3 个 ICU 动态库和 ICU 许可证，以免框架升级后开始调用 ICU 时启动失败。PostgreSQL 由 `compose.yml` 提供。编译期间，`build.rs` 对本目录的 buf workspace（`buf.yaml`）运行 `buf build`，再生成 RPC 代码。googleapis 依赖从 BSR 获取，由 `buf.lock` 固定版本。首次编译需要访问 BSR 和 crates.io。
 
-`better-auth` 精确固定到 crates.io 版本 `=1.0.0-alpha.4`。这个版本包含 Apple 签名器和原生运营权限 API。编译不需要克隆框架仓库或准备本机副本。首次构建需要访问 crates.io。
+`better-auth` 精确固定到 crates.io 版本 `=1.0.0-alpha.5`。这个版本包含 Apple 签名器、原生运营权限 API 和事务化的账号注销。编译不需要克隆框架仓库或准备本机副本。首次构建需要访问 crates.io。
 
 ```bash
 cd bizserver

@@ -17,7 +17,7 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 | `assets/public/` | Generic static files for `https://assets.leanmuscle.club`, such as the app icon images, the app screenshots and the exercise images that the root `README.md` shows. `assets/public/animations/exercises/v1/` holds the course exercise animations that `animations/` generates and the apps download | this file, `animations/AGENTS.md` |
 | `LICENSE.md` | The PolyForm Noncommercial License 1.0.0 with the `Required Notice:` line | this file |
 | `.github/` | GitHub files: `.github/CLA.md` is the contributor license agreement, `.github/workflows/cla.yml` runs the CLA check on pull requests, and `.github/workflows/image.yml` publishes the `bizserver/` image to GHCR for each `bizserver/v*` tag. `.github/actionlint.yaml` declares runner labels that actionlint does not list yet, such as the GitHub-hosted `xcode-27` preview label. `workflows/ios.yml` runs iOS CI, manual TestFlight uploads and manual App Store review; see `ios/docs/ci-cd.md`. `.github/SECURITY.md` is the security policy: report vulnerabilities to `security@leanmuscle.club`. `.github/CODE_OF_CONDUCT.md` is the Contributor Covenant 3.0 code of conduct in English and Simplified Chinese: report violations to `conduct@leanmuscle.club`. | this file, `bizserver/AGENTS.md` |
-| `devenv.nix`, `devenv.yaml`, `.envrc` | Local toolchains: Node.js and pnpm for `animations/` and `websites/`, Rust, `buf` and OpenSSL for `bizserver/`, JDK 17 for `android/`, and Python with Pillow and rembg for `websites/scripts/` | this file |
+| `devenv.nix`, `devenv.yaml`, `.envrc` | Local toolchains: Node.js and pnpm for `animations/` and `websites/`, Rust, `buf`, OpenSSL and ICU 78 for `bizserver/`, JDK 17 for `android/`, and Python with Pillow and rembg for `websites/scripts/` | this file |
 | `.work/` | Local build outputs and scratch files. Git ignores this directory | none |
 | `.agents/skills/`, `.claude/skills/`, `skills-lock.json` | Third-party agent skills that `npx skills` installs. `.agents/skills/` holds the files, `.claude/skills/` holds symbolic links to them, and `skills-lock.json` pins the source and hash of each skill | this file |
 
@@ -36,7 +36,7 @@ Enter the devenv shell at the repository root with `devenv shell`, or with diren
 | Directory | Tools from devenv |
 | --- | --- |
 | `animations/`, `websites/` | Node.js 26 and pnpm. devenv runs `pnpm install` in both directories |
-| `bizserver/` | Rust from `bizserver/rust-toolchain.toml` through the `rust-overlay` input, `buf`, OpenSSL and `pkg-config` |
+| `bizserver/` | Rust from `bizserver/rust-toolchain.toml` through the `rust-overlay` input, `buf`, OpenSSL, `pkg-config`, and ICU 78 with `RUST_ICU_MAJOR_VERSION_NUMBER` and `RUST_ICU_LINK_SEARCH_DIR` |
 | `crates/` | The same Rust version as `bizserver/`. `crates/rust-toolchain.toml` repeats it for rustup users |
 | `android/` | JDK 17 and `JAVA_HOME`. The Gradle wrapper provides Gradle |
 | `websites/scripts/` | Python 3 with Pillow and rembg. `portraits.py` downloads the rembg model to `~/.u2net` on first use |

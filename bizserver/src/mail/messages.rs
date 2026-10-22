@@ -6,11 +6,12 @@
 //! the plugins in `auth.rs`, so the copy and the real lifetimes stay equal.
 
 use async_trait::async_trait;
+use better_auth::FieldValue;
 use better_auth::email::EmailProvider;
 use better_auth::error::{AuthError, AuthResult};
 use better_auth::plugins::user_management::SendDeleteAccountVerification;
 use better_auth::plugins::{SendChangeEmailConfirmation, SendResetPassword, SendVerificationEmail};
-use better_auth::prelude::{AuthRequest, UserView};
+use better_auth::prelude::AuthRequest;
 
 use super::{MailFailure, Mailer};
 
@@ -129,6 +130,14 @@ fn escape(value: &str) -> String {
     escaped
 }
 
+/// Returns the `email` property of a Better Auth user, or `None` when it is not a string.
+fn user_email(user: &FieldValue) -> Option<String> {
+    user.model_property("email")
+        .ok()
+        .and_then(|email| email.decode::<Option<String>>().ok())
+        .flatten()
+}
+
 async fn deliver(mailer: &Mailer, to: Option<&str>, email: Email) -> AuthResult<()> {
     let to = to
         .filter(|value| !value.is_empty())
@@ -181,8 +190,8 @@ impl VerificationEmailSender {
 
 #[async_trait]
 impl SendVerificationEmail for VerificationEmailSender {
-    async fn send(&self, user: &UserView, url: &str, _token: &str) -> AuthResult<()> {
-        deliver(&self.mailer, user.email.as_deref(), verification(url)).await
+    async fn send(&self, user: &FieldValue, url: &str, _token: &str) -> AuthResult<()> {
+        deliver(&self.mailer, user_email(user).as_deref(), verification(url)).await
     }
 }
 
@@ -224,12 +233,17 @@ impl DeleteAccountEmailSender {
 impl SendDeleteAccountVerification for DeleteAccountEmailSender {
     async fn send(
         &self,
-        user: &UserView,
+        user: &FieldValue,
         _url: &str,
         token: &str,
         _request: Option<&AuthRequest>,
     ) -> AuthResult<()> {
-        deliver(&self.mailer, user.email.as_deref(), delete_account(token)).await
+        deliver(
+            &self.mailer,
+            user_email(user).as_deref(),
+            delete_account(token),
+        )
+        .await
     }
 }
 
@@ -250,13 +264,13 @@ impl ChangeEmailConfirmationSender {
 impl SendChangeEmailConfirmation for ChangeEmailConfirmationSender {
     async fn send(
         &self,
-        user: &UserView,
+        user: &FieldValue,
         new_email: &str,
         url: &str,
         _token: &str,
     ) -> AuthResult<()> {
         let email = change_email_confirmation(new_email, url);
-        deliver(&self.mailer, user.email.as_deref(), email).await
+        deliver(&self.mailer, user_email(user).as_deref(), email).await
     }
 }
 

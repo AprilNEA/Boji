@@ -27,7 +27,7 @@
 | 目录 | devenv 提供的工具 |
 | --- | --- |
 | `animations/`、`websites/` | Node.js 26 和 pnpm 12 |
-| `bizserver/`、`crates/` | Rust（版本由 `bizserver/rust-toolchain.toml` 决定）、`buf`、OpenSSL 和 `pkg-config` |
+| `bizserver/`、`crates/` | Rust（版本由 `bizserver/rust-toolchain.toml` 决定）、`buf`、OpenSSL 和 `pkg-config`。`bizserver/` 还需要 ICU 78，devenv 同时设置 `RUST_ICU_MAJOR_VERSION_NUMBER` 和 `RUST_ICU_LINK_SEARCH_DIR` |
 | `android/` | JDK 17，并设置 `JAVA_HOME` |
 | `websites/scripts/` | Python 3，带 Pillow 和 rembg |
 

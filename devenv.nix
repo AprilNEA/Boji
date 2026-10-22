@@ -48,11 +48,18 @@
     # bizserver/: better-auth links openssl-sys through josekit and webauthn-rs-core.
     pkgs.openssl
     pkgs.pkg-config
+    # bizserver/: better-auth-core links ICU4C 78 through rust_icu with pre-generated bindings.
+    # Keep the ICU version in bizserver/Dockerfile on the same major version.
+    pkgs.icu78
   ];
 
   # On macOS, openssl-sys checks Homebrew paths before pkg-config. Point it at the devenv OpenSSL.
   env.OPENSSL_LIB_DIR = "${lib.getLib pkgs.openssl}/lib";
   env.OPENSSL_INCLUDE_DIR = "${lib.getDev pkgs.openssl}/include";
+
+  # rust_icu_sys reads the ICU major version and the library directory at compile time.
+  env.RUST_ICU_MAJOR_VERSION_NUMBER = "78";
+  env.RUST_ICU_LINK_SEARCH_DIR = "${lib.getLib pkgs.icu78}/lib";
 
   # languages.javascript installs one directory only, so install websites/ here.
   tasks."websites:install" = {

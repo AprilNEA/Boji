@@ -51,9 +51,12 @@ pub async fn authorize(
 }
 
 fn require_fresh_verified(user: &UserView, session: &SessionView) -> Result<(), ConnectError> {
-    if user.banned {
+    // A field that a replacement schema stores with another type fails closed.
+    if *user.banned.typed().map_err(|_| authorization_failed())? {
         let expires = user
             .ban_expires
+            .typed()
+            .map_err(|_| authorization_failed())?
             .as_ref()
             .map(|expiry| expiry.to_datetime())
             .transpose()
@@ -63,7 +66,11 @@ fn require_fresh_verified(user: &UserView, session: &SessionView) -> Result<(), 
             return Err(forbidden());
         }
     }
-    if !user.email_verified {
+    if !*user
+        .email_verified
+        .typed()
+        .map_err(|_| authorization_failed())?
+    {
         return Err(error::error(
             ErrorCode::PermissionDenied,
             ErrorReason::EMAIL_NOT_VERIFIED,
@@ -72,6 +79,8 @@ fn require_fresh_verified(user: &UserView, session: &SessionView) -> Result<(), 
     }
     let created = session
         .created_at
+        .typed()
+        .map_err(|_| authorization_failed())?
         .to_datetime()
         .map_err(|_| authorization_failed())?
         .ok_or_else(authorization_failed)?;
@@ -83,7 +92,7 @@ fn require_fresh_verified(user: &UserView, session: &SessionView) -> Result<(), 
             "Sign in again. Operations require a session created within 15 minutes.",
         ));
     }
-    if session.impersonated_by.is_some() {
+    if !session.impersonated_by.is_absent() {
         return Err(forbidden());
     }
     Ok(())
@@ -93,7 +102,11 @@ fn permission_error(error: AdminPermissionError) -> ConnectError {
     match error {
         AdminPermissionError::Unauthenticated => session_required(),
         AdminPermissionError::Forbidden => forbidden(),
-        AdminPermissionError::Internal(error) if error.status_code() == 403 => forbidden(),
+        AdminPermissionError::Internal(error)
+            if error.status_code().is_ok_and(|status| status == 403) =>
+        {
+            forbidden()
+        }
         _ => authorization_failed(),
     }
 }

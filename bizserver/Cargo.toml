@@ -11,7 +11,7 @@ aip-193 = { version = "0.2.7", default-features = false, features = ["connectrpc
 anyhow = "1"
 async-trait = "0.1"
 axum = { version = "0.8", features = ["http2"] }
-better-auth = { version = "=1.0.0-alpha.4", default-features = false, features = ["axum", "seaorm2", "rustls"] }
+better-auth = { version = "=1.0.0-alpha.5", default-features = false, features = ["axum", "seaorm2", "rustls"] }
 buffa = { version = "0.9", features = ["json"] }
 buffa-types = { version = "0.9", features = ["chrono", "json"] }
 chrono = { version = "0.4", features = ["serde"] }

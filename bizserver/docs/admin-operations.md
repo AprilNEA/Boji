@@ -52,7 +52,7 @@
 
 ## 本地集成与上线限制
 
-框架依赖精确固定到 crates.io 版本 `=1.0.0-alpha.4`。这个版本包含 Apple 支持和原生权限 API。历史联调副本保留在 `.work/`，但不再参与构建。
+框架依赖精确固定到 crates.io 版本 `=1.0.0-alpha.5`。这个版本包含 Apple 支持和原生权限 API。历史联调副本保留在 `.work/`，但不再参与构建。
 
 构建时由 Cargo 获取注册表发布包，Docker 不需要克隆框架仓库。`APP_ENV=production` 时的配置检查见 [README](../README.md#配置)。
 

@@ -15,22 +15,17 @@ use crate::mail::{
     PasswordResetEmailSender, VerificationEmailSender,
 };
 use anyhow::Context;
-use async_trait::async_trait;
 use better_auth::config::{AccountLinkingConfig, IpAddressConfig};
 use better_auth::integrations::axum::AxumIntegration;
-use better_auth::plugins::user_management::BeforeDeleteUser;
 use better_auth::plugins::{
     EmailPasswordPlugin, EmailVerificationPlugin, OAuthPlugin, PasswordManagementPlugin,
     SessionManagementPlugin, UserManagementPlugin,
 };
-use better_auth::prelude::{
-    AuthError, AuthRequest, AuthResult, AuthSession, AuthUser, HttpMethod, UserView,
-};
+use better_auth::prelude::{AuthRequest, AuthSession, AuthUser, HttpMethod};
 use better_auth::seaorm::{DatabaseConnection, SeaOrmStore};
 use better_auth::{AuthConfig, BetterAuth};
 use chrono::Duration;
 use http::{HeaderMap, header::AUTHORIZATION};
-use sea_orm::EntityTrait;
 use std::collections::HashMap;
 use std::sync::Arc;
 use thiserror::Error;
@@ -181,11 +176,14 @@ pub enum AuthFailure {
 ///
 /// This enables email/password registration, session management, email
 /// verification, password management, account deletion and email change.
-/// Deletion needs a code that the service mails to the user. An email change
-/// needs a confirmation from the current address and a verification of the new
-/// address. When `options.apple` is set, it also registers the `apple` social
-/// provider and trusts Apple's `form_post` origin. When `options.google` is
-/// set, it also registers the `google` social provider. `options.account_linking`
+/// Deletion needs a code that the service mails to the user. Better Auth
+/// deletes the sessions, the accounts and the user in one transaction, and the
+/// foreign keys of the business tables cascade from the user row. An email
+/// change needs a confirmation from the current address and a verification of
+/// the new address. When `options.apple` is set, it also registers the `apple`
+/// social provider and trusts Apple's `form_post` origin. When
+/// `options.google` is set, it also registers the `google` social provider.
+/// `options.account_linking`
 /// decides whether a social sign-in may join an existing user with the same
 /// verified email.
 pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Result<Arc<Auth>> {
@@ -226,7 +224,6 @@ pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Resu
             .verification_token_expiry(Duration::hours(VERIFICATION_LINK_HOURS))
             .custom_send_verification_email(Arc::new(verification_sender.clone())),
     );
-    let user_deletion = Arc::new(UserDeletion { db: db.clone() });
     let store = SeaOrmStore::<BojiAuthSchema>::new(config.clone(), db);
     let mut builder = BetterAuth::<BojiAuthSchema>::new(config)
         .store(store)
@@ -264,8 +261,7 @@ pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Resu
                 )))
                 .delete_user_enabled(true)
                 .delete_token_expires_in(Duration::minutes(DELETE_ACCOUNT_CODE_MINUTES))
-                .send_delete_account_verification(Arc::new(DeleteAccountEmailSender::new(mailer)))
-                .before_delete(user_deletion),
+                .send_delete_account_verification(Arc::new(DeleteAccountEmailSender::new(mailer))),
         );
     if apple_provider.is_some() || google_provider.is_some() {
         let mut oauth = OAuthPlugin::new();
@@ -280,41 +276,6 @@ pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Resu
     let auth = builder.build().await.context("build Better Auth service")?;
 
     Ok(Arc::new(auth))
-}
-
-/// Deletes a user and the rows it owns in one SQL statement.
-///
-/// Better Auth deletes the sessions, the accounts and the user in separate
-/// statements. Its SeaORM store also clears an `api_keys` table that this
-/// service does not create, so the last statement fails. Without this hook,
-/// that failure leaves a user without sessions or credentials.
-///
-/// The hook runs before those statements and deletes the `user` row.
-/// PostgreSQL applies the foreign-key cascades and `SET NULL` rules inside the
-/// same statement, so the deletion is complete or absent. The later framework
-/// statements then find no rows and succeed. `tests/account_contract.rs`
-/// checks this behavior.
-struct UserDeletion {
-    db: DatabaseConnection,
-}
-
-#[async_trait]
-impl BeforeDeleteUser for UserDeletion {
-    async fn before_delete(
-        &self,
-        target: &UserView,
-        _request: Option<&AuthRequest>,
-    ) -> AuthResult<()> {
-        let id = target.id.typed()?.clone();
-        crate::auth_schema::user::Entity::delete_by_id(id)
-            .exec(&self.db)
-            .await
-            .map(|_| ())
-            .map_err(|error| {
-                tracing::error!(%error, "delete user");
-                AuthError::internal("delete user")
-            })
-    }
 }
 
 /// Returns Better Auth's native route router.
@@ -361,7 +322,11 @@ pub async fn authenticate(auth: &Auth, headers: &HeaderMap) -> Result<Principal,
         .map_err(AuthFailure::Storage)?
         .ok_or(AuthFailure::UserNotFound)?;
 
-    if !user.email_verified() {
+    let email_verified = *user
+        .email_verified()
+        .typed()
+        .map_err(AuthFailure::Storage)?;
+    if !email_verified {
         return Err(AuthFailure::EmailUnverified);
     }
     let user_id = user.id();
@@ -369,8 +334,13 @@ pub async fn authenticate(auth: &Auth, headers: &HeaderMap) -> Result<Principal,
 
     Ok(Principal {
         user_id: user_id.to_string(),
-        email_verified: user.email_verified(),
-        role: user.role().map(ToOwned::to_owned),
+        email_verified,
+        role: user
+            .role()
+            .typed()
+            .map_err(AuthFailure::Storage)?
+            .as_deref()
+            .map(ToOwned::to_owned),
     })
 }
 
