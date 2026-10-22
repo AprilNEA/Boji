@@ -67,12 +67,15 @@ Boji 把薄肌理论拆成每天三项打卡：**训练**、**饮水**和**睡�
 
 ### 课程与跟练
 
-App 内置 4 套课程、16 个动作，居家徒手和健身房器械都有：
+App 有 14 套课程、68 个动作，分为居家、健身房、拉伸与放松三组。居家基础训练、居家进阶训练、器械基础训练和舒缓拉伸这 4 套课程的动画随 App 安装。其余 10 套课程的动画在第一次打开课程时从 `assets.leanmuscle.club` 下载，之后离线也能播放。动画没有下载时，课程照常可用：
 
 <table>
     <tr>
         <th>课程</th>
-        <th colspan="5">动作</th>
+        <th colspan="6">动作</th>
+    </tr>
+    <tr>
+        <th colspan="7" align="left">居家</th>
     </tr>
     <tr>
         <td><b>居家基础训练</b><br><sub>无需器械的全身入门<br>20 分钟，4 个动作</sub></td>
@@ -80,6 +83,7 @@ App 内置 4 套课程、16 个动作，居家徒手和健身房器械都有：
         <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/course/dark/wall-push-up.png"><img src="assets/public/previews/course/light/wall-push-up.png" width="96" alt="墙壁俯卧撑的代表姿势"></picture><br><sub>墙壁俯卧撑</sub></td>
         <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/course/dark/glute-bridge.png"><img src="assets/public/previews/course/light/glute-bridge.png" width="96" alt="臀桥的代表姿势"></picture><br><sub>臀桥</sub></td>
         <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/course/dark/bird-dog.png"><img src="assets/public/previews/course/light/bird-dog.png" width="96" alt="鸟狗式的代表姿势"></picture><br><sub>鸟狗式</sub></td>
+        <td></td>
         <td></td>
     </tr>
     <tr>
@@ -89,6 +93,46 @@ App 内置 4 套课程、16 个动作，居家徒手和健身房器械都有：
         <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/course/dark/dead-bug.png"><img src="assets/public/previews/course/light/dead-bug.png" width="96" alt="死虫式的代表姿势"></picture><br><sub>死虫式</sub></td>
         <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/course/dark/wall-sit.png"><img src="assets/public/previews/course/light/wall-sit.png" width="96" alt="靠墙静蹲的代表姿势"></picture><br><sub>靠墙静蹲</sub></td>
         <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/course/dark/plank.png"><img src="assets/public/previews/course/light/plank.png" width="96" alt="平板支撑的代表姿势"></picture><br><sub>平板支撑</sub></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><b>居家强化训练</b><br><sub>用自重练出全身力量<br>30 分钟，6 个动作，动画需下载</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/push-up.png"><img src="assets/public/previews/library/light/push-up.png" width="96" alt="标准俯卧撑的代表姿势"></picture><br><sub>标准俯卧撑</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/bodyweight-split-squat.png"><img src="assets/public/previews/library/light/bodyweight-split-squat.png" width="96" alt="徒手分腿蹲的代表姿势"></picture><br><sub>徒手分腿蹲</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/single-leg-glute-bridge.png"><img src="assets/public/previews/library/light/single-leg-glute-bridge.png" width="96" alt="单腿臀桥的代表姿势"></picture><br><sub>单腿臀桥</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/bench-dip.png"><img src="assets/public/previews/library/light/bench-dip.png" width="96" alt="凳上反向臂屈伸的代表姿势"></picture><br><sub>凳上反向臂屈伸</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/superman.png"><img src="assets/public/previews/library/light/superman.png" width="96" alt="俯卧超人挺身的代表姿势"></picture><br><sub>俯卧超人挺身</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/bodyweight-forearm-side-plank.png"><img src="assets/public/previews/library/light/bodyweight-forearm-side-plank.png" width="96" alt="自重前臂侧平板支撑的代表姿势"></picture><br><sub>自重前臂侧平板支撑</sub></td>
+    </tr>
+    <tr>
+        <td><b>核心训练</b><br><sub>在地垫上练腹部和核心稳定<br>15 分钟，6 个动作，动画需下载</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/crunch.png"><img src="assets/public/previews/library/light/crunch.png" width="96" alt="卷腹的代表姿势"></picture><br><sub>卷腹</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/reverse-crunch.png"><img src="assets/public/previews/library/light/reverse-crunch.png" width="96" alt="反向卷腹的代表姿势"></picture><br><sub>反向卷腹</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/bicycle-crunch.png"><img src="assets/public/previews/library/light/bicycle-crunch.png" width="96" alt="自行车卷腹的代表姿势"></picture><br><sub>自行车卷腹</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/russian-twist.png"><img src="assets/public/previews/library/light/russian-twist.png" width="96" alt="俄罗斯转体的代表姿势"></picture><br><sub>俄罗斯转体</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/flutter-kick.png"><img src="assets/public/previews/library/light/flutter-kick.png" width="96" alt="仰卧交替打腿的代表姿势"></picture><br><sub>仰卧交替打腿</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/course/dark/plank.png"><img src="assets/public/previews/course/light/plank.png" width="96" alt="平板支撑的代表姿势"></picture><br><sub>平板支撑</sub></td>
+    </tr>
+    <tr>
+        <td><b>燃脂循环</b><br><sub>不用器械，让心率升起来<br>15 分钟，6 个动作，动画需下载</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/jumping-jack.png"><img src="assets/public/previews/library/light/jumping-jack.png" width="96" alt="开合跳的代表姿势"></picture><br><sub>开合跳</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/wall-high-knees.png"><img src="assets/public/previews/library/light/wall-high-knees.png" width="96" alt="扶墙高抬腿的代表姿势"></picture><br><sub>扶墙高抬腿</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/mountain-climber.png"><img src="assets/public/previews/library/light/mountain-climber.png" width="96" alt="登山者的代表姿势"></picture><br><sub>登山者</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/jump-squat.png"><img src="assets/public/previews/library/light/jump-squat.png" width="96" alt="深蹲跳的代表姿势"></picture><br><sub>深蹲跳</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/bear-crawl.png"><img src="assets/public/previews/library/light/bear-crawl.png" width="96" alt="熊爬的代表姿势"></picture><br><sub>熊爬</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/bodyweight-burpee.png"><img src="assets/public/previews/library/light/bodyweight-burpee.png" width="96" alt="波比跳的代表姿势"></picture><br><sub>波比跳</sub></td>
+    </tr>
+    <tr>
+        <td><b>哑铃居家训练</b><br><sub>用一对哑铃练遍全身<br>25 分钟，6 个动作，动画需下载</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/dumbbell-goblet-squat.png"><img src="assets/public/previews/library/light/dumbbell-goblet-squat.png" width="96" alt="哑铃高脚杯深蹲的代表姿势"></picture><br><sub>哑铃高脚杯深蹲</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/dumbbell-floor-press.png"><img src="assets/public/previews/library/light/dumbbell-floor-press.png" width="96" alt="哑铃地板卧推的代表姿势"></picture><br><sub>哑铃地板卧推</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/dumbbell-bent-over-row.png"><img src="assets/public/previews/library/light/dumbbell-bent-over-row.png" width="96" alt="哑铃俯身划船的代表姿势"></picture><br><sub>哑铃俯身划船</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/dumbbell-romanian-deadlift.png"><img src="assets/public/previews/library/light/dumbbell-romanian-deadlift.png" width="96" alt="哑铃罗马尼亚硬拉的代表姿势"></picture><br><sub>哑铃罗马尼亚硬拉</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/dumbbell-reverse-lunge.png"><img src="assets/public/previews/library/light/dumbbell-reverse-lunge.png" width="96" alt="哑铃后撤弓步蹲的代表姿势"></picture><br><sub>哑铃后撤弓步蹲</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/dumbbell-lateral-raise.png"><img src="assets/public/previews/library/light/dumbbell-lateral-raise.png" width="96" alt="哑铃侧平举的代表姿势"></picture><br><sub>哑铃侧平举</sub></td>
+    </tr>
+    <tr>
+        <th colspan="7" align="left">健身房</th>
     </tr>
     <tr>
         <td><b>器械基础训练</b><br><sub>轻重量熟悉常用器械<br>30 分钟，4 个动作</sub></td>
@@ -97,6 +141,37 @@ App 内置 4 套课程、16 个动作，居家徒手和健身房器械都有：
         <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/course/dark/leg-press.png"><img src="assets/public/previews/course/light/leg-press.png" width="96" alt="坐姿腿举的代表姿势"></picture><br><sub>坐姿腿举</sub></td>
         <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/course/dark/lat-pulldown.png"><img src="assets/public/previews/course/light/lat-pulldown.png" width="96" alt="高位下拉的代表姿势"></picture><br><sub>高位下拉</sub></td>
         <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><b>自由重量入门</b><br><sub>从哑铃开始学自由重量<br>35 分钟，6 个动作，动画需下载</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/dumbbell-goblet-squat.png"><img src="assets/public/previews/library/light/dumbbell-goblet-squat.png" width="96" alt="哑铃高脚杯深蹲的代表姿势"></picture><br><sub>哑铃高脚杯深蹲</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/dumbbell-bench-press.png"><img src="assets/public/previews/library/light/dumbbell-bench-press.png" width="96" alt="哑铃卧推的代表姿势"></picture><br><sub>哑铃卧推</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/dumbbell-bent-over-row.png"><img src="assets/public/previews/library/light/dumbbell-bent-over-row.png" width="96" alt="哑铃俯身划船的代表姿势"></picture><br><sub>哑铃俯身划船</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/dumbbell-romanian-deadlift.png"><img src="assets/public/previews/library/light/dumbbell-romanian-deadlift.png" width="96" alt="哑铃罗马尼亚硬拉的代表姿势"></picture><br><sub>哑铃罗马尼亚硬拉</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/dumbbell-seated-shoulder-press.png"><img src="assets/public/previews/library/light/dumbbell-seated-shoulder-press.png" width="96" alt="哑铃坐姿肩上推举的代表姿势"></picture><br><sub>哑铃坐姿肩上推举</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/dumbbell-biceps-curl.png"><img src="assets/public/previews/library/light/dumbbell-biceps-curl.png" width="96" alt="哑铃弯举的代表姿势"></picture><br><sub>哑铃弯举</sub></td>
+    </tr>
+    <tr>
+        <td><b>上肢器械训练</b><br><sub>胸、肩、背和手臂<br>35 分钟，6 个动作，动画需下载</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/machine-chest-press.png"><img src="assets/public/previews/library/light/machine-chest-press.png" width="96" alt="器械推胸的代表姿势"></picture><br><sub>器械推胸</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/machine-shoulder-press.png"><img src="assets/public/previews/library/light/machine-shoulder-press.png" width="96" alt="器械肩上推举的代表姿势"></picture><br><sub>器械肩上推举</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/machine-assisted-pull-up.png"><img src="assets/public/previews/library/light/machine-assisted-pull-up.png" width="96" alt="器械辅助引体向上的代表姿势"></picture><br><sub>器械辅助引体向上</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/machine-pec-deck-fly.png"><img src="assets/public/previews/library/light/machine-pec-deck-fly.png" width="96" alt="蝴蝶机夹胸的代表姿势"></picture><br><sub>蝴蝶机夹胸</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/cable-face-pull.png"><img src="assets/public/previews/library/light/cable-face-pull.png" width="96" alt="绳索面拉的代表姿势"></picture><br><sub>绳索面拉</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/cable-rope-triceps-pushdown.png"><img src="assets/public/previews/library/light/cable-rope-triceps-pushdown.png" width="96" alt="绳索绳把下压的代表姿势"></picture><br><sub>绳索绳把下压</sub></td>
+    </tr>
+    <tr>
+        <td><b>下肢器械训练</b><br><sub>腿部、臀部和下背<br>35 分钟，6 个动作，动画需下载</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/course/dark/leg-press.png"><img src="assets/public/previews/course/light/leg-press.png" width="96" alt="坐姿腿举的代表姿势"></picture><br><sub>坐姿腿举</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/machine-leg-extension.png"><img src="assets/public/previews/library/light/machine-leg-extension.png" width="96" alt="器械腿屈伸的代表姿势"></picture><br><sub>器械腿屈伸</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/machine-seated-leg-curl.png"><img src="assets/public/previews/library/light/machine-seated-leg-curl.png" width="96" alt="器械坐姿腿弯举的代表姿势"></picture><br><sub>器械坐姿腿弯举</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/machine-seated-hip-abduction.png"><img src="assets/public/previews/library/light/machine-seated-hip-abduction.png" width="96" alt="坐姿髋外展的代表姿势"></picture><br><sub>坐姿髋外展</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/machine-seated-hip-adduction.png"><img src="assets/public/previews/library/light/machine-seated-hip-adduction.png" width="96" alt="坐姿髋内收的代表姿势"></picture><br><sub>坐姿髋内收</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/back-extension.png"><img src="assets/public/previews/library/light/back-extension.png" width="96" alt="罗马椅背部伸展的代表姿势"></picture><br><sub>罗马椅背部伸展</sub></td>
+    </tr>
+    <tr>
+        <th colspan="7" align="left">拉伸与放松</th>
     </tr>
     <tr>
         <td><b>舒缓拉伸</b><br><sub>训练前后都可进行<br>10 分钟，3 个动作</sub></td>
@@ -104,6 +179,34 @@ App 内置 4 套课程、16 个动作，居家徒手和健身房器械都有：
         <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/course/dark/hip-flexor-stretch.png"><img src="assets/public/previews/course/light/hip-flexor-stretch.png" width="96" alt="髋屈肌拉伸的代表姿势"></picture><br><sub>髋屈肌拉伸</sub></td>
         <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/course/dark/chest-stretch.png"><img src="assets/public/previews/course/light/chest-stretch.png" width="96" alt="开胸拉伸的代表姿势"></picture><br><sub>开胸拉伸</sub></td>
         <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><b>训练后下肢拉伸</b><br><sub>放松大腿、臀部和小腿<br>10 分钟，5 个动作，动画需下载</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/standing-hamstring-stretch.png"><img src="assets/public/previews/library/light/standing-hamstring-stretch.png" width="96" alt="站姿腘绳肌拉伸的代表姿势"></picture><br><sub>站姿腘绳肌拉伸</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/prone-quadriceps-stretch.png"><img src="assets/public/previews/library/light/prone-quadriceps-stretch.png" width="96" alt="俯卧股四头肌拉伸的代表姿势"></picture><br><sub>俯卧股四头肌拉伸</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/supine-figure-four-glute-stretch.png"><img src="assets/public/previews/library/light/supine-figure-four-glute-stretch.png" width="96" alt="仰卧四字臀肌拉伸的代表姿势"></picture><br><sub>仰卧四字臀肌拉伸</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/runners-lunge-stretch.png"><img src="assets/public/previews/library/light/runners-lunge-stretch.png" width="96" alt="跑步弓步拉伸的代表姿势"></picture><br><sub>跑步弓步拉伸</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/wall-standing-calf-stretch.png"><img src="assets/public/previews/library/light/wall-standing-calf-stretch.png" width="96" alt="扶墙站姿小腿拉伸的代表姿势"></picture><br><sub>扶墙站姿小腿拉伸</sub></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><b>久坐肩颈放松</b><br><sub>在椅子旁就能做<br>8 分钟，5 个动作，动画需下载</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/neck-side-stretch.png"><img src="assets/public/previews/library/light/neck-side-stretch.png" width="96" alt="颈部侧屈拉伸的代表姿势"></picture><br><sub>颈部侧屈拉伸</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/cross-body-shoulder-stretch.png"><img src="assets/public/previews/library/light/cross-body-shoulder-stretch.png" width="96" alt="交叉抱臂肩部拉伸的代表姿势"></picture><br><sub>交叉抱臂肩部拉伸</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/overhead-triceps-stretch.png"><img src="assets/public/previews/library/light/overhead-triceps-stretch.png" width="96" alt="过顶肱三头肌拉伸的代表姿势"></picture><br><sub>过顶肱三头肌拉伸</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/chair-seated-chest-and-shoulder-stretch.png"><img src="assets/public/previews/library/light/chair-seated-chest-and-shoulder-stretch.png" width="96" alt="坐椅胸肩拉伸的代表姿势"></picture><br><sub>坐椅胸肩拉伸</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/seated-chair-hamstring-stretch.png"><img src="assets/public/previews/library/light/seated-chair-hamstring-stretch.png" width="96" alt="坐姿椅上腘绳肌拉伸的代表姿势"></picture><br><sub>坐姿椅上腘绳肌拉伸</sub></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><b>晨间唤醒</b><br><sub>起床后舒展全身<br>8 分钟，5 个动作，动画需下载</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/worlds-greatest-stretch.png"><img src="assets/public/previews/library/light/worlds-greatest-stretch.png" width="96" alt="世界最佳拉伸的代表姿势"></picture><br><sub>世界最佳拉伸</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/inchworm.png"><img src="assets/public/previews/library/light/inchworm.png" width="96" alt="毛毛虫爬行的代表姿势"></picture><br><sub>毛毛虫爬行</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/bodyweight-good-morning.png"><img src="assets/public/previews/library/light/bodyweight-good-morning.png" width="96" alt="徒手早安式体前屈的代表姿势"></picture><br><sub>徒手早安式体前屈</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/knees-to-chest-stretch.png"><img src="assets/public/previews/library/light/knees-to-chest-stretch.png" width="96" alt="仰卧抱膝拉伸的代表姿势"></picture><br><sub>仰卧抱膝拉伸</sub></td>
+        <td align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/public/previews/library/dark/childs-pose.png"><img src="assets/public/previews/library/light/childs-pose.png" width="96" alt="婴儿式的代表姿势"></picture><br><sub>婴儿式</sub></td>
         <td></td>
     </tr>
 </table>
@@ -181,7 +284,7 @@ App 内置 4 套课程、16 个动作，居家徒手和健身房器械都有：
 
 ### 动作库（开发中）
 
-仓库里还有一个含 1567 个动作的动作库，覆盖徒手、哑铃、杠铃、壶铃、绳索、固定器械、弹力带等训练方式，尚未编入 App 课程。下面是其中 8 个动作：
+仓库里还有一个含 1567 个动作的动作库，覆盖徒手、哑铃、杠铃、壶铃、绳索、固定器械、弹力带等训练方式。其中 52 个动作已编入上面的课程，其余 1515 个尚未编入。下面是其中 8 个动作：
 
 <table>
     <tr>
@@ -235,7 +338,7 @@ I have read the CLA Document and I hereby sign the CLA
 | 人像照片 | `websites/public/images/portraits/` |
 | App 截图 | `ios/app-store/screenshots/`、`assets/public/screenshots/` |
 | Apple 设备边框（Apple Design Resources） | `ios/app-store/screenshots/public/frames/`、`websites/public/frames/`、`assets/public/screenshots/apple/watch/` |
-| 动作库 | `animations/src/exercises/library/`、`assets/public/previews/library/` |
+| 动作库 | `animations/src/exercises/library/`、`assets/public/previews/library/`，以及由动作库源码生成的动画文件，例如 `assets/public/animations/exercises/v1/` 中远端课程新增的 52 个动作 |
 | Apple Root CA 证书 | `bizserver/assets/wallet/apple-root-ca.crt` |
 | 学校名单数据（Hipo university-domains-list，MIT 许可证） | `bizserver/data/schools/hipo.json`、`bizserver/data/schools/LICENSE-hipo.txt` |
 | 第三方依赖与字体 | — |

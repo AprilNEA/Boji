@@ -1,10 +1,10 @@
 // Private lower-stretch builders for stretch-lower-1. Each pose preserves floor, bench, or hand contacts.
 // Static stretches ease into the visible end range, hold it, then return to the exact initial pose.
 import type { LibraryMeta, MuscleSpec, PropShape, SideExercise } from '@/exercise.ts';
-import { add, lerp, type Vec2 } from '@/math/vec2.ts';
+import { add, len, lerp, mul, polar, sub, type Vec2 } from '@/math/vec2.ts';
 import { timeline, type Timeline } from '@/math/timeline.ts';
 import type { Palette } from '@/draw/palettes.ts';
-import type { Joints, Pose } from '@/rig/side.ts';
+import { BODY, type Joints, type Pose } from '@/rig/side.ts';
 import { A, FLOOR, G, QUAD, hipForShoulder, plantedArm } from '@/exercises/common.ts';
 
 export const stretchTL: Timeline = timeline([
@@ -64,15 +64,30 @@ export function kneesToChest(p: number): Pose {
     floorArms([lerp(180, -38, p), lerp(180, -55, p)], [lerp(180, -34, p), lerp(180, -50, p)]));
 }
 
+/** `target`, or the point `reach` away from `from` toward `target` when `target` is farther than that. */
+const reachToward = (from: Vec2, target: Vec2, reach: number): Vec2 => {
+  const d = sub(target, from), l = len(d);
+  return l <= reach ? target : add(from, mul(d, reach / l));
+};
+
 /** Prone base. The working knee bends while the hand follows toward the ankle. */
 export function proneQuad(p: number, lift = 0): Pose {
   const hip: Vec2 = [258, FLOOR - 30 - lift * p];
   return {
     // A prone figure faces right: the chest and head are right of the pelvis.
     hip, spine: { lumbar: 2, thoracic: 2 }, neck: 0, head: 0, farHip: 0, farShoulder: 0,
-    // The calf folds forward toward the head and the foot returns toward the glute.
-    legs: { near: { a1: 180, a2: lerp(180, 360, p), foot: lerp(180, 350, p) }, far: { a1: 180, a2: 180, foot: 180 } },
-    arms: floorArms([180, lerp(180, 220, p)], [180, 180]),
+    // The calf folds toward the head and stops near 155° of knee flexion, so the heel nears the glute without the
+    // calf lying flat on the thigh.
+    legs: { near: { a1: 180, a2: lerp(180, 335, p), foot: lerp(180, 320, p) }, far: { a1: 180, a2: 180, foot: 180 } },
+    arms: {
+      // The near hand reaches back toward the ankle as the knee bends and holds it once the ankle comes within
+      // reach. The reach stops 2 px short of the full arm length so the arm never locks.
+      near: {
+        target: (J) => reachToward(J.S, polar(J.ankle_n, lerp(180, 320, p), 6), BODY.upper + BODY.fore - 2),
+        side: [0, -1],
+      },
+      far: { a1: 180, a2: 180, hand: 180 },
+    },
   };
 }
 

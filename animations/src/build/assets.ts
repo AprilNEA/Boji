@@ -1,20 +1,17 @@
-// CLI: write every exercise animation, course and library, for the asset host.
+// CLI: write only the asset catalog: every course exercise, bundled or not.
 // Output: <out>/index.json and <out>/<palette>/<id>.json.
 // Default <out>: ../assets/public/animations/exercises/v1, which the asset host serves at
-// https://assets.leanmuscle.club/animations/exercises/v1/. Git ignores this output.
-// `v1` is the format version of index.json. Change it only for a change that breaks existing readers.
+// https://assets.leanmuscle.club/animations/exercises/v1/. Git tracks this output. `pnpm build` writes it too.
 // Usage: tsx src/build/assets.ts [--out <dir>] [exerciseId...]
-// Exercise IDs limit which animation files are rewritten; index.json always lists every exercise.
+// Exercise IDs limit which animation files are rewritten; index.json always lists every course exercise.
 // Exit code 1: IK or framing warnings. Exit code 2: bad arguments.
 import path from 'node:path';
 import { parseArgs } from 'node:util';
-import { generateCatalog } from './generate.ts';
-
-export const DEFAULT_ASSETS_DIR = path.resolve(import.meta.dirname, '../../../assets/public/animations/exercises/v1');
+import { DEFAULT_CATALOG_DIR, generateCatalog } from './generate.ts';
 
 try {
   const { values, positionals } = parseArgs({ options: { out: { type: 'string' } }, allowPositionals: true });
-  const outDir = path.resolve(values.out ?? DEFAULT_ASSETS_DIR);
+  const outDir = path.resolve(values.out ?? DEFAULT_CATALOG_DIR);
   const { warned } = generateCatalog(outDir, { only: positionals, log: (line) => console.log(line) });
   console.log(`Wrote ${outDir}`);
   if (warned) {

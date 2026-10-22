@@ -14,7 +14,7 @@ Boji is a local-first fitness tracking app. This repository holds two native cli
 | `locales/` | Copy that more than one client shows, and the Apple Wallet pass copy: ICU MessageFormat in YAML, one directory per language | `locales/README.md` |
 | `crates/` | Rust tools for the repository, in their own Cargo workspace. `crates/locales/` generates the client string resources and the pass copy of `bizserver/` from `locales/` | `crates/AGENTS.md` |
 | `docs/` | Documents shared by both clients. `docs/DEVELOPMENT.md` is the developer guide: the repository layout, the toolchain and how to run each component. The root `README.md` links to it and does not repeat it. `docs/ACCESSIBILITY.md` is the accessibility statement. The `.mdx` pages and `meta.json` files of `docs/` are the docs section that `websites/` publishes under `/docs/`: `docs/guide/` for app users, and `docs/developers/` for developers. `docs/developers/membership.mdx` is the membership contract, `docs/developers/school-ranking.mdx` is the school ranking design, and `docs/developers/sentry.mdx` describes Sentry error reporting in every project. `docs/sites/` holds the standalone pages that `websites/` publishes: the support page, and the privacy policy, terms of use and third-party data sharing list, with English versions in `.en.mdx` files. The `.md` files of `docs/` are internal and are not published | this file, `docs/sites/AGENTS.md` |
-| `assets/public/` | Generic static files for `https://assets.leanmuscle.club`, such as the app icon images, the app screenshots and the exercise images that the root `README.md` shows | this file |
+| `assets/public/` | Generic static files for `https://assets.leanmuscle.club`, such as the app icon images, the app screenshots and the exercise images that the root `README.md` shows. `assets/public/animations/exercises/v1/` holds the course exercise animations that `animations/` generates and the apps download | this file, `animations/AGENTS.md` |
 | `LICENSE.md` | The PolyForm Noncommercial License 1.0.0 with the `Required Notice:` line | this file |
 | `.github/` | GitHub files: `.github/CLA.md` is the contributor license agreement, `.github/workflows/cla.yml` runs the CLA check on pull requests, and `.github/workflows/image.yml` publishes the `bizserver/` image to GHCR for each `bizserver/v*` tag. `.github/actionlint.yaml` declares runner labels that actionlint does not list yet, such as the GitHub-hosted `xcode-27` preview label. `workflows/ios.yml` runs iOS CI, manual TestFlight uploads and manual App Store review; see `ios/docs/ci-cd.md`. `.github/SECURITY.md` is the security policy: report vulnerabilities to `security@leanmuscle.club`. `.github/CODE_OF_CONDUCT.md` is the Contributor Covenant 3.0 code of conduct in English and Simplified Chinese: report violations to `conduct@leanmuscle.club`. | this file, `bizserver/AGENTS.md` |
 | `devenv.nix`, `devenv.yaml`, `.envrc` | Local toolchains: Node.js and pnpm for `animations/` and `websites/`, Rust, `buf` and OpenSSL for `bizserver/`, JDK 17 for `android/`, and Python with Pillow and rembg for `websites/scripts/` | this file |
@@ -45,7 +45,7 @@ devenv does not provide Xcode, `ictool`, XcodeGen, the Android SDK, Chromium for
 
 ## Commands
 
-- `devenv test` at the repository root runs the type check of `animations/`, verifies that `animations/lottie/` and `animations/lottie-library/` match their source, and runs the type check of `websites/`.
+- `devenv test` at the repository root runs the type check of `animations/`, verifies that `animations/lottie/` and `assets/public/animations/exercises/v1/` match their source, and runs the type check of `websites/`.
 - The iOS and Android build and test commands are in `ios/AGENTS.md` and `android/AGENTS.md`.
 - The website commands are in `websites/AGENTS.md`.
 - `cargo locales check` in `crates/` validates `locales/` and verifies that the generated string resources are current. `cargo locales generate` writes them. See `crates/AGENTS.md`.
@@ -162,11 +162,11 @@ The `## 功能` section of the root `README.md` also shows exercise images from 
 
 | Path | Content |
 | --- | --- |
-| `previews/course/<palette>/<id>.png` | The poster frame of every course exercise, 240 pixels square. The course table shows them |
+| `previews/<group>/<palette>/<id>.png` | The poster frame of every course exercise, 240 pixels square. `<group>` is `course` for an exercise with a script in `animations/src/exercises/course/` and `library` for an exercise from the exercise library. The course table shows them |
 | `previews/course/<palette>/<id>.gif` | A looping GIF of each course exercise in `GIFS` of the script |
 | `previews/library/<palette>/<id>.gif` | A looping GIF of each library exercise in `GIFS`. The exercise library section shows them |
 
-`README.md` shows each image in a `<picture>` element. The `dark` file is the source for `prefers-color-scheme: dark`, and the `light` file is the default. Keep the library images in `previews/library/`, because the exercise library has a separate license.
+`README.md` shows each image in a `<picture>` element. The `dark` file is the source for `prefers-color-scheme: dark`, and the `light` file is the default. Keep the library images in `previews/library/`, also when a course uses the exercise, because the exercise library has a separate license.
 
 Run `pnpm build` and then `pnpm readme` in `animations/` after you change a course exercise or the `GIFS` list. The script deletes `previews/course/` and `previews/library/` and writes them again. When `GIFS` changes, update the matching `<picture>` elements in `README.md`. Before you add a library exercise to `GIFS`, review its frames with `scripts/family.ts`, because most library families have no manual review.
 
@@ -194,11 +194,13 @@ Keep the googleapis commit in each `buf.gen.yaml` equal to `bizserver/buf.lock`.
 
 ### Asset host
 
-`assets/public/` deploys to `https://assets.leanmuscle.club`. The file `assets/public/<path>` is served at `https://assets.leanmuscle.club/<path>`. This repository does not hold the deployment configuration.
+`assets/public/` deploys to `https://assets.leanmuscle.club`. The file `assets/public/<path>` is served at `https://assets.leanmuscle.club/<path>`. A push to `master` deploys `assets/public/`. Push a change there only when the files are ready to publish. This repository does not hold the deployment configuration.
 
-Put only generic files here, such as the app icon, the app screenshots and the README exercise images. Keep a file that only one client or website uses in that directory, for example the website media in `websites/public/media/`.
+Put only generic files here, such as the app icon, the app screenshots, the README exercise images and the course exercise animations. Keep a file that only one client or website uses in that directory, for example the website media in `websites/public/media/`.
 
 Do not reference `files.manuscdn.com`, `/manus-storage/` or other hosted storage URLs. Store the file in the repository instead.
+
+`assets/public/animations/exercises/v1/` holds `index.json` and the light and dark animation of every course exercise. Generate it with `pnpm build` or `pnpm build:assets` in `animations/`, and do not edit it by hand. Released apps download the animations of remote courses from this path, so keep its layout and its `index.json` fields compatible. `animations/docs/integration.md` describes the contract.
 
 ### Membership numbers
 
@@ -210,11 +212,13 @@ This rule applies to both clients and to all documentation in this repository.
 
 ### Exercise IDs
 
-Three places use the same exercise IDs: `Exercise.id` in `ios/Boji/Models/BojiStore.swift`, the Android course model (`Workout.kt`), and `COURSES` in `animations/src/courses.ts`. Keep the IDs equal. If you rename or add a course exercise, update all three places and regenerate `animations/lottie/`.
+Three places use the same exercise IDs: `Exercise.id` in `ios/Boji/Models/BojiStore.swift`, the Android course model (`Workout.kt`), and `COURSES` in `animations/src/courses.ts`. Keep the IDs equal. If you rename or add a course exercise, update all three places and run `pnpm build` in `animations/`.
+
+`bundled` of each course in `COURSES` decides where its animations go. The exercises of a bundled course go to `animations/lottie/`, which both apps bundle. Every course exercise is also in `assets/public/animations/exercises/v1/`, and the apps download the exercises that no bundled course uses from there. Add a new course with `bundled: false`, unless the user decides otherwise, because bundled animations add to the size of both app packages. One exercise can belong to more than one course.
 
 The text of a course and its exercises is in `locales/`, groups `course` and `exercise`. The keys contain the ID with `_` for `-`: `course_<id>_title`, `course_<id>_subtitle`, `exercise_<id>_name` and `exercise_<id>_tip`. If you rename or add a course or an exercise, rename or add these keys too and run `cargo locales generate` in `crates/`. Article keys use a name instead of the numeric article ID, for example `article_first_workout_title`.
 
-`LIBRARY` in `animations/src/courses.ts` holds animated exercises that no app course uses yet. Their files are in `animations/lottie-library/`, which no app bundles. When an app course adopts one, move it from `LIBRARY` to `COURSES` and regenerate.
+`LIBRARY` in `animations/src/courses.ts` holds the library exercises that no app course uses. Their files are in `animations/lottie-library/`, which Git ignores and no app bundles. When an app course adopts one, reference it with `lib('<id>')` in `COURSES` and keep its script in `animations/src/exercises/library/`. `LIBRARY` then excludes it, and the next `pnpm build` moves its files.
 
 ### Shared copy
 
@@ -232,7 +236,7 @@ The `wallet` target is the Apple Wallet pass that `bizserver/` signs. `crates/lo
 
 `LICENSE.md` holds the official text of the PolyForm Noncommercial License 1.0.0. Its first line is the `Required Notice:` line. AprilNEA LLC is the licensor and the CLA party. Do not edit the license text. Call the project source-available, not open source.
 
-The license does not cover the names Boji, 薄肌 and 薄肌俱乐部, the app icon, the pass icons and logos in `bizserver/assets/wallet/` with their SVG sources, the Apple Root CA in `bizserver/assets/wallet/apple-root-ca.crt`, the Hipo school list in `bizserver/data/schools/hipo.json` under the MIT license, `websites/public/media/`, `websites/public/images/portraits/`, the app screenshots in `ios/app-store/screenshots/` and `assets/public/screenshots/`, the Apple Product Bezels in `ios/app-store/screenshots/public/frames/` and `websites/public/frames/`, the framed Watch screenshots in `assets/public/screenshots/apple/watch/`, the exercise library `animations/src/exercises/library/` and its images in `assets/public/previews/library/`, or third-party dependencies and fonts. The exercise library is available only under a separate commercial license from AprilNEA LLC. The `## 许可证` section of the root `README.md` lists the excluded content in a table with its directory. The table omits the names, because the license grants no trademark rights. When you add brand assets or third-party material, add them to that table.
+The license does not cover the names Boji, 薄肌 and 薄肌俱乐部, the app icon, the pass icons and logos in `bizserver/assets/wallet/` with their SVG sources, the Apple Root CA in `bizserver/assets/wallet/apple-root-ca.crt`, the Hipo school list in `bizserver/data/schools/hipo.json` under the MIT license, `websites/public/media/`, `websites/public/images/portraits/`, the app screenshots in `ios/app-store/screenshots/` and `assets/public/screenshots/`, the Apple Product Bezels in `ios/app-store/screenshots/public/frames/` and `websites/public/frames/`, the framed Watch screenshots in `assets/public/screenshots/apple/watch/`, the exercise library `animations/src/exercises/library/`, its images in `assets/public/previews/library/` and the animation files generated from it, such as the remote course exercises in `assets/public/animations/exercises/v1/`, or third-party dependencies and fonts. The exercise library is available only under a separate commercial license from AprilNEA LLC. The `## 许可证` section of the root `README.md` lists the excluded content in a table with its directory. The table omits the names, because the license grants no trademark rights. When you add brand assets or third-party material, add them to that table.
 
 `.github/CLA.md` is the contributor license agreement. `.github/workflows/cla.yml` asks each commit author of a pull request to sign it with a pull request comment. The workflow stores the signatures in `signatures/version1/cla.json` on the `cla-signatures` branch, and creates that branch on its first run. Do not protect `cla-signatures`, and do not merge it into `master`.
 
