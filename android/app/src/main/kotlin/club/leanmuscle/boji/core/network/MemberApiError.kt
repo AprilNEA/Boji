@@ -1,6 +1,8 @@
 package club.leanmuscle.boji.core.network
 
 import com.connectrpc.Code
+import io.github.betterauth.client.result.BetterAuthError
+import io.github.betterauth.client.result.BetterAuthResult
 
 /**
  * Failures of the member service. The cases match `MembershipAPIError` on iOS, plus [Rpc] for the
@@ -54,3 +56,17 @@ val MemberApiError.serverCode: String?
         is MemberApiError.Rpc -> reason
         else -> null
     }
+
+/**
+ * Returns the value of a better-auth-kotlin-client call, or throws its failure as a [MemberApiError],
+ * so that Better Auth and Connect errors share one handling. Cancellation still propagates.
+ */
+fun <T> BetterAuthResult<T>.getOrThrowMemberError(): T = when (this) {
+    is BetterAuthResult.Success -> value
+    is BetterAuthResult.Failure -> throw when (val error = error) {
+        is BetterAuthError.Api -> MemberApiError.Http(error.status, error.code)
+        is BetterAuthError.Network -> MemberApiError.Network(error.cause)
+        // Includes an authenticated response without the `set-auth-token` header.
+        is BetterAuthError.Decoding -> MemberApiError.InvalidResponse
+    }
+}

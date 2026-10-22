@@ -17,6 +17,12 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // JitPack builds better-auth-kotlin-client from its GitHub tags. It serves only that group, and
+        // that group comes only from JitPack.
+        exclusiveContent {
+            forRepository { maven("https://jitpack.io") }
+            filter { includeGroup("com.github.better-auth-rs.better-auth-kotlin-client") }
+        }
     }
 }
 

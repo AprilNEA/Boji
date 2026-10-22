@@ -40,7 +40,7 @@ class MembershipClient(private val service: MembershipServiceClientInterface) {
     private suspend fun <T> rpc(call: suspend () -> ResponseMessage<T>): T = connectCall(call)
 
     private fun authorization(token: String): Headers =
-        mapOf("authorization" to listOf(BetterAuthClient.bearer(token)))
+        mapOf("authorization" to listOf("Bearer $token"))
 
     companion object {
         /** The parent of the caller's own resources. */

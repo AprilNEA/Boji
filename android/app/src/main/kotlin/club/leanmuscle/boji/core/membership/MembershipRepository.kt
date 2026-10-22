@@ -4,14 +4,21 @@ import club.leanmuscle.boji.core.auth.AuthSessionStore
 import club.leanmuscle.boji.core.auth.StoredSession
 import club.leanmuscle.boji.core.di.ApplicationScope
 import club.leanmuscle.boji.core.di.IoDispatcher
-import club.leanmuscle.boji.core.network.AuthSession
 import club.leanmuscle.boji.core.network.MemberApiError
 import club.leanmuscle.boji.core.network.MemberService
+import club.leanmuscle.boji.core.network.getOrThrowMemberError
 import club.leanmuscle.boji.core.network.isEmailNotVerified
 import club.leanmuscle.boji.core.network.isForbidden
 import club.leanmuscle.boji.core.network.isRateLimited
 import club.leanmuscle.boji.core.network.isUnauthenticated
 import club.leanmuscle.boji.core.network.serverCode
+import io.github.betterauth.client.BetterAuthClient
+import io.github.betterauth.client.api.IdTokenCredentials
+import io.github.betterauth.client.model.OperationResult
+import io.github.betterauth.client.model.SessionData
+import io.github.betterauth.client.model.SignInOutcome
+import io.github.betterauth.client.model.SocialSignInOutcome
+import io.github.betterauth.client.storage.InMemoryStorage
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -187,7 +194,11 @@ class MembershipRepository @Inject constructor(
         if (email.isEmpty() || password.isEmpty()) return AccountMessage.EmailAndPasswordRequired
         if (origin == null) return AccountMessage.NotConfigured
         val token = try {
-            service.auth().signIn(email, password)
+            val auth = signedOutAuth()
+            // bizserver does not enable two-factor authentication.
+            val outcome = auth.signIn.email(email, password).getOrThrowMemberError()
+            if (outcome !is SignInOutcome.Authenticated) throw MemberApiError.InvalidResponse
+            auth.currentToken() ?: throw MemberApiError.InvalidResponse
         } catch (e: MemberApiError) {
             if (e is MemberApiError.Http && e.status == 401) return AccountMessage.InvalidCredentials
             return handle(e, AccountAction.SIGN_IN)
@@ -197,7 +208,7 @@ class MembershipRepository @Inject constructor(
 
     private suspend fun completeSignIn(token: String, origin: String): AccountMessage {
         val session = try {
-            service.auth().getSession(token)
+            fetchSession(token)
         } catch (e: MemberApiError) {
             return handle(e, AccountAction.SIGN_IN)
         } ?: return AccountMessage.Failed(AccountAction.SIGN_IN)
@@ -220,7 +231,11 @@ class MembershipRepository @Inject constructor(
         if (origin == null || googleServerClientId == null) return AccountMessage.GoogleSignInUnavailable
         if (idToken.isBlank() || nonce.isBlank()) return AccountMessage.GoogleSignInIncomplete
         val token = try {
-            service.auth().signInWithIdToken(GOOGLE_PROVIDER, idToken, nonce)
+            val auth = signedOutAuth()
+            val credentials = IdTokenCredentials(token = idToken, nonce = nonce)
+            val outcome = auth.signIn.social(GOOGLE_PROVIDER, idToken = credentials).getOrThrowMemberError()
+            if (outcome !is SocialSignInOutcome.Authenticated) throw MemberApiError.InvalidResponse
+            auth.currentToken() ?: throw MemberApiError.InvalidResponse
         } catch (e: MemberApiError) {
             // There is no local session yet, so a 401 here rejects the token and clears nothing.
             return socialSignInProblem(e) ?: handle(e, AccountAction.GOOGLE_SIGN_IN)
@@ -246,7 +261,7 @@ class MembershipRepository @Inject constructor(
         if (origin == null) return AccountMessage.NotConfigured
         return try {
             // Sign-up does not sign in. The user verifies the email first, then signs in.
-            service.auth().register(name, email, password)
+            signedOutAuth().signUp.email(name, email, password).getOrThrowMemberError()
             AccountMessage.Registered
         } catch (e: MemberApiError) {
             handle(e, AccountAction.REGISTER)
@@ -258,7 +273,7 @@ class MembershipRepository @Inject constructor(
         if (email.isEmpty()) return AccountMessage.VerificationEmailRequired
         if (origin == null) return AccountMessage.NotConfigured
         return try {
-            service.auth().sendVerification(email)
+            signedOutAuth().sendVerificationEmail(email).getOrThrowMemberError()
             AccountMessage.VerificationSent
         } catch (e: MemberApiError) {
             handle(e, AccountAction.SEND_VERIFICATION)
@@ -270,7 +285,7 @@ class MembershipRepository @Inject constructor(
         if (email.isEmpty()) return AccountMessage.ResetEmailRequired
         if (origin == null) return AccountMessage.NotConfigured
         return try {
-            service.auth().requestPasswordReset(email)
+            signedOutAuth().requestPasswordReset(email).getOrThrowMemberError()
             AccountMessage.ResetRequested
         } catch (e: MemberApiError) {
             handle(e, AccountAction.RESET_PASSWORD)
@@ -317,7 +332,11 @@ class MembershipRepository @Inject constructor(
         if (origin == null) return AccountMessage.NotConfigured
         val stored = readSession() ?: return AccountMessage.SignInRequired
         val newToken = try {
-            service.auth().changePassword(currentPassword, newPassword, stored.token)
+            val auth = service.auth().withSession(stored.token)
+            // Changing the password always signs out the other sessions, as on iOS.
+            auth.changePassword(currentPassword, newPassword, revokeOtherSessions = true).getOrThrowMemberError()
+            // The view still holds the old token unless the response sent a new one.
+            auth.currentToken()?.takeIf { it != stored.token }
         } catch (e: MemberApiError) {
             return handle(e, AccountAction.CHANGE_PASSWORD)
         }
@@ -341,7 +360,7 @@ class MembershipRepository @Inject constructor(
         if (origin == null) return AccountMessage.NotConfigured
         val stored = readSession() ?: return AccountMessage.SignInRequired
         return try {
-            service.auth().revokeOtherSessions(stored.token)
+            service.auth().withSession(stored.token).revokeOtherSessions().getOrThrowMemberError().requireSuccess()
             AccountMessage.OtherSessionsRevoked
         } catch (e: MemberApiError) {
             handle(e, AccountAction.REVOKE_OTHER_SESSIONS)
@@ -352,7 +371,8 @@ class MembershipRepository @Inject constructor(
         if (origin == null) return AccountMessage.NotConfigured
         val stored = readSession() ?: return AccountMessage.SignInRequired
         return try {
-            service.auth().requestAccountDeletion(stored.token)
+            // Account deletion has two steps with the same session; see bizserver/docs/migration-auth.md.
+            service.auth().withSession(stored.token).deleteUser().getOrThrowMemberError().requireSuccess()
             AccountMessage.DeletionCodeSent
         } catch (e: MemberApiError) {
             handle(e, AccountAction.REQUEST_ACCOUNT_DELETION)
@@ -366,7 +386,7 @@ class MembershipRepository @Inject constructor(
         if (origin == null) return AccountMessage.NotConfigured
         val stored = readSession() ?: return AccountMessage.SignInRequired
         try {
-            service.auth().deleteAccount(code, stored.token)
+            service.auth().withSession(stored.token).deleteUser(token = code).getOrThrowMemberError().requireSuccess()
         } catch (e: MemberApiError) {
             if (e.serverCode == "INVALID_TOKEN") return AccountMessage.InvalidDeletionCode
             return handle(e, AccountAction.DELETE_ACCOUNT)
@@ -378,7 +398,7 @@ class MembershipRepository @Inject constructor(
         val stored = sessions.currentQuietly()
         val serverConfirmed = if (stored != null && origin != null && stored.origin == origin) {
             try {
-                service.auth().signOut(stored.token)
+                service.auth().withSession(stored.token).signOut().getOrThrowMemberError()
                 true
             } catch (e: MemberApiError) {
                 false
@@ -432,7 +452,7 @@ class MembershipRepository @Inject constructor(
         action: AccountAction,
     ): Pair<StoredSession?, AccountMessage?> {
         val session = try {
-            service.auth().getSession(stored.token)
+            fetchSession(stored.token)
         } catch (e: MemberApiError) {
             return null to handle(e, action)
         }
@@ -440,7 +460,7 @@ class MembershipRepository @Inject constructor(
             clearLocal()
             return null to AccountMessage.SessionExpired
         }
-        if (session.userId != stored.userId) {
+        if (session.user.id != stored.userId) {
             clearLocal()
             return null to AccountMessage.AccountMismatch
         }
@@ -563,16 +583,35 @@ class MembershipRepository @Inject constructor(
         null
     }
 
-    private fun storedSession(origin: String, token: String, session: AuthSession) = StoredSession(
+    /** A view of the Better Auth client without a session, for the calls that create one or need none. */
+    private fun signedOutAuth(): BetterAuthClient = service.auth().withStorage(InMemoryStorage())
+
+    /**
+     * Reads the session of [token]. Returns null when the server has no session or it has expired.
+     * The SDK does not check that the session belongs to the user, or that it has an expiry.
+     */
+    private suspend fun fetchSession(token: String): SessionData? {
+        val data = service.auth().withSession(token).getSession().getOrThrowMemberError() ?: return null
+        val expiresAt = data.session.expiresAt ?: throw MemberApiError.InvalidResponse
+        if (data.user.id != data.session.userId) throw MemberApiError.InvalidResponse
+        return data.takeIf { expiresAt.toEpochMilliseconds() > clock.millis() }
+    }
+
+    /** [data] comes from [fetchSession], which has checked the expiry. */
+    private fun storedSession(origin: String, token: String, data: SessionData) = StoredSession(
         origin = origin,
         token = token,
-        userId = session.userId,
-        email = session.email,
-        name = session.name,
-        emailVerified = session.emailVerified,
-        createdAtMillis = session.createdAt?.toEpochMilli(),
-        expiresAtMillis = session.expiresAt.toEpochMilli(),
+        userId = data.user.id,
+        email = data.user.email,
+        name = data.user.name,
+        emailVerified = data.user.emailVerified,
+        createdAtMillis = data.session.createdAt?.toEpochMilliseconds(),
+        expiresAtMillis = checkNotNull(data.session.expiresAt).toEpochMilliseconds(),
     )
+
+    private fun OperationResult.requireSuccess() {
+        if (!success) throw MemberApiError.InvalidResponse
+    }
 
     // endregion
 

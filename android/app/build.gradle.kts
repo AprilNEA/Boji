@@ -161,9 +161,10 @@ dependencies {
     implementation(project(":rpc"))
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
-    // Better Auth (/api/auth/*) is a JSON API outside the proto contract.
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.kotlinx.serialization)
+    // Better Auth (/api/auth/*) is a JSON API outside the proto contract. better-auth-kotlin-client calls
+    // it, and its Ktor OkHttp engine runs on the app's OkHttpClient.
+    implementation(libs.better.auth.kotlin.client)
+    implementation(libs.ktor.client.okhttp)
     // Saves and offers the email password. play-services-auth backs it on Android 13 and lower.
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)

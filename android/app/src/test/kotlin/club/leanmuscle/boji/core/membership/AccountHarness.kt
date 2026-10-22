@@ -63,7 +63,7 @@ class AccountHarness(
 
     val repository: MembershipRepository by lazy {
         MembershipRepository(
-            service = MemberService(MemberServiceConfig(endpoint, googleServerClientId), Lazy { httpClient }, clock),
+            service = MemberService(MemberServiceConfig(endpoint, googleServerClientId), Lazy { httpClient }),
             sessions = sessions,
             cache = cache,
             clock = clock,

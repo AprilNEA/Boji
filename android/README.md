@@ -93,7 +93,7 @@ Baseline Profile 需要在连接的模拟器或设备（API 28 及以上）上�
 | 依赖注入 | Hilt 2.60.1、KSP 2.3.12 | 模块位于 `core/di/`。不使用 kapt |
 | 存储 | DataStore 1.2.1、kotlinx.serialization 1.12.0 | 记录保存为 JSON DataStore（`state.json`），外观偏好保存在 Preferences DataStore |
 | 并发 | kotlinx.coroutines 1.11.0 | 写入在应用级协程作用域中执行，关闭页面不会取消保存 |
-| 网络 | OkHttp 5.5.0、Retrofit 3.0.0 | 全应用共用一个 `OkHttpClient`。Better Auth 的 JSON 接口通过 Retrofit 和 kotlinx.serialization 转换器调用 |
+| 网络 | OkHttp 5.5.0、better-auth-kotlin-client v0.1.1（Ktor 3.6.0） | 全应用共用一个 `OkHttpClient`。Better Auth 的 JSON 接口通过 [better-auth-kotlin-client](https://github.com/better-auth-rs/better-auth-kotlin-client) 调用，不手写请求。SDK 从 JitPack 下载，它的 Ktor OkHttp 引擎使用共享的 `OkHttpClient` |
 | RPC | connect-kotlin 0.9.0、Protobuf 4.36.2（lite） | `:rpc` 模块由 `buf generate` 从 `../bizserver/proto/` 生成客户端 |
 | 凭据 | Credential Manager 1.6.0、Android Keystore | 会话令牌和会员卡缓存用 Keystore 中的 AES-256-GCM 密钥加密，再存入 DataStore |
 | 性能 | Baseline Profile（Benchmark 1.5.0）、ProfileInstaller 1.4.1 | `:baselineprofile` 模块生成配置文件并运行启动基准测试 |
@@ -308,7 +308,7 @@ iOS 版采用 Liquid Glass 和 Apple 人机界面指南。Android 版遵循 Mate
 | `ShareLink` | 系统分享面板（`ACTION_SEND`）。足迹页分享文字，会员卡分享 PNG 图片，图片经 `FileProvider` 提供 |
 | `fileExporter` | 系统文件选择器（`CreateDocument`），默认文件名为 `boji-records.json` |
 | Keychain 保存会话令牌 | Android Keystore 中的 AES-256-GCM 密钥加密后存入 DataStore。不使用已弃用的 EncryptedSharedPreferences |
-| `URLSession` 调用接口 | OkHttp。Better Auth 用 Retrofit，`boji.v1` 用 connect-kotlin |
+| `URLSession` 调用接口 | OkHttp。Better Auth 用 better-auth-kotlin-client，`boji.v1` 用 connect-kotlin |
 | 密码自动填充 | 输入框声明自动填充类型，并用 Credential Manager 读取和保存密码 |
 | SF Symbols | Material Symbols 矢量图标，选中时使用填充样式 |
 | 强调色 `#C7401F` | 以 `#C7401F` 为种子生成 Material 3 配色。浅色 `primary` 为 `#A52806`，`primaryContainer` 为 `#C7401F` |
@@ -324,6 +324,7 @@ iOS 版采用 Liquid Glass 和 Apple 人机界面指南。Android 版遵循 Mate
 - **每周起始日**：最近一周和每周挑战按系统区域设置计算每周第一天。iOS 版的行为相同。
 - **RPC 编码**：iOS 版用 `URLSession` 发送 JSON 编码的 Connect 请求。Android 版用 connect-kotlin 发送二进制 Protobuf（`application/proto`）。两者调用相同的服务和方法。[bizserver 的 RPC 说明](../bizserver/docs/connectrpc-api.md)写明服务端同时接受两种编码。
 - **系统登录**：iOS 版用 Apple 登录，Android 版用 Google 登录。两者都调用 `/api/auth/sign-in/social`，错误提示的规则相同：邮箱已属于邮箱账号时提示用邮箱登录，令牌被拒时提示重试。
+- **Better Auth 调用方式**：iOS 的 `BetterAuthClient.swift` 手写 `/api/auth/` 的请求，因为没有 Swift 客户端 SDK。Android 版由 `MembershipRepository` 直接调用 [better-auth-kotlin-client](https://github.com/better-auth-rs/better-auth-kotlin-client)，没有对应的中间层。两端调用的接口和错误处理规则相同。
 - **密码与网站关联**：Android 版已在应用一侧声明 Digital Asset Links，iOS 版没有 `webcredentials` 关联域名。网站一侧的文件尚未发布，所以两端目前都不与网站共享密码。见[密码与网站关联](#密码与网站关联)。
 - **健康数据的腰围**：iOS 版从 HealthKit 读取腰围。Health Connect 没有腰围类型，Android 版只读取体重和睡眠。
 - **睡眠分类**：iOS 版统计 HealthKit 的各类「睡着」值，不统计「卧床」。Android 版统计 Health Connect 的睡眠阶段，不统计清醒和离床阶段。两端都不把在床时间算作睡眠。
