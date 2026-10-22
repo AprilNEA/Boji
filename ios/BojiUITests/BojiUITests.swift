@@ -85,6 +85,21 @@ final class BojiUITests: XCTestCase {
         tapVisible(app.buttons["完成"])
     }
 
+    func testTrainingGroupsListAllCourses() {
+        onboard()
+        app.tabBars.buttons["训练"].tap()
+        for heading in ["居家", "健身房", "拉伸与放松"] {
+            XCTAssertTrue(app.staticTexts[heading].waitForExistence(timeout: 5), heading)
+        }
+        for identifier in [
+            "home-beginner", "home-intermediate", "home-strength", "home-core", "home-cardio", "home-dumbbell",
+            "gym-beginner", "gym-free-weights", "gym-upper", "gym-lower",
+            "mobility", "stretch-lower", "stretch-desk", "morning-wake-up"
+        ] {
+            XCTAssertTrue(app.buttons["course-\(identifier)"].waitForExistence(timeout: 5), identifier)
+        }
+    }
+
     /// App Review requires an easily accessible privacy policy link inside the app.
     func testSettingsLinkToLegalPages() {
         onboard()

@@ -24,22 +24,8 @@ struct TrainingView: View {
                         InfoRow(text: String(localized: .Shared.trainingTipLoad), symbol: "figure.mind.and.body")
                     }
                 }
-                VStack(alignment: .leading, spacing: 12) {
-                    SectionHeading(title: String(localized: "更多课程"))
-                    GroupedRows {
-                        courseLink(WorkoutLibrary.homeIntermediate) {
-                            NavigationRowLabel(title: WorkoutLibrary.homeIntermediate.title,
-                                               detail: String(localized: "准备好了，再进一步 · \(WorkoutLibrary.homeIntermediate.minutes) 分钟"),
-                                               symbol: "figure.strengthtraining.traditional")
-                        }
-                        .buttonStyle(RowButtonStyle())
-                        courseLink(WorkoutLibrary.mobility) {
-                            NavigationRowLabel(title: WorkoutLibrary.mobility.title,
-                                               detail: String(localized: "给身体一点余地 · \(WorkoutLibrary.mobility.minutes) 分钟"),
-                                               symbol: "figure.flexibility", color: BojiTheme.green)
-                        }
-                        .buttonStyle(RowButtonStyle())
-                    }
+                ForEach(WorkoutGroup.allCases) { group in
+                    courseSection(group)
                 }
             }
             .navigationTitle(.Shared.tabTraining)
@@ -57,6 +43,29 @@ struct TrainingView: View {
         }
         .matchedTransitionSource(id: workout.id, in: transition)
     }
+
+    private func courseSection(_ group: WorkoutGroup) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeading(title: String(localized: group.title))
+            GroupedRows {
+                ForEach(WorkoutLibrary.courses(in: group)) { workout in
+                    courseLink(workout) {
+                        NavigationRowLabel(
+                            title: workout.title,
+                            detail: String(localized: .Shared.trainingProgressionMeta(
+                                minutes: workout.minutes,
+                                exercises: workout.exercises.count
+                            )),
+                            symbol: workout.exercises[0].symbol,
+                            color: group == .stretch ? BojiTheme.green : BojiTheme.accent
+                        )
+                    }
+                    .buttonStyle(RowButtonStyle())
+                    .accessibilityIdentifier("course-\(workout.id)")
+                }
+            }
+        }
+    }
 }
 
 struct WorkoutDetailView: View {
@@ -64,11 +73,24 @@ struct WorkoutDetailView: View {
     @Environment(BojiStore.self) private var store
     @State private var training = false
     @State private var preview: Exercise?
+    @State private var animationStatus: AnimationStatus = .idle
     private var completed: Bool { store.today.completedWorkoutIDs.contains(workout.id) }
 
     var body: some View {
         PageScroll {
             WorkoutCard(workout: workout).accessibilityHidden(true)
+            if animationStatus != .idle && animationStatus != .available {
+                Label {
+                    Text(animationStatus == .downloading
+                         ? LocalizedStringResource.Shared.detailAnimationDownloading
+                         : .Shared.detailAnimationUnavailable)
+                } icon: {
+                    Image(systemName: animationStatus == .downloading ? "arrow.down.circle" : "wifi.exclamationmark")
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .accessibilityIdentifier("course-animation-status")
+            }
             Surface(padding: 16) {
                 AdaptiveStack(spacing: 8) {
                     metric("\(workout.minutes)", String(localized: .Shared.detailMinutes))
@@ -97,8 +119,25 @@ struct WorkoutDetailView: View {
                 .padding(.horizontal, 16).padding(.bottom, 8)
                 .frame(maxWidth: 680)
         }
+        .task(id: workout.id) {
+            guard await ExerciseAnimationLoader.shared.needsPrefetch(workout) else { return }
+            animationStatus = .downloading
+            switch await ExerciseAnimationLoader.shared.prefetch(workout) {
+            case .available, .notRequired:
+                animationStatus = .available
+            case .unavailable:
+                animationStatus = .unavailable
+            }
+        }
         .fullScreenCover(isPresented: $training) { WorkoutSessionView(workout: workout) }
         .sheet(item: $preview) { ExercisePreviewView(exercise: $0) }
+    }
+
+    private enum AnimationStatus {
+        case idle
+        case downloading
+        case available
+        case unavailable
     }
 
     private func exerciseRow(index: Int, exercise: Exercise) -> some View {

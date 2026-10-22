@@ -42,10 +42,27 @@ targets:
         excludes:
           - '**/*.tmp'
           - '**/.manus-*.tmp'
+          - 'DebugSupport/Fixtures/**'
       - path: Shared
       - path: ../animations/lottie
         type: folder
         buildPhase: resources
+    preBuildScripts:
+      - name: Copy Debug animation fixtures
+        script: |
+          if [ "${CONFIGURATION}" = "Debug" ]; then
+            destination="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RemoteAnimationFixtures"
+            /bin/mkdir -p "$destination"
+            /bin/cp "${SRCROOT}/Boji/DebugSupport/Fixtures/"*.json "$destination/"
+          fi
+        inputFiles:
+          - ${SRCROOT}/Boji/DebugSupport/Fixtures/index.json
+          - ${SRCROOT}/Boji/DebugSupport/Fixtures/light.json
+          - ${SRCROOT}/Boji/DebugSupport/Fixtures/dark.json
+        outputFiles:
+          - ${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RemoteAnimationFixtures/index.json
+          - ${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RemoteAnimationFixtures/light.json
+          - ${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RemoteAnimationFixtures/dark.json
     dependencies:
       - target: BojiWidgets
         embed: true

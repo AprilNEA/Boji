@@ -15,6 +15,16 @@ final class ExerciseAnimationUITests: XCTestCase {
         tap(course, app)
         return app
     }
+    private func openRemoteCourse(fixture: String) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting", "--animation-remote-fixture=\(fixture)", "-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN"]
+        app.launch()
+        XCTAssertTrue(app.buttons["开始我的计划"].waitForExistence(timeout: 10))
+        app.buttons["开始我的计划"].tap()
+        app.tabBars.buttons["训练"].tap()
+        tap(app.buttons["course-home-strength"], app)
+        return app
+    }
     private func tap(_ target: XCUIElement, _ app: XCUIApplication) {
         XCTAssertTrue(target.waitForExistence(timeout: 8))
         for _ in 0..<8 where !target.isHittable { app.swipeUp() }
@@ -75,5 +85,16 @@ final class ExerciseAnimationUITests: XCTestCase {
         XCTAssertFalse(app.images["exercise-animation"].exists)
         tap(app.buttons["跳过休息"], app)
         XCTAssertTrue(app.images["exercise-animation"].waitForExistence(timeout: 5))
+    }
+    func testRemoteCourseOfflineShowsStatusAndStillStartsSession() {
+        let app = openRemoteCourse(fixture: "offline")
+        XCTAssertTrue(app.staticTexts["联网后可查看动作动画"].waitForExistence(timeout: 10))
+        tap(app.buttons["开始训练"], app)
+        XCTAssertTrue(app.buttons["完成这一组"].waitForExistence(timeout: 10))
+    }
+    func testRemoteFixtureLoadsAnimation() {
+        let app = openRemoteCourse(fixture: "ok")
+        tap(app.buttons["exercise-preview-push-up"], app)
+        assertAnimation("正在播放", app)
     }
 }

@@ -8,8 +8,7 @@ struct ExercisePreviewView: View {
     @State private var playing = true
     @State private var still = false
     @State private var speed = 1.0
-
-    private var entry: ExerciseAnimationDescriptor? { ExerciseAnimationLoader.shared.catalog?.entry(for: exercise.id) }
+    @State private var entry: ExerciseAnimationDescriptor?
 
     var body: some View {
         NavigationStack {
@@ -26,12 +25,11 @@ struct ExercisePreviewView: View {
                             Button(playing ? "暂停演示" : "播放演示", systemImage: playing ? "pause.fill" : "play.fill") {
                                 if still { still = false; playing = true } else { playing.toggle() }
                             }
-                            .disabled(entry == nil)
                             .buttonStyle(.bordered).frame(minHeight: 44)
                             .accessibilityIdentifier("exercise-playback-toggle")
                             Spacer()
                             Button("代表姿势", systemImage: "figure.stand") { still = true; playing = false }
-                                .buttonStyle(.bordered).frame(minHeight: 44).disabled(entry == nil)
+                                .buttonStyle(.bordered).frame(minHeight: 44)
                                 .accessibilityIdentifier("exercise-show-poster")
                         }
                         Picker("演示速度", selection: $speed) {
@@ -61,5 +59,6 @@ struct ExercisePreviewView: View {
             }
         }
         .onChange(of: scenePhase) { _, phase in if phase != .active { playing = false } }
+        .task(id: exercise.id) { entry = await ExerciseAnimationLoader.shared.descriptor(for: exercise.id) }
     }
 }
