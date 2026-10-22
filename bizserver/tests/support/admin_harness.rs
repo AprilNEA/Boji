@@ -109,6 +109,7 @@ impl Harness {
                 },
                 client_ip: auth::ClientIp::default(),
                 apple: None,
+                google: None,
                 account_linking: auth::AccountLinking::Disabled,
             },
         )

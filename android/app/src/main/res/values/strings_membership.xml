@@ -117,6 +117,8 @@
     <string name="auth_data_note">Your email and sign-in details go to the club service. The sign-in token is stored encrypted on this device and is never included in data exports.</string>
     <string name="auth_dev_service">Development service: %1$s</string>
     <string name="auth_use_saved">Use Saved Password</string>
+    <string name="auth_google_continue">Continue with Google</string>
+    <string name="auth_google_note">Google shares the name and email of the account you choose, to create or restore your club account. An existing email account isn’t merged automatically.</string>
 
     <!-- Card enrollment -->
     <string name="enroll_title">Claim a Free Member Card</string>
@@ -190,7 +192,7 @@
     <string name="security_revoke_others">Sign Out Other Sessions</string>
     <string name="security_note">Changing your password signs out your other sessions. This only applies to accounts with an email password.</string>
     <string name="security_signed_out">Sign in first to manage account security.</string>
-    <string name="security_footer">Better Auth manages sign-in. This page doesn’t delete your account, member card or local records.</string>
+    <string name="security_footer">Better Auth manages sign-in. Deleting your account removes it and your member card from the server. Your local records stay on this device.</string>
     <string name="security_revoke_title">Sign out other sessions?</string>
     <string name="security_revoke_action">Sign Out Others</string>
     <string name="security_revoke_text">Your other sessions will end and must sign in again. This session and your local records stay.</string>
@@ -205,6 +207,18 @@
     <string name="security_password_confirm_title">Update password and sign out other sessions?</string>
     <string name="security_password_confirm_action">Update</string>
     <string name="security_password_confirm_text">Other devices must sign in again. If this session can’t be restored, you also need to sign in with the new password.</string>
+    <string name="security_delete_section">Delete Account</string>
+    <string name="security_delete_text">Deleting your account permanently removes it, your member card and its benefits from the server. It can’t be undone. Your local records on this device stay; you can delete them separately in Settings.</string>
+    <string name="security_delete_start">Delete Account…</string>
+    <string name="security_delete_request_title">Delete your account?</string>
+    <string name="security_delete_request_text">We’ll send a confirmation code to %1$s. Your account is deleted only after you enter the code here.</string>
+    <string name="security_delete_request_action">Send Code</string>
+    <string name="security_delete_code_hint">Copy the confirmation code from the email sent to %1$s and paste it below. The code is valid for 15 minutes.</string>
+    <string name="security_delete_code">Confirmation code</string>
+    <string name="security_delete_resend">Send a New Code</string>
+    <string name="security_delete_confirm_title">Permanently delete your account?</string>
+    <string name="security_delete_confirm_text">Your account, member card and benefits will be deleted from the server, and every session will sign out. This can’t be undone.</string>
+    <string name="security_delete_confirm_action">Delete Account</string>
 
     <!-- Share card -->
     <string name="share_title">Share Preview</string>
@@ -271,6 +285,12 @@
     <string name="msg_network_revoke">Signing out other sessions isn’t confirmed. Try again later.</string>
     <string name="msg_failed_refresh">Can’t update the membership. Try again later.</string>
     <string name="msg_failed_sign_in">Sign-in failed. Check your email and password.</string>
+    <string name="msg_failed_google">Google sign-in didn’t finish. Try again later.</string>
+    <string name="msg_google_unavailable">Google sign-in isn’t available right now. You can still sign in with your email.</string>
+    <string name="msg_google_rejected">Google sign-in couldn’t be verified. Try again.</string>
+    <string name="msg_google_incomplete">Google sign-in didn’t finish. Try again.</string>
+    <string name="msg_no_google_account">No Google account is available on this device. Add one in system settings, or sign in with your email.</string>
+    <string name="msg_email_account_exists">This email already has a club account. Sign in with your email and password.</string>
     <string name="msg_failed_register">Registration failed. Check your details and try again.</string>
     <string name="msg_failed_verification">Can’t send the verification email. Try again later.</string>
     <string name="msg_failed_reset">Can’t send the password reset email. Try again later.</string>
@@ -278,4 +298,13 @@
     <string name="msg_failed_session">Can’t confirm the current session. Refresh and try again.</string>
     <string name="msg_failed_password">The password change isn’t confirmed. Check your current password or reset it.</string>
     <string name="msg_failed_revoke">Can’t sign out other sessions right now.</string>
+    <string name="msg_deletion_code_sent">A confirmation code is on its way to your email.</string>
+    <string name="msg_account_deleted">Your account is deleted. Your local records stay on this device.</string>
+    <string name="msg_deletion_code_required">Paste the confirmation code from the email first.</string>
+    <string name="msg_invalid_deletion_code">The confirmation code is wrong or has expired. Check the email, or send a new code.</string>
+    <string name="msg_account_deleted_clear_failed">Your account is deleted, but some sign-in data on this device couldn’t be cleared. Delete local data in Settings.</string>
+    <string name="msg_network_deletion_code">The confirmation code wasn’t sent. Check your connection and try again.</string>
+    <string name="msg_network_delete_account">Account deletion isn’t confirmed. Check your connection and try again.</string>
+    <string name="msg_failed_deletion_code">Can’t send a confirmation code right now.</string>
+    <string name="msg_failed_delete_account">Can’t delete your account right now.</string>
 </resources>

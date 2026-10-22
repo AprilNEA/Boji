@@ -96,6 +96,8 @@ pub(crate) fn session_required() -> ConnectError {
 pub struct Capabilities {
     /// Whether `POST /api/auth/sign-in/social` accepts the `apple` provider.
     pub apple_sign_in: bool,
+    /// Whether `POST /api/auth/sign-in/social` accepts the `google` provider.
+    pub google_sign_in: bool,
     /// Apple Wallet pass signing. `None` when the `WALLET_*` variables are unset.
     pub wallet: Option<Arc<PassSigner>>,
     /// Pass update notifications. `None` records pass changes but sends no
@@ -137,6 +139,7 @@ impl p::SystemService for SystemService {
         Response::ok(p::ServerConfig {
             name: SERVER_CONFIG.to_owned(),
             apple_login_enabled: self.capabilities.apple_sign_in,
+            google_login_enabled: self.capabilities.google_sign_in,
             wallet_pass_enabled: self
                 .capabilities
                 .wallet

@@ -17,7 +17,7 @@ use serde::Deserialize;
 /// A key path with a `.` places the value in a group, for example
 /// `APPLE_TEAM_ID` becomes `apple.team_id`. The process ignores variables
 /// that are not in this table.
-pub const VARIABLES: [(&str, &str); 32] = [
+pub const VARIABLES: [(&str, &str); 35] = [
     ("APP_ENV", "app_env"),
     ("HOST", "host"),
     ("PORT", "port"),
@@ -42,6 +42,12 @@ pub const VARIABLES: [(&str, &str); 32] = [
     ("APPLE_TEAM_ID", "apple.team_id"),
     ("APPLE_KEY_ID", "apple.key_id"),
     ("APPLE_PRIVATE_KEY", "apple.private_key"),
+    ("GOOGLE_CLIENT_ID", "google.client_id"),
+    ("GOOGLE_CLIENT_SECRET", "google.client_secret"),
+    (
+        "GOOGLE_ADDITIONAL_CLIENT_IDS",
+        "google.additional_client_ids",
+    ),
     ("WALLET_PASS_TYPE_IDENTIFIER", "wallet.pass_type_identifier"),
     ("WALLET_TEAM_IDENTIFIER", "wallet.team_identifier"),
     ("WALLET_SIGNER_CERT", "wallet.signer_cert"),
@@ -167,6 +173,7 @@ pub struct Settings {
     pub mail: MailSettings,
     pub smtp: SmtpSettings,
     pub apple: AppleSettings,
+    pub google: GoogleSettings,
     pub wallet: WalletSettings,
     pub affiliation_email_hmac_key: Option<String>,
 }
@@ -199,6 +206,15 @@ pub struct AppleSettings {
     pub team_id: Option<String>,
     pub key_id: Option<String>,
     pub private_key: Option<String>,
+}
+
+/// `GOOGLE_*` variables.
+#[derive(Default, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct GoogleSettings {
+    pub client_id: Option<String>,
+    pub client_secret: Option<String>,
+    pub additional_client_ids: Option<String>,
 }
 
 /// `WALLET_*` variables.

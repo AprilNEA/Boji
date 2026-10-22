@@ -20,7 +20,7 @@
 | POST | `/api/auth/change-password` | 使用旧密码修改密码 |
 | POST | `/api/auth/delete-user` | 注销账号：先发送确认码，再凭确认码删除账号 |
 | POST | `/api/auth/change-email` | 申请更换登录邮箱 |
-| POST | `/api/auth/sign-in/social` | Apple 登录，仅在配置 Apple 后可用 |
+| POST | `/api/auth/sign-in/social` | Apple 或 Google 登录，仅在配置对应提供方后可用 |
 | GET、POST | `/api/auth/callback/apple` | Apple 网页授权回调，仅在配置 Apple 后可用 |
 
 这是配置范围，不代表每个端点均已完成联调。实际验证范围见[迁移状态](migration-status.md)。
@@ -88,6 +88,22 @@ Apple 邮箱已属于现有用户时的行为由 `ACCOUNT_LINKING` 决定，见[
 
 网页流程使用 `response_mode=form_post`。配置 Apple 后，服务自动把 `https://appleid.apple.com` 加入可信来源，以接受 Apple 提交的回调表单。在 Apple Developer 中登记的回调地址必须是 `{BETTER_AUTH_URL}/api/auth/callback/apple`。
 
+## Google 登录
+
+服务在设置 `GOOGLE_CLIENT_ID` 时注册 `google` 提供方。此时 `SystemService/GetServerConfig` 返回 `googleLoginEnabled: true`。没有设置时，Google 登录保持关闭。只设置另外两个变量时，服务拒绝启动。
+
+| 变量 | 含义 |
+| --- | --- |
+| `GOOGLE_CLIENT_ID` | Google Cloud 中 Web 应用类型的 OAuth 客户端 ID。Android 用它作为 `serverClientId` 请求 ID 令牌，所以令牌的 `aud` 是这个值 |
+| `GOOGLE_CLIENT_SECRET` | 可选。Web 客户端的密钥，只用于网页授权流程。原生 ID 令牌登录不需要 |
+| `GOOGLE_ADDITIONAL_CLIENT_IDS` | 可选。其他可接受的令牌受众，用逗号分隔，例如 iOS 客户端 ID。不能重复 `GOOGLE_CLIENT_ID` |
+
+Android 客户端调用 `POST /api/auth/sign-in/social`。请求体为 `{"provider":"google","idToken":{"token":"…","nonce":"…"}}`，`nonce` 可选。服务用 Google 公布的公钥校验 RS256 签名，并检查签发方、受众、签发时间和过期时间。签发方必须是 `accounts.google.com`，受众必须是上表中的客户端 ID，签发时间必须在 1 小时内。请求带 `nonce` 时，令牌中的 `nonce` 必须相同。校验时，服务向 `https://www.googleapis.com/oauth2/v3/certs` 读取公钥，所以服务必须能访问 Google。成功响应与邮箱登录相同，签名令牌通过 `set-auth-token` 返回。
+
+Google 邮箱已属于现有用户时的行为由 `ACCOUNT_LINKING` 决定，见[账号关联](#账号关联)。
+
+客户端 ID 和密钥不写入仓库。本地调试时，开发者在自己的 Google Cloud 项目中创建客户端，把值写进本地 `.env`。正式值只放在部署环境中。
+
 ## 账号关联
 
 账号关联指社交登录的邮箱已属于现有用户时，把社交账号加入这个用户。`ACCOUNT_LINKING` 控制这个行为，默认值为 `disabled`。其他取值会让服务拒绝启动。
@@ -103,7 +119,7 @@ Apple 邮箱已属于现有用户时的行为由 `ACCOUNT_LINKING` 决定，见[
 - 现有用户已验证同一个邮箱。这样可以防止他人先用这个邮箱注册，再接管社交账号。
 - 两个邮箱相同。服务从不关联邮箱不同的用户。
 
-任何一项不满足时，登录失败，现有用户保持不变。关联不会用提供方资料覆盖现有用户的资料。已登录用户也可以调用 `POST /api/auth/link-social` 主动关联，同样受这些条件限制。目前只有 Apple 一个社交提供方，所以这个配置只影响 Apple 登录。
+任何一项不满足时，登录失败，现有用户保持不变。关联不会用提供方资料覆盖现有用户的资料。已登录用户也可以调用 `POST /api/auth/link-social` 主动关联，同样受这些条件限制。这个配置同时影响 Apple 登录和 Google 登录。
 
 ## 邮件与密码
 

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
@@ -35,6 +36,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import club.leanmuscle.boji.BuildConfig
 import club.leanmuscle.boji.R
+import club.leanmuscle.boji.core.membership.AccountMessage
 import club.leanmuscle.boji.core.membership.PasswordRules
 import club.leanmuscle.boji.ui.components.BojiCard
 import club.leanmuscle.boji.ui.components.BojiScaffold
@@ -44,12 +46,15 @@ import club.leanmuscle.boji.ui.components.PageHeading
 import kotlinx.coroutines.launch
 
 const val AUTH_SCREEN_TAG = "auth_screen"
+const val GOOGLE_SIGN_IN_TAG = "google_sign_in"
 
 private enum class AuthMode { SIGN_IN, REGISTER }
 
 /**
  * Sign in and registration with email and password, as on iOS. Credential Manager offers saved
- * passwords when the screen opens and offers to save a password that the user typed.
+ * passwords when the screen opens and offers to save a password that the user typed. When the build
+ * and the server both enable it, Sign in with Google sits above the form in both modes, where iOS
+ * shows Sign in with Apple.
  */
 @Composable
 fun AuthScreen(
@@ -61,7 +66,9 @@ fun AuthScreen(
 ) {
     val busy by viewModel.busy.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
+    val googleSignInAvailable by viewModel.googleSignInAvailable.collectAsStateWithLifecycle()
     val credentials = rememberPasswordCredentials()
+    val google = rememberGoogleCredentials()
     val scope = rememberCoroutineScope()
 
     var mode by rememberSaveable { mutableStateOf(AuthMode.SIGN_IN) }
@@ -93,6 +100,19 @@ fun AuthScreen(
             scope.launch {
                 if (!pickedSaved) credentials.save(email, password)
                 onSignedIn()
+            }
+        }
+    }
+    val signInWithGoogle: () -> Unit = {
+        viewModel.googleServerClientId?.let { clientId ->
+            scope.launch {
+                val nonce = GoogleCredentials.newNonce()
+                when (val result = google.signIn(clientId, nonce)) {
+                    is GoogleSignInResult.Token -> viewModel.signInWithGoogle(result.idToken, nonce, onSignedIn)
+                    GoogleSignInResult.Cancelled -> Unit
+                    GoogleSignInResult.NoAccount -> viewModel.showProblem(AccountMessage.NoGoogleAccount)
+                    GoogleSignInResult.Failed -> viewModel.showProblem(AccountMessage.GoogleSignInIncomplete)
+                }
             }
         }
     }
@@ -130,6 +150,14 @@ fun AuthScreen(
                         Text(stringResource(if (option == AuthMode.SIGN_IN) R.string.auth_sign_in else R.string.auth_register))
                     }
                 }
+            }
+            if (googleSignInAvailable) {
+                OutlinedButton(
+                    onClick = signInWithGoogle,
+                    enabled = !busy,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp).testTag(GOOGLE_SIGN_IN_TAG),
+                ) { Text(stringResource(R.string.auth_google_continue), style = MaterialTheme.typography.titleMedium) }
+                FootNote(stringResource(R.string.auth_google_note))
             }
             if (mode == AuthMode.REGISTER) {
                 AccountField(name, { name = it }, stringResource(R.string.auth_name), FieldKind.NAME, enabled = !busy)

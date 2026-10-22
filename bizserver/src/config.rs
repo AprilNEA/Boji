@@ -9,12 +9,16 @@ pub mod source;
 use crate::apple::AppleSignIn;
 use crate::auth::{AccountLinking, ClientIp};
 use crate::domain::organization::AffiliationEmailKey;
+use crate::google::GoogleSignIn;
 use crate::mail::{MailTransport, SmtpCredentials, SmtpRelay, SmtpSecurity};
 use crate::wallet::{PassSigner, WalletCredentials};
 use anyhow::{Context, Result, anyhow, bail};
 use better_auth::plugins::oauth::AppleClientSecretSigner;
 use figment::{Figment, Provider};
-use source::{AppleSettings, Environment, MailSettings, Settings, SmtpSettings, WalletSettings};
+use source::{
+    AppleSettings, Environment, GoogleSettings, MailSettings, Settings, SmtpSettings,
+    WalletSettings,
+};
 use std::{
     net::{IpAddr, SocketAddr},
     path::PathBuf,
@@ -48,6 +52,8 @@ pub struct Config {
     pub mail: MailTransport,
     /// Sign in with Apple settings. `None` when no `APPLE_*` variable is set.
     pub apple: Option<AppleSignIn>,
+    /// Sign in with Google settings. `None` when no `GOOGLE_*` variable is set.
+    pub google: Option<GoogleSignIn>,
     /// Apple Wallet pass signing. `None` when no `WALLET_*` variable is set.
     pub wallet: Option<PassSigner>,
     /// Rule for a social sign-in whose email already belongs to a user.
@@ -124,6 +130,7 @@ impl Config {
         let client_ip = client_ip(settings.client_ip_header, settings.trusted_proxies)?;
         let mail = mail(settings.mail, settings.smtp, production)?;
         let apple = apple(settings.apple)?;
+        let google = google(settings.google)?;
         let wallet = wallet(settings.wallet, &auth_origin_for_wallet, &auth_secret)?;
         Ok(Self {
             database_url,
@@ -137,6 +144,7 @@ impl Config {
             client_ip,
             mail,
             apple,
+            google,
             wallet,
             account_linking: account_linking(settings.account_linking.as_deref())?,
             affiliation_email_key,
@@ -336,6 +344,43 @@ fn apple(settings: AppleSettings) -> Result<Option<AppleSignIn>> {
     }))
 }
 
+/// Check the Google settings.
+///
+/// `GOOGLE_CLIENT_ID` enables the provider. The other two variables need it.
+/// `GOOGLE_CLIENT_SECRET` serves only the web code flow, and
+/// `GOOGLE_ADDITIONAL_CLIENT_IDS` lists more accepted ID-token audiences,
+/// separated by commas.
+fn google(settings: GoogleSettings) -> Result<Option<GoogleSignIn>> {
+    let GoogleSettings {
+        client_id,
+        client_secret,
+        additional_client_ids,
+    } = settings;
+    let Some(client_id) = client_id else {
+        if client_secret.is_some() || additional_client_ids.is_some() {
+            bail!("Sign in with Google requires GOOGLE_CLIENT_ID");
+        }
+        return Ok(None);
+    };
+    let additional_client_ids: Vec<String> = additional_client_ids
+        .as_deref()
+        .unwrap_or_default()
+        .split(',')
+        .map(str::trim)
+        .filter(|id| !id.is_empty())
+        .map(str::to_owned)
+        .collect();
+    let client_id = client_id.trim().to_owned();
+    if additional_client_ids.contains(&client_id) {
+        bail!("GOOGLE_ADDITIONAL_CLIENT_IDS must not repeat GOOGLE_CLIENT_ID");
+    }
+    Ok(Some(GoogleSignIn {
+        client_id,
+        client_secret: client_secret.unwrap_or_default().trim().to_owned(),
+        additional_client_ids,
+    }))
+}
+
 /// Check the Wallet settings and the certificate chain.
 ///
 /// `auth_origin` is the public origin of the service. Passes name
@@ -483,7 +528,7 @@ mod tests {
         assert_eq!(config.auth_url, "http://localhost:3000");
         assert_eq!(config.log_filter, DEFAULT_LOG_FILTER);
         assert_eq!(config.client_ip, ClientIp::Untracked);
-        assert!(config.apple.is_none() && config.wallet.is_none());
+        assert!(config.apple.is_none() && config.google.is_none() && config.wallet.is_none());
         let MailTransport::Files { directory } = config.mail else {
             panic!("development without SMTP_HOST must write mail files");
         };
@@ -629,6 +674,61 @@ mod tests {
             "Sign in with Apple requires every APPLE_* variable; missing \
              APPLE_APP_BUNDLE_IDENTIFIER, APPLE_TEAM_ID, APPLE_PRIVATE_KEY"
         );
+    }
+
+    #[test]
+    fn google_settings_need_the_client_id() {
+        assert!(
+            load(&[("GOOGLE_CLIENT_ID", "  ")])
+                .unwrap()
+                .google
+                .is_none()
+        );
+        assert_eq!(
+            error(&[("GOOGLE_CLIENT_SECRET", "secret")]),
+            "Sign in with Google requires GOOGLE_CLIENT_ID"
+        );
+        assert_eq!(
+            error(&[
+                ("GOOGLE_CLIENT_ID", "web.apps.googleusercontent.com"),
+                (
+                    "GOOGLE_ADDITIONAL_CLIENT_IDS",
+                    "ios.apps.googleusercontent.com, web.apps.googleusercontent.com"
+                ),
+            ]),
+            "GOOGLE_ADDITIONAL_CLIENT_IDS must not repeat GOOGLE_CLIENT_ID"
+        );
+    }
+
+    #[test]
+    fn google_settings_split_the_additional_client_ids() {
+        let only_id = load(&[("GOOGLE_CLIENT_ID", " web.apps.googleusercontent.com ")])
+            .unwrap()
+            .google
+            .unwrap();
+        assert_eq!(only_id.client_id, "web.apps.googleusercontent.com");
+        assert!(only_id.client_secret.is_empty() && only_id.additional_client_ids.is_empty());
+
+        let settings = load(&[
+            ("GOOGLE_CLIENT_ID", "web.apps.googleusercontent.com"),
+            ("GOOGLE_CLIENT_SECRET", "GOCSPX-test-secret"),
+            (
+                "GOOGLE_ADDITIONAL_CLIENT_IDS",
+                "ios.apps.googleusercontent.com, ,other.apps.googleusercontent.com",
+            ),
+        ])
+        .unwrap()
+        .google
+        .unwrap();
+        assert_eq!(
+            settings.additional_client_ids,
+            [
+                "ios.apps.googleusercontent.com",
+                "other.apps.googleusercontent.com"
+            ]
+        );
+        let debug = format!("{settings:?}");
+        assert!(debug.contains("client_secret_set: true") && !debug.contains("GOCSPX"));
     }
 
     #[test]

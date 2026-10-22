@@ -56,7 +56,7 @@ Authorization: Bearer <signed-session-token>
 
 业务接口只接受已验证邮箱的有效会话。客户端必须使用登录响应的 `set-auth-token`。服务不接受原始会话 token 或仅 Cookie 的业务请求。
 
-`SystemService/GetServerConfig` 和 `boji.v1.OrganizationService` 的方法不要求登录。`GetServerConfig` 的请求为 `{"name":"serverConfig"}`。服务设置全部 `APPLE_*` 变量后，`appleLoginEnabled` 为 `true`。服务配置了 Wallet 签名材料，并且签名证书和 WWDR 证书都在有效期内时，`walletPassEnabled` 为 `true`。`activitySyncEnabled` 为 `true`。服务设置了 `AFFILIATION_EMAIL_HMAC_KEY` 时，`organizationRankingEnabled` 为 `true`。
+`SystemService/GetServerConfig` 和 `boji.v1.OrganizationService` 的方法不要求登录。`GetServerConfig` 的请求为 `{"name":"serverConfig"}`。服务设置全部 `APPLE_*` 变量后，`appleLoginEnabled` 为 `true`。服务设置 `GOOGLE_CLIENT_ID` 后，`googleLoginEnabled` 为 `true`。服务配置了 Wallet 签名材料，并且签名证书和 WWDR 证书都在有效期内时，`walletPassEnabled` 为 `true`。`activitySyncEnabled` 为 `true`。服务设置了 `AFFILIATION_EMAIL_HMAC_KEY` 时，`organizationRankingEnabled` 为 `true`。
 
 ## 资源名
 

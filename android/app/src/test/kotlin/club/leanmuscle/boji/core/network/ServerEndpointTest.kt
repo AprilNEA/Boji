@@ -15,6 +15,7 @@ class ServerEndpointTest {
         assertEquals("https://api.leanmuscle.club", endpoint.origin)
         assertEquals("https://api.leanmuscle.club/", endpoint.directoryUrl.toString())
         assertEquals("https://api.leanmuscle.club", endpoint.connectHost)
+        assertEquals("https://api.leanmuscle.club/api/auth", endpoint.authUrl)
     }
 
     @Test
@@ -28,6 +29,7 @@ class ServerEndpointTest {
         val endpoint = checkNotNull(parse("https://example.com/boji"))
         assertEquals("https://example.com/boji/", endpoint.directoryUrl.toString())
         assertEquals("https://example.com/boji", endpoint.connectHost)
+        assertEquals("https://example.com/boji/api/auth", endpoint.authUrl)
         assertEquals("https://example.com", endpoint.origin)
     }
 

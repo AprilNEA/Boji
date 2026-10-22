@@ -6,6 +6,7 @@
 
 use crate::apple::{self, AppleSignIn};
 use crate::auth_schema::BojiAuthSchema;
+use crate::google::{self, GoogleSignIn};
 use crate::mail::messages::{
     DELETE_ACCOUNT_CODE_MINUTES, PASSWORD_RESET_LINK_HOURS, VERIFICATION_LINK_HOURS,
 };
@@ -54,6 +55,8 @@ pub struct AuthOptions {
     pub client_ip: ClientIp,
     /// Sign in with Apple settings. `None` leaves the Apple provider unregistered.
     pub apple: Option<AppleSignIn>,
+    /// Sign in with Google settings. `None` leaves the Google provider unregistered.
+    pub google: Option<GoogleSignIn>,
     /// Rule for a social sign-in whose email already belongs to a user.
     pub account_linking: AccountLinking,
 }
@@ -181,7 +184,8 @@ pub enum AuthFailure {
 /// Deletion needs a code that the service mails to the user. An email change
 /// needs a confirmation from the current address and a verification of the new
 /// address. When `options.apple` is set, it also registers the `apple` social
-/// provider and trusts Apple's `form_post` origin. `options.account_linking`
+/// provider and trusts Apple's `form_post` origin. When `options.google` is
+/// set, it also registers the `google` social provider. `options.account_linking`
 /// decides whether a social sign-in may join an existing user with the same
 /// verified email.
 pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Result<Arc<Auth>> {
@@ -192,6 +196,7 @@ pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Resu
         .apple
         .as_ref()
         .map(|settings| apple::provider(settings, db.clone()));
+    let google_provider = options.google.as_ref().map(google::provider);
     let mut trusted_origins = options.trusted_origins;
     if apple_provider.is_some() {
         trusted_origins.push(apple::ORIGIN.to_owned());
@@ -262,9 +267,15 @@ pub async fn build(db: DatabaseConnection, options: AuthOptions) -> anyhow::Resu
                 .send_delete_account_verification(Arc::new(DeleteAccountEmailSender::new(mailer)))
                 .before_delete(user_deletion),
         );
-    if let Some(apple_provider) = apple_provider {
-        builder =
-            builder.plugin(OAuthPlugin::new().add_provider(apple::PROVIDER_ID, apple_provider));
+    if apple_provider.is_some() || google_provider.is_some() {
+        let mut oauth = OAuthPlugin::new();
+        if let Some(apple_provider) = apple_provider {
+            oauth = oauth.add_provider(apple::PROVIDER_ID, apple_provider);
+        }
+        if let Some(google_provider) = google_provider {
+            oauth = oauth.add_provider(google::PROVIDER_ID, google_provider);
+        }
+        builder = builder.plugin(oauth);
     }
     let auth = builder.build().await.context("build Better Auth service")?;
 

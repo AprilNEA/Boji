@@ -23,9 +23,12 @@ class ServerEndpoint private constructor(val baseUrl: HttpUrl) {
         if (baseUrl.port != HttpUrl.defaultPort(baseUrl.scheme)) append(':').append(baseUrl.port)
     }
 
-    /** Base URL for Retrofit, which requires a trailing slash. */
+    /** [baseUrl] with a trailing slash. */
     val directoryUrl: HttpUrl =
         if (baseUrl.encodedPath.endsWith("/")) baseUrl else baseUrl.newBuilder().addPathSegment("").build()
+
+    /** Better Auth base URL for better-auth-kotlin-client: the `/api/auth` handler, without a trailing slash. */
+    val authUrl: String = directoryUrl.resolve("api/auth").toString()
 
     /** Host for connect-kotlin, which appends `/<service>/<method>` itself. */
     val connectHost: String = directoryUrl.toString().removeSuffix("/")

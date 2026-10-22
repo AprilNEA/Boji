@@ -72,6 +72,26 @@ class AuthViewModel @Inject constructor(repository: MembershipRepository) : Acco
     /** The member service URL, for the debug hint. */
     val serviceUrl: String? = repository.serviceUrl
 
+    /** The Web client ID for Google ID tokens. Null hides Sign in with Google. */
+    val googleServerClientId: String? = repository.googleServerClientId
+
+    private val mutableGoogleSignInAvailable = MutableStateFlow(false)
+
+    /** True once the server confirms `googleLoginEnabled` for a build with a client ID. */
+    val googleSignInAvailable: StateFlow<Boolean> = mutableGoogleSignInAvailable.asStateFlow()
+
+    init {
+        if (googleServerClientId != null) {
+            viewModelScope.launch { mutableGoogleSignInAvailable.value = repository.isGoogleSignInAvailable() }
+        }
+    }
+
+    fun signInWithGoogle(idToken: String, nonce: String, onSignedIn: () -> Unit) =
+        launchAction({ repository.signInWithGoogle(idToken, nonce) }) { if (!it.isError) onSignedIn() }
+
+    /** Shows a problem that the device reported before any request, such as a missing account. */
+    fun showProblem(problem: AccountMessage.Problem) = launchAction({ problem })
+
     fun signIn(email: String, password: String, onSignedIn: () -> Unit) =
         launchAction({ repository.signIn(email, password) }) { if (!it.isError) onSignedIn() }
 
@@ -143,4 +163,9 @@ class SecurityViewModel @Inject constructor(repository: MembershipRepository) : 
         launchAction({ repository.changePassword(currentPassword, newPassword) }) { if (!it.isError) onChanged() }
 
     fun revokeOtherSessions() = launchAction(repository::revokeOtherSessions)
+
+    fun requestAccountDeletion(onSent: () -> Unit) =
+        launchAction(repository::requestAccountDeletion) { if (!it.isError) onSent() }
+
+    fun deleteAccount(code: String) = launchAction({ repository.deleteAccount(code) })
 }

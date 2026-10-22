@@ -10,6 +10,7 @@ pub mod auth_schema;
 pub mod config;
 pub mod domain;
 pub mod entities;
+pub mod google;
 pub mod mail;
 pub mod migrations;
 pub mod rpc;

@@ -12,6 +12,10 @@ x-app: &app
     CORS_ORIGINS: ${CORS_ORIGINS:-}
     TRUSTED_ORIGINS: ${TRUSTED_ORIGINS:-}
     MAIL_OUTPUT_DIR: /app/.data/mail
+    # Optional. Empty values leave Sign in with Google off.
+    GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+    GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+    GOOGLE_ADDITIONAL_CLIENT_IDS: ${GOOGLE_ADDITIONAL_CLIENT_IDS:-}
   read_only: true
   tmpfs:
     - /tmp

@@ -26,12 +26,12 @@ icon: IdCard
 | --- | --- |
 | `POST /api/auth/sign-up/email` | 注册，提交 name、email、password；不自动登录 |
 | `POST /api/auth/sign-in/email` | 邮箱登录；从 `set-auth-token` 响应头读取令牌 |
-| `POST /api/auth/sign-in/social` | Apple 登录，提交 `provider: apple` 和 `idToken`；从 `set-auth-token` 响应头读取令牌 |
+| `POST /api/auth/sign-in/social` | Apple 或 Google 登录，提交 `provider`（`apple` 或 `google`）和 `idToken`；从 `set-auth-token` 响应头读取令牌 |
 | `POST /api/auth/send-verification-email` | 重发验证邮件 |
 | `POST /api/auth/request-password-reset` | 发送重置邮件 |
 | `GET /api/auth/get-session` | 恢复用户与会话状态；没有有效会话时返回 null |
 | `POST /api/auth/sign-out` | 请求注销当前会话 |
-| `SystemService.GetServerConfig` | 读取 Apple 登录和钱包凭证的服务端开关；不需要登录 |
+| `SystemService.GetServerConfig` | 读取 Apple 登录、Google 登录和钱包凭证的服务端开关；不需要登录 |
 | `MembershipService.ListMemberships` | `parent` 为 `users/me`，返回零或一张会员卡 |
 | `MembershipService.CreateMembership` | 提交 `nickname` 和 `terms_version`，返回会员卡。卡已存在时返回 `MEMBERSHIP_ALREADY_EXISTS`，客户端改为读取现有卡 |
 | `WalletService.GetMembershipPass` | `name` 为 `users/me/memberships/{membership}/pass`，返回已签名的 `.pkpass` 文件 |

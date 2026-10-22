@@ -11,6 +11,7 @@ Do not reimplement Connect framing or password and session algorithms. Use `app:
 | `src/config.rs`, `src/config/` | Service configuration through `figment`: the only reader of service environment variables |
 | `src/auth*`, `src/mail*` | Native authentication, application-owned entities, and mail delivery: SMTP relay or local files |
 | `src/apple.rs` | Sign in with Apple provider assembly and the stored-email fallback |
+| `src/google.rs` | Sign in with Google provider assembly |
 | `src/wallet.rs`, `src/wallet/` | Apple Wallet signing material checks, pass packaging, PKCS #7 signatures, authentication tokens (`token.rs`), the web service (`web.rs`) and APNs update notifications (`push.rs`). `strings.rs` is generated |
 | `assets/wallet/` | Pass icon and logo sources and PNG files, and the Apple Root CA that `src/wallet.rs` embeds at build time |
 | `data/schools/` | The school list: the pinned Hipo snapshot, its MIT notice and local corrections, which `src/domain/organization/import.rs` embeds at build time. See `data/schools/README.md` |
@@ -100,6 +101,8 @@ The protobuf API follows Google AIPs. No released client uses it yet, so a contr
 Clients generate their code from this workspace. After a change to `proto/boji/v1/`, run `buf generate` in `../ios/BojiAPI/` and in `../android/rpc/`, and include the regenerated Swift and Kotlin files in the same change. This is the one exception to the rule against changes in client directories: a contract change must not leave the generated client code stale.
 
 Sign in with Apple is enabled only when every `APPLE_*` variable is set. `rpc::Capabilities::apple_sign_in` must match the providers installed by `auth::build`. better-auth-rs signs and renews the Apple client secret. Do not add a static client secret or a renewal job here.
+
+Sign in with Google is enabled when `GOOGLE_CLIENT_ID` is set; `GOOGLE_CLIENT_SECRET` and `GOOGLE_ADDITIONAL_CLIENT_IDS` are optional and need it. `rpc::Capabilities::google_sign_in` must match the providers installed by `auth::build`. better-auth-rs verifies Google ID tokens against Google's published keys. Do not add a local token verifier, and never commit a client ID or secret: real values live only in the deployment environment or a local `.env`.
 
 `ACCOUNT_LINKING` selects `auth::AccountLinking`, which defaults to `Disabled`. `AccountLinking::config` sets every Better Auth linking field explicitly. When linking is enabled, keep these settings: no trusted providers, a verified local email, equal emails, and no profile overwrite. Changing any of them requires a security review and an update to `docs/migration-auth.md`.
 

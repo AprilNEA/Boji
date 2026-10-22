@@ -110,6 +110,8 @@
     <string name="auth_data_note">邮箱和认证信息将提交至俱乐部服务。登录令牌加密保存在本机，不会写入数据导出。</string>
     <string name="auth_dev_service">开发服务：%1$s</string>
     <string name="auth_use_saved">使用已保存的密码</string>
+    <string name="auth_google_continue">使用 Google 继续</string>
+    <string name="auth_google_note">Google 会提供你所选账号的姓名和邮箱，用于创建或恢复俱乐部身份。已有邮箱账号不会自动合并。</string>
 
     <!-- Card enrollment -->
     <string name="enroll_title">领取免费身份卡</string>
@@ -183,7 +185,7 @@
     <string name="security_revoke_others">退出其他登录会话</string>
     <string name="security_note">修改密码会退出其他会话。仅适用于已设置邮箱密码的账号。</string>
     <string name="security_signed_out">请先登录，再管理账号安全。</string>
-    <string name="security_footer">认证由 Better Auth 管理。本页不会删除账号、会员卡或本地记录。</string>
+    <string name="security_footer">认证由 Better Auth 管理。删除账号会从服务器删除账号和会员卡，本机记录保留在这台设备上。</string>
     <string name="security_revoke_title">退出其他登录会话？</string>
     <string name="security_revoke_action">退出其他会话</string>
     <string name="security_revoke_text">其他登录会话将失效，需要重新登录。当前会话与本地记录保留。</string>
@@ -198,6 +200,18 @@
     <string name="security_password_confirm_title">更新密码并退出其他会话？</string>
     <string name="security_password_confirm_action">确认更新</string>
     <string name="security_password_confirm_text">其他设备需要重新登录。如当前会话无法恢复，你也需要使用新密码登录。</string>
+    <string name="security_delete_section">删除账号</string>
+    <string name="security_delete_text">删除账号会从服务器永久删除账号、会员卡和权益，无法恢复。本机记录保留，需要时可以在「设置」中另外删除。</string>
+    <string name="security_delete_start">删除账号…</string>
+    <string name="security_delete_request_title">删除账号？</string>
+    <string name="security_delete_request_text">我们会向 %1$s 发送确认码。只有在这里输入确认码后，账号才会被删除。</string>
+    <string name="security_delete_request_action">发送确认码</string>
+    <string name="security_delete_code_hint">从发往 %1$s 的邮件中复制确认码，粘贴到下方。确认码 15 分钟内有效。</string>
+    <string name="security_delete_code">确认码</string>
+    <string name="security_delete_resend">重新发送确认码</string>
+    <string name="security_delete_confirm_title">永久删除账号？</string>
+    <string name="security_delete_confirm_text">账号、会员卡和权益将从服务器删除，所有登录会话都会退出。此操作无法撤销。</string>
+    <string name="security_delete_confirm_action">删除账号</string>
 
     <!-- Share card -->
     <string name="share_title">分享预览</string>
@@ -264,6 +278,12 @@
     <string name="msg_network_revoke">其他会话的退出结果未确认，请稍后重试。</string>
     <string name="msg_failed_refresh">无法更新会员信息，请稍后重试。</string>
     <string name="msg_failed_sign_in">登录失败，请检查邮箱和密码。</string>
+    <string name="msg_failed_google">Google 登录未完成，请稍后重试。</string>
+    <string name="msg_google_unavailable">Google 登录暂不可用。你仍可使用邮箱登录。</string>
+    <string name="msg_google_rejected">Google 登录校验失败，请重新尝试。</string>
+    <string name="msg_google_incomplete">Google 登录未完成，请重试。</string>
+    <string name="msg_no_google_account">这台设备上没有可用的 Google 账号。请在系统设置中添加，或使用邮箱登录。</string>
+    <string name="msg_email_account_exists">这个邮箱已有俱乐部账号。请用邮箱和密码登录。</string>
     <string name="msg_failed_register">注册失败，请检查信息后重试。</string>
     <string name="msg_failed_verification">验证邮件发送失败，请稍后重试。</string>
     <string name="msg_failed_reset">密码重置邮件发送失败，请稍后重试。</string>
@@ -271,4 +291,13 @@
     <string name="msg_failed_session">无法确认当前登录会话，请刷新后重试。</string>
     <string name="msg_failed_password">密码修改未确认，请检查当前密码或使用密码找回。</string>
     <string name="msg_failed_revoke">暂时无法退出其他登录会话。</string>
+    <string name="msg_deletion_code_sent">确认码已发送到你的邮箱。</string>
+    <string name="msg_account_deleted">账号已删除。本机记录仍保留在这台设备上。</string>
+    <string name="msg_deletion_code_required">请先粘贴邮件中的确认码。</string>
+    <string name="msg_invalid_deletion_code">确认码错误或已过期。请检查邮件，或重新发送确认码。</string>
+    <string name="msg_account_deleted_clear_failed">账号已删除，但本机的部分登录数据未能清除。请在「设置」中删除本地数据。</string>
+    <string name="msg_network_deletion_code">确认码未发送，请检查网络后重试。</string>
+    <string name="msg_network_delete_account">删除结果未确认，请检查网络后重试。</string>
+    <string name="msg_failed_deletion_code">暂时无法发送确认码。</string>
+    <string name="msg_failed_delete_account">暂时无法删除账号。</string>
 </resources>

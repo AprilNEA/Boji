@@ -2,9 +2,12 @@ package club.leanmuscle.boji.core.membership
 
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.CHANGE_PASSWORD
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.CREATE_MEMBERSHIP
+import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.DELETE_USER
+import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.GET_SERVER_CONFIG
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.GET_SESSION
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.LIST_MEMBERSHIPS
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.SIGN_IN
+import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.SIGN_IN_SOCIAL
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.SIGN_OUT
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.connectError
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.json
@@ -13,7 +16,9 @@ import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.membershi
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.proto
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.sessionJson
 import club.leanmuscle.boji.v1.CreateMembershipRequest
+import club.leanmuscle.boji.v1.GetServerConfigRequest
 import club.leanmuscle.boji.v1.ListMembershipsRequest
+import club.leanmuscle.boji.v1.ServerConfig
 import java.io.File
 import java.nio.file.Files
 import java.util.concurrent.TimeUnit
@@ -364,6 +369,70 @@ class MembershipRepositoryTest {
 
     // endregion
 
+    // region Sign in with Google
+
+    @Test
+    fun googleSignInIsOfferedOnlyWhenTheBuildAndTheServerEnableIt() = runTest {
+        server.on(GET_SERVER_CONFIG) { proto(ServerConfig.newBuilder().setGoogleLoginEnabled(true).build()) }
+        val h = harness()
+        assertTrue(h.repository.isGoogleSignInAvailable())
+        val request = GetServerConfigRequest.parseFrom(checkNotNull(server.requests(GET_SERVER_CONFIG).single().body).toByteArray())
+        assertEquals("serverConfig", request.name)
+
+        server.on(GET_SERVER_CONFIG) { proto(ServerConfig.getDefaultInstance()) }
+        assertFalse(h.repository.isGoogleSignInAvailable())
+        server.on(GET_SERVER_CONFIG) { connectError("unavailable", 503) }
+        assertFalse(h.repository.isGoogleSignInAvailable())
+        h.close()
+
+        // A build without a client ID never asks the server.
+        val requestsBefore = server.requestCount
+        val withoutClientId = AccountHarness(dir, backgroundScope, server.endpoint, googleServerClientId = null)
+        withoutClientId.awaitRestore()
+        assertFalse(withoutClientId.repository.isGoogleSignInAvailable())
+        assertEquals(AccountMessage.GoogleSignInUnavailable, withoutClientId.repository.signInWithGoogle("id-token", "nonce"))
+        assertEquals(requestsBefore, server.requestCount)
+        withoutClientId.close()
+    }
+
+    @Test
+    fun googleSignInSendsTheTokenAndTheNonceAndStoresTheSession() = runTest {
+        serveSignedInAccount(membership())
+        server.on(SIGN_IN_SOCIAL) { json("""{"redirect":false,"token":"raw"}""", authToken = "tok-g") }
+        val h = harness()
+        h.awaitRestore()
+
+        assertEquals(AccountMessage.SignedIn, h.repository.signInWithGoogle("google-id-token", "raw-nonce"))
+
+        val body = server.requests(SIGN_IN_SOCIAL).single().jsonBody()
+        assertEquals("google", body["provider"]!!.jsonPrimitive.content)
+        val idToken = body["idToken"]!!.jsonObject
+        assertEquals("google-id-token", idToken["token"]!!.jsonPrimitive.content)
+        assertEquals("raw-nonce", idToken["nonce"]!!.jsonPrimitive.content)
+        assertEquals("tok-g", h.sessions.current()?.token)
+        assertEquals("000042", signedIn(h.repository.state.value).card?.memberNumber)
+        h.close()
+    }
+
+    @Test
+    fun rejectedGoogleSignInKeepsTheUserSignedOut() = runTest {
+        val h = harness()
+        h.awaitRestore()
+
+        server.on(SIGN_IN_SOCIAL) { json("""{"code":"INVALID_TOKEN","message":"Invalid token"}""", code = 401) }
+        assertEquals(AccountMessage.GoogleSignInRejected, h.repository.signInWithGoogle("bad", "nonce"))
+        server.on(SIGN_IN_SOCIAL) { json("""{"code":"LINKING_NOT_ALLOWED","message":"Account not linked"}""", code = 401) }
+        assertEquals(AccountMessage.EmailAccountExists, h.repository.signInWithGoogle("token", "nonce"))
+        assertEquals(AccountMessage.GoogleSignInIncomplete, h.repository.signInWithGoogle(" ", "nonce"))
+
+        assertEquals(2, server.requests(SIGN_IN_SOCIAL).size)
+        assertEquals(AccountState.SignedOut, h.repository.state.value)
+        assertNull(h.sessions.current())
+        h.close()
+    }
+
+    // endregion
+
     // region Account security, sign-out and local data
 
     @Test
@@ -401,6 +470,64 @@ class MembershipRepositoryTest {
         assertEquals(AccountMessage.PasswordChangedSignInAgain, h.repository.changePassword("password1", "password2"))
         assertEquals(AccountState.SignedOut, h.repository.state.value)
         assertNull(h.sessions.current())
+        h.close()
+    }
+
+    @Test
+    fun requestingAccountDeletionSendsAnEmptyBodyAndKeepsTheSession() = runTest {
+        serveSignedInAccount(membership())
+        server.on(DELETE_USER) { json("""{"success":true,"message":"Verification email sent"}""") }
+        val h = harness()
+        h.seed(h.storedSession(), card = h.cardOf(membership()))
+        h.awaitRestore()
+
+        assertEquals(AccountMessage.DeletionCodeSent, h.repository.requestAccountDeletion())
+
+        val request = server.requests(DELETE_USER).single()
+        assertEquals("Bearer tok-1", request.headers["Authorization"])
+        assertTrue(request.jsonBody().isEmpty())
+        assertEquals("tok-1", h.sessions.current()?.token)
+        assertEquals("000042", signedIn(h.repository.state.value).card?.memberNumber)
+        h.close()
+    }
+
+    @Test
+    fun deletingTheAccountSendsThePastedCodeAndClearsLocalData() = runTest {
+        serveSignedInAccount(membership())
+        server.on(DELETE_USER) { json("""{"success":true,"message":"User deleted"}""") }
+        val h = harness()
+        h.seed(h.storedSession(), card = h.cardOf(membership()))
+        h.awaitRestore()
+
+        assertEquals(AccountMessage.AccountDeleted, h.repository.deleteAccount("  7fb0fa42\n7383450f "))
+
+        val request = server.requests(DELETE_USER).single()
+        assertEquals("Bearer tok-1", request.headers["Authorization"])
+        assertEquals("7fb0fa427383450f", request.jsonBody()["token"]!!.jsonPrimitive.content)
+        assertEquals(AccountState.SignedOut, h.repository.state.value)
+        assertNull(h.sessions.current())
+        assertEquals(0L, h.cacheFile.length())
+        h.close()
+    }
+
+    @Test
+    fun wrongOrMissingDeletionCodeKeepsTheAccount() = runTest {
+        serveSignedInAccount(membership())
+        server.on(DELETE_USER) { json("""{"code":"INVALID_TOKEN","message":"Invalid token"}""", code = 404) }
+        val h = harness()
+        h.seed(h.storedSession(), card = h.cardOf(membership()))
+        h.awaitRestore()
+
+        assertEquals(AccountMessage.DeletionCodeRequired, h.repository.deleteAccount(" \n "))
+        assertTrue(server.requests(DELETE_USER).isEmpty())
+
+        assertEquals(AccountMessage.InvalidDeletionCode, h.repository.deleteAccount("000000"))
+        assertEquals("tok-1", h.sessions.current()?.token)
+        assertEquals("000042", signedIn(h.repository.state.value).card?.memberNumber)
+
+        server.on(DELETE_USER) { json("""{"code":"UNAUTHORIZED","message":"Unauthorized"}""", code = 401) }
+        assertEquals(AccountMessage.SessionExpired, h.repository.deleteAccount("000000"))
+        assertEquals(AccountState.SignedOut, h.repository.state.value)
         h.close()
     }
 

@@ -4,14 +4,21 @@ import club.leanmuscle.boji.core.auth.AuthSessionStore
 import club.leanmuscle.boji.core.auth.StoredSession
 import club.leanmuscle.boji.core.di.ApplicationScope
 import club.leanmuscle.boji.core.di.IoDispatcher
-import club.leanmuscle.boji.core.network.AuthSession
 import club.leanmuscle.boji.core.network.MemberApiError
 import club.leanmuscle.boji.core.network.MemberService
+import club.leanmuscle.boji.core.network.getOrThrowMemberError
 import club.leanmuscle.boji.core.network.isEmailNotVerified
 import club.leanmuscle.boji.core.network.isForbidden
 import club.leanmuscle.boji.core.network.isRateLimited
 import club.leanmuscle.boji.core.network.isUnauthenticated
 import club.leanmuscle.boji.core.network.serverCode
+import io.github.betterauth.client.BetterAuthClient
+import io.github.betterauth.client.api.IdTokenCredentials
+import io.github.betterauth.client.model.OperationResult
+import io.github.betterauth.client.model.SessionData
+import io.github.betterauth.client.model.SignInOutcome
+import io.github.betterauth.client.model.SocialSignInOutcome
+import io.github.betterauth.client.storage.InMemoryStorage
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -21,6 +28,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.security.GeneralSecurityException
 import java.security.ProviderException
@@ -58,6 +66,9 @@ class MembershipRepository @Inject constructor(
     /** The member service URL of this build, for the debug hint on the sign-in screen. */
     val serviceUrl: String? = service.endpoint?.toString()
 
+    /** The Web client ID that Google ID tokens are requested for, or null when the build has none. */
+    val googleServerClientId: String? = service.googleServerClientId
+
     init {
         // Without a stored session this reads one file and makes no request.
         if (origin != null) scope.launch(io) { operation { restore() } }
@@ -70,6 +81,24 @@ class MembershipRepository @Inject constructor(
     suspend fun refreshQuietly(): AccountMessage? = operation { refreshNow(explicit = false) }
 
     suspend fun signIn(email: String, password: String): AccountMessage? = operation { signInNow(email, password) }
+
+    /**
+     * Whether the sign-in screen offers Google: the build has a client ID and the server reports
+     * `googleLoginEnabled`. Any failure counts as unavailable. This reads no account data, so it
+     * runs outside the operation lock.
+     */
+    suspend fun isGoogleSignInAvailable(): Boolean = withContext(io) {
+        if (origin == null || googleServerClientId == null) return@withContext false
+        try {
+            service.system().serverConfig().googleLoginEnabled
+        } catch (e: MemberApiError) {
+            false
+        }
+    }
+
+    /** Signs in with a Google ID token that was requested with the raw [nonce]. */
+    suspend fun signInWithGoogle(idToken: String, nonce: String): AccountMessage? =
+        operation { signInWithGoogleNow(idToken, nonce) }
 
     suspend fun register(name: String, email: String, password: String): AccountMessage? =
         operation { registerNow(name, email, password) }
@@ -92,6 +121,15 @@ class MembershipRepository @Inject constructor(
         operation { changePasswordNow(currentPassword, newPassword) }
 
     suspend fun revokeOtherSessions(): AccountMessage? = operation { revokeOtherSessionsNow() }
+
+    /** Asks the server to email a confirmation code for deleting the account. */
+    suspend fun requestAccountDeletion(): AccountMessage? = operation { requestAccountDeletionNow() }
+
+    /**
+     * Deletes the account on the server with the emailed [code], then clears the session and the
+     * card cache. Local records stay, as after a sign-out.
+     */
+    suspend fun deleteAccount(code: String): AccountMessage? = operation { deleteAccountNow(code) }
 
     /** Signs out on the server when possible, and always clears the session and the card cache. */
     suspend fun signOut(): AccountMessage? = operation { signOutNow() }
@@ -156,7 +194,11 @@ class MembershipRepository @Inject constructor(
         if (email.isEmpty() || password.isEmpty()) return AccountMessage.EmailAndPasswordRequired
         if (origin == null) return AccountMessage.NotConfigured
         val token = try {
-            service.auth().signIn(email, password)
+            val auth = signedOutAuth()
+            // bizserver does not enable two-factor authentication.
+            val outcome = auth.signIn.email(email, password).getOrThrowMemberError()
+            if (outcome !is SignInOutcome.Authenticated) throw MemberApiError.InvalidResponse
+            auth.currentToken() ?: throw MemberApiError.InvalidResponse
         } catch (e: MemberApiError) {
             if (e is MemberApiError.Http && e.status == 401) return AccountMessage.InvalidCredentials
             return handle(e, AccountAction.SIGN_IN)
@@ -166,7 +208,7 @@ class MembershipRepository @Inject constructor(
 
     private suspend fun completeSignIn(token: String, origin: String): AccountMessage {
         val session = try {
-            service.auth().getSession(token)
+            fetchSession(token)
         } catch (e: MemberApiError) {
             return handle(e, AccountAction.SIGN_IN)
         } ?: return AccountMessage.Failed(AccountAction.SIGN_IN)
@@ -185,6 +227,31 @@ class MembershipRepository @Inject constructor(
         return loadCard(stored, AccountAction.SIGN_IN) ?: AccountMessage.SignedIn
     }
 
+    private suspend fun signInWithGoogleNow(idToken: String, nonce: String): AccountMessage {
+        if (origin == null || googleServerClientId == null) return AccountMessage.GoogleSignInUnavailable
+        if (idToken.isBlank() || nonce.isBlank()) return AccountMessage.GoogleSignInIncomplete
+        val token = try {
+            val auth = signedOutAuth()
+            val credentials = IdTokenCredentials(token = idToken, nonce = nonce)
+            val outcome = auth.signIn.social(GOOGLE_PROVIDER, idToken = credentials).getOrThrowMemberError()
+            if (outcome !is SocialSignInOutcome.Authenticated) throw MemberApiError.InvalidResponse
+            auth.currentToken() ?: throw MemberApiError.InvalidResponse
+        } catch (e: MemberApiError) {
+            // There is no local session yet, so a 401 here rejects the token and clears nothing.
+            return socialSignInProblem(e) ?: handle(e, AccountAction.GOOGLE_SIGN_IN)
+        }
+        return completeSignIn(token, origin)
+    }
+
+    /** The answers of Better Auth to a rejected provider token, as `appleSignInMessage` on iOS. */
+    private fun socialSignInProblem(error: MemberApiError): AccountMessage? {
+        if (error !is MemberApiError.Http) return null
+        return when (error.code) {
+            in LINKING_CODES -> AccountMessage.EmailAccountExists
+            else -> if (error.status == 401) AccountMessage.GoogleSignInRejected else null
+        }
+    }
+
     private suspend fun registerNow(rawName: String, rawEmail: String, password: String): AccountMessage {
         val name = rawName.trim()
         val email = rawEmail.trim()
@@ -194,7 +261,7 @@ class MembershipRepository @Inject constructor(
         if (origin == null) return AccountMessage.NotConfigured
         return try {
             // Sign-up does not sign in. The user verifies the email first, then signs in.
-            service.auth().register(name, email, password)
+            signedOutAuth().signUp.email(name, email, password).getOrThrowMemberError()
             AccountMessage.Registered
         } catch (e: MemberApiError) {
             handle(e, AccountAction.REGISTER)
@@ -206,7 +273,7 @@ class MembershipRepository @Inject constructor(
         if (email.isEmpty()) return AccountMessage.VerificationEmailRequired
         if (origin == null) return AccountMessage.NotConfigured
         return try {
-            service.auth().sendVerification(email)
+            signedOutAuth().sendVerificationEmail(email).getOrThrowMemberError()
             AccountMessage.VerificationSent
         } catch (e: MemberApiError) {
             handle(e, AccountAction.SEND_VERIFICATION)
@@ -218,7 +285,7 @@ class MembershipRepository @Inject constructor(
         if (email.isEmpty()) return AccountMessage.ResetEmailRequired
         if (origin == null) return AccountMessage.NotConfigured
         return try {
-            service.auth().requestPasswordReset(email)
+            signedOutAuth().requestPasswordReset(email).getOrThrowMemberError()
             AccountMessage.ResetRequested
         } catch (e: MemberApiError) {
             handle(e, AccountAction.RESET_PASSWORD)
@@ -265,7 +332,11 @@ class MembershipRepository @Inject constructor(
         if (origin == null) return AccountMessage.NotConfigured
         val stored = readSession() ?: return AccountMessage.SignInRequired
         val newToken = try {
-            service.auth().changePassword(currentPassword, newPassword, stored.token)
+            val auth = service.auth().withSession(stored.token)
+            // Changing the password always signs out the other sessions, as on iOS.
+            auth.changePassword(currentPassword, newPassword, revokeOtherSessions = true).getOrThrowMemberError()
+            // The view still holds the old token unless the response sent a new one.
+            auth.currentToken()?.takeIf { it != stored.token }
         } catch (e: MemberApiError) {
             return handle(e, AccountAction.CHANGE_PASSWORD)
         }
@@ -289,18 +360,45 @@ class MembershipRepository @Inject constructor(
         if (origin == null) return AccountMessage.NotConfigured
         val stored = readSession() ?: return AccountMessage.SignInRequired
         return try {
-            service.auth().revokeOtherSessions(stored.token)
+            service.auth().withSession(stored.token).revokeOtherSessions().getOrThrowMemberError().requireSuccess()
             AccountMessage.OtherSessionsRevoked
         } catch (e: MemberApiError) {
             handle(e, AccountAction.REVOKE_OTHER_SESSIONS)
         }
     }
 
+    private suspend fun requestAccountDeletionNow(): AccountMessage {
+        if (origin == null) return AccountMessage.NotConfigured
+        val stored = readSession() ?: return AccountMessage.SignInRequired
+        return try {
+            // Account deletion has two steps with the same session; see bizserver/docs/migration-auth.md.
+            service.auth().withSession(stored.token).deleteUser().getOrThrowMemberError().requireSuccess()
+            AccountMessage.DeletionCodeSent
+        } catch (e: MemberApiError) {
+            handle(e, AccountAction.REQUEST_ACCOUNT_DELETION)
+        }
+    }
+
+    private suspend fun deleteAccountNow(rawCode: String): AccountMessage {
+        // The code is pasted from an email, so drop the spaces and line breaks that come with it.
+        val code = rawCode.filterNot(Char::isWhitespace)
+        if (code.isEmpty()) return AccountMessage.DeletionCodeRequired
+        if (origin == null) return AccountMessage.NotConfigured
+        val stored = readSession() ?: return AccountMessage.SignInRequired
+        try {
+            service.auth().withSession(stored.token).deleteUser(token = code).getOrThrowMemberError().requireSuccess()
+        } catch (e: MemberApiError) {
+            if (e.serverCode == "INVALID_TOKEN") return AccountMessage.InvalidDeletionCode
+            return handle(e, AccountAction.DELETE_ACCOUNT)
+        }
+        return if (clearLocal()) AccountMessage.AccountDeleted else AccountMessage.AccountDeletedClearFailed
+    }
+
     private suspend fun signOutNow(): AccountMessage {
         val stored = sessions.currentQuietly()
         val serverConfirmed = if (stored != null && origin != null && stored.origin == origin) {
             try {
-                service.auth().signOut(stored.token)
+                service.auth().withSession(stored.token).signOut().getOrThrowMemberError()
                 true
             } catch (e: MemberApiError) {
                 false
@@ -354,7 +452,7 @@ class MembershipRepository @Inject constructor(
         action: AccountAction,
     ): Pair<StoredSession?, AccountMessage?> {
         val session = try {
-            service.auth().getSession(stored.token)
+            fetchSession(stored.token)
         } catch (e: MemberApiError) {
             return null to handle(e, action)
         }
@@ -362,7 +460,7 @@ class MembershipRepository @Inject constructor(
             clearLocal()
             return null to AccountMessage.SessionExpired
         }
-        if (session.userId != stored.userId) {
+        if (session.user.id != stored.userId) {
             clearLocal()
             return null to AccountMessage.AccountMismatch
         }
@@ -485,22 +583,45 @@ class MembershipRepository @Inject constructor(
         null
     }
 
-    private fun storedSession(origin: String, token: String, session: AuthSession) = StoredSession(
+    /** A view of the Better Auth client without a session, for the calls that create one or need none. */
+    private fun signedOutAuth(): BetterAuthClient = service.auth().withStorage(InMemoryStorage())
+
+    /**
+     * Reads the session of [token]. Returns null when the server has no session or it has expired.
+     * The SDK does not check that the session belongs to the user, or that it has an expiry.
+     */
+    private suspend fun fetchSession(token: String): SessionData? {
+        val data = service.auth().withSession(token).getSession().getOrThrowMemberError() ?: return null
+        val expiresAt = data.session.expiresAt ?: throw MemberApiError.InvalidResponse
+        if (data.user.id != data.session.userId) throw MemberApiError.InvalidResponse
+        return data.takeIf { expiresAt.toEpochMilliseconds() > clock.millis() }
+    }
+
+    /** [data] comes from [fetchSession], which has checked the expiry. */
+    private fun storedSession(origin: String, token: String, data: SessionData) = StoredSession(
         origin = origin,
         token = token,
-        userId = session.userId,
-        email = session.email,
-        name = session.name,
-        emailVerified = session.emailVerified,
-        createdAtMillis = session.createdAt?.toEpochMilli(),
-        expiresAtMillis = session.expiresAt.toEpochMilli(),
+        userId = data.user.id,
+        email = data.user.email,
+        name = data.user.name,
+        emailVerified = data.user.emailVerified,
+        createdAtMillis = data.session.createdAt?.toEpochMilliseconds(),
+        expiresAtMillis = checkNotNull(data.session.expiresAt).toEpochMilliseconds(),
     )
+
+    private fun OperationResult.requireSuccess() {
+        if (!success) throw MemberApiError.InvalidResponse
+    }
 
     // endregion
 
     private companion object {
         val WRONG_PASSWORD_CODES = setOf("INVALID_PASSWORD", "INVALID_CURRENT_PASSWORD")
         val NO_PASSWORD_CODES = setOf("PASSWORD_NOT_FOUND", "CREDENTIAL_ACCOUNT_NOT_FOUND")
+        val LINKING_CODES = setOf("LINKING_NOT_ALLOWED", "LINKING_DIFFERENT_EMAILS_NOT_ALLOWED")
+
+        /** Provider ID of Google in Better Auth, `google::PROVIDER_ID` in bizserver. */
+        const val GOOGLE_PROVIDER = "google"
     }
 }
 

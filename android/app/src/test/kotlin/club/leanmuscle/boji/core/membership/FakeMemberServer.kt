@@ -57,8 +57,11 @@ class FakeMemberServer : Closeable {
     companion object {
         const val SIGN_IN = "/api/auth/sign-in/email"
         const val SIGN_OUT = "/api/auth/sign-out"
+        const val SIGN_IN_SOCIAL = "/api/auth/sign-in/social"
+        const val GET_SERVER_CONFIG = "/boji.v1.SystemService/GetServerConfig"
         const val GET_SESSION = "/api/auth/get-session"
         const val CHANGE_PASSWORD = "/api/auth/change-password"
+        const val DELETE_USER = "/api/auth/delete-user"
         const val LIST_MEMBERSHIPS = "/boji.v1.MembershipService/ListMemberships"
         const val CREATE_MEMBERSHIP = "/boji.v1.MembershipService/CreateMembership"
 

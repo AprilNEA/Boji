@@ -66,6 +66,7 @@ async fn apple_provider_is_advertised_and_routed_over_real_http() {
             },
             client_ip: auth::ClientIp::default(),
             apple: Some(settings()),
+            google: None,
             account_linking: auth::AccountLinking::Enabled,
         },
     )

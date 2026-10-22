@@ -102,6 +102,7 @@ async fn run(sentry: bool) -> Result<()> {
         .map(|sender| Arc::new(sender) as Arc<dyn wallet::push::PushSender>);
     let capabilities = rpc::Capabilities {
         apple_sign_in: config.apple.is_some(),
+        google_sign_in: config.google.is_some(),
         wallet,
         wallet_push,
         affiliation_verification,
@@ -115,6 +116,7 @@ async fn run(sentry: bool) -> Result<()> {
             mail: config.mail,
             client_ip: config.client_ip,
             apple: config.apple,
+            google: config.google,
             account_linking: config.account_linking,
         },
     )
