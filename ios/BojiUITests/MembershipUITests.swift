@@ -216,7 +216,8 @@ final class MembershipUITests: XCTestCase {
         openAccountDeletion(app)
         XCTAssertFalse(app.secureTextFields["account-delete-code"].exists)
         tap(app.buttons["account-delete-send-code"], in: app)
-        XCTAssertTrue(app.secureTextFields["account-delete-code"].waitForExistence(timeout: 5))
+        // With large text the code field appears below the screen, and List creates no element for it there.
+        reveal(app.secureTextFields["account-delete-code"], in: app)
         reveal(app.buttons["account-delete-submit"], in: app)
         XCTAssertFalse(app.buttons["account-delete-submit"].isEnabled)
         capture("account-deletion-dark-large", app)

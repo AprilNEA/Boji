@@ -3,11 +3,13 @@ import SwiftUI
 struct AccountSecurityView: View {
     @Environment(MembershipStore.self) private var membership
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
     @State private var presentedSheet: AccountSheet?
     @State private var confirmRevoke = false
 
     private enum AccountSheet: String, Identifiable {
         case password
+        case email
         case deletion
         var id: String { rawValue }
     }
@@ -16,9 +18,23 @@ struct AccountSecurityView: View {
         NavigationStack {
             Form {
                 if let account = membership.account {
-                    Section("当前账号") {
+                    Section {
                         LabeledContent("邮箱", value: account.email)
                         Label(account.emailVerified ? "邮箱已验证" : "邮箱尚未验证", systemImage: account.emailVerified ? "checkmark.seal" : "envelope.badge")
+                        if let pendingEmail = membership.pendingEmailChange {
+                            LabeledContent("待生效的新邮箱", value: pendingEmail)
+                                .accessibilityIdentifier("account-pending-email")
+                        }
+                        Button("更换登录邮箱", systemImage: "envelope") { presentedSheet = .email }
+                            .accessibilityIdentifier("account-change-email")
+                            .disabled(membership.isBusy || membership.isOffline || membership.authSession == nil || !account.emailVerified)
+                    } header: { Text("当前账号") }
+                    footer: {
+                        if membership.pendingEmailChange != nil {
+                            Text("先在当前邮箱中确认，再打开新邮箱收到的验证链接。完成后刷新会话，这里会显示新邮箱。")
+                        } else if !account.emailVerified {
+                            Text("验证当前邮箱后，才能更换登录邮箱。")
+                        }
                     }
                     Section("当前会话") {
                         if let session = membership.authSession?.session {
@@ -68,9 +84,15 @@ struct AccountSecurityView: View {
                 membership.notice = nil
                 if membership.account != nil { await membership.refreshAuthSession() }
             }
+            .onChange(of: scenePhase) { _, phase in
+                // The user opens both links in Mail, so check the session again on return.
+                guard phase == .active, membership.pendingEmailChange != nil, !membership.isBusy else { return }
+                Task { await membership.refreshAuthSession() }
+            }
             .sheet(item: $presentedSheet) { sheet in
                 switch sheet {
                 case .password: ChangePasswordView()
+                case .email: ChangeEmailView()
                 case .deletion: AccountDeletionView()
                 }
             }
@@ -132,6 +154,53 @@ private struct ChangePasswordView: View {
                 }
                 Button(.Shared.actionCancel, role: .cancel) {}
             } message: { Text("其他设备需要重新登录。如当前会话无法恢复，你也需要使用新密码登录。") }
+        }
+    }
+}
+
+private struct ChangeEmailView: View {
+    @Environment(MembershipStore.self) private var membership
+    @Environment(\.dismiss) private var dismiss
+    @State private var newEmail = ""
+    private var trimmedEmail: String { newEmail.trimmingCharacters(in: .whitespacesAndNewlines) }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    if let account = membership.account {
+                        LabeledContent("当前邮箱", value: account.email)
+                    }
+                    TextField("新邮箱", text: $newEmail)
+                        .textContentType(.emailAddress).keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never).autocorrectionDisabled()
+                        .accessibilityIdentifier("account-new-email")
+                } footer: {
+                    Text("提交后，当前邮箱会收到确认链接。确认后，新邮箱会收到验证链接。验证完成前，继续用当前邮箱登录。")
+                }
+                Section {
+                    MembershipMessages()
+                    Button(membership.isBusy ? "正在提交…" : "发送确认邮件") {
+                        Task {
+                            if await membership.changeEmail(to: newEmail) {
+                                newEmail = ""
+                                dismiss()
+                            }
+                        }
+                    }
+                    .disabled(trimmedEmail.isEmpty || membership.isBusy)
+                    .accessibilityIdentifier("account-save-email")
+                }
+            }
+            .pageBackground()
+            .navigationTitle("更换邮箱").navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(.Shared.actionCancel, systemImage: "xmark", role: .cancel) { dismiss() }.disabled(membership.isBusy)
+                }
+            }
+            .interactiveDismissDisabled(membership.isBusy)
+            .onAppear { membership.errorMessage = nil; membership.notice = nil }
         }
     }
 }

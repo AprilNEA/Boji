@@ -824,6 +824,16 @@
         }
       }
     },
+    "先在当前邮箱中确认，再打开新邮箱收到的验证链接。完成后刷新会话，这里会显示新邮箱。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm in your current email first, then open the verification link in the new email. After that, refresh the session to see the new email here."
+          }
+        }
+      }
+    },
     "先填写邮箱，再选择需要的邮件。验证或重置完成后，返回这里登录。" : {
       "localizations" : {
         "en" : {
@@ -1015,6 +1025,7 @@
       }
     },
     "准备好了，再进一步 · %lld 分钟" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1332,6 +1343,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Send Deletion Confirmation Email"
+          }
+        }
+      }
+    },
+    "发送确认邮件" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send Confirmation Email"
           }
         }
       }
@@ -1969,6 +1990,26 @@
         }
       }
     },
+    "当前邮箱" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current Email"
+          }
+        }
+      }
+    },
+    "待生效的新邮箱" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pending New Email"
+          }
+        }
+      }
+    },
     "待记录" : {
       "localizations" : {
         "en" : {
@@ -2105,6 +2146,16 @@
         }
       }
     },
+    "提交后，当前邮箱会收到确认链接。确认后，新邮箱会收到验证链接。验证完成前，继续用当前邮箱登录。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After you submit, your current email gets a confirmation link. After you confirm, the new email gets a verification link. Until you verify it, sign in with your current email."
+          }
+        }
+      }
+    },
     "播放演示" : {
       "localizations" : {
         "en" : {
@@ -2185,6 +2236,26 @@
         }
       }
     },
+    "新邮箱" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Email"
+          }
+        }
+      }
+    },
+    "新邮箱与当前邮箱相同。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The new email is the same as the current email."
+          }
+        }
+      }
+    },
     "无支付步骤，不会自动续费。卡号与入会日期将在服务确认后显示。" : {
       "localizations" : {
         "en" : {
@@ -2241,6 +2312,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Can’t fully clear the sign-in state on this device."
+          }
+        }
+      }
+    },
+    "无法更换为这个邮箱，请检查邮箱地址后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t change to this email. Check the address and try again."
           }
         }
       }
@@ -2395,6 +2476,16 @@
         }
       }
     },
+    "无法连接认证服务，暂时无法更换邮箱。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t reach the sign-in service, so the email can’t be changed right now."
+          }
+        }
+      }
+    },
     "无法连接认证服务，暂时无法确认会话。" : {
       "localizations" : {
         "en" : {
@@ -2526,11 +2617,52 @@
       }
     },
     "更多课程" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "More Courses"
+          }
+        }
+      }
+    },
+    "更换申请已提交。如果新邮箱可以使用，%@ 会收到确认链接。确认后，新邮箱会收到验证链接。完成后回到此页刷新会话。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The request is sent. If the new email can be used, %@ gets a confirmation link. After you confirm, the new email gets a verification link. Then come back and refresh the session."
+          }
+        }
+      }
+    },
+    "更换登录邮箱" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change Sign-In Email"
+          }
+        }
+      }
+    },
+    "更换邮箱" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change Email"
+          }
+        }
+      }
+    },
+    "更换邮箱失败，请稍后重试。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t change the email. Try again later."
           }
         }
       }
@@ -2651,6 +2783,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The service hasn’t turned on official pass issuing yet."
+          }
+        }
+      }
+    },
+    "服务暂不支持更换邮箱。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The service doesn’t support email changes yet."
           }
         }
       }
@@ -2903,6 +3045,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Loading Exercise…"
+          }
+        }
+      }
+    },
+    "正在提交…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Submitting…"
           }
         }
       }
@@ -3487,6 +3639,16 @@
         }
       }
     },
+    "登录邮箱已更新为 %@。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your sign-in email is now %@."
+          }
+        }
+      }
+    },
     "睡眠" : {
       "localizations" : {
         "en" : {
@@ -3658,6 +3820,7 @@
       }
     },
     "给身体一点余地 · %lld 分钟" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3858,6 +4021,16 @@
         }
       }
     },
+    "请先登录后再更换邮箱。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in before you change your email."
+          }
+        }
+      }
+    },
     "请先登录后再查看账号安全。" : {
       "localizations" : {
         "en" : {
@@ -3908,6 +4081,16 @@
         }
       }
     },
+    "请先验证当前邮箱，再更换邮箱。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verify your current email before you change it."
+          }
+        }
+      }
+    },
     "请参考下方动作提示" : {
       "localizations" : {
         "en" : {
@@ -3954,6 +4137,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enter a nickname."
+          }
+        }
+      }
+    },
+    "请输入有效的新邮箱。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter a valid new email."
           }
         }
       }
@@ -4536,6 +4729,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Water"
+          }
+        }
+      }
+    },
+    "验证当前邮箱后，才能更换登录邮箱。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verify your current email before you change your sign-in email."
           }
         }
       }

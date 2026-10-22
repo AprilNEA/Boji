@@ -16,6 +16,7 @@ final class MembershipStore {
         case security
         case changePassword
         case revokeOtherSessions
+        case changeEmail
         case requestAccountDeletion
         case confirmAccountDeletion
     }
@@ -49,6 +50,9 @@ final class MembershipStore {
     private(set) var requiresEmailVerification = false
     private(set) var authSession: BetterAuthSession?
     private(set) var hasPendingAccountDeletion = false
+    /// The new address of a requested email change. The session shows the old
+    /// address until both links are opened, so this stays in memory only.
+    private(set) var pendingEmailChange: String?
     let isConfigured: Bool
     let serviceURL: String
     let isTestEnvironment: Bool
@@ -356,9 +360,16 @@ final class MembershipStore {
                 errorMessage = String(localized: "账号状态不一致，请重新登录。")
                 return
             }
+            let emailChanged = account.map { $0.email != session.user.email } ?? false
             authSession = session
             account = session.user
             requiresEmailVerification = !session.user.emailVerified
+            if let pendingEmailChange,
+               pendingEmailChange.lowercased() == session.user.email.lowercased() {
+                self.pendingEmailChange = nil
+                notice = String(localized: "登录邮箱已更新为 \(session.user.email)。")
+            }
+            if emailChanged { saveCacheIfPossible() }
         } catch { handle(error, action: .security, operation: operation) }
     }
 
@@ -432,6 +443,43 @@ final class MembershipStore {
             return true
         } catch {
             handle(error, action: .revokeOtherSessions, operation: operation)
+            return false
+        }
+    }
+
+    /// Requests an email change. The server mails the current address first; the
+    /// session shows the new address only after both links are opened, and then
+    /// `refreshAuthSession()` clears `pendingEmailChange`.
+    func changeEmail(to newEmail: String) async -> Bool {
+        let newEmail = normalized(newEmail)
+        let parts = newEmail.split(separator: "@", omittingEmptySubsequences: false)
+        guard parts.count == 2, !parts[0].isEmpty, parts[1].contains("."), !newEmail.contains(where: \.isWhitespace) else {
+            errorMessage = String(localized: "请输入有效的新邮箱。")
+            return false
+        }
+        guard isConfigured, let token = tokenStore.loadToken(), let account else {
+            errorMessage = String(localized: "请先登录后再更换邮箱。")
+            return false
+        }
+        guard account.emailVerified else {
+            errorMessage = String(localized: "请先验证当前邮箱，再更换邮箱。")
+            return false
+        }
+        guard newEmail.lowercased() != account.email.lowercased() else {
+            errorMessage = String(localized: "新邮箱与当前邮箱相同。")
+            return false
+        }
+        guard let operation = beginOperation() else { return false }
+        defer { finishOperation(operation) }
+        do {
+            try await api.changeEmail(newEmail: newEmail, token: token)
+            guard isCurrent(operation) else { return false }
+            pendingEmailChange = newEmail
+            isOffline = false
+            notice = String(localized: "更换申请已提交。如果新邮箱可以使用，\(account.email) 会收到确认链接。确认后，新邮箱会收到验证链接。完成后回到此页刷新会话。")
+            return true
+        } catch {
+            handle(error, action: .changeEmail, operation: operation)
             return false
         }
     }
@@ -756,6 +804,14 @@ final class MembershipStore {
                 errorMessage = String(localized: "此账号尚未设置邮箱密码，请使用原登录方式。")
                 return
             }
+            if action == .changeEmail, code == "CHANGE_EMAIL_DISABLED" {
+                errorMessage = String(localized: "服务暂不支持更换邮箱。")
+                return
+            }
+            if action == .changeEmail, statusCode == 400 || statusCode == 422 {
+                errorMessage = String(localized: "无法更换为这个邮箱，请检查邮箱地址后重试。")
+                return
+            }
             if code == "SESSION_NOT_FRESH" {
                 errorMessage = String(localized: "此操作需要重新登录后再试。")
                 return
@@ -848,6 +904,7 @@ final class MembershipStore {
 
     private func clearPublishedIdentity() {
         clearPendingAccountDeletion()
+        pendingEmailChange = nil
         account = nil
         card = nil
         authSession = nil
@@ -918,6 +975,8 @@ final class MembershipStore {
             return String(localized: "密码修改结果未确认。请检查网络，必要时使用密码找回。")
         case .revokeOtherSessions:
             return String(localized: "其他会话的退出结果未确认，请稍后重试。")
+        case .changeEmail:
+            return String(localized: "无法连接认证服务，暂时无法更换邮箱。")
         case .requestAccountDeletion:
             return String(localized: "无法连接认证服务，暂时无法发送注销确认邮件。")
         case .confirmAccountDeletion:
@@ -949,6 +1008,8 @@ final class MembershipStore {
             return String(localized: "密码修改未确认，请检查当前密码或使用密码找回。")
         case .revokeOtherSessions:
             return String(localized: "暂时无法退出其他登录会话。")
+        case .changeEmail:
+            return String(localized: "更换邮箱失败，请稍后重试。")
         case .requestAccountDeletion:
             return String(localized: "注销确认邮件发送失败，请稍后重试。")
         case .confirmAccountDeletion:

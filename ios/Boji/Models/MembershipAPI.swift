@@ -86,6 +86,10 @@ struct MembershipAPI: Sendable {
     func revokeOtherSessions(token: String) async throws {
         try await betterAuth.revokeOtherSessions(token: token)
     }
+
+    func changeEmail(newEmail: String, token: String) async throws {
+        try await betterAuth.changeEmail(newEmail: newEmail, token: token)
+    }
 }
 
 protocol MembershipTokenStore: Sendable {
@@ -426,11 +430,11 @@ actor UITestingMembershipTransport: MembershipTransport {
                 statusCode: 200,
                 headers: ["set-auth-token": token]
             )
-        case ("POST", "/api/auth/revoke-other-sessions"):
+        case ("POST", "/api/auth/revoke-other-sessions"), ("POST", "/api/auth/change-email"):
             guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)" else {
                 return errorResponse(statusCode: 401, code: "UNAUTHORIZED")
             }
-            return try encoded(UITestingRevokeResponse(status: true))
+            return try encoded(UITestingStatusResponse(status: true))
         case ("POST", "/boji.v1.MembershipService/ListMemberships"):
             guard request.value(forHTTPHeaderField: "Authorization") == "Bearer \(token)", !accountDeleted else {
                 return MembershipRPCFixtures.error(.unauthenticated, reason: "SESSION_REQUIRED")
@@ -481,7 +485,7 @@ actor UITestingMembershipTransport: MembershipTransport {
         let expiresAt: Date
     }
 
-    private struct UITestingRevokeResponse: Encodable {
+    private struct UITestingStatusResponse: Encodable {
         let status: Bool
     }
 

@@ -35,13 +35,23 @@ struct BetterAuthClient: Sendable {
         let token: String
     }
 
-    /// `better-auth = 1.0.0-alpha.4` returns this exact native response shape.
+    /// `better-auth = 1.0.0-alpha.5` returns this exact native response shape.
     private struct AccountDeletionResponse: Decodable {
         let success: Bool
         let message: String
     }
 
     private struct RevokeOtherSessionsResponse: Decodable {
+        let status: Bool
+    }
+
+    private struct ChangeEmailRequest: Encodable {
+        let newEmail: String
+    }
+
+    /// Better Auth answers `status: true` also when another account owns the new
+    /// address. It sends no mail in that case, so a success is not a delivery receipt.
+    private struct ChangeEmailResponse: Decodable {
         let status: Bool
     }
 
@@ -180,6 +190,20 @@ struct BetterAuthClient: Sendable {
             method: "POST",
             token: token,
             body: Data("{}".utf8)
+        )
+        guard response.status else {
+            throw MembershipAPIError.invalidResponse
+        }
+    }
+
+    /// Starts an email change. Better Auth mails a confirmation link to the current
+    /// address first, and mails a verification link to the new address after that.
+    func changeEmail(newEmail: String, token: String) async throws {
+        let response: ChangeEmailResponse = try await httpClient.request(
+            path: "api/auth/change-email",
+            method: "POST",
+            token: token,
+            body: try httpClient.encodedBody(ChangeEmailRequest(newEmail: newEmail))
         )
         guard response.status else {
             throw MembershipAPIError.invalidResponse
