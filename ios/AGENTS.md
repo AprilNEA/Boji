@@ -135,6 +135,7 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - Membership UI tests can add `--membership-fixture=long-number`, `suspended`, or `offline`. These fixtures require the Debug `--uitesting` entry point.
 - Animation UI tests can add `--animation-reduce-motion` or `--animation-missing-asset`. These flags require Debug and `--uitesting`.
 - To reveal an element in a `Form` or a `List`, drag a short distance and end the drag with a hold, as `scrollUp(_:)` in `BojiUITests/MembershipUITests.swift` does. Do not use `swipeUp()` there. In the large text layout a swipe can move a row out of the hierarchy, and a tap during the fling does not run the button action.
+- iOS 26 exposes a SwiftUI `Link` as a button, and iOS 27 exposes it as a link. Find a `Link` by its accessibility identifier in `app.descendants(matching: .any)`, as `testSettingsLinkToLegalPages` in `BojiUITests/BojiUITests.swift` does. Do not query it with `app.buttons` or `app.links`, because CI runs iOS 27 and local simulators can run iOS 26.
 
 ### Accounts and data
 
