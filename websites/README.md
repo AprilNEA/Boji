@@ -55,7 +55,7 @@ Python 自带的服务器不会返回 `404.html`，所以用它预览时看不�
 | `/privacy/`、`/en/privacy/` | 隐私政策，中文版和英文版 |
 | `/terms/`、`/en/terms/` | 用户协议，中文版和英文版 |
 | `/third-parties/`、`/en/third-parties/` | 第三方信息共享清单，中文版和英文版 |
-| `/docs/` | 文档首页 |
+| `/docs/` | 跳转到用户指南。文档区没有首页 |
 | `/docs/guide/` | 用户指南，含大学排名规则 `/docs/guide/school-ranking/` |
 | `/docs/developers/` | 开发者文档：会员卡开发说明、大学排名设计和 Sentry 错误上报 |
 
@@ -88,7 +88,7 @@ Python 自带的服务器不会返回 `404.html`，所以用它预览时看不�
 新增页面的步骤：
 
 1. 在栏目目录中新建 `.mdx` 文件，例如 `docs/guide/install.mdx`。页面地址是 `/docs/guide/install/`。
-2. 在文件开头的 front matter 中写 `title` 和 `description`。
+2. 在文件开头的 front matter 中写 `title`、`description` 和 `icon`。`icon` 是 [Lucide](https://lucide.dev/icons/) 的图标名，用大驼峰写法，例如 `BookOpen`，显示在侧边栏中。栏目的 `meta.json` 也有 `icon`，显示在栏目切换器中。
 3. 把文件名（不含扩展名）加到同一目录 `meta.json` 的 `pages` 中，用来确定侧边栏的顺序。
 
 MDX 中可以直接使用 Fumadocs 的 `Callout`、`Card` 和 `Cards` 组件。站内链接可以写相对文件路径，例如 `[安装](./install.mdx)`。

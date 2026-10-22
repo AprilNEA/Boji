@@ -1,6 +1,7 @@
 {
   "title": "开发者文档",
   "description": "Boji 的客户端、后端和接口",
+  "icon": "Code",
   "root": true,
   "pages": ["index", "membership", "school-ranking", "sentry"]
 }

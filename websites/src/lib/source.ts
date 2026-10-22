@@ -1,6 +1,7 @@
 import { defineDocs } from "fumadocs-mdx/macro";
 import { loader } from "fumadocs-core/source";
-import type { Folder, Node, Root } from "fumadocs-core/page-tree";
+import { lucideIconsPlugin } from "fumadocs-core/source/plugins/lucide-icons";
+import type { Folder, Root } from "fumadocs-core/page-tree";
 
 /**
  * 网站的 MDX 内容来源，路径相对 websites/：
@@ -54,6 +55,9 @@ export const source = loader({
       ...pages.toFumadocsSource().files,
     ],
   },
+  // meta.json 和页面 front matter 中的 icon 是 Lucide 图标名，例如 "BookOpen"。插件把它渲染成图标，
+  // 显示在栏目切换器和侧边栏中。图标名见 https://lucide.dev/icons/，写法用 PascalCase。
+  plugins: [lucideIconsPlugin()],
   pageTree: {
     // 内容根目录没有 meta.json，Fumadocs 会把根节点命名为 "Docs"，搜索结果的面包屑
     // 就会多出这个英文名称。根目录不是一个栏目，所以把名称留空。
@@ -62,41 +66,38 @@ export const source = loader({
 });
 
 /** 返回文档区的页面。slug 不含开头的 docs，例如 ["guide"] 对应 /docs/guide/。 */
-export function getDocsPage(slug: string[] = []) {
+export function getDocsPage(slug: string[]) {
   return source.getPage([DOCS_SECTION, ...slug]);
 }
 
-/** 文档区所有页面的 slug，供 /docs/[[...slug]] 生成静态页面。 */
+/**
+ * 文档区所有页面的 slug，供 /docs/[[...slug]] 生成静态页面。
+ * 文档区没有首页：空 slug 对应 /docs/，这个网址跳转到 DOCS_HOME。
+ */
 export function getDocsParams() {
-  return source
+  const pages = source
     .getPages("zh-CN")
     .filter((page) => page.slugs[0] === DOCS_SECTION)
     .map((page) => ({ slug: page.slugs.slice(1) }));
+  return [{ slug: [] }, ...pages];
 }
 
-const DOCS_HOME_URL = `/${DOCS_SECTION}`;
-
-function isDocsFolder(node: Node): node is Folder {
-  return (
-    node.type === "folder" &&
-    (node.index?.url === DOCS_HOME_URL ||
-      node.children.some((child) => child.type === "page" && child.url === DOCS_HOME_URL))
-  );
-}
+/** /docs/ 跳转的目标：用户指南栏目的首页。 */
+export const DOCS_HOME = `/${DOCS_SECTION}/guide/`;
 
 /**
- * 文档侧边栏的页面树：只含 docs/ 下的页面，不含独立页面。
- * docs/meta.json 的 pages 列出了 index，所以首页通常已经是 children 的第一项。
- * 没有列出时，首页在 folder.index 中，这里把它放回第一项。
+ * 文档侧边栏的页面树：docs/ 下的两个栏目，不含独立页面。
+ * docs/guide/ 和 docs/developers/ 的 meta.json 都设置了 "root": true，
+ * 所以侧边栏顶部的切换器列出这两个栏目，侧边栏只显示当前栏目的页面。
  */
 export function getDocsTree(): Root {
-  const folder = source.getPageTree("zh-CN").children.find(isDocsFolder);
+  // 开启 i18n 后，Fumadocs 给节点的 $id 加上语言前缀，例如 zh-CN:docs。
+  const id = `zh-CN:${DOCS_SECTION}`;
+  const folder = source
+    .getPageTree("zh-CN")
+    .children.find((node): node is Folder => node.type === "folder" && node.$id === id);
   if (!folder) {
-    throw new Error("docs/index.mdx 不存在");
+    throw new Error(`页面树中没有 ${id}`);
   }
-  return {
-    $id: folder.$id,
-    name: folder.name,
-    children: folder.index ? [folder.index, ...folder.children] : folder.children,
-  };
+  return { $id: folder.$id, name: folder.name, children: folder.children };
 }

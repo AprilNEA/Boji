@@ -55,3 +55,12 @@
 ::selection {
   background: rgba(140, 213, 188, 0.45); /* mint, same as globals.css */
 }
+
+/*
+ * Fumadocs draws popovers, such as the section switcher at the top of the sidebar, at 60 % opacity
+ * (`bg-fd-popover/60`) with a backdrop blur. Over the sidebar the blur is too weak, and the sidebar
+ * items show through the menu. Use the solid popover color instead.
+ */
+[data-radix-popper-content-wrapper] > .bg-fd-popover\/60 {
+  background-color: var(--color-fd-popover);
+}
