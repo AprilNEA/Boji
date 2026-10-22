@@ -46,12 +46,23 @@ CI 不使用 `pull_request_target`。PR 不进入带凭据的 Environment。不�
 | Runner | `xcode-27`，GitHub 托管 |
 | Xcode | `27.1`，构建号 `27A9275` |
 | XcodeGen | `2.46.0`，校验官方 ZIP 的 SHA-256 |
-| Node.js | `26.11.1` |
+| Node.js | `26.12.1` |
 | pnpm | `12.9.1` |
 | Rust | `crates/rust-toolchain.toml` |
 | asc | `app-store/asc-lock.json`，当前为 `5.16.0` |
 
 Action 使用完整提交 SHA。SwiftPM 使用仓库中的 `Package.resolved`。pnpm 和 Cargo 使用现有锁文件。
+
+2026-10-23（UTC+08:00），已核对并采用以下最新正式版。四个 Action 均使用 Node.js 24 运行时。项目动画脚本另用 Node.js 26.12.1，两者独立配置。
+
+| Action | 版本 |
+| --- | --- |
+| `actions/checkout` | [v7.0.1](https://github.com/actions/checkout/releases/tag/v7.0.1) |
+| `actions/setup-node` | [v7.1.0](https://github.com/actions/setup-node/releases/tag/v7.1.0) |
+| `actions/upload-artifact` | [v7.0.2](https://github.com/actions/upload-artifact/releases/tag/v7.0.2) |
+| `1password/load-secrets-action` | [v5.0.1](https://github.com/1Password/load-secrets-action/releases/tag/v5.0.1) |
+
+这次升级处理 [Node.js 20 弃用警告](https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/)。`setup-node` 显式关闭自动缓存。三个产物步骤显式保留 ZIP 格式，保持回执校验兼容。旧运行使用启动时的提交，不会因更新工作流而改变。
 
 本机和 CI 都使用 Xcode 27.1，构建号均为 `27A9275`。`xcode-27` 是 GitHub 的 preview 镜像，可能不稳定或排队。它的底层系统是 macOS 27，默认 Xcode 是 27.0。工作流用 `DEVELOPER_DIR` 选择 `/Applications/Xcode_27.1.app`。这个路径是符号链接，指向镜像中的 Xcode 27.1 Release Candidate。镜像只带 iOS 27.0 和 watchOS 27.0 模拟器。以上信息来自 2026-10-12 的镜像清单。
 

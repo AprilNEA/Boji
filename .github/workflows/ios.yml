@@ -57,12 +57,13 @@ jobs:
       CARGO_TARGET_DIR: ${{ github.workspace }}/.work/boji-ios/ci/cargo
       BOJI_SENTRY_DSN: ''
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '26.11.1'
+          node-version: '26.12.1'
+          package-manager-cache: false
       - name: Check source and local release safeguards
         run: |
           python3 ios/ci/check.py toolchain
@@ -95,7 +96,7 @@ jobs:
       DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
       BOJI_SENTRY_DSN: ''
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Check toolchain and discover runner simulator
@@ -136,8 +137,9 @@ jobs:
             --app .work/boji-ios/ci/DerivedData/Build/Products/Release-iphonesimulator/Boji.app
       - name: Save isolated test evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
+          archive: true
           name: ios-ci-evidence-${{ github.run_id }}-${{ github.run_attempt }}
           path: .work/boji-ios/ci/reports/
           if-no-files-found: ignore
@@ -149,7 +151,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
@@ -180,7 +182,7 @@ jobs:
             echo "PRIVATE_DIR=$RUNNER_TEMP/boji-private-evidence"
             echo "RECEIPT_PATH=$RUNNER_TEMP/boji-receipt/receipt.json"
           } >> "$GITHUB_ENV"
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
@@ -287,8 +289,9 @@ jobs:
             --version "$VERSION" --build-number "$BUILD_NUMBER" --commit "$GITHUB_SHA" \
             --receipt "$RECEIPT_PATH" --apply
       - name: Save non-secret build provenance only
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
+          archive: true
           name: ios-testflight-receipt
           path: ${{ runner.temp }}/boji-receipt/receipt.json
           if-no-files-found: error
@@ -302,8 +305,9 @@ jobs:
             --output "$RUNNER_TEMP/boji-encrypted-evidence"
       - name: Save encrypted diagnostics only
         if: always() && steps.seal.outcome == 'success'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
+          archive: true
           name: ios-release-evidence-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/boji-encrypted-evidence/release-evidence.tar.gpg
           if-no-files-found: error
@@ -331,7 +335,7 @@ jobs:
       TESTFLIGHT_RUN_ID: ${{ inputs.testflight_run_id }}
       SUBMIT: ${{ inputs.submit }}
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
