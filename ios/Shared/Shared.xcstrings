@@ -937,6 +937,108 @@
         }
       }
     },
+    "course_gym_free_weights_subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start free-weight training with dumbbells"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从哑铃开始学自由重量"
+          }
+        }
+      }
+    },
+    "course_gym_free_weights_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Free Weights Basics"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自由重量入门"
+          }
+        }
+      }
+    },
+    "course_gym_lower_subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legs, glutes and lower back"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "腿部、臀部和下背"
+          }
+        }
+      }
+    },
+    "course_gym_lower_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lower-Body Machines"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下肢器械训练"
+          }
+        }
+      }
+    },
+    "course_gym_upper_subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chest, shoulders, back and arms"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "胸、肩、背和手臂"
+          }
+        }
+      }
+    },
+    "course_gym_upper_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upper-Body Machines"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上肢器械训练"
+          }
+        }
+      }
+    },
     "course_home_beginner_subtitle" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -971,6 +1073,108 @@
         }
       }
     },
+    "course_home_cardio_subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get your heart rate up with no equipment"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不用器械，让心率升起来"
+          }
+        }
+      }
+    },
+    "course_home_cardio_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cardio Circuit"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "燃脂循环"
+          }
+        }
+      }
+    },
+    "course_home_core_subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Work your abs and core stability on a mat"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在地垫上练腹部和核心稳定"
+          }
+        }
+      }
+    },
+    "course_home_core_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Core Workout"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "核心训练"
+          }
+        }
+      }
+    },
+    "course_home_dumbbell_subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Train your whole body with a pair of dumbbells"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用一对哑铃练遍全身"
+          }
+        }
+      }
+    },
+    "course_home_dumbbell_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home Dumbbell Workout"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "哑铃居家训练"
+          }
+        }
+      }
+    },
     "course_home_intermediate_subtitle" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1001,6 +1205,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "居家进阶训练"
+          }
+        }
+      }
+    },
+    "course_home_strength_subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Build full-body strength with your bodyweight"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用自重练出全身力量"
+          }
+        }
+      }
+    },
+    "course_home_strength_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home Strength"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "居家强化训练"
           }
         }
       }
@@ -1093,6 +1331,108 @@
         }
       }
     },
+    "course_morning_wake_up_subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stretch your whole body after you get up"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "起床后舒展全身"
+          }
+        }
+      }
+    },
+    "course_morning_wake_up_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morning Wake-Up"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "晨间唤醒"
+          }
+        }
+      }
+    },
+    "course_stretch_desk_subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loosen your neck and shoulders at your desk"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在椅子旁就能做"
+          }
+        }
+      }
+    },
+    "course_stretch_desk_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desk Break Stretch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "久坐肩颈放松"
+          }
+        }
+      }
+    },
+    "course_stretch_lower_subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relax your thighs, glutes and calves"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "放松大腿、臀部和小腿"
+          }
+        }
+      }
+    },
+    "course_stretch_lower_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Post-Workout Leg Stretch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "训练后下肢拉伸"
+          }
+        }
+      }
+    },
     "default_display_name" : {
       "comment" : "新用户的默认昵称。App 首次启动和删除全部数据后写入，用户可以修改",
       "extractionState" : "manual",
@@ -1124,6 +1464,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "再次练习"
+          }
+        }
+      }
+    },
+    "detail_animation_downloading" : {
+      "comment" : "课程详情页：这门课程的动作动画正在从网络下载",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Downloading exercise animations"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在下载动作动画"
+          }
+        }
+      }
+    },
+    "detail_animation_unavailable" : {
+      "comment" : "课程详情页：动作动画还没有下载，而且现在无法联网。训练本身不受影响",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connect to the internet to view the exercise animations"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "联网后可查看动作动画"
           }
         }
       }
@@ -1247,6 +1623,142 @@
         }
       }
     },
+    "exercise_back_extension_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back Extension"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "罗马椅背部伸展"
+          }
+        }
+      }
+    },
+    "exercise_back_extension_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rise until your body lines up with your legs, and don’t arch past it."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "起身到身体与双腿成一条直线即可，不要过度后仰。"
+          }
+        }
+      }
+    },
+    "exercise_bear_crawl_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bear Crawl"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "熊爬"
+          }
+        }
+      }
+    },
+    "exercise_bear_crawl_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hover your knees just off the floor and move your opposite hand and foot together."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "膝盖离地几厘米，对侧的手和脚同时向前。"
+          }
+        }
+      }
+    },
+    "exercise_bench_dip_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bench Dip"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反向臂屈伸"
+          }
+        }
+      }
+    },
+    "exercise_bench_dip_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grip the edge of a sturdy chair or bench behind you and bend your elbows to about 90 degrees."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双手撑在身后稳固的椅子边缘，屈肘到约 90 度。"
+          }
+        }
+      }
+    },
+    "exercise_bicycle_crunch_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bicycle Crunch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自行车卷腹"
+          }
+        }
+      }
+    },
+    "exercise_bicycle_crunch_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn your elbow toward the opposite knee, and don’t pull on your neck."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "肘部转向对侧膝盖，不要用手拉脖子。"
+          }
+        }
+      }
+    },
     "exercise_bird_dog_name" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1277,6 +1789,142 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "动作放慢，保持躯干稳定。"
+          }
+        }
+      }
+    },
+    "exercise_bodyweight_burpee_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Burpee"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "波比跳"
+          }
+        }
+      }
+    },
+    "exercise_bodyweight_burpee_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move at your own pace and land with soft knees."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按自己的节奏完成，落地时膝盖微屈。"
+          }
+        }
+      }
+    },
+    "exercise_bodyweight_forearm_side_plank_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Side Plank"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "侧平板支撑"
+          }
+        }
+      }
+    },
+    "exercise_bodyweight_forearm_side_plank_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your elbow under your shoulder and don’t let your hips sag."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "肘部在肩膀正下方，髋部不要下沉。"
+          }
+        }
+      }
+    },
+    "exercise_bodyweight_good_morning_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bodyweight Good Morning"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "徒手早安式"
+          }
+        }
+      }
+    },
+    "exercise_bodyweight_good_morning_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soften your knees, push your hips back and keep your back flat."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "膝盖微屈，臀部向后推，背部保持挺直。"
+          }
+        }
+      }
+    },
+    "exercise_bodyweight_split_squat_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Split Squat"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分腿蹲"
+          }
+        }
+      }
+    },
+    "exercise_bodyweight_split_squat_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your stance fixed, lower straight down and drive up through your front heel."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前后脚站定，身体垂直下沉，用前脚跟发力站起。"
           }
         }
       }
@@ -1315,6 +1963,74 @@
         }
       }
     },
+    "exercise_cable_face_pull_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cable Face Pull"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "绳索面拉"
+          }
+        }
+      }
+    },
+    "exercise_cable_face_pull_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pull the rope toward your face and spread your hands, keeping your upper arms level."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把绳索拉向面部，双手向两侧分开，上臂保持水平。"
+          }
+        }
+      }
+    },
+    "exercise_cable_rope_triceps_pushdown_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rope Triceps Pushdown"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "绳索下压"
+          }
+        }
+      }
+    },
+    "exercise_cable_rope_triceps_pushdown_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your upper arms at your sides and move only your forearms."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上臂贴紧身体，只动前臂。"
+          }
+        }
+      }
+    },
     "exercise_cat_cow_name" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1345,6 +2061,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "配合呼吸，动作保持柔和。"
+          }
+        }
+      }
+    },
+    "exercise_chair_seated_chest_and_shoulder_stretch_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seated Chest Opener"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "坐姿开胸拉伸"
+          }
+        }
+      }
+    },
+    "exercise_chair_seated_chest_and_shoulder_stretch_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sit at the front of the chair, hold the chair back behind you and lift your chest forward."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "坐在椅子前沿，双手向后握住椅背，挺胸向前。"
           }
         }
       }
@@ -1417,6 +2167,108 @@
         }
       }
     },
+    "exercise_childs_pose_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Child’s Pose"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "婴儿式"
+          }
+        }
+      }
+    },
+    "exercise_childs_pose_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your hands in place and sit your hips back onto your heels."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双手留在原位，臀部向后坐到脚跟上。"
+          }
+        }
+      }
+    },
+    "exercise_cross_body_shoulder_stretch_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cross-Body Shoulder Stretch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "交叉抱臂肩部拉伸"
+          }
+        }
+      }
+    },
+    "exercise_cross_body_shoulder_stretch_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bring one arm across your chest, support the elbow with the other hand and keep your shoulder down."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一侧手臂横过胸前，另一只手托住手肘，肩膀不要抬起。"
+          }
+        }
+      }
+    },
+    "exercise_crunch_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crunch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "卷腹"
+          }
+        }
+      }
+    },
+    "exercise_crunch_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lift your upper back with your abs and keep your lower back on the mat."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用腹部带动上背抬起，下背贴住地面。"
+          }
+        }
+      }
+    },
     "exercise_dead_bug_name" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1447,6 +2299,346 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "腰背贴住地面，对侧手脚慢慢伸出。"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_bench_press_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dumbbell Bench Press"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "哑铃卧推"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_bench_press_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plant your feet, bend your elbows to about 90 degrees, then press up."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双脚踩稳，屈肘到约 90 度再推起。"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_bent_over_row_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dumbbell Bent-Over Row"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "哑铃俯身划船"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_bent_over_row_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your back flat and your elbows close as you pull the dumbbells toward your waist."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背部挺直，手肘贴近身体，把哑铃拉向腰部。"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_biceps_curl_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dumbbell Biceps Curl"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "哑铃弯举"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_biceps_curl_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your upper arms by your sides and don’t swing."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上臂贴近身体，不要借力摆动。"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_floor_press_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dumbbell Floor Press"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "哑铃地板卧推"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_floor_press_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Let your upper arms touch the floor lightly, then press up."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上臂轻触地面后再推起。"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_goblet_squat_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Goblet Squat"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高脚杯深蹲"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_goblet_squat_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hold the dumbbell close to your chest and keep your back straight as you squat."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "哑铃贴近胸口，背部挺直下蹲。"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_lateral_raise_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dumbbell Lateral Raise"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "哑铃侧平举"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_lateral_raise_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep a slight bend in your elbows and raise only to shoulder height."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手肘微屈，举到与肩同高即可。"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_reverse_lunge_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dumbbell Reverse Lunge"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "哑铃后撤弓步蹲"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_reverse_lunge_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step back, then lower, keeping your torso upright."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "后撤一步再下蹲，躯干保持直立。"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_romanian_deadlift_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dumbbell Romanian Deadlift"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "哑铃罗马尼亚硬拉"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_romanian_deadlift_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Push your hips back and keep the dumbbells close to your legs."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "臀部向后推，哑铃贴着大腿下放。"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_seated_shoulder_press_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seated Dumbbell Shoulder Press"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "哑铃坐姿推举"
+          }
+        }
+      }
+    },
+    "exercise_dumbbell_seated_shoulder_press_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your back against the bench and don’t shrug as you press."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背部靠稳，向上推时不要耸肩。"
+          }
+        }
+      }
+    },
+    "exercise_flutter_kick_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flutter Kick"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仰卧交替踢腿"
+          }
+        }
+      }
+    },
+    "exercise_flutter_kick_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Press your lower back into the mat and make small, alternating kicks with straight legs."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下背贴紧地面，双腿伸直，小幅交替上下。"
           }
         }
       }
@@ -1519,6 +2711,108 @@
         }
       }
     },
+    "exercise_inchworm_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inchworm"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "毛毛虫爬行"
+          }
+        }
+      }
+    },
+    "exercise_inchworm_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your hands planted and your legs straight, walk your feet toward your hands, then return to a plank."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双手撑地不动，双腿伸直，双脚走向双手，再回到平板支撑。"
+          }
+        }
+      }
+    },
+    "exercise_jump_squat_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jump Squat"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "深蹲跳"
+          }
+        }
+      }
+    },
+    "exercise_jump_squat_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cross your arms over your chest and land softly back into the squat."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双臂交叉在胸前，落地时顺势回到深蹲。"
+          }
+        }
+      }
+    },
+    "exercise_jumping_jack_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jumping Jack"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开合跳"
+          }
+        }
+      }
+    },
+    "exercise_jumping_jack_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Land with soft knees and bring your arms together overhead."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "落地时膝盖微屈，双臂在头顶上方合拢。"
+          }
+        }
+      }
+    },
     "exercise_knee_push_up_name" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1549,6 +2843,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "膝盖到头保持一条直线，胸口慢慢下放。"
+          }
+        }
+      }
+    },
+    "exercise_knees_to_chest_stretch_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Knees-to-Chest Stretch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仰卧抱膝拉伸"
+          }
+        }
+      }
+    },
+    "exercise_knees_to_chest_stretch_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hold your shins and draw your knees toward your chest, letting your lower back rest on the floor."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双手抱住小腿，把膝盖拉向胸口，下背贴地放松。"
           }
         }
       }
@@ -1621,6 +2949,380 @@
         }
       }
     },
+    "exercise_machine_assisted_pull_up_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Assisted Pull-Up"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "辅助引体向上"
+          }
+        }
+      }
+    },
+    "exercise_machine_assisted_pull_up_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pull until your chin clears the handles, then lower slowly without swinging."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下巴过把手后慢慢放下，身体不要摆动。"
+          }
+        }
+      }
+    },
+    "exercise_machine_chest_press_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Machine Chest Press"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "器械推胸"
+          }
+        }
+      }
+    },
+    "exercise_machine_chest_press_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your back against the pad and press until your elbows are almost straight."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背部靠紧靠垫，推到手肘接近伸直，不要锁死。"
+          }
+        }
+      }
+    },
+    "exercise_machine_leg_extension_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leg Extension"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "坐姿腿屈伸"
+          }
+        }
+      }
+    },
+    "exercise_machine_leg_extension_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Line up your knees with the machine’s pivot, pause at the top and lower slowly."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "膝盖对准器械转轴，伸直时稍作停顿，再慢慢放下。"
+          }
+        }
+      }
+    },
+    "exercise_machine_pec_deck_fly_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pec Deck Fly"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "蝴蝶机夹胸"
+          }
+        }
+      }
+    },
+    "exercise_machine_pec_deck_fly_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep a slight bend in your elbows, bring the handles together, then open slowly."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手肘微屈，在胸前合拢后慢慢打开。"
+          }
+        }
+      }
+    },
+    "exercise_machine_seated_hip_abduction_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seated Hip Abduction"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "坐姿髋外展"
+          }
+        }
+      }
+    },
+    "exercise_machine_seated_hip_abduction_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your back against the pad, push your knees apart and pause."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背部靠稳，双膝向外推开，稍作停顿。"
+          }
+        }
+      }
+    },
+    "exercise_machine_seated_hip_adduction_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seated Hip Adduction"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "坐姿髋内收"
+          }
+        }
+      }
+    },
+    "exercise_machine_seated_hip_adduction_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Squeeze your knees together, then return slowly."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双膝向内夹紧，再慢慢回到起始位置。"
+          }
+        }
+      }
+    },
+    "exercise_machine_seated_leg_curl_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seated Leg Curl"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "坐姿腿弯举"
+          }
+        }
+      }
+    },
+    "exercise_machine_seated_leg_curl_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your thighs under the pad and curl your lower legs under the seat."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "大腿用压垫固定，小腿向座椅下方弯曲。"
+          }
+        }
+      }
+    },
+    "exercise_machine_shoulder_press_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Machine Shoulder Press"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "器械肩上推举"
+          }
+        }
+      }
+    },
+    "exercise_machine_shoulder_press_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your back against the backrest and press up smoothly."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "背部贴紧靠背，平稳向上推。"
+          }
+        }
+      }
+    },
+    "exercise_mountain_climber_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mountain Climber"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登山者"
+          }
+        }
+      }
+    },
+    "exercise_mountain_climber_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your hands under your shoulders and drive your knees toward your chest in turn."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双手撑在肩膀正下方，膝盖交替提向胸口。"
+          }
+        }
+      }
+    },
+    "exercise_neck_side_stretch_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neck Side Stretch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "颈部侧屈拉伸"
+          }
+        }
+      }
+    },
+    "exercise_neck_side_stretch_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tilt your ear slowly toward your shoulder and keep your shoulders relaxed."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "耳朵慢慢靠向肩膀，肩膀保持放松。"
+          }
+        }
+      }
+    },
+    "exercise_overhead_triceps_stretch_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Overhead Triceps Stretch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "过顶肱三头肌拉伸"
+          }
+        }
+      }
+    },
+    "exercise_overhead_triceps_stretch_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reach one hand behind your head and gently pull that elbow with the other hand."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一只手放到脑后，另一只手轻拉这侧手肘。"
+          }
+        }
+      }
+    },
     "exercise_plank_name" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1651,6 +3353,74 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "肘在肩正下方，身体保持一条直线。"
+          }
+        }
+      }
+    },
+    "exercise_prone_quadriceps_stretch_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prone Quad Stretch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "俯卧股四头肌拉伸"
+          }
+        }
+      }
+    },
+    "exercise_prone_quadriceps_stretch_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hold your ankle and draw your heel toward your glutes, keeping your hips down."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手握脚踝，把脚跟拉向臀部，髋部贴住地面。"
+          }
+        }
+      }
+    },
+    "exercise_push_up_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Push-Up"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "俯卧撑"
+          }
+        }
+      }
+    },
+    "exercise_push_up_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your body in a straight line and lower your chest close to the floor."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "身体保持一条直线，胸口贴近地面再推起。"
           }
         }
       }
@@ -1835,6 +3605,40 @@
         }
       }
     },
+    "exercise_reverse_crunch_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reverse Crunch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反向卷腹"
+          }
+        }
+      }
+    },
+    "exercise_reverse_crunch_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Curl your pelvis to bring your knees toward your chest, then lower slowly."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "卷起骨盆让膝盖靠近胸口，再慢慢放回。"
+          }
+        }
+      }
+    },
     "exercise_reverse_lunge_name" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1869,6 +3673,108 @@
         }
       }
     },
+    "exercise_runners_lunge_stretch_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Runner’s Lunge Stretch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弓步拉伸"
+          }
+        }
+      }
+    },
+    "exercise_runners_lunge_stretch_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plant your hands beside your front foot and shift your hips back to stretch the back of your front leg."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双手撑在前脚两侧，臀部向后抬，拉伸前腿后侧。"
+          }
+        }
+      }
+    },
+    "exercise_russian_twist_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Russian Twist"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "俄罗斯转体"
+          }
+        }
+      }
+    },
+    "exercise_russian_twist_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lift your feet, keep your back straight and turn your rib cage side to side."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双脚离地，背部挺直，用胸廓带动左右转动。"
+          }
+        }
+      }
+    },
+    "exercise_seated_chair_hamstring_stretch_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seated Hamstring Stretch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "坐姿腘绳肌拉伸"
+          }
+        }
+      }
+    },
+    "exercise_seated_chair_hamstring_stretch_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sit at the front of the chair, straighten one leg with the heel down and lean forward from your hips."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "坐在椅子前沿，一条腿伸直，脚跟着地，从髋部前倾。"
+          }
+        }
+      }
+    },
     "exercise_seated_row_name" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1899,6 +3805,176 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "拉向身体时保持肩部放松。"
+          }
+        }
+      }
+    },
+    "exercise_single_leg_glute_bridge_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Single-Leg Glute Bridge"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "单腿臀桥"
+          }
+        }
+      }
+    },
+    "exercise_single_leg_glute_bridge_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hold one knee toward your chest and push your hips up through the other heel."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一侧膝盖收向胸口，用另一只脚的脚跟把臀部推高。"
+          }
+        }
+      }
+    },
+    "exercise_standing_hamstring_stretch_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standing Hamstring Stretch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "站姿腘绳肌拉伸"
+          }
+        }
+      }
+    },
+    "exercise_standing_hamstring_stretch_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your front leg straight and your back flat as you lean forward from your hips."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前腿伸直，背部挺直，从髋部向前倾。"
+          }
+        }
+      }
+    },
+    "exercise_superman_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Superman"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "超人式"
+          }
+        }
+      }
+    },
+    "exercise_superman_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lift your arms and legs together and keep your neck relaxed."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手臂和双腿同时抬离地面，颈部保持放松。"
+          }
+        }
+      }
+    },
+    "exercise_supine_figure_four_glute_stretch_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Figure-Four Glute Stretch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仰卧四字臀肌拉伸"
+          }
+        }
+      }
+    },
+    "exercise_supine_figure_four_glute_stretch_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cross one ankle over the other knee and draw your legs toward your chest."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一侧脚踝搭在另一侧膝盖上，双手把腿拉向胸口。"
+          }
+        }
+      }
+    },
+    "exercise_wall_high_knees_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wall High Knees"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "扶墙高抬腿"
+          }
+        }
+      }
+    },
+    "exercise_wall_high_knees_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your hands on the wall and drive each knee toward your chest in turn."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双手扶墙，膝盖交替抬向胸口。"
           }
         }
       }
@@ -1967,6 +4043,74 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "背部贴墙，大腿与地面平行。"
+          }
+        }
+      }
+    },
+    "exercise_wall_standing_calf_stretch_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wall Calf Stretch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "扶墙小腿拉伸"
+          }
+        }
+      }
+    },
+    "exercise_wall_standing_calf_stretch_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep your back leg straight and your heel down as you lean toward the wall."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "后腿伸直，后脚跟踩实地面，身体向墙前倾。"
+          }
+        }
+      }
+    },
+    "exercise_worlds_greatest_stretch_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "World’s Greatest Stretch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "世界最伟大拉伸"
+          }
+        }
+      }
+    },
+    "exercise_worlds_greatest_stretch_tip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "From a lunge, bring your elbow toward the inside of your front foot, then straighten your front leg."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弓步后手肘靠向前脚内侧，再伸直前腿。"
           }
         }
       }
@@ -3300,6 +5444,60 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "今天，轻一点。"
+          }
+        }
+      }
+    },
+    "training_group_gym" : {
+      "comment" : "训练页的课程分组标题：需要健身房器械的课程",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gym"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "健身房"
+          }
+        }
+      }
+    },
+    "training_group_home" : {
+      "comment" : "训练页的课程分组标题：不需要器械或只需要哑铃、可以在家完成的课程",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "At Home"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "居家"
+          }
+        }
+      }
+    },
+    "training_group_stretch" : {
+      "comment" : "训练页的课程分组标题：拉伸、放松和活动度课程",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stretch and Recover"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拉伸与放松"
           }
         }
       }

@@ -6,6 +6,26 @@ course_gym_beginner_title:
 course_gym_beginner_subtitle:
 course_mobility_title:
 course_mobility_subtitle:
+course_home_strength_title:
+course_home_strength_subtitle:
+course_home_core_title:
+course_home_core_subtitle:
+course_home_cardio_title:
+course_home_cardio_subtitle:
+course_home_dumbbell_title:
+course_home_dumbbell_subtitle:
+course_gym_free_weights_title:
+course_gym_free_weights_subtitle:
+course_gym_upper_title:
+course_gym_upper_subtitle:
+course_gym_lower_title:
+course_gym_lower_subtitle:
+course_stretch_lower_title:
+course_stretch_lower_subtitle:
+course_stretch_desk_title:
+course_stretch_desk_subtitle:
+course_morning_wake_up_title:
+course_morning_wake_up_subtitle:
 course_level_beginner:
   comment: 课程难度，显示在课程卡片和课程详情中
 course_level_intermediate:

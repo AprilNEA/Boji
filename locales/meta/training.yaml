@@ -19,3 +19,13 @@ detail_exercise_sets:
     reps: string
 detail_start:
 detail_again:
+training_group_home:
+  comment: 训练页的课程分组标题：不需要器械或只需要哑铃、可以在家完成的课程
+training_group_gym:
+  comment: 训练页的课程分组标题：需要健身房器械的课程
+training_group_stretch:
+  comment: 训练页的课程分组标题：拉伸、放松和活动度课程
+detail_animation_downloading:
+  comment: 课程详情页：这门课程的动作动画正在从网络下载
+detail_animation_unavailable:
+  comment: 课程详情页：动作动画还没有下载，而且现在无法联网。训练本身不受影响
