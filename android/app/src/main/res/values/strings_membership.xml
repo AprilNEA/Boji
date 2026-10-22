@@ -117,6 +117,8 @@
     <string name="auth_data_note">Your email and sign-in details go to the club service. The sign-in token is stored encrypted on this device and is never included in data exports.</string>
     <string name="auth_dev_service">Development service: %1$s</string>
     <string name="auth_use_saved">Use Saved Password</string>
+    <string name="auth_google_continue">Continue with Google</string>
+    <string name="auth_google_note">Google shares the name and email of the account you choose, to create or restore your club account. An existing email account isn’t merged automatically.</string>
 
     <!-- Card enrollment -->
     <string name="enroll_title">Claim a Free Member Card</string>
@@ -283,6 +285,12 @@
     <string name="msg_network_revoke">Signing out other sessions isn’t confirmed. Try again later.</string>
     <string name="msg_failed_refresh">Can’t update the membership. Try again later.</string>
     <string name="msg_failed_sign_in">Sign-in failed. Check your email and password.</string>
+    <string name="msg_failed_google">Google sign-in didn’t finish. Try again later.</string>
+    <string name="msg_google_unavailable">Google sign-in isn’t available right now. You can still sign in with your email.</string>
+    <string name="msg_google_rejected">Google sign-in couldn’t be verified. Try again.</string>
+    <string name="msg_google_incomplete">Google sign-in didn’t finish. Try again.</string>
+    <string name="msg_no_google_account">No Google account is available on this device. Add one in system settings, or sign in with your email.</string>
+    <string name="msg_email_account_exists">This email already has a club account. Sign in with your email and password.</string>
     <string name="msg_failed_register">Registration failed. Check your details and try again.</string>
     <string name="msg_failed_verification">Can’t send the verification email. Try again later.</string>
     <string name="msg_failed_reset">Can’t send the password reset email. Try again later.</string>

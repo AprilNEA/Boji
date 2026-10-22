@@ -51,6 +51,7 @@ internal fun StoredSession.toAccount(): Account = Account(
 enum class AccountAction {
     REFRESH,
     SIGN_IN,
+    GOOGLE_SIGN_IN,
     REGISTER,
     SEND_VERIFICATION,
     RESET_PASSWORD,
@@ -103,6 +104,13 @@ sealed interface AccountMessage {
     data object PasswordRules : Problem
     data object SamePassword : Problem
     data object PasswordChangedStorageFailed : Problem
+    data object GoogleSignInUnavailable : Problem
+    data object GoogleSignInRejected : Problem
+    data object GoogleSignInIncomplete : Problem
+    data object NoGoogleAccount : Problem
+
+    /** The email of the provider account already belongs to an email account. */
+    data object EmailAccountExists : Problem
     data object DeletionCodeRequired : Problem
     data object InvalidDeletionCode : Problem
 

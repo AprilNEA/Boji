@@ -12,7 +12,7 @@ Boji 的原生 Android 客户端，使用 Kotlin 和 Jetpack Compose。Android �
 - 训练计时：暂停、继续、30 秒休息倒计时和完成记录。离开前台时自动暂停，旋转屏幕或切换深浅色时不暂停。
 - 足迹：累计训练次数、活跃天数、最近 7 天、身体数据趋势图和文字分享。
 - 俱乐部：本地每周挑战和 3 篇入门文章。
-- 账号：邮箱注册、登录、重发验证邮件、密码重置邮件、修改密码、退出其他会话和删除账号。登录后可以用 Credential Manager 保存密码。
+- 账号：邮箱注册、登录、重发验证邮件、密码重置邮件、修改密码、退出其他会话和删除账号。登录后可以用 Credential Manager 保存密码。构建和服务端都开启时，可以用 Google 账号登录。
 - 会员卡：昵称、三条共识和核对三步领取免费会员卡；显示服务端返回的会员状态、加入日期和权益；离线时显示上次同步的副本。
 - 会员卡分享：选择三种配色之一生成图片，默认隐藏卡号，通过系统分享面板发送。
 - 健康数据：通过 Health Connect 只读查询近 30 天的体重和睡眠，与手动记录分开显示。连接后，今天页和足迹页显示摘要卡片。
@@ -64,6 +64,14 @@ ANDROID_SERIAL=<手表序列号> ./gradlew :wear:connectedDebugAndroidTest
 ```sh
 ./gradlew :app:assembleRelease -Pboji.apiBaseUrl=https://<会员服务主机>
 ```
+
+Google 登录需要 Google Cloud 中 Web 应用类型的 OAuth 客户端 ID，与服务端的 `GOOGLE_CLIENT_ID` 相同。同一项目中还要有 Android 类型的客户端，登记包名 `club.leanmuscle.boji` 和签名证书的 SHA-1。客户端 ID 不写入仓库，构建时传入；不传时登录页不显示 Google 登录：
+
+```sh
+./gradlew :app:assembleDebug -Pboji.googleServerClientId=<编号>.apps.googleusercontent.com
+```
+
+登录页打开时，应用读取 `SystemService.GetServerConfig`，只有 `googleLoginEnabled` 为 `true` 才显示「使用 Google 继续」。请求 ID 令牌时带随机 nonce，服务端核对令牌中的 nonce。调试时，Google Cloud 项目处于测试状态，只有列为测试用户的账号能登录，模拟器需要先登录这个 Google 账号。
 
 Baseline Profile 需要在连接的模拟器或设备（API 28 及以上）上生成。生成结果位于 `app/src/release/generated/baselineProfiles/`，需要提交：
 
@@ -315,7 +323,7 @@ iOS 版采用 Liquid Glass 和 Apple 人机界面指南。Android 版遵循 Mate
 
 - **每周起始日**：最近一周和每周挑战按系统区域设置计算每周第一天。iOS 版的行为相同。
 - **RPC 编码**：iOS 版用 `URLSession` 发送 JSON 编码的 Connect 请求。Android 版用 connect-kotlin 发送二进制 Protobuf（`application/proto`）。两者调用相同的服务和方法。[bizserver 的 RPC 说明](../bizserver/docs/connectrpc-api.md)写明服务端同时接受两种编码。
-- **系统登录**：iOS 版有 Apple 登录。Android 版只有邮箱和密码，因为服务端是否支持 Google 登录尚未确认。
+- **系统登录**：iOS 版用 Apple 登录，Android 版用 Google 登录。两者都调用 `/api/auth/sign-in/social`，错误提示的规则相同：邮箱已属于邮箱账号时提示用邮箱登录，令牌被拒时提示重试。
 - **密码与网站关联**：Android 版已在应用一侧声明 Digital Asset Links，iOS 版没有 `webcredentials` 关联域名。网站一侧的文件尚未发布，所以两端目前都不与网站共享密码。见[密码与网站关联](#密码与网站关联)。
 - **健康数据的腰围**：iOS 版从 HealthKit 读取腰围。Health Connect 没有腰围类型，Android 版只读取体重和睡眠。
 - **睡眠分类**：iOS 版统计 HealthKit 的各类「睡着」值，不统计「卧床」。Android 版统计 Health Connect 的睡眠阶段，不统计清醒和离床阶段。两端都不把在床时间算作睡眠。
@@ -401,7 +409,6 @@ Credential Manager 对密码只是强烈建议声明 Digital Asset Links，对�
 
 以下 iOS 功能在 Android 版中尚不存在：
 
-- Apple 登录。Android 对应 Credential Manager 中的 Google 登录，需要服务端先支持。
 - Wallet 会员卡。Android 对应 Google Wallet，被服务端契约阻塞，见下文。
 
 ### Google Wallet

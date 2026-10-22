@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.security.GeneralSecurityException
 import java.security.ProviderException
@@ -58,6 +59,9 @@ class MembershipRepository @Inject constructor(
     /** The member service URL of this build, for the debug hint on the sign-in screen. */
     val serviceUrl: String? = service.endpoint?.toString()
 
+    /** The Web client ID that Google ID tokens are requested for, or null when the build has none. */
+    val googleServerClientId: String? = service.googleServerClientId
+
     init {
         // Without a stored session this reads one file and makes no request.
         if (origin != null) scope.launch(io) { operation { restore() } }
@@ -70,6 +74,24 @@ class MembershipRepository @Inject constructor(
     suspend fun refreshQuietly(): AccountMessage? = operation { refreshNow(explicit = false) }
 
     suspend fun signIn(email: String, password: String): AccountMessage? = operation { signInNow(email, password) }
+
+    /**
+     * Whether the sign-in screen offers Google: the build has a client ID and the server reports
+     * `googleLoginEnabled`. Any failure counts as unavailable. This reads no account data, so it
+     * runs outside the operation lock.
+     */
+    suspend fun isGoogleSignInAvailable(): Boolean = withContext(io) {
+        if (origin == null || googleServerClientId == null) return@withContext false
+        try {
+            service.system().serverConfig().googleLoginEnabled
+        } catch (e: MemberApiError) {
+            false
+        }
+    }
+
+    /** Signs in with a Google ID token that was requested with the raw [nonce]. */
+    suspend fun signInWithGoogle(idToken: String, nonce: String): AccountMessage? =
+        operation { signInWithGoogleNow(idToken, nonce) }
 
     suspend fun register(name: String, email: String, password: String): AccountMessage? =
         operation { registerNow(name, email, password) }
@@ -192,6 +214,27 @@ class MembershipRepository @Inject constructor(
         mutableState.value = AccountState.SignedIn(stored.toAccount(), card = null, syncedAt = null, isOffline = false)
         // getSession above has just confirmed the token, so read the card without a second check.
         return loadCard(stored, AccountAction.SIGN_IN) ?: AccountMessage.SignedIn
+    }
+
+    private suspend fun signInWithGoogleNow(idToken: String, nonce: String): AccountMessage {
+        if (origin == null || googleServerClientId == null) return AccountMessage.GoogleSignInUnavailable
+        if (idToken.isBlank() || nonce.isBlank()) return AccountMessage.GoogleSignInIncomplete
+        val token = try {
+            service.auth().signInWithIdToken(GOOGLE_PROVIDER, idToken, nonce)
+        } catch (e: MemberApiError) {
+            // There is no local session yet, so a 401 here rejects the token and clears nothing.
+            return socialSignInProblem(e) ?: handle(e, AccountAction.GOOGLE_SIGN_IN)
+        }
+        return completeSignIn(token, origin)
+    }
+
+    /** The answers of Better Auth to a rejected provider token, as `appleSignInMessage` on iOS. */
+    private fun socialSignInProblem(error: MemberApiError): AccountMessage? {
+        if (error !is MemberApiError.Http) return null
+        return when (error.code) {
+            in LINKING_CODES -> AccountMessage.EmailAccountExists
+            else -> if (error.status == 401) AccountMessage.GoogleSignInRejected else null
+        }
     }
 
     private suspend fun registerNow(rawName: String, rawEmail: String, password: String): AccountMessage {
@@ -536,6 +579,10 @@ class MembershipRepository @Inject constructor(
     private companion object {
         val WRONG_PASSWORD_CODES = setOf("INVALID_PASSWORD", "INVALID_CURRENT_PASSWORD")
         val NO_PASSWORD_CODES = setOf("PASSWORD_NOT_FOUND", "CREDENTIAL_ACCOUNT_NOT_FOUND")
+        val LINKING_CODES = setOf("LINKING_NOT_ALLOWED", "LINKING_DIFFERENT_EMAILS_NOT_ALLOWED")
+
+        /** Provider ID of Google in Better Auth, `google::PROVIDER_ID` in bizserver. */
+        const val GOOGLE_PROVIDER = "google"
     }
 }
 

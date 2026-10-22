@@ -33,6 +33,7 @@ class AccountHarness(
     parent: CoroutineScope,
     private val endpoint: ServerEndpoint?,
     val clock: Clock = FIXED_CLOCK,
+    private val googleServerClientId: String? = GOOGLE_CLIENT_ID,
 ) {
     private val job = SupervisorJob(parent.coroutineContext.job)
     private val scope = CoroutineScope(Dispatchers.IO + job)
@@ -62,7 +63,7 @@ class AccountHarness(
 
     val repository: MembershipRepository by lazy {
         MembershipRepository(
-            service = MemberService(MemberServiceConfig(endpoint), Lazy { httpClient }, clock),
+            service = MemberService(MemberServiceConfig(endpoint, googleServerClientId), Lazy { httpClient }, clock),
             sessions = sessions,
             cache = cache,
             clock = clock,
@@ -102,5 +103,6 @@ class AccountHarness(
     companion object {
         val FIXED_CLOCK: Clock = Clock.fixed(Instant.parse("2026-10-20T08:00:00Z"), ZoneOffset.UTC)
         val SYNCED_AT: Instant = Instant.parse("2026-10-19T08:00:00Z")
+        const val GOOGLE_CLIENT_ID = "123-test.apps.googleusercontent.com"
     }
 }

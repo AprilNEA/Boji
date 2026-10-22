@@ -19,8 +19,10 @@ object NetworkModule {
 
     /** Debug builds also accept http for the local hosts in [ServerEndpoint.LOCAL_HTTP_HOSTS]. */
     @Provides
-    fun memberServiceConfig(): MemberServiceConfig =
-        MemberServiceConfig(ServerEndpoint.parse(BuildConfig.BOJI_API_BASE_URL, allowLocalHttp = BuildConfig.DEBUG))
+    fun memberServiceConfig(): MemberServiceConfig = MemberServiceConfig(
+        endpoint = ServerEndpoint.parse(BuildConfig.BOJI_API_BASE_URL, allowLocalHttp = BuildConfig.DEBUG),
+        googleServerClientId = BuildConfig.GOOGLE_SERVER_CLIENT_ID.ifBlank { null },
+    )
 
     /**
      * One client for Better Auth and Connect. Like the iOS transport, it keeps no cookies and no

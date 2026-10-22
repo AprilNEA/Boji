@@ -25,6 +25,11 @@ fun accountMessageText(message: AccountMessage): String {
         AccountMessage.PasswordChanged -> stringResource(R.string.msg_password_changed)
         AccountMessage.PasswordChangedSignInAgain -> stringResource(R.string.msg_password_changed_sign_in)
         AccountMessage.OtherSessionsRevoked -> stringResource(R.string.msg_other_sessions_revoked)
+        AccountMessage.GoogleSignInUnavailable -> stringResource(R.string.msg_google_unavailable)
+        AccountMessage.GoogleSignInRejected -> stringResource(R.string.msg_google_rejected)
+        AccountMessage.GoogleSignInIncomplete -> stringResource(R.string.msg_google_incomplete)
+        AccountMessage.NoGoogleAccount -> stringResource(R.string.msg_no_google_account)
+        AccountMessage.EmailAccountExists -> stringResource(R.string.msg_email_account_exists)
         AccountMessage.DeletionCodeSent -> stringResource(R.string.msg_deletion_code_sent)
         AccountMessage.AccountDeleted -> stringResource(R.string.msg_account_deleted)
         AccountMessage.DeletionCodeRequired -> stringResource(R.string.msg_deletion_code_required)
@@ -63,6 +68,7 @@ fun accountMessageText(message: AccountMessage): String {
 private fun networkMessage(action: AccountAction): Int = when (action) {
     AccountAction.REFRESH -> R.string.msg_network_refresh
     AccountAction.SIGN_IN -> R.string.msg_network_sign_in
+    AccountAction.GOOGLE_SIGN_IN -> R.string.msg_network_sign_in
     AccountAction.REGISTER -> R.string.msg_network_register
     AccountAction.SEND_VERIFICATION -> R.string.msg_network_verification
     AccountAction.RESET_PASSWORD -> R.string.msg_network_reset
@@ -78,6 +84,7 @@ private fun networkMessage(action: AccountAction): Int = when (action) {
 private fun failureMessage(action: AccountAction): Int = when (action) {
     AccountAction.REFRESH -> R.string.msg_failed_refresh
     AccountAction.SIGN_IN -> R.string.msg_failed_sign_in
+    AccountAction.GOOGLE_SIGN_IN -> R.string.msg_failed_google
     AccountAction.REGISTER -> R.string.msg_failed_register
     AccountAction.SEND_VERIFICATION -> R.string.msg_failed_verification
     AccountAction.RESET_PASSWORD -> R.string.msg_failed_reset

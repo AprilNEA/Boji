@@ -20,6 +20,10 @@ interface BetterAuthApi {
     @POST("api/auth/sign-in/email")
     suspend fun signInEmail(@Body body: SignInRequest): Response<Unit>
 
+    /** Signs in with a provider ID token, such as Google's. The token comes back in `set-auth-token`. */
+    @POST("api/auth/sign-in/social")
+    suspend fun signInSocial(@Body body: SocialSignInRequest): Response<Unit>
+
     @POST("api/auth/sign-up/email")
     suspend fun signUpEmail(@Body body: SignUpRequest): Response<Unit>
 
@@ -67,6 +71,14 @@ interface BetterAuthApi {
 
 @Serializable
 data class SignInRequest(val email: String, val password: String)
+
+/** `{"provider":"google","idToken":{"token":"…","nonce":"…"}}`. */
+@Serializable
+data class SocialSignInRequest(val provider: String, val idToken: IdTokenBody)
+
+/** [nonce] is the raw nonce that the client gave the provider. */
+@Serializable
+data class IdTokenBody(val token: String, val nonce: String)
 
 @Serializable
 data class SignUpRequest(val name: String, val email: String, val password: String)

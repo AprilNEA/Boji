@@ -39,6 +39,8 @@ connectKotlin = "0.9.0"
 okhttp = "5.5.0"
 retrofit = "3.0.0"
 credentials = "1.6.0"
+# Sign in with Google for Credential Manager. 1.2.1 builds on credentials 1.6.0.
+googleId = "1.2.1"
 # Checked against Maven Central on 2026-10-21. Gradle plugin 6.24.0 targets SDK 8.61.0; upgrade them together.
 sentry = "8.61.0"
 sentryGradlePlugin = "6.24.0"
@@ -57,6 +59,7 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 retrofit-converter-kotlinx-serialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
 androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
+google-identity-googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleId" }
 androidx-profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
 androidx-benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmark" }
 androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }

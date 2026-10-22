@@ -38,6 +38,12 @@ class BetterAuthClient(
         return response.authToken() ?: throw MemberApiError.InvalidResponse
     }
 
+    /** Signs in with a provider ID token. Returns the session token from the `set-auth-token` header. */
+    suspend fun signInWithIdToken(provider: String, idToken: String, nonce: String): String {
+        val response = call { api.signInSocial(SocialSignInRequest(provider, IdTokenBody(idToken, nonce))) }
+        return response.authToken() ?: throw MemberApiError.InvalidResponse
+    }
+
     suspend fun register(name: String, email: String, password: String) {
         call { api.signUpEmail(SignUpRequest(name, email, password)) }
     }

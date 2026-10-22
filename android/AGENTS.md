@@ -34,6 +34,10 @@ ANDROID_SERIAL=<watch> ./gradlew :wear:connectedDebugAndroidTest
 # release builds stay offline.
 ./gradlew assembleRelease -Pboji.apiBaseUrl=https://api.example.com
 
+# Enable Sign in with Google with the Web client ID that bizserver trusts (GOOGLE_CLIENT_ID).
+# Without a value, the sign-in screen hides Google.
+./gradlew assembleDebug -Pboji.googleServerClientId=<id>.apps.googleusercontent.com
+
 # Regenerate the API client code after a change to ../bizserver/proto/boji/v1/.
 (cd rpc && buf generate)
 ```
@@ -53,7 +57,7 @@ Crash reporting is off unless the build sets a Sentry DSN with `-Pboji.sentryDsn
 
 ### API client
 
-- `rpc/` is an Android library with the Java lite messages, the Kotlin builders and the Connect clients of the `boji.v1` API. `app` uses it through `core/network/MembershipClient.kt` only.
+- `rpc/` is an Android library with the Java lite messages, the Kotlin builders and the Connect clients of the `boji.v1` API. `app` uses it through `core/network/MembershipClient.kt` and `core/network/SystemClient.kt` only. Both run calls through `connectCall`, so every failure becomes a `MemberApiError`.
 - `buf generate` in `rpc/` writes `rpc/generated/` from `../bizserver/proto/boji/v1/`. Do not edit `rpc/generated/`. Commit it in the same change as the proto change. `buf` comes from the devenv shell, and the first run needs network access to the BSR.
 - The Gradle build compiles `rpc/generated/` as source. It does not run `protoc` or `buf`. Do not add the protobuf Gradle plugin.
 - Keep the plugin versions in `rpc/buf.gen.yaml` equal to the runtimes in `gradle/libs.versions.toml`: `protocolbuffers/java` and `protocolbuffers/kotlin` at the protoc release of `protobuf` (v36.2 for 4.36.2), and `connectrpc/kotlin` equal to `connectKotlin`. Follow "API contract" in the root `AGENTS.md`.
@@ -81,6 +85,7 @@ Crash reporting is off unless the build sets a Sentry DSN with `-Pboji.sentryDsn
 - `NetworkModule` provides the only `OkHttpClient`. Redirects are off. Better Auth (`/api/auth/` endpoints) is a JSON API outside the proto contract: call it through `BetterAuthApi` with Retrofit and the kotlinx.serialization converter. Call `boji.v1` services through the generated Connect clients. Do not hand-write RPC request or response types.
 - `AuthSessionStore` and `MembershipCacheStore` are DataStore files encrypted by `EncryptedJsonSerializer`. `KeystoreCipher` uses an AES-256-GCM key in the Android Keystore and passes the file purpose as associated data. When a file cannot be decrypted, for example after the key is lost, treat the account as signed out. Do not crash and do not log the file content.
 - `MembershipRepository` holds the account rules of `../ios/Boji/Models/MembershipStore.swift`. Map a server error by its `ErrorInfo.reason` first, then by the Connect code. Treat membership numbers as opaque strings, as the root `AGENTS.md` requires.
+- Sign in with Google: `GoogleCredentials` requests an ID token with `GetSignInWithGoogleOption` for `BuildConfig.GOOGLE_SERVER_CLIENT_ID` and a fresh nonce, and `MembershipRepository.signInWithGoogle` sends both to `/api/auth/sign-in/social`. Show the button only when the build has a client ID and `ServerConfig.google_login_enabled` is true. Never commit a client ID: pass it with `-Pboji.googleServerClientId` or `BOJI_GOOGLE_SERVER_CLIENT_ID`. A 401 from that endpoint rejects the token; do not treat it as an expired session, because no session exists yet.
 - `PasswordCredentials` saves and offers the email password with Credential Manager. `res/values/asset_statements.xml` includes `https://leanmuscle.club/.well-known/assetlinks.json`, and `AndroidManifest.xml` declares it as the `asset_statements` meta-data. `AssetStatementsTest` checks both. The site file is not published yet; `README.md` holds its content. Put only the SHA-256 of the Play App Signing certificate in it, never a debug fingerprint. Do not add `handle_all_urls` while the app handles no web links.
 - Deleting all local data in Settings also turns off check-in sharing, clears the session and the cached member card, and disconnects Health Connect. It does not delete the account or the membership on the server, and it does not touch records or permissions in Health Connect.
 - UI tests replace `DataFileModule`, `AccountFileModule` and `NetworkModule` with `@TestInstallIn` modules in `src/androidTest/`. Each test uses a new directory, and the member service is `null` unless a test starts `FakeMemberServerRule`.

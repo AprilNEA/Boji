@@ -1,6 +1,7 @@
 package club.leanmuscle.boji.core.network
 
 import club.leanmuscle.boji.v1.MembershipServiceClient
+import club.leanmuscle.boji.v1.SystemServiceClient
 import com.connectrpc.ProtocolClientConfig
 import com.connectrpc.extensions.GoogleJavaLiteProtobufStrategy
 import com.connectrpc.impl.ProtocolClient
@@ -16,8 +17,13 @@ import java.time.Clock
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** The member service URL of this build, or null when the build has none. */
-data class MemberServiceConfig(val endpoint: ServerEndpoint?)
+/**
+ * The member service URL of this build, or null when the build has none.
+ *
+ * @property googleServerClientId the Web client ID that Google ID tokens are requested for, or null
+ *   when the build has none. Sign in with Google stays hidden without it.
+ */
+data class MemberServiceConfig(val endpoint: ServerEndpoint?, val googleServerClientId: String? = null)
 
 /**
  * Entry point to the member service. The clients are created on first use, off the main thread,
@@ -30,6 +36,8 @@ class MemberService @Inject constructor(
     private val clock: Clock,
 ) {
     val endpoint: ServerEndpoint? = config.endpoint
+
+    val googleServerClientId: String? = config.googleServerClientId?.takeIf { it.isNotBlank() }
 
     val isConfigured: Boolean get() = endpoint != null
 
@@ -48,9 +56,9 @@ class MemberService @Inject constructor(
         BetterAuthClient(retrofit.create(BetterAuthApi::class.java), json, clock)
     }
 
-    private val membershipClient: MembershipClient? by lazy {
+    private val protocolClient: ProtocolClient? by lazy {
         val endpoint = endpoint ?: return@lazy null
-        val protocolClient = ProtocolClient(
+        ProtocolClient(
             httpClient = ConnectOkHttpClient(okHttpClient.get()),
             config = ProtocolClientConfig(
                 host = endpoint.connectHost,
@@ -58,7 +66,14 @@ class MemberService @Inject constructor(
                 networkProtocol = NetworkProtocol.CONNECT,
             ),
         )
-        MembershipClient(MembershipServiceClient(protocolClient))
+    }
+
+    private val membershipClient: MembershipClient? by lazy {
+        protocolClient?.let { MembershipClient(MembershipServiceClient(it)) }
+    }
+
+    private val systemClient: SystemClient? by lazy {
+        protocolClient?.let { SystemClient(SystemServiceClient(it)) }
     }
 
     /** @throws MemberApiError.NotConfigured when the build has no member service URL. */
@@ -66,6 +81,9 @@ class MemberService @Inject constructor(
 
     /** @throws MemberApiError.NotConfigured when the build has no member service URL. */
     fun memberships(): MembershipClient = membershipClient ?: throw MemberApiError.NotConfigured
+
+    /** @throws MemberApiError.NotConfigured when the build has no member service URL. */
+    fun system(): SystemClient = systemClient ?: throw MemberApiError.NotConfigured
 
     private companion object {
         const val JSON_MEDIA_TYPE = "application/json"

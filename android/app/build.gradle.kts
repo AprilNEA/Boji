@@ -31,6 +31,18 @@ require(apiBaseUrl.isEmpty() || Regex("https?://[A-Za-z0-9._~:/\\[\\]-]+").match
 }
 val debugApiBaseUrl = apiBaseUrl.ifEmpty { "http://10.0.2.2:3000" }
 
+// Sign in with Google: the Web client ID of the Google Cloud project that bizserver trusts
+// (GOOGLE_CLIENT_ID there). The Gradle property boji.googleServerClientId takes precedence over the
+// BOJI_GOOGLE_SERVER_CLIENT_ID environment variable. Without a value, the app hides Google sign-in.
+// Keep real values out of the repository: pass them on the command line or in ~/.gradle/gradle.properties.
+val googleServerClientId: String = providers.gradleProperty("boji.googleServerClientId")
+    .orElse(providers.environmentVariable("BOJI_GOOGLE_SERVER_CLIENT_ID"))
+    .getOrElse("")
+    .trim()
+require(googleServerClientId.isEmpty() || Regex("[0-9]+-[a-z0-9]+\\.apps\\.googleusercontent\\.com").matches(googleServerClientId)) {
+    "The Google server client ID must look like 123-abc.apps.googleusercontent.com."
+}
+
 android {
     namespace = "club.leanmuscle.boji"
     compileSdk = 37
@@ -48,6 +60,8 @@ android {
 
         // Read by core/diagnostics/CrashReporting.kt. An empty value keeps the Sentry SDK stopped.
         buildConfigField("String", "SENTRY_DSN", "\"$sentryDsn\"")
+        // Read by core/di/NetworkModule.kt. An empty value hides Sign in with Google.
+        buildConfigField("String", "GOOGLE_SERVER_CLIENT_ID", "\"$googleServerClientId\"")
     }
 
     buildTypes {
@@ -153,6 +167,7 @@ dependencies {
     // Saves and offers the email password. play-services-auth backs it on Android 13 and lower.
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.google.identity.googleid)
     // Installs the generated Baseline Profile on devices without Play, for example sideloaded builds.
     implementation(libs.androidx.profileinstaller)
     baselineProfile(project(":baselineprofile"))

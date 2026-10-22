@@ -37,17 +37,7 @@ class MembershipClient(private val service: MembershipServiceClientInterface) {
         return rpc { service.createMembership(request, authorization(token)) }
     }
 
-    private suspend fun <T> rpc(call: suspend () -> ResponseMessage<T>): T {
-        val response = try {
-            call()
-        } catch (e: IOException) {
-            throw MemberApiError.Network(e)
-        }
-        return when (response) {
-            is ResponseMessage.Success -> response.message
-            is ResponseMessage.Failure -> throw response.cause.toMemberApiError()
-        }
-    }
+    private suspend fun <T> rpc(call: suspend () -> ResponseMessage<T>): T = connectCall(call)
 
     private fun authorization(token: String): Headers =
         mapOf("authorization" to listOf(BetterAuthClient.bearer(token)))
@@ -58,6 +48,19 @@ class MembershipClient(private val service: MembershipServiceClientInterface) {
 
         /** `ErrorInfo.domain` of every bizserver error. */
         const val ERROR_DOMAIN = "boji.leanmuscle.club"
+    }
+}
+
+/** Runs one unary Connect call. Every failure is a [MemberApiError]. */
+internal suspend fun <T> connectCall(call: suspend () -> ResponseMessage<T>): T {
+    val response = try {
+        call()
+    } catch (e: IOException) {
+        throw MemberApiError.Network(e)
+    }
+    return when (response) {
+        is ResponseMessage.Success -> response.message
+        is ResponseMessage.Failure -> throw response.cause.toMemberApiError()
     }
 }
 
