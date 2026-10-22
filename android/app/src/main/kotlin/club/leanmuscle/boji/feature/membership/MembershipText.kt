@@ -59,6 +59,14 @@ fun accountMessageText(message: AccountMessage): String {
         AccountMessage.EmailNotVerified -> stringResource(R.string.msg_email_not_verified)
         AccountMessage.OfflineShowingCard -> stringResource(R.string.msg_offline_card)
         AccountMessage.PermissionDenied -> stringResource(R.string.msg_permission_denied)
+        is AccountMessage.EmailChangeRequested -> stringResource(R.string.msg_email_change_requested, message.currentEmail)
+        is AccountMessage.EmailChanged -> stringResource(R.string.msg_email_changed, message.email)
+        AccountMessage.EmailChangePending -> stringResource(R.string.msg_email_change_pending)
+        AccountMessage.InvalidNewEmail -> stringResource(R.string.msg_invalid_new_email)
+        AccountMessage.SameEmail -> stringResource(R.string.msg_same_email)
+        AccountMessage.VerifyEmailBeforeChange -> stringResource(R.string.msg_verify_before_email_change)
+        AccountMessage.EmailChangeDisabled -> stringResource(R.string.msg_email_change_disabled)
+        AccountMessage.EmailChangeRejected -> stringResource(R.string.msg_email_change_rejected)
         is AccountMessage.Network -> stringResource(networkMessage(message.action))
         is AccountMessage.Failed -> stringResource(failureMessage(message.action))
     }
@@ -76,6 +84,7 @@ private fun networkMessage(action: AccountAction): Int = when (action) {
     AccountAction.REFRESH_SESSION -> R.string.msg_network_session
     AccountAction.CHANGE_PASSWORD -> R.string.msg_network_password
     AccountAction.REVOKE_OTHER_SESSIONS -> R.string.msg_network_revoke
+    AccountAction.CHANGE_EMAIL -> R.string.msg_network_change_email
     AccountAction.REQUEST_ACCOUNT_DELETION -> R.string.msg_network_deletion_code
     AccountAction.DELETE_ACCOUNT -> R.string.msg_network_delete_account
 }
@@ -92,6 +101,7 @@ private fun failureMessage(action: AccountAction): Int = when (action) {
     AccountAction.REFRESH_SESSION -> R.string.msg_failed_session
     AccountAction.CHANGE_PASSWORD -> R.string.msg_failed_password
     AccountAction.REVOKE_OTHER_SESSIONS -> R.string.msg_failed_revoke
+    AccountAction.CHANGE_EMAIL -> R.string.msg_failed_change_email
     AccountAction.REQUEST_ACCOUNT_DELETION -> R.string.msg_failed_deletion_code
     AccountAction.DELETE_ACCOUNT -> R.string.msg_failed_delete_account
 }

@@ -29,6 +29,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import club.leanmuscle.boji.R
 import club.leanmuscle.boji.core.membership.AccountState
+import club.leanmuscle.boji.core.membership.EmailRules
 import club.leanmuscle.boji.core.membership.PasswordRules
 import club.leanmuscle.boji.ui.components.BojiCard
 import club.leanmuscle.boji.ui.components.BojiScaffold
@@ -39,12 +40,15 @@ import kotlinx.coroutines.launch
 
 const val SECURITY_SCREEN_TAG = "account_security_screen"
 const val DELETE_ACCOUNT_TAG = "delete_account"
+const val CHANGE_EMAIL_TAG = "change_email"
+const val NEW_EMAIL_TAG = "new_email"
 
 @Composable
 fun AccountSecurityScreen(onBack: () -> Unit, modifier: Modifier = Modifier, viewModel: SecurityViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val busy by viewModel.busy.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
+    val pendingEmail by viewModel.pendingEmail.collectAsStateWithLifecycle()
     val credentials = rememberPasswordCredentials()
     val scope = rememberCoroutineScope()
 
@@ -64,6 +68,14 @@ fun AccountSecurityScreen(onBack: () -> Unit, modifier: Modifier = Modifier, vie
                     stringResource(if (account.emailVerified) R.string.security_email_verified else R.string.security_email_unverified),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                ChangeEmailControls(
+                    currentEmail = account.email,
+                    emailVerified = account.emailVerified,
+                    pendingEmail = pendingEmail,
+                    busy = busy,
+                    onSubmit = viewModel::changeEmail,
+                    onCheck = viewModel::checkEmailChange,
                 )
             }
             SectionHeading(stringResource(R.string.security_session), null)
@@ -185,6 +197,83 @@ private fun RevokeOthersButton(busy: Boolean, onConfirm: () -> Unit) {
                 }) { Text(stringResource(R.string.security_revoke_action)) }
             },
             dismissButton = { TextButton(onClick = { confirming = false }) { Text(stringResource(R.string.action_cancel)) } },
+        )
+    }
+}
+
+/**
+ * The email change: the server mails the current address first, then the new address. The page
+ * keeps the new address until the session shows it.
+ */
+@Composable
+private fun ChangeEmailControls(
+    currentEmail: String,
+    emailVerified: Boolean,
+    pendingEmail: String?,
+    busy: Boolean,
+    onSubmit: (newEmail: String, onRequested: () -> Unit) -> Unit,
+    onCheck: () -> Unit,
+) {
+    var editing by rememberSaveable { mutableStateOf(false) }
+    var newEmail by rememberSaveable { mutableStateOf("") }
+    val candidate = newEmail.trim()
+    val ready = EmailRules.isValid(candidate) && !candidate.equals(currentEmail, ignoreCase = true)
+
+    if (pendingEmail != null) {
+        HorizontalDivider(Modifier.padding(vertical = 8.dp))
+        InfoRow(stringResource(R.string.security_pending_email), pendingEmail)
+        Text(
+            stringResource(R.string.security_change_email_pending, currentEmail),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        OutlinedButton(
+            onClick = onCheck,
+            enabled = !busy,
+            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+        ) { Text(stringResource(R.string.security_check_email_change)) }
+    }
+    OutlinedButton(
+        onClick = { editing = true },
+        enabled = !busy && emailVerified,
+        modifier = Modifier.fillMaxWidth().padding(top = 12.dp).testTag(CHANGE_EMAIL_TAG),
+    ) { Text(stringResource(R.string.security_change_email)) }
+    if (!emailVerified) {
+        Text(
+            stringResource(R.string.security_change_email_unverified),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    if (editing) {
+        AlertDialog(
+            onDismissRequest = { editing = false },
+            title = { Text(stringResource(R.string.security_change_email_title)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(stringResource(R.string.security_change_email_text))
+                    AccountField(
+                        value = newEmail,
+                        onValueChange = { newEmail = it },
+                        label = stringResource(R.string.security_new_email),
+                        kind = FieldKind.EMAIL,
+                        enabled = !busy,
+                        imeAction = ImeAction.Done,
+                        modifier = Modifier.testTag(NEW_EMAIL_TAG),
+                    )
+                }
+            },
+            confirmButton = {
+                // The dialog closes first, so that the page shows the result message.
+                TextButton(
+                    onClick = {
+                        editing = false
+                        onSubmit(candidate) { newEmail = "" }
+                    },
+                    enabled = ready && !busy,
+                ) { Text(stringResource(R.string.security_change_email_submit)) }
+            },
+            dismissButton = { TextButton(onClick = { editing = false }) { Text(stringResource(R.string.action_cancel)) } },
         )
     }
 }

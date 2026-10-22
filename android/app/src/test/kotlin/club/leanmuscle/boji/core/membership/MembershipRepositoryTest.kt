@@ -1,5 +1,6 @@
 package club.leanmuscle.boji.core.membership
 
+import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.CHANGE_EMAIL
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.CHANGE_PASSWORD
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.CREATE_MEMBERSHIP
 import club.leanmuscle.boji.core.membership.FakeMemberServer.Companion.DELETE_USER
@@ -488,6 +489,80 @@ class MembershipRepositoryTest {
         assertTrue(request.jsonBody().isEmpty())
         assertEquals("tok-1", h.sessions.current()?.token)
         assertEquals("000042", signedIn(h.repository.state.value).card?.memberNumber)
+        h.close()
+    }
+
+    @Test
+    fun changingTheEmailWaitsUntilTheSessionShowsTheNewAddress() = runTest {
+        serveSignedInAccount(membership())
+        server.on(CHANGE_EMAIL) { json("""{"status":true}""") }
+        val h = harness()
+        h.seed(h.storedSession(), card = h.cardOf(membership()))
+        h.awaitRestore()
+
+        assertEquals(
+            AccountMessage.EmailChangeRequested(currentEmail = FakeMemberServer.EMAIL, newEmail = "New@Example.com"),
+            h.repository.changeEmail("  New@Example.com "),
+        )
+        val request = server.requests(CHANGE_EMAIL).single()
+        assertEquals("Bearer tok-1", request.headers["Authorization"])
+        assertEquals("New@Example.com", request.jsonBody()["newEmail"]?.jsonPrimitive?.content)
+        // The old address has not confirmed yet, so the session keeps it.
+        assertEquals(FakeMemberServer.EMAIL, signedIn(h.repository.state.value).account.email)
+        assertEquals(AccountMessage.EmailChangePending, h.repository.checkEmailChange("New@Example.com"))
+
+        // The server lowercases the address.
+        server.on(GET_SESSION) { json(sessionJson(email = "new@example.com")) }
+        assertEquals(AccountMessage.EmailChanged("new@example.com"), h.repository.checkEmailChange("New@Example.com"))
+        assertEquals("new@example.com", signedIn(h.repository.state.value).account.email)
+        assertEquals("new@example.com", h.sessions.current()?.email)
+        assertEquals("tok-1", h.sessions.current()?.token)
+        h.close()
+    }
+
+    @Test
+    fun emailChangeChecksTheAddressBeforeAnyRequest() = runTest {
+        serveSignedInAccount()
+        val h = harness()
+        h.seed(h.storedSession())
+        h.awaitRestore()
+
+        assertEquals(AccountMessage.SameEmail, h.repository.changeEmail(FakeMemberServer.EMAIL.uppercase()))
+        for (invalid in listOf("not-an-email", "a@b", "two words@example.com", "@example.com", "a@b@example.com")) {
+            assertEquals(invalid, AccountMessage.InvalidNewEmail, h.repository.changeEmail(invalid))
+        }
+        assertTrue(server.requests(CHANGE_EMAIL).isEmpty())
+        h.close()
+    }
+
+    @Test
+    fun emailChangeNeedsAVerifiedEmail() = runTest {
+        server.on(GET_SESSION) { json(sessionJson(emailVerified = false)) }
+        val h = harness()
+        h.seed(h.storedSession(emailVerified = false))
+        h.awaitRestore()
+
+        assertEquals(AccountMessage.VerifyEmailBeforeChange, h.repository.changeEmail("new@example.com"))
+        assertTrue(server.requests(CHANGE_EMAIL).isEmpty())
+        h.close()
+    }
+
+    @Test
+    fun rejectedEmailChangeKeepsTheSession() = runTest {
+        serveSignedInAccount()
+        val h = harness()
+        h.seed(h.storedSession())
+        h.awaitRestore()
+
+        server.on(CHANGE_EMAIL) { json("""{"code":"CHANGE_EMAIL_DISABLED","message":"x"}""", code = 400) }
+        assertEquals(AccountMessage.EmailChangeDisabled, h.repository.changeEmail("new@example.com"))
+        server.on(CHANGE_EMAIL) { json("""{"message":"Email is the same"}""", code = 400) }
+        assertEquals(AccountMessage.EmailChangeRejected, h.repository.changeEmail("new@example.com"))
+        server.on(CHANGE_EMAIL) { json("""{"code":"TOO_MANY_REQUESTS"}""", code = 429) }
+        assertEquals(AccountMessage.TooManyRequests, h.repository.changeEmail("new@example.com"))
+
+        assertEquals("tok-1", h.sessions.current()?.token)
+        assertEquals(FakeMemberServer.EMAIL, signedIn(h.repository.state.value).account.email)
         h.close()
     }
 

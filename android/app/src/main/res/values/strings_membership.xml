@@ -183,6 +183,15 @@
     <string name="security_email">Email</string>
     <string name="security_email_verified">Email verified</string>
     <string name="security_email_unverified">Email not verified</string>
+    <string name="security_change_email">Change Sign-In Email</string>
+    <string name="security_pending_email">Pending New Email</string>
+    <string name="security_change_email_unverified">Verify your current email before you change it.</string>
+    <string name="security_change_email_pending">Open the link in %1$s first, then the link in the new email. Until then, sign in with %1$s.</string>
+    <string name="security_check_email_change">Check Email Change</string>
+    <string name="security_change_email_title">Change Sign-In Email?</string>
+    <string name="security_change_email_text">Your current email gets a confirmation link first. After you open it, the new email gets a verification link. The change takes effect after you open both links.</string>
+    <string name="security_new_email">New Email</string>
+    <string name="security_change_email_submit">Send Confirmation Email</string>
     <string name="security_session">Current Session</string>
     <string name="security_signed_in_at">Signed In</string>
     <string name="security_expires_at">Expires</string>
@@ -268,6 +277,14 @@
     <string name="msg_nickname_rejected">The member service didn’t accept this nickname. Change it and try again.</string>
     <string name="msg_too_many_requests">Too many attempts. Try again later.</string>
     <string name="msg_wrong_current_password">The current password is incorrect. Enter it again.</string>
+    <string name="msg_email_change_requested">The request is sent. If the new email can be used, %1$s gets a confirmation link.</string>
+    <string name="msg_email_changed">Your sign-in email is now %1$s.</string>
+    <string name="msg_email_change_pending">The change isn’t complete yet. Open the links in both emails, then check again.</string>
+    <string name="msg_invalid_new_email">Enter a valid new email.</string>
+    <string name="msg_same_email">The new email is the same as the current email.</string>
+    <string name="msg_verify_before_email_change">Verify your current email before you change it.</string>
+    <string name="msg_email_change_disabled">The service doesn’t support email changes yet.</string>
+    <string name="msg_email_change_rejected">Can’t change to this email. Check the address and try again.</string>
     <string name="msg_no_email_password">This account has no email password. Use the sign-in method you used before.</string>
     <string name="msg_session_not_fresh">Sign in again, then retry this action.</string>
     <string name="msg_session_expired">Your session expired. Sign in again.</string>
@@ -283,6 +300,7 @@
     <string name="msg_network_session">Can’t reach the sign-in service, so the session can’t be confirmed right now.</string>
     <string name="msg_network_password">The password change isn’t confirmed. Check your network, and reset your password if needed.</string>
     <string name="msg_network_revoke">Signing out other sessions isn’t confirmed. Try again later.</string>
+    <string name="msg_network_change_email">Can’t reach the sign-in service, so the email can’t be changed right now.</string>
     <string name="msg_failed_refresh">Can’t update the membership. Try again later.</string>
     <string name="msg_failed_sign_in">Sign-in failed. Check your email and password.</string>
     <string name="msg_failed_google">Google sign-in didn’t finish. Try again later.</string>
@@ -298,6 +316,7 @@
     <string name="msg_failed_session">Can’t confirm the current session. Refresh and try again.</string>
     <string name="msg_failed_password">The password change isn’t confirmed. Check your current password or reset it.</string>
     <string name="msg_failed_revoke">Can’t sign out other sessions right now.</string>
+    <string name="msg_failed_change_email">Can’t change the email. Try again later.</string>
     <string name="msg_deletion_code_sent">A confirmation code is on its way to your email.</string>
     <string name="msg_account_deleted">Your account is deleted. Your local records stay on this device.</string>
     <string name="msg_deletion_code_required">Paste the confirmation code from the email first.</string>

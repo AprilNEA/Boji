@@ -122,6 +122,15 @@ class MembershipRepository @Inject constructor(
 
     suspend fun revokeOtherSessions(): AccountMessage? = operation { revokeOtherSessionsNow() }
 
+    /**
+     * Requests an email change. The server mails a confirmation link to the current address, and a
+     * verification link to the new address after that; see bizserver/docs/migration-auth.md.
+     */
+    suspend fun changeEmail(newEmail: String): AccountMessage? = operation { changeEmailNow(newEmail) }
+
+    /** Confirms the session again and reports whether it shows [newEmail] now. */
+    suspend fun checkEmailChange(newEmail: String): AccountMessage? = operation { checkEmailChangeNow(newEmail) }
+
     /** Asks the server to email a confirmation code for deleting the account. */
     suspend fun requestAccountDeletion(): AccountMessage? = operation { requestAccountDeletionNow() }
 
@@ -364,6 +373,37 @@ class MembershipRepository @Inject constructor(
             AccountMessage.OtherSessionsRevoked
         } catch (e: MemberApiError) {
             handle(e, AccountAction.REVOKE_OTHER_SESSIONS)
+        }
+    }
+
+    private suspend fun changeEmailNow(rawEmail: String): AccountMessage {
+        val newEmail = rawEmail.trim()
+        if (!EmailRules.isValid(newEmail)) return AccountMessage.InvalidNewEmail
+        if (origin == null) return AccountMessage.NotConfigured
+        val stored = readSession() ?: return AccountMessage.SignInRequired
+        if (!stored.emailVerified) return AccountMessage.VerifyEmailBeforeChange
+        if (newEmail.equals(stored.email, ignoreCase = true)) return AccountMessage.SameEmail
+        return try {
+            service.auth().withSession(stored.token).changeEmail(newEmail).getOrThrowMemberError().requireSuccess()
+            AccountMessage.EmailChangeRequested(currentEmail = stored.email, newEmail = newEmail)
+        } catch (e: MemberApiError) {
+            when {
+                e.serverCode == "CHANGE_EMAIL_DISABLED" -> AccountMessage.EmailChangeDisabled
+                e is MemberApiError.Http && (e.status == 400 || e.status == 422) -> AccountMessage.EmailChangeRejected
+                else -> handle(e, AccountAction.CHANGE_EMAIL)
+            }
+        }
+    }
+
+    private suspend fun checkEmailChangeNow(newEmail: String): AccountMessage {
+        if (origin == null) return AccountMessage.NotConfigured
+        val stored = readSession() ?: return AccountMessage.SignInRequired
+        val (confirmed, problem) = confirmSession(stored, AccountAction.REFRESH_SESSION)
+        if (confirmed == null) return problem ?: AccountMessage.Failed(AccountAction.REFRESH_SESSION)
+        return if (confirmed.email.equals(newEmail, ignoreCase = true)) {
+            AccountMessage.EmailChanged(confirmed.email)
+        } else {
+            AccountMessage.EmailChangePending
         }
     }
 

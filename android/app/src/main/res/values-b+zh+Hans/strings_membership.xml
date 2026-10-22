@@ -176,6 +176,15 @@
     <string name="security_email">邮箱</string>
     <string name="security_email_verified">邮箱已验证</string>
     <string name="security_email_unverified">邮箱尚未验证</string>
+    <string name="security_change_email">更换登录邮箱</string>
+    <string name="security_pending_email">待生效的新邮箱</string>
+    <string name="security_change_email_unverified">验证当前邮箱后，才能更换登录邮箱。</string>
+    <string name="security_change_email_pending">先打开 %1$s 收到的确认链接，再打开新邮箱收到的验证链接。在此之前，继续用 %1$s 登录。</string>
+    <string name="security_check_email_change">检查更换结果</string>
+    <string name="security_change_email_title">更换登录邮箱？</string>
+    <string name="security_change_email_text">当前邮箱会先收到确认链接。你打开后，新邮箱会收到验证链接。两个链接都打开后，更换才会生效。</string>
+    <string name="security_new_email">新邮箱</string>
+    <string name="security_change_email_submit">发送确认邮件</string>
     <string name="security_session">当前会话</string>
     <string name="security_signed_in_at">登录时间</string>
     <string name="security_expires_at">到期时间</string>
@@ -261,6 +270,14 @@
     <string name="msg_nickname_rejected">会员服务没有接受这个昵称，请修改后重试。</string>
     <string name="msg_too_many_requests">操作过于频繁，请稍后再试。</string>
     <string name="msg_wrong_current_password">当前密码不正确，请重新输入。</string>
+    <string name="msg_email_change_requested">更换申请已提交。如果新邮箱可以使用，%1$s 会收到确认链接。</string>
+    <string name="msg_email_changed">登录邮箱已更新为 %1$s。</string>
+    <string name="msg_email_change_pending">更换尚未生效。请打开两封邮件中的链接后再检查。</string>
+    <string name="msg_invalid_new_email">请输入有效的新邮箱。</string>
+    <string name="msg_same_email">新邮箱与当前邮箱相同。</string>
+    <string name="msg_verify_before_email_change">请先验证当前邮箱，再更换邮箱。</string>
+    <string name="msg_email_change_disabled">服务暂不支持更换邮箱。</string>
+    <string name="msg_email_change_rejected">无法更换为这个邮箱，请检查邮箱地址后重试。</string>
     <string name="msg_no_email_password">此账号尚未设置邮箱密码，请使用原登录方式。</string>
     <string name="msg_session_not_fresh">此操作需要重新登录后再试。</string>
     <string name="msg_session_expired">登录已失效，请重新登录。</string>
@@ -276,6 +293,7 @@
     <string name="msg_network_session">无法连接认证服务，暂时无法确认会话。</string>
     <string name="msg_network_password">密码修改结果未确认。请检查网络，必要时使用密码找回。</string>
     <string name="msg_network_revoke">其他会话的退出结果未确认，请稍后重试。</string>
+    <string name="msg_network_change_email">无法连接认证服务，暂时无法更换邮箱。</string>
     <string name="msg_failed_refresh">无法更新会员信息，请稍后重试。</string>
     <string name="msg_failed_sign_in">登录失败，请检查邮箱和密码。</string>
     <string name="msg_failed_google">Google 登录未完成，请稍后重试。</string>
@@ -291,6 +309,7 @@
     <string name="msg_failed_session">无法确认当前登录会话，请刷新后重试。</string>
     <string name="msg_failed_password">密码修改未确认，请检查当前密码或使用密码找回。</string>
     <string name="msg_failed_revoke">暂时无法退出其他登录会话。</string>
+    <string name="msg_failed_change_email">更换邮箱失败，请稍后重试。</string>
     <string name="msg_deletion_code_sent">确认码已发送到你的邮箱。</string>
     <string name="msg_account_deleted">账号已删除。本机记录仍保留在这台设备上。</string>
     <string name="msg_deletion_code_required">请先粘贴邮件中的确认码。</string>

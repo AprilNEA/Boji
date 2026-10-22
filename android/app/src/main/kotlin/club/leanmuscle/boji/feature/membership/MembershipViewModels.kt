@@ -155,7 +155,16 @@ class EnrollViewModel @Inject constructor(
 }
 
 @HiltViewModel
-class SecurityViewModel @Inject constructor(repository: MembershipRepository) : AccountViewModel(repository) {
+class SecurityViewModel @Inject constructor(
+    repository: MembershipRepository,
+    private val savedState: SavedStateHandle,
+) : AccountViewModel(repository) {
+
+    /**
+     * The new address of a requested email change. It survives process death, because the user
+     * leaves the app to open both links.
+     */
+    val pendingEmail: StateFlow<String?> = savedState.getStateFlow(KEY_PENDING_EMAIL, null)
 
     fun refreshSession() = launchAction(repository::refreshSession)
 
@@ -164,8 +173,27 @@ class SecurityViewModel @Inject constructor(repository: MembershipRepository) : 
 
     fun revokeOtherSessions() = launchAction(repository::revokeOtherSessions)
 
+    fun changeEmail(newEmail: String, onRequested: () -> Unit) =
+        launchAction({ repository.changeEmail(newEmail) }) {
+            if (it is AccountMessage.EmailChangeRequested) {
+                savedState[KEY_PENDING_EMAIL] = it.newEmail
+                onRequested()
+            }
+        }
+
+    fun checkEmailChange() {
+        val newEmail = pendingEmail.value ?: return
+        launchAction({ repository.checkEmailChange(newEmail) }) {
+            if (it is AccountMessage.EmailChanged) savedState[KEY_PENDING_EMAIL] = null
+        }
+    }
+
     fun requestAccountDeletion(onSent: () -> Unit) =
         launchAction(repository::requestAccountDeletion) { if (!it.isError) onSent() }
 
     fun deleteAccount(code: String) = launchAction({ repository.deleteAccount(code) })
+
+    private companion object {
+        const val KEY_PENDING_EMAIL = "pendingEmail"
+    }
 }

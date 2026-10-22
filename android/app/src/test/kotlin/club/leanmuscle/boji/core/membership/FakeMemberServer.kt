@@ -61,6 +61,7 @@ class FakeMemberServer : Closeable {
         const val GET_SERVER_CONFIG = "/boji.v1.SystemService/GetServerConfig"
         const val GET_SESSION = "/api/auth/get-session"
         const val CHANGE_PASSWORD = "/api/auth/change-password"
+        const val CHANGE_EMAIL = "/api/auth/change-email"
         const val DELETE_USER = "/api/auth/delete-user"
         const val LIST_MEMBERSHIPS = "/boji.v1.MembershipService/ListMemberships"
         const val CREATE_MEMBERSHIP = "/boji.v1.MembershipService/CreateMembership"
@@ -107,6 +108,7 @@ class FakeMemberServer : Closeable {
             userId: String = USER_ID,
             emailVerified: Boolean = true,
             expiresAt: String = "2026-11-20T08:00:00.000Z",
+            email: String = EMAIL,
         ): String = """
             {
               "session": {
@@ -118,7 +120,7 @@ class FakeMemberServer : Closeable {
               },
               "user": {
                 "id": "$userId",
-                "email": "$EMAIL",
+                "email": "$email",
                 "name": "小林",
                 "emailVerified": $emailVerified,
                 "image": null

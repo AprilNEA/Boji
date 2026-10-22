@@ -59,6 +59,7 @@ enum class AccountAction {
     REFRESH_SESSION,
     CHANGE_PASSWORD,
     REVOKE_OTHER_SESSIONS,
+    CHANGE_EMAIL,
     REQUEST_ACCOUNT_DELETION,
     DELETE_ACCOUNT,
 }
@@ -88,6 +89,13 @@ sealed interface AccountMessage {
     data object PasswordChanged : Notice
     data object PasswordChangedSignInAgain : Notice
     data object OtherSessionsRevoked : Notice
+
+    /** The server accepted the request. It sends nothing when another account owns [newEmail]. */
+    data class EmailChangeRequested(val currentEmail: String, val newEmail: String) : Notice
+    data class EmailChanged(val email: String) : Notice
+
+    /** The session still shows the old email: the user has not opened both links yet. */
+    data object EmailChangePending : Notice
     data object DeletionCodeSent : Notice
     data object AccountDeleted : Notice
 
@@ -104,6 +112,11 @@ sealed interface AccountMessage {
     data object PasswordRules : Problem
     data object SamePassword : Problem
     data object PasswordChangedStorageFailed : Problem
+    data object InvalidNewEmail : Problem
+    data object SameEmail : Problem
+    data object VerifyEmailBeforeChange : Problem
+    data object EmailChangeDisabled : Problem
+    data object EmailChangeRejected : Problem
     data object GoogleSignInUnavailable : Problem
     data object GoogleSignInRejected : Problem
     data object GoogleSignInIncomplete : Problem
@@ -136,4 +149,12 @@ object PasswordRules {
     val LENGTH: IntRange = 8..128
 
     fun isValid(password: String): Boolean = password.length in LENGTH
+}
+
+/** A light check of a new email before the request, as on iOS. The server decides the rest. */
+object EmailRules {
+    fun isValid(email: String): Boolean {
+        val parts = email.split('@')
+        return parts.size == 2 && parts[0].isNotEmpty() && '.' in parts[1] && email.none(Char::isWhitespace)
+    }
 }
