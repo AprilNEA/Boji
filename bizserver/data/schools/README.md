@@ -92,4 +92,4 @@ docker run --rm --env-file .env.production ghcr.io/aprilnea/boji-bizserver:<版�
 
 ## 许可证
 
-`hipo.json` 来自 Hipo，按 MIT 许可证提供，版权归 Hipo 所有。提交或分发快照时必须保留 `LICENSE-hipo.txt`。这份数据不适用本仓库的 PolyForm Noncommercial License，根 `README.md` 的许可证排除表列出了它。
+`hipo.json` 来自 Hipo，按 MIT 许可证提供，版权归 Hipo 所有。提交或分发快照时必须保留 `LICENSE-hipo.txt`。这份数据不适用本仓库的 PolyForm Noncommercial License，根 `README.md` 的许可证排除列表列出了它。
