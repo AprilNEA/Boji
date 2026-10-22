@@ -1,0 +1,24 @@
+{
+  "sourceLanguage" : "zh-Hans",
+  "strings" : {
+    "CFBundleDisplayName" : {
+      "comment" : "Widget extension display name.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lean Muscle"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "薄肌"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

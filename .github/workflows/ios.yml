@@ -259,6 +259,11 @@ jobs:
             -exportOptionsPlist "$SIGNING_DIR/ExportOptions.plist" 2>&1 \
             | python3 ios/ci/artifacts.py log --file "$PRIVATE_DIR/logs/export.log"
           test -f "$EXPORT_PATH/Boji.ipa"
+      - name: Validate exported IPA before loading upload credentials
+        run: |
+          python3 ios/ci/store.py upload --ipa "$EXPORT_PATH/Boji.ipa" \
+            --version "$VERSION" --build-number "$BUILD_NUMBER" --commit "$GITHUB_SHA" \
+            --receipt "$RECEIPT_PATH"
       - name: Check 1Password App Store Connect item reference
         env:
           OP_ASC_SECRET_ITEM: ${{ vars.OP_ASC_SECRET_ITEM }}

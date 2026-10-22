@@ -19,6 +19,24 @@
         }
       }
     },
+    "NSHealthUpdateUsageDescription" : {
+      "comment" : "Required HealthKit purpose string. Authorization remains read-only; the app never requests write types.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lean Muscle only reads the health data you allow. It does not save or change data in Apple Health."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "薄肌只读取你授权的健康数据，不向「健康」写入或修改记录。"
+          }
+        }
+      }
+    },
     "NSHealthShareUsageDescription" : {
       "comment" : "HealthKit read permission prompt.",
       "extractionState" : "manual",

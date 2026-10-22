@@ -158,7 +158,7 @@ Sentry 在这套流程中保持关闭。启用应用崩溃上报需要另行审�
 
 先将目标提交合并到 `master`。`testflight` 模式会在同次运行中重新执行 CI。两个 CI job 都通过后，才允许进入签名和上传。输入版本必须与 `ios/project.yml` 和 `app-store/project.json` 一致。
 
-输入一个尚未使用的构建号，例如 `8`。脚本不会自动改变营销版本。允许的构建号使用 Apple 数字版本格式。
+先查询 Apple 中的构建及上传记录。再输入未使用的构建号。脚本不会自动改变营销版本。允许的构建号使用 Apple 数字版本格式。
 
 操作顺序：
 
@@ -173,10 +173,13 @@ Sentry 在这套流程中保持关闭。启用应用崩溃上报需要另行审�
 1. `Prepare signing certificates and profiles` 校验并安装签名材料。
 2. `Archive signed iOS app` 直接执行 `xcodebuild archive`。
 3. `Export IPA` 直接执行 `xcodebuild -exportArchive`。
-4. `Upload IPA to App Store Connect and wait for processing` 上传并等待处理。
-5. 加密保存诊断产物，再清理签名材料和明文文件。
+4. `Validate exported IPA before loading upload credentials` 离线检查最终 IPA，不读取上传密钥。
+5. `Upload IPA to App Store Connect and wait for processing` 上传并等待处理。
+6. 加密保存诊断产物，再清理签名材料和明文文件。
 
 `signing.py` 不再执行构建或上传。它只负责参数校验、签名准备和清理。`Export IPA` 生成 `$RUNNER_TEMP/boji-export/Boji.ipa`。上传仍使用 `store.py` 的精确构建校验和防重传规则。
+
+预检读取 IPA 内三个产品的最终 `Info.plist`。它检查读取和更新两项健康用途说明，以及三个产品的显示名称。它也检查 iPad 四方向、Watch 图标名称和资源。Xcode 27 的 Watch 图标可只存在于 `Assets.car` 中。此时仍须有 `CFBundleIconName`，不能仅凭资源目录通过检查。这些检查不能替代 Apple 的服务端校验。
 
 上传前会查询相同版本和构建号。已有构建时停止，不重复上传。若上传超时，先去 Apple 后台确认结果。不要直接点击重新运行，也不要用新构建号掩盖不明状态。
 
@@ -187,6 +190,8 @@ Sentry 在这套流程中保持关闭。启用应用崩溃上报需要另行审�
 ## 查看构建诊断
 
 正式构建的完整日志不进入公开控制台。控制台只显示编译错误位置等有限信息。日志记录失败或构建失败都会使对应步骤失败。工作流不会因日志管道而忽略构建退出码。
+
+`asc` 失败时，脚本把标准输出和错误输出写入私有诊断目录。文件名为 `logs/asc-<随机标识>.stdout.log` 和对应的 `.stderr.log`，权限为 `0600`。只有 `artifacts.py prepare` 已准备的目录能接收日志。控制台不输出这些内容；后续步骤将其一并加密。没有有效私有目录时，脚本不在其他位置保存输出。
 
 工作流将原始日志和 dSYM 打包并加密。密文产物名为 `ios-release-evidence-<run-id>-<attempt>`，保留 90 天。内容不包含 IPA、签名文件或整个归档。构建失败时，工作流仍会尝试保存已有日志。
 
@@ -200,7 +205,7 @@ Sentry 在这套流程中保持关闭。启用应用崩溃上报需要另行审�
 gpg --output release-evidence.tar --decrypt release-evidence.tar.gpg
 ```
 
-解密后的日志和符号文件不得进入 Git 或公开工单。本轮没有创建正式加密密钥，也没有配置环境变量。加密留存仍需在托管 Runner 验收。
+解密后的日志和符号文件不得进入 Git 或公开工单。解密私钥保存在 1Password 管理保险库，不在 CI 可读保险库内。2026-10-23 的首次内测运行已成功上传加密诊断包，但 Apple 拒绝了应用包。
 
 ## 第三层：提交同一构建
 
@@ -281,6 +286,8 @@ git diff --exit-code -- ios/Boji.xcodeproj
 
 ## 当前验证范围
 
+### 2026-10-22：本机回归
+
 2026-10-22（UTC+08:00），在本机 macOS 完成以下验证：
 
 - 71 项 CI/CD 测试通过，含 1Password 作用域和 P8 清理检查。
@@ -303,7 +310,24 @@ GPG 测试只生成一次性测试密钥。测试使用短临时路径，避免 
 
 已人工复核文档结构、操作顺序和发布边界。`zhlint` 未运行成功：本地缓存缺包，联网安装未获执行权限。不能将人工复核当作自动格式校验。
 
-本次修复尚未在 GitHub 托管 Runner 验证。真实分发签名、Apple 上传和正式提审仍未验证。客户端注销的验证记录见 [Better Auth 接入说明](better-auth.md)。
+客户端注销的验证记录见 [Better Auth 接入说明](better-auth.md)。
+
+### 2026-10-23：首次上传后的包校验修复
+
+运行 `39811383220` 的 CI、签名、归档和 IPA 导出成功。Apple 收到 `1.0 (8)` 后，将上传状态设为 `FAILED`。错误码为 `90683`、`90713`、`90360`、`90391`、`90474`。这些错误对应健康用途说明、Watch 图标、Widget 显示名称和 iPad 方向。该运行没有生成可用的 TestFlight 构建。
+
+本机于 2026-10-23 01:35（UTC+08:00）完成以下验证。环境为 macOS、Xcode 27.1（27A9275）、XcodeGen 2.46.0：
+
+- 87 项 CI/CD 回归和 23 项元数据回归通过。
+- `actionlint`、公开元数据检查和 `git diff --check` 通过。
+- iOS/watchOS 设备架构的未签名 Release 构建通过。
+- 设备架构产物封装成测试 ZIP 后，IPA 预检通过。该文件没有签名，也没有上传。
+- `assetutil` 确认 Watch 图标包含名为 `AppIcon` 的 1024 × 1024 图像。最终 plist 使用嵌套图标名称，没有独立 PNG 引用。
+- 三个产品的中英文显示名均已编译。主 App 的两项健康用途说明也已编译。
+- 动画和嵌入产物检查通过，Release 中没有 Debug 动画测试资源。
+- 工程连续生成两次，输出逐字相同。GPG 隔离加密与解密回归通过。
+
+修复后的签名 IPA、Apple 再次接收和 TestFlight 安装仍未验证。正式提审验收项保持关闭；HealthKit 写入授权仍为空。本次修复没有重传旧构建。
 
 ## 参考
 

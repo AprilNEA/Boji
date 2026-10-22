@@ -8,6 +8,7 @@ exact build ID.  This program never prints asc output.
 from __future__ import annotations
 
 import argparse
+import artifacts
 import hashlib
 import importlib
 import ipaddress
@@ -16,6 +17,7 @@ import os
 from pathlib import Path, PurePosixPath
 import plistlib
 import re
+import secrets
 import socket
 import stat
 import subprocess
@@ -61,6 +63,16 @@ IPA_PLISTS = {
     "Payload/Boji.app/PlugIns/BojiWidgets.appex/Info.plist": f"{BUNDLE_ID}.widgets",
     "Payload/Boji.app/Watch/BojiWatch.app/Info.plist": f"{BUNDLE_ID}.watchkitapp",
 }
+MAIN_APP_PLIST = "Payload/Boji.app/Info.plist"
+WIDGET_PLIST = "Payload/Boji.app/PlugIns/BojiWidgets.appex/Info.plist"
+WATCH_PLIST = "Payload/Boji.app/Watch/BojiWatch.app/Info.plist"
+WATCH_BUNDLE_ROOT = str(PurePosixPath(WATCH_PLIST).parent)
+REQUIRED_IPAD_ORIENTATIONS = {
+    "UIInterfaceOrientationPortrait",
+    "UIInterfaceOrientationPortraitUpsideDown",
+    "UIInterfaceOrientationLandscapeLeft",
+    "UIInterfaceOrientationLandscapeRight",
+}
 REQUIRED_RECEIPT_FIELDS = {
     "schemaVersion",
     "appId",
@@ -86,7 +98,7 @@ class StoreError(RuntimeError):
 
 
 class AscCommandError(StoreError):
-    """asc exited unsuccessfully; stdout and stderr remain private."""
+    """asc exited unsuccessfully; its output is never sent to CI console output."""
 
 
 class RemoteBuildError(StoreError):
@@ -200,6 +212,113 @@ def _validate_zip_members(archive: zipfile.ZipFile) -> None:
             raise StoreError("IPA 解压后大小超过上限。")
 
 
+def _nonempty_plist_text(value: Any) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+def _require_plist_text(plist: dict[str, Any], key: str, bundle: str) -> None:
+    if not _nonempty_plist_text(plist.get(key)):
+        raise StoreError(f"IPA 的{bundle}缺少非空 {key}。")
+
+
+def _watch_icon_sources(watch: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return supported top-level and primary-icon dictionaries from final Info.plist."""
+    sources = [watch]
+    icons = watch.get("CFBundleIcons")
+    if icons is None:
+        return sources
+    if not isinstance(icons, dict):
+        raise StoreError("IPA 的 Watch 图标配置 CFBundleIcons 无效。")
+    primary = icons.get("CFBundlePrimaryIcon")
+    if primary is None:
+        return sources
+    if not isinstance(primary, dict):
+        raise StoreError("IPA 的 Watch 图标配置 CFBundlePrimaryIcon 无效。")
+    sources.append(primary)
+    return sources
+
+
+def _watch_icon_file_references(sources: list[dict[str, Any]]) -> list[str]:
+    references: list[str] = []
+    for source in sources:
+        value = source.get("CFBundleIconFiles")
+        if value is None:
+            continue
+        if not isinstance(value, list) or not value or not all(_nonempty_plist_text(item) for item in value):
+            raise StoreError("IPA 的 Watch 图标配置 CFBundleIconFiles 无效。")
+        references.extend(item.strip() for item in value)
+    return references
+
+
+def _watch_icon_names(sources: list[dict[str, Any]]) -> list[str]:
+    names: list[str] = []
+    for source in sources:
+        value = source.get("CFBundleIconName")
+        if value is None:
+            continue
+        if not _nonempty_plist_text(value):
+            raise StoreError("IPA 的 Watch 缺少非空 CFBundleIconName。")
+        names.append(value.strip())
+    if not names:
+        raise StoreError("IPA 的 Watch 缺少非空 CFBundleIconName。")
+    return names
+
+
+def _watch_icon_resource_exists(archive: zipfile.ZipFile, references: list[str]) -> bool:
+    """Check raw icon files, or a compiled catalog after its Info.plist references passed."""
+    members = set(archive.namelist())
+    prefix = f"{WATCH_BUNDLE_ROOT}/"
+    resolved: list[bool] = []
+    for reference in references:
+        relative = PurePosixPath(reference)
+        if relative.is_absolute() or ".." in relative.parts or relative.name in {"", "."}:
+            raise StoreError("IPA 的 Watch 图标资源引用不安全。")
+        expected = f"{prefix}{relative}"
+        candidates = {expected}
+        if not relative.suffix:
+            candidates.add(f"{expected}.png")
+            candidates.add(f"{expected}@2x.png")
+            candidates.add(f"{expected}@3x.png")
+        resolved.append(any(
+            candidate in members and archive.getinfo(candidate).file_size > 0
+            for candidate in candidates
+        ))
+
+    # Xcode 27 can place the referenced Watch icon renditions in Assets.car.
+    # Icon Composer output has a primary icon name but can omit CFBundleIconFiles.
+    # The caller requires CFBundleIconName before accepting a compiled catalog.
+    catalog = f"{prefix}Assets.car"
+    if catalog in members and archive.getinfo(catalog).file_size > 0:
+        return True
+    return bool(resolved) and all(resolved)
+
+
+def _validate_product_metadata(archive: zipfile.ZipFile, plists: dict[str, dict[str, Any]]) -> None:
+    """Validate App Store metadata in final bundles without using HealthKit APIs."""
+    main = plists[MAIN_APP_PLIST]
+    widget = plists[WIDGET_PLIST]
+    watch = plists[WATCH_PLIST]
+
+    for key in ("NSHealthShareUsageDescription", "NSHealthUpdateUsageDescription"):
+        # This confirms only the signed IPA's privacy-purpose text. It never
+        # reads HealthKit data or changes any user's HealthKit authorization.
+        _require_plist_text(main, key, "主 App")
+    for plist, bundle in ((main, "主 App"), (widget, "Widget"), (watch, "Watch")):
+        _require_plist_text(plist, "CFBundleDisplayName", bundle)
+
+    orientations = main.get("UISupportedInterfaceOrientations~ipad")
+    if (not isinstance(orientations, list)
+            or not all(isinstance(item, str) for item in orientations)
+            or not REQUIRED_IPAD_ORIENTATIONS.issubset(orientations)):
+        raise StoreError("IPA 的主 App 缺少 iPad 四方向 UISupportedInterfaceOrientations~ipad。")
+
+    sources = _watch_icon_sources(watch)
+    _watch_icon_names(sources)
+    references = _watch_icon_file_references(sources)
+    if not _watch_icon_resource_exists(archive, references):
+        raise StoreError("IPA 的 Watch 缺少已引用的图标资源。")
+
+
 def inspect_ipa(path: Path, version: str, build_number: str) -> str:
     """Verify the main app and both embedded product bundles before upload."""
     _validate_ipa_file(path)
@@ -209,6 +328,7 @@ def inspect_ipa(path: Path, version: str, build_number: str) -> str:
             names = set(archive.namelist())
             if not set(IPA_PLISTS).issubset(names):
                 raise StoreError("IPA 缺少主 App、Widget 或 Watch 的 Info.plist。")
+            plists: dict[str, dict[str, Any]] = {}
             for plist_name, expected_bundle_id in IPA_PLISTS.items():
                 try:
                     value = plistlib.loads(archive.read(plist_name))
@@ -222,6 +342,8 @@ def inspect_ipa(path: Path, version: str, build_number: str) -> str:
                     raise StoreError("IPA 的版本号与请求版本不一致。")
                 if value.get("CFBundleVersion") != build_number:
                     raise StoreError("IPA 的构建号与请求构建号不一致。")
+                plists[plist_name] = value
+            _validate_product_metadata(archive, plists)
     except zipfile.BadZipFile as exc:
         raise StoreError("IPA 不是有效 ZIP 归档。") from exc
     except OSError as exc:
@@ -268,6 +390,67 @@ def _write_private_key(path: Path, private_key: str) -> None:
         stream.write(private_key)
 
 
+def _is_private_directory(path: Path) -> bool:
+    try:
+        details = path.lstat()
+    except OSError:
+        return False
+    if not stat.S_ISDIR(details.st_mode) or stat.S_IMODE(details.st_mode) != 0o700:
+        return False
+    return not hasattr(os, "getuid") or details.st_uid == os.getuid()
+
+
+def _prepared_private_logs() -> Path | None:
+    """Return artifacts.py's prepared log directory, or fail closed and silently."""
+    raw_directory = os.environ.get("PRIVATE_DIR")
+    if not raw_directory:
+        return None
+    directory = Path(raw_directory)
+    if not directory.is_absolute() or not _is_private_directory(directory):
+        return None
+    logs = directory / "logs"
+    gnupg = directory / "gnupg"
+    recipient = directory / artifacts.FINGERPRINT_NAME
+    if not _is_private_directory(logs) or not _is_private_directory(gnupg):
+        return None
+    try:
+        details = recipient.lstat()
+    except OSError:
+        return None
+    if (
+        not stat.S_ISREG(details.st_mode)
+        or stat.S_IMODE(details.st_mode) != 0o600
+        or (hasattr(os, "getuid") and details.st_uid != os.getuid())
+    ):
+        return None
+    try:
+        flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+        descriptor = os.open(recipient, flags)
+        with os.fdopen(descriptor, "rb") as stream:
+            fingerprint = stream.read(128).decode("ascii").strip()
+    except (OSError, UnicodeError):
+        return None
+    if not artifacts.FINGERPRINT.fullmatch(fingerprint):
+        return None
+    return logs
+
+
+def _write_asc_failure_logs(stdout: Any, stderr: Any) -> None:
+    """Keep failed asc output in prepared encrypted evidence, never in console output."""
+    logs = _prepared_private_logs()
+    if logs is None:
+        return
+    token = secrets.token_hex(16)
+    try:
+        for stream_name, value in (("stdout", stdout), ("stderr", stderr)):
+            data = value.encode("utf-8", "backslashreplace") if isinstance(value, str) else b""
+            with artifacts.private_file(logs / f"asc-{token}.{stream_name}.log") as stream:
+                stream.write(data)
+    except (OSError, UnicodeError, artifacts.ArtifactError):
+        # Diagnostics must not change asc's result or disclose a path/error.
+        return
+
+
 def run_asc(arguments: list[str]) -> str:
     """Run asc privately.  Callers must never print the returned string."""
     try:
@@ -292,7 +475,9 @@ def run_asc(arguments: list[str]) -> str:
     except OSError as exc:
         raise AscCommandError("asc 无法启动。") from exc
     if result.returncode != 0:
-        raise AscCommandError("asc 操作失败。")
+        _write_asc_failure_logs(result.stdout, result.stderr)
+        code = result.returncode if isinstance(result.returncode, int) else "未知"
+        raise AscCommandError(f"asc 私有命令失败（退出码 {code}）。")
     return result.stdout
 
 
@@ -430,7 +615,8 @@ def upload(ipa: Path, version: str, build_number: str, commit: str, receipt_path
         build_id = find_verified_build(version, build_number)
     except (AscCommandError, RemoteBuildError) as exc:
         raise StoreError(
-            "上传或处理未能确认成功；脚本没有自动重传。请在 App Store Connect 人工回查该版本和构建号。"
+            "上传或处理未能确认成功；脚本没有自动重传。"
+            "请检查加密诊断中的 asc 日志，并在 App Store Connect 回查该版本和构建号。"
         ) from exc
 
     receipt = {

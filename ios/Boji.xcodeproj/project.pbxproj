@@ -27,6 +27,7 @@
 		2A270EB8EBE2CB77EDF2F525 /* TrainingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5C69E187FD17A2705F3713 /* TrainingView.swift */; };
 		2D3C6DD55721463172DA1E0D /* HealthConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458A3077F92019074E88F6CF /* HealthConnectionView.swift */; };
 		31535C827E616094DCECA3E8 /* AccountDeletionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A73CF5CAD8690274053AB8 /* AccountDeletionView.swift */; };
+		3212A9162BCE0A4D0783AAC4 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 559E32ADE93BAC9FEFAF3107 /* AppIcon.icon */; };
 		352016E5B270E99C0DA6E065 /* MembershipRPCFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52902C7BFFB3D07FB320C4F9 /* MembershipRPCFixtures.swift */; };
 		3B0A9512235FB99171894270 /* BojiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F4EEA7892D89748155D924 /* BojiUITests.swift */; };
 		40613947F1DBA770A474CF9B /* BojiWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 661AE16B78FF2F30E57965DC /* BojiWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -70,6 +71,7 @@
 		CC1037D29706935C780AE46D /* Shared.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D9FCBE76E0C8017D6AB44D93 /* Shared.xcstrings */; };
 		CDB72F7C2DBE92403FC9DB0B /* LegalDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9E35155AD090D46105762 /* LegalDocument.swift */; };
 		CDE9CB1C2BD58BCD11ED7F57 /* EntrySheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8402B1E44C2D1E89E8CF0193 /* EntrySheets.swift */; };
+		CF02F545C2F437FF08D458BE /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 3855B4273A5444BEDD1A3079 /* InfoPlist.xcstrings */; };
 		D0F6D9A8C5D1050791CD739C /* BojiHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A437255836A3D9A03C3465FA /* BojiHTTPClient.swift */; };
 		D2A3381C29D34E1D66969FA1 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 8F064198CCCD2086E644CCE1 /* Sentry */; };
 		D59A37A44FF3779D8398C8C3 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 15BEB5076A2624AF34BB855E /* InfoPlist.xcstrings */; };
@@ -167,6 +169,7 @@
 		289FEADA3B5814EB470D4F4B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2AFDF41C9C885E6DDE1070C1 /* AppleIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntegrationTests.swift; sourceTree = "<group>"; };
 		37AD3A872C22D2EEEB321535 /* BojiUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BojiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3855B4273A5444BEDD1A3079 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		3B37D16693B56D0C5C393052 /* CrashReportingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrashReportingTests.swift; sourceTree = "<group>"; };
 		40F9A36CC425B538B13A453D /* MembershipUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipUITests.swift; sourceTree = "<group>"; };
 		43252989887EE4615826FA3F /* MembershipPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipPresentation.swift; sourceTree = "<group>"; };
@@ -255,6 +258,7 @@
 				083B8509767D09C964A00EF6 /* BojiDailyWidget.swift */,
 				80A0A478621B74FB3ACE6C3E /* BojiWidgets.entitlements */,
 				83488134D6C16836BDF6F1A7 /* Info.plist */,
+				3855B4273A5444BEDD1A3079 /* InfoPlist.xcstrings */,
 				D10F7EF26E239B652E0E2AF9 /* Localizable.xcstrings */,
 			);
 			path = BojiWidgets;
@@ -596,6 +600,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF02F545C2F437FF08D458BE /* InfoPlist.xcstrings in Resources */,
 				254BCD51FD325EA2575157A9 /* Localizable.xcstrings in Resources */,
 				1DC1E3341B17EF56315044ED /* Shared.xcstrings in Resources */,
 			);
@@ -618,6 +623,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3212A9162BCE0A4D0783AAC4 /* AppIcon.icon in Resources */,
 				4BE11F2893AB2F064E9D90FB /* InfoPlist.xcstrings in Resources */,
 				25F823C9CE7414E10C816C0C /* Localizable.xcstrings in Resources */,
 				ED8361A9B5DDDAF1961727DA /* Shared.xcstrings in Resources */,
@@ -793,7 +799,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -956,7 +962,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

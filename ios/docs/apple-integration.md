@@ -23,7 +23,7 @@
 3. 使用包含相应能力的签名配置构建。
 4. 在真机主动授权，检查已有样本和空数据场景。
 
-工程已包含 HealthKit entitlement 和 `NSHealthShareUsageDescription`。HealthKit 是可选功能，没有将它设为安装设备的必需能力。[1]
+工程包含 HealthKit entitlement，以及读取和更新两项用途说明。[1] `NSHealthUpdateUsageDescription` 的文案明确不写入健康记录。这项声明满足 Apple 对当前构建的包校验要求。`typesToShare` 仍为空，不申请写入权限。HealthKit 仍是可选功能，不是安装设备的必需能力。
 
 ## 2. Apple 登录
 

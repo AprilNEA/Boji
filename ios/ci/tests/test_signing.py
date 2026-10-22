@@ -148,6 +148,18 @@ class VisibleWorkflowTests(unittest.TestCase):
         self.assertNotIn('path: ${{ runner.temp }}/boji-private-evidence', release)
         self.assertEqual(release.count('set -o pipefail'), 3)
 
+    def test_exported_ipa_is_checked_before_loading_upload_credentials(self):
+        source = (CI.parents[1] / '.github/workflows/ios.yml').read_text()
+        name = 'Validate exported IPA before loading upload credentials'
+        start = source.index('- name: ' + name)
+        end = source.index('      - name:', start + 1)
+        step = source[start:end]
+        self.assertIn('store.py upload', step)
+        self.assertNotIn('--apply', step)
+        self.assertNotIn('secrets.', step)
+        self.assertLess(source.index('- name: Export IPA'), start)
+        self.assertLess(start, source.index('- name: Load App Store Connect credentials'))
+
     def test_log_pipeline_preserves_build_exit_code(self):
         with tempfile.TemporaryDirectory() as temporary:
             log = Path(temporary) / 'archive.log'

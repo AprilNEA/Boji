@@ -95,17 +95,55 @@ class StoreTests(unittest.TestCase):
             "claimsVerified": True,
         }
 
-    def make_ipa(self, path: Path):
+    def make_ipa(self, path: Path, mutate=None):
+        plists = {
+            plist_name: {
+                "CFBundleIdentifier": bundle_id,
+                "CFBundleShortVersionString": VERSION,
+                "CFBundleVersion": BUILD,
+            }
+            for plist_name, bundle_id in store.IPA_PLISTS.items()
+        }
+        plists[store.MAIN_APP_PLIST].update({
+            "CFBundleDisplayName": "Lean Muscle",
+            "NSHealthShareUsageDescription": "Read permitted health data.",
+            "NSHealthUpdateUsageDescription": "No health data is written.",
+            "UISupportedInterfaceOrientations~ipad": sorted(store.REQUIRED_IPAD_ORIENTATIONS),
+        })
+        plists[store.WIDGET_PLIST]["CFBundleDisplayName"] = "Lean Muscle Widgets"
+        plists[store.WATCH_PLIST].update({
+            "CFBundleDisplayName": "Lean Muscle Watch",
+            "CFBundleIconName": "WatchIcon",
+            "CFBundleIconFiles": ["WatchIcon.png"],
+            "CFBundleIcons": {
+                "CFBundlePrimaryIcon": {
+                    "CFBundleIconName": "WatchIcon",
+                    "CFBundleIconFiles": ["WatchIcon.png"],
+                },
+            },
+        })
+        files = {f"{store.WATCH_BUNDLE_ROOT}/WatchIcon.png": b"watch-icon"}
+        if mutate is not None:
+            mutate(plists, files)
         with zipfile.ZipFile(path, "w") as archive:
-            for plist_name, bundle_id in store.IPA_PLISTS.items():
-                archive.writestr(
-                    plist_name,
-                    plistlib.dumps({
-                        "CFBundleIdentifier": bundle_id,
-                        "CFBundleShortVersionString": VERSION,
-                        "CFBundleVersion": BUILD,
-                    }),
-                )
+            for plist_name, value in plists.items():
+                archive.writestr(plist_name, plistlib.dumps(value))
+            for file_name, value in files.items():
+                archive.writestr(file_name, value)
+
+    def prepared_private_directory(self) -> Path:
+        directory = self.root / "private-evidence"
+        logs = directory / "logs"
+        gnupg = directory / "gnupg"
+        logs.mkdir(parents=True, mode=0o700)
+        gnupg.mkdir(mode=0o700)
+        directory.chmod(0o700)
+        logs.chmod(0o700)
+        gnupg.chmod(0o700)
+        recipient = directory / "recipient-fingerprint"
+        recipient.write_text("A" * 40 + "\n", encoding="ascii")
+        recipient.chmod(0o600)
+        return directory
 
     def write_receipt(self, data=None):
         self.receipt.write_text(json.dumps(data or receipt_data()), encoding="utf-8")
@@ -170,6 +208,86 @@ class StoreTests(unittest.TestCase):
                 store.upload(self.ipa, VERSION, BUILD, COMMIT, self.receipt, apply=False)
         asc.assert_not_called()
         self.assertFalse(self.receipt.exists())
+
+    def test_ipa_rejects_missing_health_update_description(self):
+        def mutate(plists, _files):
+            plists[store.MAIN_APP_PLIST]["NSHealthUpdateUsageDescription"] = " "
+
+        self.make_ipa(self.ipa, mutate)
+        with self.assertRaisesRegex(store.StoreError, "NSHealthUpdateUsageDescription"):
+            store.inspect_ipa(self.ipa, VERSION, BUILD)
+
+    def test_ipa_rejects_watch_without_icon_name_even_with_assets_catalog(self):
+        def mutate(plists, files):
+            watch = plists[store.WATCH_PLIST]
+            watch.pop("CFBundleIconName")
+            watch["CFBundleIcons"]["CFBundlePrimaryIcon"].pop("CFBundleIconName")
+            files.clear()
+            files[f"{store.WATCH_BUNDLE_ROOT}/Assets.car"] = b"compiled-icons"
+
+        self.make_ipa(self.ipa, mutate)
+        with self.assertRaisesRegex(store.StoreError, "CFBundleIconName"):
+            store.inspect_ipa(self.ipa, VERSION, BUILD)
+
+    def test_ipa_rejects_watch_without_referenced_icon_resource(self):
+        def mutate(_plists, files):
+            files.clear()
+
+        self.make_ipa(self.ipa, mutate)
+        with self.assertRaisesRegex(store.StoreError, "已引用的图标资源"):
+            store.inspect_ipa(self.ipa, VERSION, BUILD)
+
+    def test_ipa_rejects_empty_final_bundle_display_name(self):
+        for plist_name, bundle in (
+            (store.MAIN_APP_PLIST, "主 App"),
+            (store.WIDGET_PLIST, "Widget"),
+            (store.WATCH_PLIST, "Watch"),
+        ):
+            def mutate(plists, _files, plist_name=plist_name):
+                plists[plist_name]["CFBundleDisplayName"] = ""
+
+            with self.subTest(bundle=bundle):
+                self.make_ipa(self.ipa, mutate)
+                with self.assertRaisesRegex(store.StoreError, bundle):
+                    store.inspect_ipa(self.ipa, VERSION, BUILD)
+
+    def test_ipa_rejects_missing_iPad_upside_down_orientation(self):
+        def mutate(plists, _files):
+            plists[store.MAIN_APP_PLIST]["UISupportedInterfaceOrientations~ipad"] = [
+                orientation for orientation in store.REQUIRED_IPAD_ORIENTATIONS
+                if orientation != "UIInterfaceOrientationPortraitUpsideDown"
+            ]
+
+        self.make_ipa(self.ipa, mutate)
+        with self.assertRaisesRegex(store.StoreError, "iPad 四方向"):
+            store.inspect_ipa(self.ipa, VERSION, BUILD)
+
+    def test_ipa_accepts_xcode_27_nested_watch_icon_catalog(self):
+        def mutate(plists, files):
+            watch = plists[store.WATCH_PLIST]
+            watch.pop("CFBundleIconName")
+            watch.pop("CFBundleIconFiles")
+            watch["CFBundleIcons"]["CFBundlePrimaryIcon"].pop("CFBundleIconFiles")
+            files.clear()
+            files[f"{store.WATCH_BUNDLE_ROOT}/Assets.car"] = b"compiled-icons"
+
+        self.make_ipa(self.ipa, mutate)
+        self.assertEqual(len(store.inspect_ipa(self.ipa, VERSION, BUILD)), 64)
+
+    def test_ipa_rejects_icon_name_without_real_catalog_or_files(self):
+        for catalog in (None, b""):
+            def mutate(plists, files):
+                watch = plists[store.WATCH_PLIST]
+                watch.pop("CFBundleIconFiles")
+                watch["CFBundleIcons"]["CFBundlePrimaryIcon"].pop("CFBundleIconFiles")
+                files.clear()
+                if catalog is not None:
+                    files[f"{store.WATCH_BUNDLE_ROOT}/Assets.car"] = catalog
+
+            with self.subTest(catalog=catalog):
+                self.make_ipa(self.ipa, mutate)
+                with self.assertRaisesRegex(store.StoreError, "图标资源"):
+                    store.inspect_ipa(self.ipa, VERSION, BUILD)
 
     def test_upload_rejects_duplicate_before_any_upload(self):
         with patch.object(store, "assert_remote_app") as identity, \
@@ -298,16 +416,71 @@ class StoreTests(unittest.TestCase):
             lambda command, **kwargs: subprocess.CompletedProcess(command, 1, stdout="", stderr="private response"),
             lambda command, **kwargs: (_ for _ in ()).throw(OSError("private response")),
         ):
+            stdout = io.StringIO()
+            stderr = io.StringIO()
             with self.subTest(side_effect=side_effect), patch.dict(os.environ, environment, clear=True), \
                     patch.object(store, "verified_binary", return_value=Path("/test/asc")), \
                     patch.object(store.subprocess, "run", side_effect=side_effect) as run:
-                with self.assertRaises(store.AscCommandError) as caught:
+                with redirect_stdout(stdout), redirect_stderr(stderr), self.assertRaises(store.AscCommandError) as caught:
                     store.run_asc(["apps", "view"])
             private_key_path = Path(run.call_args.kwargs["env"]["ASC_PRIVATE_KEY_PATH"])
             self.assertNotIn(FAKE_P8, str(caught.exception))
             self.assertNotIn("private response", str(caught.exception))
+            self.assertNotIn("private response", stdout.getvalue())
+            self.assertNotIn("private response", stderr.getvalue())
             self.assertFalse(private_key_path.exists())
             self.assertFalse(private_key_path.parent.exists())
+
+    def test_run_asc_stores_failure_output_only_in_prepared_private_evidence(self):
+        private_directory = self.prepared_private_directory()
+        secret = "asc private error: token=not-for-console"
+        environment = {
+            "ASC_KEY_ID": "test-id",
+            "ASC_ISSUER_ID": "test-issuer",
+            "ASC_PRIVATE_KEY_P8": FAKE_P8,
+            "PRIVATE_DIR": str(private_directory),
+        }
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with patch.dict(os.environ, environment, clear=True), \
+                patch.object(store, "verified_binary", return_value=Path("/test/asc")), \
+                patch.object(
+                    store.subprocess,
+                    "run",
+                    return_value=subprocess.CompletedProcess(["/test/asc"], 17, stdout=secret, stderr=secret),
+                ):
+            with redirect_stdout(stdout), redirect_stderr(stderr), self.assertRaises(store.AscCommandError) as caught:
+                store.run_asc(["builds", "upload"])
+        self.assertIn("退出码 17", str(caught.exception))
+        self.assertNotIn(secret, str(caught.exception))
+        self.assertNotIn(secret, stdout.getvalue())
+        self.assertNotIn(secret, stderr.getvalue())
+        logs = sorted((private_directory / "logs").glob("asc-*.log"))
+        self.assertEqual(len(logs), 2)
+        for log in logs:
+            self.assertEqual(stat.S_IMODE(log.stat().st_mode), 0o600)
+            self.assertEqual(log.read_text(encoding="utf-8"), secret)
+
+    def test_run_asc_does_not_write_unprepared_private_directory(self):
+        private_directory = self.root / "unprepared"
+        private_directory.mkdir(mode=0o700)
+        (private_directory / "logs").symlink_to(self.root, target_is_directory=True)
+        environment = {
+            "ASC_KEY_ID": "test-id",
+            "ASC_ISSUER_ID": "test-issuer",
+            "ASC_PRIVATE_KEY_P8": FAKE_P8,
+            "PRIVATE_DIR": str(private_directory),
+        }
+        with patch.dict(os.environ, environment, clear=True), \
+                patch.object(store, "verified_binary", return_value=Path("/test/asc")), \
+                patch.object(
+                    store.subprocess,
+                    "run",
+                    return_value=subprocess.CompletedProcess(["/test/asc"], 1, stdout="private", stderr="private"),
+                ):
+            with self.assertRaises(store.AscCommandError):
+                store.run_asc(["apps", "view"])
+        self.assertFalse(list(self.root.glob("asc-*.log")))
 
     def test_remote_check_has_no_write_commands(self):
         self.write_receipt()

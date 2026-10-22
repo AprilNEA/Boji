@@ -11,7 +11,7 @@ This directory holds the native iOS app, its watchOS app and its widgets. The pr
 | `Boji/Views/` | SwiftUI screens and the design system (`DesignSystem.swift`) |
 | `Boji/Resources/` | Icon Composer document (`AppIcon.icon`), privacy manifest, `Localizable.xcstrings` for the copy that only the app shows, and `InfoPlist.xcstrings` |
 | `BojiWatch/` | watchOS app, with its own `Localizable.xcstrings` and `InfoPlist.xcstrings` |
-| `BojiWidgets/` | WidgetKit extension, with its own `Localizable.xcstrings` |
+| `BojiWidgets/` | WidgetKit extension, with its own `Localizable.xcstrings` and `InfoPlist.xcstrings` |
 | `Shared/` | Code that the `Boji`, `BojiWidgets` and `BojiWatch` targets compile |
 | `Shared/Shared.xcstrings` | Generated String Catalog of the copy that Android also shows. All three targets bundle it |
 | `BojiTests/` | Unit tests |
@@ -79,6 +79,8 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - Keep archive, IPA export and upload visible as separate workflow steps. `ci/signing.py` only validates, prepares and cleans up signing state.
 - Run signing cleanup with `always()`. Preserve build failures through `pipefail`; never publish raw release logs, dSYMs or signing files.
 - Encrypt release diagnostics with the configured OpenPGP public key before uploading artifacts. Keep the decryption private key outside CI.
+- Run offline IPA validation before loading upload credentials. Check final bundle display names, HealthKit purpose strings, iPad orientations and Watch icon metadata/resources. Xcode 27 Icon Composer output can omit `CFBundleIconFiles` when a named primary icon uses `Assets.car`.
+- Keep failed asc stdout/stderr only in `PRIVATE_DIR/logs` after verifying the private evidence directory. Never expose raw command output in exceptions or the public console.
 - Keep `ci/release-approval.json` checks false until the corresponding build passes acceptance. Bind approval to the receipt's commit and build ID. Never reuse approval for another build.
 - Submit the exact TestFlight build recorded in its verified workflow receipt. Never rebuild during review submission or release the app automatically.
 - Require the existing manual-release store version to have that same build attached. Default submission checks may read Apple state but must not mutate it.
@@ -98,7 +100,7 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 ### Project and build
 
 - Edit `project.yml`, not `Boji.xcodeproj`. After each change to `project.yml`, run `xcodegen generate` and commit both files.
-- Edit `Boji/Resources/AppIcon.icon` in Icon Composer. Xcode compiles the icon during the app build.
+- Edit `Boji/Resources/AppIcon.icon` in Icon Composer. The iOS and watchOS targets both compile this document as `AppIcon`. Keep its watchOS circle variant enabled. Do not duplicate the source or hand-write compiled icon metadata.
 - Write build outputs to `../.work/boji-ios/`. Do not write DerivedData or other build outputs inside `ios/`.
 - If a restricted terminal blocks Swift macro plugins or SwiftPM manifest loading with `sandbox_apply: Operation not permitted`, allow Xcode to run them. Do not remove `@Observable` or a package to hide the permission problem.
 - Lottie and Sentry are pinned with `exactVersion` in `project.yml`. connect-swift and swift-protobuf are pinned with `exact:` in `BojiAPI/Package.swift`. Keep the generated `Package.resolved` with the project.
@@ -131,7 +133,8 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 
 ### Copy that only iOS shows
 
-- Each target has its own `Localizable.xcstrings`: `Boji/Resources/`, `BojiWidgets/` and `BojiWatch/`. `InfoPlist.xcstrings` in `Boji/Resources/` and `BojiWatch/` holds the display name and the usage descriptions. The display name is 薄肌 in Simplified Chinese and Lean Muscle in English.
+- Each target has its own `Localizable.xcstrings` and `InfoPlist.xcstrings`: `Boji/Resources/`, `BojiWidgets/` and `BojiWatch/`. `InfoPlist.xcstrings` holds the display name and the usage descriptions. The display name is 薄肌 in Simplified Chinese and Lean Muscle in English.
+- Keep both HealthKit purpose strings in the main app plist and catalog. The update description states that the app does not write health records. Do not add write authorization to satisfy package validation; `typesToShare` stays empty.
 - The key is the Simplified Chinese text in the Swift code. English is the fallback language: each `Info.plist` sets `CFBundleDevelopmentRegion` to `en`. A key without an English value shows the Chinese key to every user who does not read Chinese. Give each new key an English value with the state `translated`.
 - Reuse the English of the Android resource that has the same Chinese text, so that both clients use the same words.
 - `SWIFT_EMIT_LOC_STRINGS` in `project.yml` makes the compiler extract the literals of `Text`, `Button`, `LocalizedStringKey`, `LocalizedStringResource` and `String(localized:)`. The compiler does not extract a literal of the type `String`: a `String` property or parameter, a ternary of two `String` values, or the `value:` of `LabeledContent`. Wrap such a literal in `String(localized:)`.
