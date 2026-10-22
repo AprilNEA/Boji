@@ -2,8 +2,12 @@ package club.leanmuscle.boji.feature.training.session
 
 import club.leanmuscle.boji.core.data.TestStore
 import club.leanmuscle.boji.core.model.WorkoutLibrary
+import club.leanmuscle.boji.feature.training.CachedExerciseAnimations
+import club.leanmuscle.boji.feature.training.CachedRemoteAnimation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.resetMain
@@ -110,7 +114,7 @@ class TrainingSessionViewModelTest {
     @Test
     fun timerTicksEverySecondAndStopsWhenPaused() = runTest(dispatcher) {
         val store = TestStore(temp.newFile("state.json").also { it.delete() }, backgroundScope).store
-        val viewModel = TrainingSessionViewModel(WorkoutLibrary.Home, store)
+        val viewModel = TrainingSessionViewModel(WorkoutLibrary.Home, store, NoRemoteAnimations)
         advanceTimeBy(3_000)
         runCurrent()
         assertEquals(3, viewModel.session.value.elapsedSeconds)
@@ -134,7 +138,7 @@ class TrainingSessionViewModelTest {
     fun finishingRecordsTheWorkoutOnce() = runTest(dispatcher) {
         val store = TestStore(temp.newFile("state.json").also { it.delete() }, backgroundScope).store
         val workout = WorkoutLibrary.Mobility
-        val viewModel = TrainingSessionViewModel(workout, store)
+        val viewModel = TrainingSessionViewModel(workout, store, NoRemoteAnimations)
         while (!viewModel.session.value.finished) viewModel.primaryAction()
         viewModel.primaryAction()
         runCurrent()
@@ -143,4 +147,11 @@ class TrainingSessionViewModelTest {
         assertEquals(1, snapshot.totalWorkouts)
         assertEquals(workout.minutes, snapshot.todayRecord.minutes)
     }
+}
+
+/** The session tests need no remote animation. */
+private object NoRemoteAnimations : CachedExerciseAnimations {
+    override val cacheVersion: StateFlow<Int> = MutableStateFlow(0)
+
+    override fun cachedAnimation(exerciseId: String, dark: Boolean): CachedRemoteAnimation? = null
 }

@@ -40,12 +40,21 @@ class ExerciseAnimationTest {
 
     /** The APK contains `index.json`, and every course exercise has a valid still frame. */
     @Test
-    fun packagedIndexHasAStillFrameForEveryCourseExercise() {
+    fun packagedIndexHasAStillFrameForEveryBundledCourseExercise() {
         val assets = InstrumentationRegistry.getInstrumentation().targetContext.assets
         val index = runBlocking { ExerciseAnimationIndex.load(assets) }
-        for (exercise in WorkoutLibrary.all.flatMap { it.exercises }) {
-            val entry = checkNotNull(index[exercise.id]) { "No index entry for ${exercise.id}" }
-            assertTrue("${exercise.id}: posterFrame out of range", entry.posterFrame in 0 until entry.frames)
+        // Only these four courses must work offline. The other courses load their new exercises from the asset host.
+        val bundledCourses = listOf(
+            WorkoutLibrary.Home,
+            WorkoutLibrary.HomeIntermediate,
+            WorkoutLibrary.Gym,
+            WorkoutLibrary.Mobility,
+        )
+        for (exercise in bundledCourses.flatMap { it.exercises }) {
+            checkNotNull(index[exercise.id]) { "No index entry for ${exercise.id}" }
+        }
+        for ((id, entry) in index) {
+            assertTrue("$id: posterFrame out of range", entry.posterFrame in 0 until entry.frames)
         }
     }
 }

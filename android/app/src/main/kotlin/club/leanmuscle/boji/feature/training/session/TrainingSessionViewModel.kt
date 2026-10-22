@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import club.leanmuscle.boji.core.data.BojiStore
 import club.leanmuscle.boji.core.model.Workout
+import club.leanmuscle.boji.feature.training.CachedRemoteAnimation
+import club.leanmuscle.boji.feature.training.CachedExerciseAnimations
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -25,9 +27,11 @@ import kotlinx.coroutines.launch
 class TrainingSessionViewModel @AssistedInject constructor(
     @Assisted workout: Workout,
     private val store: BojiStore,
+    private val animations: CachedExerciseAnimations,
 ) : ViewModel() {
     private val _session = MutableStateFlow(TrainingSession(workout))
     val session: StateFlow<TrainingSession> = _session.asStateFlow()
+    val animationCacheVersion: StateFlow<Int> = animations.cacheVersion
 
     private var ticker: Job? = null
 
@@ -50,6 +54,9 @@ class TrainingSessionViewModel @AssistedInject constructor(
         _session.update { it.withRunning(running) }
         if (_session.value.running) startTicker() else ticker?.cancel()
     }
+
+    fun cachedAnimation(exerciseId: String, dark: Boolean): CachedRemoteAnimation? =
+        animations.cachedAnimation(exerciseId, dark)
 
     private fun startTicker() {
         ticker?.cancel()

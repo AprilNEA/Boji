@@ -39,9 +39,6 @@
     <!-- Training -->
     <string name="training_eyebrow">BUILD YOUR OWN RHYTHM</string>
     <string name="training_subtitle">把开始变简单，把坚持交给时间。</string>
-    <string name="training_progression_section">准备好了，再进一步</string>
-    <string name="training_mobility_section">给身体一点余地</string>
-    <string name="training_mobility_meta">%1$d 分钟 · 温和活动</string>
     <string name="training_disclaimer">课程是通用入门参考，不是个性化处方。有伤病或运动限制时，先咨询专业人员。出现疼痛、头晕或不适时立即停止。</string>
     <string name="detail_warmup">先热身，再开始。动作以舒适、可控为准。</string>
 

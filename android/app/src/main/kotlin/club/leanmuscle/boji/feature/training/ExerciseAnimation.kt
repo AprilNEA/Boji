@@ -43,14 +43,19 @@ fun ExerciseAnimation(
     exerciseId: String,
     playing: Boolean,
     modifier: Modifier = Modifier,
+    remoteAnimation: CachedRemoteAnimation? = null,
     fallback: @Composable () -> Unit,
 ) {
     val dark = BojiThemeColors.isDark
-    val spec = remember(exerciseId, dark) { LottieCompositionSpec.Asset(exerciseAnimationAsset(exerciseId, dark)) }
+    val spec = remember(exerciseId, dark, remoteAnimation?.file) {
+        remoteAnimation?.let { LottieCompositionSpec.File(it.file.absolutePath) }
+            ?: LottieCompositionSpec.Asset(exerciseAnimationAsset(exerciseId, dark))
+    }
     val result = rememberLottieComposition(spec)
     val composition by result
     val animatorsEnabled = rememberAnimatorsEnabled()
-    val posterProgress = rememberPosterProgress(exerciseId)
+    val bundledPosterProgress = rememberPosterProgress(exerciseId)
+    val posterProgress = remoteAnimation?.posterProgress ?: bundledPosterProgress
     val state = animateLottieCompositionAsState(
         composition = composition,
         isPlaying = playing && animatorsEnabled,

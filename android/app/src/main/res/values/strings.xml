@@ -44,9 +44,6 @@
     <!-- Training -->
     <string name="training_eyebrow">BUILD YOUR OWN RHYTHM</string>
     <string name="training_subtitle">Make starting easy. Let time take care of the rest.</string>
-    <string name="training_progression_section">Ready for the Next Step</string>
-    <string name="training_mobility_section">Give Your Body Some Room</string>
-    <string name="training_mobility_meta">%1$d min · Gentle movement</string>
     <string name="training_disclaimer">Courses are general starting points, not personal prescriptions. If you have an injury or exercise limits, talk to a professional first. Stop at once if you feel pain, dizziness or discomfort.</string>
     <string name="detail_warmup">Warm up first. Keep each move comfortable and controlled.</string>
 
