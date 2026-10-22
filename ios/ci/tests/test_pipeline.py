@@ -219,9 +219,9 @@ class ProvenanceTests(unittest.TestCase):
 
 
 class InputTests(unittest.TestCase):
-    def test_release_inputs_require_verified_public_backend(self):
+    def test_testflight_inputs_require_public_backend_origin(self):
         import manage
-        with patch.object(manage, 'project', return_value={'version': '1.0'}), patch.dict(os.environ, {'IOS_BACKEND_VERIFIED': 'true'}):
+        with patch.object(manage, 'project', return_value={'version': '1.0'}), patch.dict(os.environ, {}, clear=True):
             signing.validate_inputs('1.0', '8', 'https://api.leanmuscle.club')
             for endpoint in ('http://api.leanmuscle.club', 'https://127.0.0.1', 'https://localhost',
                              'https://api.leanmuscle.club/?token=secret', 'https://user:secret@api.leanmuscle.club'):
@@ -231,10 +231,11 @@ class InputTests(unittest.TestCase):
                 with self.subTest(number=number), self.assertRaises(ValueError):
                     signing.validate_inputs('1.0', number, 'https://api.leanmuscle.club')
 
-    def test_unverified_backend_is_rejected(self):
+    def test_testflight_does_not_claim_backend_acceptance(self):
         import manage
-        with patch.object(manage, 'project', return_value={'version': '1.0'}), patch.dict(os.environ, {}, clear=True), self.assertRaises(ValueError):
+        with patch.object(manage, 'project', return_value={'version': '1.0'}), patch.dict(os.environ, {}, clear=True):
             signing.validate_inputs('1.0', '8', 'https://api.leanmuscle.club')
+            self.assertNotIn('IOS_BACKEND_VERIFIED', os.environ)
 
 
 class BundleTests(unittest.TestCase):

@@ -6,6 +6,8 @@ import json
 import os
 from pathlib import Path
 import plistlib
+import stat
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -21,6 +23,7 @@ BUILD = "42"
 COMMIT = "a" * 40
 SHA = "b" * 64
 BUILD_ID = "47e343aa-8540-4b1c-b1c6-f375b7f64873"
+FAKE_P8 = "-----BEGIN PRIVATE KEY-----\nfake-ci-key\n-----END PRIVATE KEY-----\n"
 
 
 def receipt_data(**changes):
@@ -201,12 +204,12 @@ class StoreTests(unittest.TestCase):
 
     def test_submit_rejects_false_approval_check(self):
         self.write_receipt()
-        approval = approval_data()
-        approval["checks"]["privacy"] = False
-        self.write_approval(approval)
-        root, project, validate = self.submit_patches()
-        with root, project, validate:
-            with self.assertRaisesRegex(store.StoreError, "发布审批未通过"):
+        for check in approval_data()["checks"]:
+            approval = approval_data()
+            approval["checks"][check] = False
+            self.write_approval(approval)
+            root, project, validate = self.submit_patches()
+            with self.subTest(check=check), root, project, validate, self.assertRaisesRegex(store.StoreError, "发布审批未通过"):
                 store.validate_submit_inputs(self.receipt)
 
     def test_submit_rejects_local_version_mismatch(self):
@@ -227,18 +230,84 @@ class StoreTests(unittest.TestCase):
 
     def test_asc_environment_excludes_signing_material_and_legacy_keys(self):
         environment = {
-            "ASC_KEY_ID": "test-id", "ASC_ISSUER_ID": "test-issuer", "ASC_PRIVATE_KEY_P8": "test-key",
+            "ASC_KEY_ID": "test-id", "ASC_ISSUER_ID": "test-issuer", "ASC_PRIVATE_KEY_P8": FAKE_P8,
             "ASC_PRIVATE_KEY": "legacy-key", "ASC_BYPASS_KEYCHAIN": "0",
             "ASC_CONFIG_PATH": "/test/no-config.json", "IOS_APP_PROFILE_BASE64": "test-profile",
-            "IOS_DISTRIBUTION_P12_PASSWORD": "test-password", "PATH": "/usr/bin",
+            "IOS_DISTRIBUTION_P12_PASSWORD": "test-password", "OP_SERVICE_ACCOUNT_TOKEN": "test-token",
+            "OP_OTHER_SECRET": "other-token", "PATH": "/usr/bin",
         }
+        private_key_path = self.root / "AuthKey.p8"
         with patch.dict(os.environ, environment, clear=True):
-            result = store._runtime_env()
-        self.assertEqual(result["ASC_PRIVATE_KEY_P8"], "test-key")
+            result = store._runtime_env(private_key_path)
+        self.assertEqual(result["ASC_PRIVATE_KEY_PATH"], str(private_key_path))
         self.assertEqual(result["ASC_BYPASS_KEYCHAIN"], "1")
         self.assertEqual(result["ASC_CONFIG_PATH"], "/test/no-config.json")
         self.assertNotIn("ASC_PRIVATE_KEY", result)
+        self.assertNotIn("ASC_PRIVATE_KEY_P8", result)
         self.assertFalse(any(key.startswith("IOS_") for key in result))
+        self.assertFalse(any(key.startswith("OP_") for key in result))
+
+    def test_run_asc_uses_private_key_file_and_removes_it_after_return(self):
+        environment = {
+            "ASC_KEY_ID": "test-id",
+            "ASC_ISSUER_ID": "test-issuer",
+            "ASC_PRIVATE_KEY_P8": FAKE_P8,
+            "ASC_CONFIG_PATH": "/test/no-config.json",
+            "ASC_PRIVATE_KEY": "legacy-key",
+            "IOS_APP_PROFILE_BASE64": "test-profile",
+            "OP_SERVICE_ACCOUNT_TOKEN": "test-token",
+            "OP_OTHER_SECRET": "other-token",
+            "PATH": "/usr/bin",
+        }
+        captured: dict[str, Path] = {}
+
+        def run(command, **kwargs):
+            asc_environment = kwargs["env"]
+            private_key_path = Path(asc_environment["ASC_PRIVATE_KEY_PATH"])
+            captured["path"] = private_key_path
+            captured["directory"] = private_key_path.parent
+            self.assertEqual(command, ["/test/asc", "apps", "view"])
+            self.assertEqual(private_key_path.read_text(encoding="utf-8"), FAKE_P8)
+            self.assertEqual(stat.S_IMODE(private_key_path.stat().st_mode), 0o600)
+            self.assertEqual(stat.S_IMODE(private_key_path.parent.stat().st_mode), 0o700)
+            self.assertEqual(asc_environment["ASC_KEY_ID"], "test-id")
+            self.assertEqual(asc_environment["ASC_ISSUER_ID"], "test-issuer")
+            self.assertEqual(asc_environment["ASC_BYPASS_KEYCHAIN"], "1")
+            self.assertEqual(asc_environment["ASC_CONFIG_PATH"], "/test/no-config.json")
+            self.assertNotIn("ASC_PRIVATE_KEY_P8", asc_environment)
+            self.assertNotIn("ASC_PRIVATE_KEY", asc_environment)
+            self.assertFalse(any(key.startswith(("OP_", "IOS_")) for key in asc_environment))
+            self.assertNotIn(FAKE_P8, asc_environment.values())
+            return subprocess.CompletedProcess(command, 0, stdout="{}", stderr="private response")
+
+        with patch.dict(os.environ, environment, clear=True), \
+                patch.object(store, "verified_binary", return_value=Path("/test/asc")), \
+                patch.object(store.subprocess, "run", side_effect=run):
+            self.assertEqual(store.run_asc(["apps", "view"]), "{}")
+        self.assertFalse(captured["path"].exists())
+        self.assertFalse(captured["directory"].exists())
+
+    def test_run_asc_removes_private_key_after_failure_and_exception(self):
+        environment = {
+            "ASC_KEY_ID": "test-id",
+            "ASC_ISSUER_ID": "test-issuer",
+            "ASC_PRIVATE_KEY_P8": FAKE_P8,
+        }
+
+        for side_effect in (
+            lambda command, **kwargs: subprocess.CompletedProcess(command, 1, stdout="", stderr="private response"),
+            lambda command, **kwargs: (_ for _ in ()).throw(OSError("private response")),
+        ):
+            with self.subTest(side_effect=side_effect), patch.dict(os.environ, environment, clear=True), \
+                    patch.object(store, "verified_binary", return_value=Path("/test/asc")), \
+                    patch.object(store.subprocess, "run", side_effect=side_effect) as run:
+                with self.assertRaises(store.AscCommandError) as caught:
+                    store.run_asc(["apps", "view"])
+            private_key_path = Path(run.call_args.kwargs["env"]["ASC_PRIVATE_KEY_PATH"])
+            self.assertNotIn(FAKE_P8, str(caught.exception))
+            self.assertNotIn("private response", str(caught.exception))
+            self.assertFalse(private_key_path.exists())
+            self.assertFalse(private_key_path.parent.exists())
 
     def test_remote_check_has_no_write_commands(self):
         self.write_receipt()

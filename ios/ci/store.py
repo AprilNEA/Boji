@@ -236,19 +236,36 @@ def validate_upload_inputs(ipa: Path, version: str, build_number: str, commit: s
     return inspect_ipa(ipa, version, build_number)
 
 
-def _runtime_env() -> dict[str, str]:
+def _runtime_env(private_key_path: Path) -> dict[str, str]:
     required = ("ASC_KEY_ID", "ASC_ISSUER_ID", "ASC_PRIVATE_KEY_P8")
     missing = [name for name in required if not os.environ.get(name)]
     if missing:
         raise StoreError(f"缺少 CI 注入的凭据变量：{', '.join(missing)}。")
-    # Do not pass profiles, legacy keys, or Keychain fallback into asc.
-    environment = {key: value for key, value in os.environ.items() if not key.startswith(("ASC_", "IOS_"))}
-    for name in required:
-        environment[name] = os.environ[name]
-    environment["ASC_BYPASS_KEYCHAIN"] = "1"
-    if os.environ.get("ASC_CONFIG_PATH"):
-        environment["ASC_CONFIG_PATH"] = os.environ["ASC_CONFIG_PATH"]
+    # Do not pass 1Password variables, signing material, profiles, legacy
+    # keys, or Keychain fallback into asc. A nonexistent config inside the
+    # private directory prevents asc from discovering a user's auth profile.
+    environment = {
+        key: value for key, value in os.environ.items()
+        if not key.startswith(("ASC_", "IOS_", "OP_"))
+    }
+    environment.update({
+        "ASC_KEY_ID": os.environ["ASC_KEY_ID"],
+        "ASC_ISSUER_ID": os.environ["ASC_ISSUER_ID"],
+        "ASC_PRIVATE_KEY_PATH": str(private_key_path),
+        "ASC_BYPASS_KEYCHAIN": "1",
+        "ASC_CONFIG_PATH": os.environ.get(
+            "ASC_CONFIG_PATH", str(private_key_path.parent / "no-asc-config.json")
+        ),
+    })
     return environment
+
+
+def _write_private_key(path: Path, private_key: str) -> None:
+    """Write the P8 with owner-only permissions from its first filesystem state."""
+    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    os.fchmod(descriptor, 0o600)
+    with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+        stream.write(private_key)
 
 
 def run_asc(arguments: list[str]) -> str:
@@ -258,14 +275,20 @@ def run_asc(arguments: list[str]) -> str:
     except (OSError, ValueError) as exc:
         raise StoreError("固定 asc 二进制验证失败。") from exc
     try:
-        result = subprocess.run(
-            [str(binary), *arguments],
-            cwd=ROOT,
-            env=_runtime_env(),
-            text=True,
-            capture_output=True,
-            check=False,
-        )
+        with tempfile.TemporaryDirectory(prefix="boji-asc-") as directory:
+            private_directory = Path(directory)
+            private_directory.chmod(0o700)
+            private_key_path = private_directory / "AuthKey.p8"
+            environment = _runtime_env(private_key_path)
+            _write_private_key(private_key_path, os.environ["ASC_PRIVATE_KEY_P8"])
+            result = subprocess.run(
+                [str(binary), *arguments],
+                cwd=ROOT,
+                env=environment,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
     except OSError as exc:
         raise AscCommandError("asc 无法启动。") from exc
     if result.returncode != 0:

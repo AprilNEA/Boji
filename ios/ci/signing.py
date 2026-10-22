@@ -40,8 +40,8 @@ def validate_inputs(version: str, build: str, api: str) -> None:
     url = urlsplit(api)
     if not valid_url(api) or url.query or url.fragment or url.path not in ('', '/'):
         raise ValueError('A public HTTPS API origin without query, fragment or path is required')
-    if os.environ.get('IOS_BACKEND_VERIFIED') != 'true':
-        raise ValueError('The release backend contract and login must be verified first')
+    # TestFlight is used to verify the production backend and account flows.
+    # App Store review still requires the build-bound backend approval in store.py.
 
 
 def validate_profile(profile: dict, bundle: str, expected: dict, fingerprint: str, now=None) -> None:

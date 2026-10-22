@@ -187,7 +187,6 @@ jobs:
       - name: Validate and install pinned tools before using credentials
         env:
           BOJI_API_BASE_URL: ${{ vars.BOJI_API_BASE_URL }}
-          IOS_BACKEND_VERIFIED: ${{ vars.IOS_BACKEND_VERIFIED }}
         run: |
           python3 ios/ci/check.py toolchain
           python3 ios/ci/check.py source
@@ -207,15 +206,34 @@ jobs:
             -onlyUsePackageVersionsFromResolvedFile 2>&1 \
             | python3 ios/ci/artifacts.py log --file "$PRIVATE_DIR/logs/resolve.log"
           git diff --exit-code -- ios/Boji.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+      - name: Check 1Password signing item reference
+        env:
+          OP_IOS_SIGNING_ITEM: ${{ vars.OP_IOS_SIGNING_ITEM }}
+        run: |
+          [[ "$OP_IOS_SIGNING_ITEM" =~ ^op://[^/]+/[^/]+$ ]] || {
+            echo 'OP_IOS_SIGNING_ITEM must be an op://vault-id/item-id reference' >&2
+            exit 1
+          }
+      - name: Load signing credentials from 1Password
+        id: signing-secrets
+        uses: 1password/load-secrets-action@70062d7a876d3eb6334754fa26efd2fbd90c32f2 # v5.0.1
+        with:
+          export-env: false
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          IOS_DISTRIBUTION_P12_BASE64: ${{ vars.OP_IOS_SIGNING_ITEM }}/IOS_DISTRIBUTION_P12_BASE64
+          IOS_DISTRIBUTION_P12_PASSWORD: ${{ vars.OP_IOS_SIGNING_ITEM }}/IOS_DISTRIBUTION_P12_PASSWORD
+          IOS_APP_PROFILE_BASE64: ${{ vars.OP_IOS_SIGNING_ITEM }}/IOS_APP_PROFILE_BASE64
+          IOS_WIDGET_PROFILE_BASE64: ${{ vars.OP_IOS_SIGNING_ITEM }}/IOS_WIDGET_PROFILE_BASE64
+          IOS_WATCH_PROFILE_BASE64: ${{ vars.OP_IOS_SIGNING_ITEM }}/IOS_WATCH_PROFILE_BASE64
       - name: Prepare signing certificates and profiles
         env:
-          IOS_DISTRIBUTION_P12_BASE64: ${{ secrets.IOS_DISTRIBUTION_P12_BASE64 }}
-          IOS_DISTRIBUTION_P12_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_P12_PASSWORD }}
-          IOS_APP_PROFILE_BASE64: ${{ secrets.IOS_APP_PROFILE_BASE64 }}
-          IOS_WIDGET_PROFILE_BASE64: ${{ secrets.IOS_WIDGET_PROFILE_BASE64 }}
-          IOS_WATCH_PROFILE_BASE64: ${{ secrets.IOS_WATCH_PROFILE_BASE64 }}
+          IOS_DISTRIBUTION_P12_BASE64: ${{ steps.signing-secrets.outputs.IOS_DISTRIBUTION_P12_BASE64 }}
+          IOS_DISTRIBUTION_P12_PASSWORD: ${{ steps.signing-secrets.outputs.IOS_DISTRIBUTION_P12_PASSWORD }}
+          IOS_APP_PROFILE_BASE64: ${{ steps.signing-secrets.outputs.IOS_APP_PROFILE_BASE64 }}
+          IOS_WIDGET_PROFILE_BASE64: ${{ steps.signing-secrets.outputs.IOS_WIDGET_PROFILE_BASE64 }}
+          IOS_WATCH_PROFILE_BASE64: ${{ steps.signing-secrets.outputs.IOS_WATCH_PROFILE_BASE64 }}
           BOJI_API_BASE_URL: ${{ vars.BOJI_API_BASE_URL }}
-          IOS_BACKEND_VERIFIED: ${{ vars.IOS_BACKEND_VERIFIED }}
         run: |
           python3 ios/ci/signing.py prepare --version "$VERSION" --build-number "$BUILD_NUMBER"
       - name: Archive signed iOS app
@@ -239,11 +257,29 @@ jobs:
             -exportOptionsPlist "$SIGNING_DIR/ExportOptions.plist" 2>&1 \
             | python3 ios/ci/artifacts.py log --file "$PRIVATE_DIR/logs/export.log"
           test -f "$EXPORT_PATH/Boji.ipa"
+      - name: Check 1Password App Store Connect item reference
+        env:
+          OP_ASC_SECRET_ITEM: ${{ vars.OP_ASC_SECRET_ITEM }}
+        run: |
+          [[ "$OP_ASC_SECRET_ITEM" =~ ^op://[^/]+/[^/]+$ ]] || {
+            echo 'OP_ASC_SECRET_ITEM must be an op://vault-id/item-id reference' >&2
+            exit 1
+          }
+      - name: Load App Store Connect credentials from 1Password
+        id: asc-secrets
+        uses: 1password/load-secrets-action@70062d7a876d3eb6334754fa26efd2fbd90c32f2 # v5.0.1
+        with:
+          export-env: false
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          ASC_KEY_ID: ${{ vars.OP_ASC_SECRET_ITEM }}/ASC_KEY_ID
+          ASC_ISSUER_ID: ${{ vars.OP_ASC_SECRET_ITEM }}/ASC_ISSUER_ID
+          ASC_PRIVATE_KEY_P8: ${{ vars.OP_ASC_SECRET_ITEM }}/ASC_PRIVATE_KEY_P8
       - name: Upload IPA to App Store Connect and wait for processing
         env:
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
-          ASC_PRIVATE_KEY_P8: ${{ secrets.ASC_PRIVATE_KEY_P8 }}
+          ASC_KEY_ID: ${{ steps.asc-secrets.outputs.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ steps.asc-secrets.outputs.ASC_ISSUER_ID }}
+          ASC_PRIVATE_KEY_P8: ${{ steps.asc-secrets.outputs.ASC_PRIVATE_KEY_P8 }}
           ASC_BYPASS_KEYCHAIN: '1'
           ASC_CONFIG_PATH: ${{ runner.temp }}/boji-no-asc-config.json
         run: |
@@ -309,11 +345,29 @@ jobs:
           echo "RECEIPT_DIR=$RECEIPT_DIR" >> "$GITHUB_ENV"
           python3 ios/ci/guard.py fetch-receipt --run-id "$TESTFLIGHT_RUN_ID" --output "$RECEIPT_DIR"
           python3 ios/app-store/manage.py install
+      - name: Check 1Password App Store Connect item reference
+        env:
+          OP_ASC_SECRET_ITEM: ${{ vars.OP_ASC_SECRET_ITEM }}
+        run: |
+          [[ "$OP_ASC_SECRET_ITEM" =~ ^op://[^/]+/[^/]+$ ]] || {
+            echo 'OP_ASC_SECRET_ITEM must be an op://vault-id/item-id reference' >&2
+            exit 1
+          }
+      - name: Load App Store Connect credentials from 1Password
+        id: asc-secrets
+        uses: 1password/load-secrets-action@70062d7a876d3eb6334754fa26efd2fbd90c32f2 # v5.0.1
+        with:
+          export-env: false
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          ASC_KEY_ID: ${{ vars.OP_ASC_SECRET_ITEM }}/ASC_KEY_ID
+          ASC_ISSUER_ID: ${{ vars.OP_ASC_SECRET_ITEM }}/ASC_ISSUER_ID
+          ASC_PRIVATE_KEY_P8: ${{ vars.OP_ASC_SECRET_ITEM }}/ASC_PRIVATE_KEY_P8
       - name: Check or submit the tested build without rebuilding
         env:
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
-          ASC_PRIVATE_KEY_P8: ${{ secrets.ASC_PRIVATE_KEY_P8 }}
+          ASC_KEY_ID: ${{ steps.asc-secrets.outputs.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ steps.asc-secrets.outputs.ASC_ISSUER_ID }}
+          ASC_PRIVATE_KEY_P8: ${{ steps.asc-secrets.outputs.ASC_PRIVATE_KEY_P8 }}
           ASC_BYPASS_KEYCHAIN: '1'
           ASC_CONFIG_PATH: ${{ runner.temp }}/boji-no-asc-config.json
         run: |

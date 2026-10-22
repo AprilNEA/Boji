@@ -1,8 +1,8 @@
 # iOS CI/CD
 
-仓库用一个 `ios.yml` 管理三层流程。各层使用独立任务（job），PR 不接触发布凭据。上传和提审都需要手动触发。
+仓库用一个 `ios.yml` 管理三层流程。各层使用独立任务（job），PR 不接触发布凭据。TestFlight 和提审任务从 1Password service account 按步骤读取发布凭据。上传和提审都需要手动触发。
 
-推送到 `master` 后只运行 CI。上传和提审需要另行配置发布环境。提交这些文件不会创建 GitHub Secrets，也不会上传或提审。
+推送到 `master` 后只运行 CI。上传和提审需要另行配置发布环境。提交这些文件不会创建 GitHub Environment 的 Secret 或变量，也不会上传或提审。
 
 ## 三层职责
 
@@ -26,6 +26,8 @@ PR 和 `master` 推送会运行两组检查：
 2. 在 Runner 上发现可用的 iPhone 模拟器。运行单元测试和 UI 测试，再编译 Release。检查动画资源及嵌入的 Widget、Watch App。
 
 测试使用项目已有的隔离数据。后端地址和 Sentry DSN 均为空。工作流不访问真实账号或 HealthKit 记录。
+
+`validate`、`build` 和 `release-gate` 不读取 1Password service account。它们不进入发布 Environment。
 
 `Boji/DebugSupport/Fixtures/` 保留为仓库中的 Debug 夹具。`project.yml` 排除整个 `DebugSupport/`，避免 XcodeGen 2.46.0 为排空的组写入随机 `TEMP_` 标识符。Debug 的预构建脚本单独复制夹具。Release 不会打包这些文件。`check.py bundle` 会拒绝包含 `RemoteAnimationFixtures/` 的产物。
 
@@ -66,7 +68,7 @@ CI 原先使用 `macos-26` 和 Xcode 26.6。在这套工具链上，`actool` 编
 - `ios-testflight`
 - `ios-appstore-review`
 
-两个环境都只允许 `master` 部署。设置 required reviewers，并启用禁止自行批准。限制管理员绕过审批。保护 `master`，要求代码评审和第一层检查通过。
+两个环境都只允许 `master` 部署。配置 required reviewers，并禁止管理员绕过审批。用户已指定 TestFlight 只由 `AprilNEA` 审批，并允许审批自己发起的运行。正式审核环境需要单独核对保护设置。
 
 Environment 的审批规则不在工作流 YAML 中。仅写入 `environment:` 不会自动配置保护。检查规则后，再把仓库变量 `IOS_RELEASE_ENABLED` 设为 `true`。缺少该变量时，上传和提审 job 都会停止。
 
@@ -76,19 +78,33 @@ Environment 的审批规则不在工作流 YAML 中。仅写入 `environment:` �
 
 | 类型 | 名称 | 内容 |
 | --- | --- | --- |
-| Variable | `BOJI_API_BASE_URL` | 已验收的正式 HTTPS 服务源地址 |
-| Variable | `IOS_BACKEND_VERIFIED` | 联调通过后设为 `true` |
+| Variable | `BOJI_API_BASE_URL` | 内测使用的正式 HTTPS 服务源地址 |
 | Variable | `IOS_ARTIFACT_PUBLIC_KEY` | 单个 OpenPGP 加密公钥，保留 ASCII armor 和换行 |
-| Secret | `IOS_DISTRIBUTION_P12_BASE64` | 分发证书及私钥的 P12，整体 Base64 编码 |
-| Secret | `IOS_DISTRIBUTION_P12_PASSWORD` | P12 导出密码 |
-| Secret | `IOS_APP_PROFILE_BASE64` | 主应用 App Store 描述文件的 Base64 |
-| Secret | `IOS_WIDGET_PROFILE_BASE64` | Widget App Store 描述文件的 Base64 |
-| Secret | `IOS_WATCH_PROFILE_BASE64` | Watch App Store 描述文件的 Base64 |
-| Secret | `ASC_KEY_ID` | 具有上传权限的 API Key ID |
-| Secret | `ASC_ISSUER_ID` | 对应的 Issuer ID |
-| Secret | `ASC_PRIVATE_KEY_P8` | 对应 P8 私钥正文，保留换行 |
+| Variable | `OP_IOS_SIGNING_ITEM` | 1Password 签名条目的完整 `op://vault-id/item-id` 前缀，不含字段 |
+| Variable | `OP_ASC_SECRET_ITEM` | 1Password App Store Connect 条目的完整 `op://vault-id/item-id` 前缀，不含字段 |
+| Secret | `OP_SERVICE_ACCOUNT_TOKEN` | 只读 1Password service account token，只授权本流程所需条目 |
 
-现有 Marketing Key 不具备构建上传权限。不要直接扩权。使用另一个经过授权的凭据，按需授予 Developer 等允许上传的角色。API Key 不能替代签名证书和三个描述文件。
+`OP_IOS_SIGNING_ITEM` 和 `OP_ASC_SECRET_ITEM` 不是凭据，但仍不得带字段名。工作流会在读取凭据前拒绝空值或非 `op://vault-id/item-id` 格式。
+
+签名条目必须有以下同名字段：
+
+| 1Password 字段 | 内容 |
+| --- | --- |
+| `IOS_DISTRIBUTION_P12_BASE64` | Apple Distribution 证书及私钥的 P12，整体 Base64 编码 |
+| `IOS_DISTRIBUTION_P12_PASSWORD` | P12 导出密码 |
+| `IOS_APP_PROFILE_BASE64` | 主应用 App Store 描述文件的 Base64 |
+| `IOS_WIDGET_PROFILE_BASE64` | Widget App Store 描述文件的 Base64 |
+| `IOS_WATCH_PROFILE_BASE64` | Watch App Store 描述文件的 Base64 |
+
+App Store Connect 条目必须有以下同名字段：
+
+| 1Password 字段 | 内容 |
+| --- | --- |
+| `ASC_KEY_ID` | 具有上传权限的 API Key ID |
+| `ASC_ISSUER_ID` | 对应的 Issuer ID |
+| `ASC_PRIVATE_KEY_P8` | 对应 P8 私钥正文，保留换行 |
+
+现有 Marketing Key 不具备构建上传权限。不要直接扩权。使用另一个经过授权的凭据，按需授予 Developer 等允许上传的角色。API Key 不能替代 Apple Distribution 证书和三个描述文件。
 
 描述文件必须分别匹配：
 
@@ -100,29 +116,32 @@ Environment 的审批规则不在工作流 YAML 中。仅写入 `environment:` �
 
 签名只在一次性 GitHub 托管 Runner 执行。脚本创建临时 Keychain，结束时由独立步骤清理。IPA 只上传到 Apple，不保存为 GitHub 产物。归档、描述文件、P8 和 P12 也不保存为 GitHub 产物。
 
+工作流固定使用 [`1password/load-secrets-action`](https://github.com/1Password/load-secrets-action) 的 `70062d7a876d3eb6334754fa26efd2fbd90c32f2`（v5.0.1）。每个加载步骤设置 `export-env: false`。`OP_SERVICE_ACCOUNT_TOKEN` 仅在加载步骤的 step-level `env` 中。后续签名、上传和提审步骤只从该步骤的 outputs 接收所需字段。
+
+该版本从 `env` 读取 `op://` 引用。不要使用不存在的 `with.secrets` 输入。固定版 `asc` 使用 `ASC_PRIVATE_KEY_PATH` 认证。`store.py` 将 P8 内容写入临时文件，再传入路径。目录权限为 `0700`，文件权限为 `0600`。调用结束后删除文件，失败时也会删除。
+
 Sentry 在这套流程中保持关闭。启用应用崩溃上报需要另行审查隐私声明。构建日志和 dSYM 只以加密产物保存，见下文。
 
 ### App Store 审核环境
 
-配置同名的 `ASC_KEY_ID`、`ASC_ISSUER_ID` 和 `ASC_PRIVATE_KEY_P8`。使用允许提交审核的角色，例如 App Manager。不要把审核联系人或测试密码写进 Git。
+| 类型 | 名称 | 内容 |
+| --- | --- | --- |
+| Variable | `OP_ASC_SECRET_ITEM` | 1Password App Store Connect 条目的完整 `op://vault-id/item-id` 前缀，不含字段 |
+| Secret | `OP_SERVICE_ACCOUNT_TOKEN` | 只读 1Password service account token，只授权 App Store Connect 条目 |
 
-本机的 `op run` 交互会话不能供 Runner 使用。本轮没有将 1Password 数据复制到 GitHub。配置 Secrets 或无人值守保险库访问，需要另行授权。
+审核任务从 `OP_ASC_SECRET_ITEM` 读取 `ASC_KEY_ID`、`ASC_ISSUER_ID` 和 `ASC_PRIVATE_KEY_P8`。使用允许提交审核的角色，例如 App Manager。不要把审核联系人或测试密码写进 Git。
 
 ### 当前配置状态
 
-2026-10-21 20:40（UTC+08:00）在 GitHub 仓库设置中核对。`gh api` 只读查询的结果与页面一致：
+截至 2026-10-22（UTC+08:00），配置仍在进行中。专用 Developer 上传密钥已创建。旧 Marketing Key 未改动。Apple Distribution 证书和三个描述文件已生成。
 
-| 项目 | 状态 |
-| --- | --- |
-| `ios-testflight` 环境 | 已创建，部署分支限制为 `master` |
-| `ios-testflight` 的 `BOJI_API_BASE_URL` | `https://api.leanmuscle.club` |
-| `ios-testflight` 的 required reviewers 和禁止自行批准 | 未设置 |
-| `IOS_BACKEND_VERIFIED`、`IOS_ARTIFACT_PUBLIC_KEY` | 未设置 |
-| TestFlight 的 Secrets | 未设置 |
-| `ios-appstore-review` 环境 | 未创建 |
-| 仓库变量 `IOS_RELEASE_ENABLED` | 未设置，上传和提审 job 会停止 |
+签名材料和上传密钥已存入专用保险库。只读服务账号已配置到 TestFlight 环境。两个条目引用和诊断加密公钥也已配置。实测服务账号只能看到该保险库，八个字段均读取正确。
 
-设置 required reviewers 前，先确定审批人。只有一位维护者时，开启禁止自行批准会使任何人都无法批准部署。
+服务账号有效期为 90 天，到期前需要轮换。诊断解密私钥保存在 CI 无权访问的保险库。核验入库后，已删除本机临时私钥和密码副本。
+
+2026-10-23（UTC+08:00），已设置唯一审批人 `AprilNEA`。允许其审批自己发起的运行，禁止管理员绕过。`master` 分支限制保持不变。IPA 上传尚未执行。
+
+用户已选择先发 TestFlight，验证登录与会员卡。签名阶段只检查 HTTPS 地址等构建条件，不再要求提前宣称后台验收完成。正式提审仍检查 `release-approval.json` 的 `backend` 等六项验收，并绑定同一构建。当前各项仍为 `false`。
 
 ## 第二层：上传构建
 
@@ -253,7 +272,7 @@ git diff --exit-code -- ios/Boji.xcodeproj
 
 2026-10-22（UTC+08:00），在本机 macOS 完成以下验证：
 
-- 64 项 CI/CD 测试通过，含单工作流的来源与任务隔离检查。
+- 71 项 CI/CD 测试通过，含 1Password 作用域和 P8 清理检查。
 - 23 项元数据回归测试通过。
 - `actionlint`、Python 编译和公开元数据校验通过。
 - 固定 XcodeGen 连续生成两次，工程逐字相同。生成结果不含 `TEMP_` 标识符。
@@ -262,6 +281,8 @@ git diff --exit-code -- ios/Boji.xcodeproj
 - Release 产物检查通过。包内没有测试目录，课程动画和嵌入的 Widget、Watch App 完整。
 - 签名准备、部分失败清理和日志管道退出码检查通过。
 - 在隔离钥匙环中完成真实 GPG 加密与解密往返。日志和符号打包范围检查通过。
+
+上传脚本已使用新密钥完成真实只读认证。Apple 返回的 App ID 和 Bundle ID 均与 Boji 匹配。证书与本机生成的私钥公钥匹配。三个描述文件均绑定该证书和对应 Bundle ID。
 
 此前固定 XcodeGen 的签名工程生成检查已通过。三个目标使用独立描述文件，版本与构建号的覆盖检查也通过。该检查使用测试值，没有读取证书或签名。
 
@@ -279,4 +300,5 @@ GPG 测试只生成一次性测试密钥。测试使用短临时路径，避免 
 - [GitHub Xcode 27 镜像公告](https://github.com/actions/runner-images/issues/14404 "前往 GitHub")
 - [在 Runner 安装 Apple 证书](https://docs.github.com/actions/use-cases-and-examples/deploying/installing-an-apple-certificate-on-macos-runners-for-xcode-development "前往 GitHub 文档")
 - [GitHub Environment 保护规则](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments "前往 GitHub 文档")
+- [1Password GitHub Action](https://github.com/1Password/load-secrets-action "前往 GitHub")
 - [Apple 构建上传权限](https://developer.apple.com/help/app-store-connect/manage-builds/upload-builds/ "前往 Apple 文档")

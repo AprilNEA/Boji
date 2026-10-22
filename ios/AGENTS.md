@@ -65,7 +65,16 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 - The macOS jobs use the GitHub-hosted `xcode-27` preview label with Xcode 27.1. Read `docs/ci-cd.md` before you change the runner or Xcode.
 - Run `python3 -m unittest discover -s ios/ci/tests -v` and `actionlint .github/workflows/ios.yml` from the repository root after CI changes. `../.github/actionlint.yaml` declares `xcode-27`, because actionlint 1.7.12 does not list that label.
 - Release jobs require manual dispatch on `master` and protected environments. Do not create, copy or broaden signing credentials without authorization.
+- Release jobs load credentials with `1password/load-secrets-action@70062d7a876d3eb6334754fa26efd2fbd90c32f2` (v5.0.1).
+- Set `export-env: false`. Put `OP_SERVICE_ACCOUNT_TOKEN` only in each loader step's step-level `env`.
+- Use loader step outputs in signing, upload and review steps. Do not pass credentials through job or workflow `env`.
+- Store `OP_SERVICE_ACCOUNT_TOKEN` as an Environment secret. Store `OP_IOS_SIGNING_ITEM` and `OP_ASC_SECRET_ITEM` as Environment variables.
+- Each item variable must be exactly `op://vault-id/item-id`, without a field. Validate it before the corresponding loader step.
+- The signing item holds five named fields and uses an Apple Distribution P12. The App Store Connect item holds the three `ASC_*` fields.
+- `validate`, `build` and `release-gate` must not read a service account token or enter a release Environment.
 - TestFlight requires successful CI jobs in the same run. Review must verify successful `validate`, `build`, `release-gate` and `testflight` jobs in the source run.
+- TestFlight may be used to validate production login and membership. Require a public HTTPS API origin, but do not claim backend acceptance before testing.
+- App Store review still requires all build-bound checks in `ci/release-approval.json`, including `backend`. A successful TestFlight upload does not satisfy them.
 - Preserve those job names or update `ci/guard.py` with them. A successful workflow conclusion alone does not prove that an upload occurred.
 - Keep archive, IPA export and upload visible as separate workflow steps. `ci/signing.py` only validates, prepares and cleans up signing state.
 - Run signing cleanup with `always()`. Preserve build failures through `pipefail`; never publish raw release logs, dSYMs or signing files.
