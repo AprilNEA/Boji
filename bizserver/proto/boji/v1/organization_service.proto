@@ -1,0 +1,152 @@
+syntax = "proto3";
+
+package boji.v1;
+
+import "boji/v1/organization.proto";
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "OrganizationServiceProto";
+option java_package = "club.leanmuscle.boji.v1";
+
+// Serves the organization lists and the public rankings.
+//
+// Every method is public and requires no session. Responses contain only
+// organization data and aggregate counts, never data of a member.
+service OrganizationService {
+  option (google.api.default_host) = "boji.leanmuscle.club";
+
+  // Lists the active organizations, ordered by English name.
+  //
+  // Errors: `INVALID_ARGUMENT` `INVALID_FILTER` when `filter` is outside the
+  // documented subset.
+  rpc ListOrganizations(ListOrganizationsRequest) returns (ListOrganizationsResponse) {
+    option (google.api.http) = {get: "/v1/organizations"};
+  }
+
+  // Returns one organization.
+  //
+  // Errors: `NOT_FOUND` `ORGANIZATION_NOT_FOUND` when no organization has
+  // this ID.
+  rpc GetOrganization(GetOrganizationRequest) returns (Organization) {
+    option (google.api.http) = {get: "/v1/{name=organizations/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // Returns the ranking information of one organization.
+  //
+  // Errors: `NOT_FOUND` `ORGANIZATION_NOT_FOUND` when no organization has
+  // this ID.
+  rpc GetOrganizationStanding(GetOrganizationStandingRequest) returns (OrganizationStanding) {
+    option (google.api.http) = {get: "/v1/{name=organizations/*/standing}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // Lists a ranking.
+  //
+  // With the parent `organizations/-`, the response lists every `RANKED`
+  // organization of the type in `filter`, in rank order. With the parent of
+  // one organization, the response contains the standing of that
+  // organization in any placement. Call `GetOrganizationStanding` instead.
+  //
+  // Errors:
+  // - `NOT_FOUND` `ORGANIZATION_NOT_FOUND`: the parent names an unknown
+  //   organization.
+  // - `INVALID_ARGUMENT` `INVALID_FILTER`: the parent is `organizations/-`
+  //   and `filter` names no type.
+  // - `INVALID_ARGUMENT` `INVALID_PAGE_TOKEN`: the token is not from the
+  //   same request, or the server computed a new ranking since the token was
+  //   issued. Read again from the first page.
+  rpc ListOrganizationStandings(ListOrganizationStandingsRequest) returns (ListOrganizationStandingsResponse) {
+    option (google.api.http) = {get: "/v1/{parent=organizations/*}/organizationStandings"};
+    option (google.api.method_signature) = "parent";
+  }
+}
+
+// Request message for `OrganizationService.ListOrganizations`.
+message ListOrganizationsRequest {
+  // Optional. The maximum number of organizations to return. Zero means the
+  // default of 50. Values above 100 are treated as 100. Negative values
+  // return `INVALID_ARGUMENT`.
+  int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The `next_page_token` of a previous call with the same
+  // `filter`. Empty for the first page.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. An AIP-160 filter. The supported subset is a conjunction with
+  // `AND` of at most one of each of these terms:
+  //
+  // - `type = SCHOOL`: the organization type.
+  // - `region_code = "CN"`: the exact region code.
+  // - A bare or quoted text, for example `交通` or `"Jiao Tong"`: a
+  //   case-insensitive substring of the English name, the Chinese name or an
+  //   email domain. The text must contain 1 to 64 characters.
+  string filter = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for `OrganizationService.ListOrganizations`.
+message ListOrganizationsResponse {
+  // The organizations of this page.
+  repeated Organization organizations = 1;
+
+  // A token for the next page. Empty when no further page exists.
+  string next_page_token = 2;
+}
+
+// Request message for `OrganizationService.GetOrganization`.
+message GetOrganizationRequest {
+  // Required. The name of the organization, for example
+  // `organizations/{organization}`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "boji.leanmuscle.club/Organization"
+  ];
+}
+
+// Request message for `OrganizationService.GetOrganizationStanding`.
+message GetOrganizationStandingRequest {
+  // Required. The name of the standing, for example
+  // `organizations/{organization}/standing`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "boji.leanmuscle.club/OrganizationStanding"
+  ];
+}
+
+// Request message for `OrganizationService.ListOrganizationStandings`.
+message ListOrganizationStandingsRequest {
+  // Required. `organizations/-` for the ranking of one type, or
+  // `organizations/{organization}` for the standing of one organization.
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).child_type = "boji.leanmuscle.club/OrganizationStanding"
+  ];
+
+  // Optional. The maximum number of standings to return. Zero means the
+  // default of 50. Values above 100 are treated as 100. Negative values
+  // return `INVALID_ARGUMENT`.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The `next_page_token` of a previous call with the same
+  // `parent` and `filter`. Empty for the first page.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A subset of AIP-160: the one comparison `type = SCHOOL`.
+  // Required when `parent` is `organizations/-`, because each type has its
+  // own ranking. With the parent of one organization, the filter must be
+  // empty.
+  string filter = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for `OrganizationService.ListOrganizationStandings`.
+message ListOrganizationStandingsResponse {
+  // The standings of this page in rank order.
+  repeated OrganizationStanding organization_standings = 1;
+
+  // A token for the next page. Empty when no further page exists.
+  string next_page_token = 2;
+}

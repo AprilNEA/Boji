@@ -7,9 +7,16 @@
 mod admin_harness;
 
 use admin_harness::{Harness, Identity, VERIFY_EMAIL_SUBJECT};
-use boji_bizserver::{auth_schema::user, entities::membership};
+use boji_bizserver::{
+    auth_schema::user,
+    domain::organization::{
+        self, AffiliationEmail, AffiliationEmailKey, ConfirmRequest, OrganizationType, import,
+    },
+    entities::membership,
+};
+use chrono::Utc;
 use reqwest::{Response, StatusCode};
-use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
+use sea_orm::{ColumnTrait, ConnectionTrait, DbBackend, EntityTrait, QueryFilter, Statement};
 use serde_json::{Value, json};
 use uuid::Uuid;
 
@@ -57,6 +64,64 @@ async fn has_membership(harness: &Harness, identity: &Identity) -> bool {
         .is_some()
 }
 
+/// Give `identity` an affiliation, its event and its code record.
+async fn verify_organization(harness: &Harness, identity: &Identity) {
+    let catalog = import::parse(
+        "0000000000000000000000000000000000000000",
+        r#"[{"name": "Deletion Test University", "alpha_two_code": "CN", "domains": ["deletion-test.edu.cn"]}]"#,
+        r#"{"schools": {}}"#,
+    )
+    .expect("a one-organization list");
+    import::import(&harness.database, &catalog)
+        .await
+        .expect("import the one-organization list");
+    let key = AffiliationEmailKey::new(b"account-contract-key-not-for-production".to_vec())
+        .expect("test key has 32 bytes or more");
+    let email = AffiliationEmail::parse("owner@deletion-test.edu.cn").expect("organization email");
+    let issued = organization::issue_verification(
+        &harness.database,
+        &key,
+        &identity.user_id,
+        OrganizationType::School,
+        &email,
+        Utc::now(),
+    )
+    .await
+    .expect("issue an organization code");
+    organization::confirm_verification(
+        &harness.database,
+        &key,
+        ConfirmRequest {
+            user_id: &identity.user_id,
+            kind: OrganizationType::School,
+            id: issued.verification.id,
+            code: issued.code.as_str(),
+            organization: None,
+        },
+        Utc::now(),
+    )
+    .await
+    .expect("confirm the organization code");
+}
+
+/// Count the rows of `user_id` in the organization tables that reference `user`.
+async fn organization_rows(harness: &Harness, user_id: &str) -> i64 {
+    let row = harness
+        .database
+        .query_one_raw(Statement::from_sql_and_values(
+            DbBackend::Postgres,
+            "SELECT (SELECT COUNT(*) FROM affiliation WHERE user_id = $1) \
+                  + (SELECT COUNT(*) FROM affiliation_event WHERE user_id = $1) \
+                  + (SELECT COUNT(*) FROM affiliation_email_verification WHERE user_id = $1) AS count",
+            [user_id.into()],
+        ))
+        .await
+        .expect("count organization rows")
+        .expect("organization row count");
+    row.try_get("", "count")
+        .expect("organization row count value")
+}
+
 #[tokio::test]
 #[ignore = "requires an isolated PostgreSQL TEST_DATABASE_URL and loopback networking"]
 async fn account_deletion_needs_the_emailed_code_of_the_same_user() {
@@ -64,6 +129,8 @@ async fn account_deletion_needs_the_emailed_code_of_the_same_user() {
     let owner = harness.register_verified("delete-owner").await;
     let card = harness.enroll(&owner, "注销测试").await;
     let other = harness.register_verified("delete-other").await;
+    verify_organization(&harness, &owner).await;
+    assert_eq!(organization_rows(&harness, &owner.user_id).await, 3);
 
     let anonymous = auth_post(&harness, "/api/auth/delete-user", None, json!({})).await;
     assert_eq!(anonymous.status(), StatusCode::UNAUTHORIZED);
@@ -144,6 +211,11 @@ async fn account_deletion_needs_the_emailed_code_of_the_same_user() {
     assert!(
         !has_membership(&harness, &owner).await,
         "deleting the user deletes the membership card"
+    );
+    assert_eq!(
+        organization_rows(&harness, &owner.user_id).await,
+        0,
+        "deleting the user deletes its affiliation, events and codes"
     );
     assert!(!harness.session_is_active(&owner.user_id).await);
     let after = harness

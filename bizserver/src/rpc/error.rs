@@ -8,7 +8,9 @@
 //! `aip_193::proto`.
 
 use crate::proto::boji::v1::ErrorReason;
-use aip_193::proto::{BadRequest, Code, ErrorInfo, FieldViolation, ResourceInfo, Status};
+use aip_193::proto::{
+    BadRequest, Code, ErrorInfo, FieldViolation, ResourceInfo, RetryInfo, Status,
+};
 use buffa::Enumeration;
 use connectrpc::{ConnectError, ErrorCode};
 
@@ -25,6 +27,11 @@ pub mod resource_type {
     pub const ENTITLEMENT: &str = "boji.leanmuscle.club/Entitlement";
     /// `boji.admin.v1.EntitlementGrant`.
     pub const ENTITLEMENT_GRANT: &str = "boji.leanmuscle.club/EntitlementGrant";
+    /// `boji.v1.Organization`.
+    pub const ORGANIZATION: &str = "boji.leanmuscle.club/Organization";
+    /// `boji.v1.AffiliationEmailVerification`.
+    pub const AFFILIATION_EMAIL_VERIFICATION: &str =
+        "boji.leanmuscle.club/AffiliationEmailVerification";
 }
 
 /// Build the `ErrorInfo` for one reason.
@@ -75,6 +82,24 @@ pub fn not_found(reason: ErrorReason, resource_type: &str, resource_name: &str) 
 /// Build a `FAILED_PRECONDITION` error.
 pub fn failed_precondition(reason: ErrorReason, message: &str) -> ConnectError {
     error(ErrorCode::FailedPrecondition, reason, message)
+}
+
+/// Build the `RESOURCE_EXHAUSTED` `RATE_LIMITED` error.
+///
+/// The error carries `google.rpc.RetryInfo` with `delay_seconds`, rounded up
+/// to whole seconds and at least 1.
+pub fn rate_limited(delay_seconds: i64) -> ConnectError {
+    let retry = RetryInfo {
+        retry_delay: super::conversion::seconds(delay_seconds.max(1)).into(),
+        ..Default::default()
+    };
+    reason_status(
+        Code::RESOURCE_EXHAUSTED,
+        ErrorReason::RATE_LIMITED,
+        "The request exceeds a limit. Retry after the delay in `RetryInfo`.",
+    )
+    .with_detail(&retry)
+    .into()
 }
 
 /// Build the `UNAVAILABLE` error for a storage outage.
@@ -141,5 +166,21 @@ mod tests {
         let bad_request = status.detail::<BadRequest>().expect("BadRequest");
         assert_eq!(bad_request.field_violations[0].field, "page_size");
         assert_eq!(bad_request.field_violations[0].reason, "INVALID_INPUT");
+    }
+
+    #[test]
+    fn rate_limited_errors_carry_retry_info() {
+        let error = rate_limited(0);
+        assert_eq!(error.code, ErrorCode::ResourceExhausted);
+        let status = Status::from(&error);
+        assert_eq!(
+            status.error_info().map(|info| info.reason),
+            Some("RATE_LIMITED".to_owned())
+        );
+        let retry = status.detail::<RetryInfo>().expect("RetryInfo");
+        assert_eq!(
+            retry.retry_delay.as_option().map(|delay| delay.seconds),
+            Some(1)
+        );
     }
 }

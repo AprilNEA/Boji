@@ -79,7 +79,7 @@ NEXT_PUBLIC_SENTRY_DSN='https://<公钥>@<主机>/<项目编号>' pnpm build
 
 事件不含请求头、请求体、查询串、Cookie、用户 ID 和 IP 地址。代码设置了 `send_default_pii(false)`，也没有使用 `sentry-tower` 的 `http` 特性。
 
-学校认证的错误事件只有 `event` 字段，例如 `school_verification_mail_failed`、`school_storage_failed` 和 `school_crypto_failed`。事件不含学校邮箱、邮箱 HMAC、验证码和学校。验证码只出现在请求体中，不出现在路径中，所以事务名也不包含验证码。
+学校认证的错误事件只有 `event` 字段，例如 `affiliation_verification_mail_failed`、`organization_storage_failed` 和 `organization_crypto_failed`。事件不含学校邮箱、邮箱 HMAC、验证码和学校。验证码只出现在请求体中，不出现在路径中，所以事务名也不包含验证码。
 
 服务端没有开启性能追踪。外层路由看不到路由模板，事务名会包含原始路径，例如重置令牌。
 

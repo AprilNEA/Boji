@@ -1,5 +1,8 @@
 use anyhow::{Context, Result, bail};
-use boji_bizserver::{app, auth, config::Config, migrations, rpc, telemetry};
+use boji_bizserver::{
+    app, auth, config::Config, domain::organization::import, mail::Mailer, migrations, rpc,
+    telemetry,
+};
 use sea_orm::{ConnectOptions, Database};
 use std::{process::ExitCode, sync::Arc, time::Duration};
 use tracing_subscriber::{EnvFilter, layer::SubscriberExt, util::SubscriberInitExt};
@@ -37,12 +40,13 @@ fn start() -> Result<()> {
     result
 }
 
-/// Check the command, load the configuration and start logging, then migrate
-/// or serve. `sentry` adds the Sentry layer to the log subscriber.
+/// Check the command, load the configuration and start logging, then migrate,
+/// import the organization list or serve. `sentry` adds the Sentry layer to the log
+/// subscriber.
 async fn run(sentry: bool) -> Result<()> {
     let command = std::env::args().nth(1).unwrap_or_else(|| "serve".into());
-    if !matches!(command.as_str(), "serve" | "migrate") {
-        bail!("Usage: boji-bizserver [serve|migrate]");
+    if !matches!(command.as_str(), "serve" | "migrate" | "import-schools") {
+        bail!("Usage: boji-bizserver [serve|migrate|import-schools]");
     }
     let config = Config::load()?;
     tracing_subscriber::registry()
@@ -70,6 +74,11 @@ async fn run(sentry: bool) -> Result<()> {
     migrations::ensure_current(&database)
         .await
         .context("Run explicit migrations against an isolated Rust database before serving")?;
+    if command == "import-schools" {
+        let result = import_schools(&database).await;
+        database.close().await.context("Database close failed")?;
+        return result;
+    }
     let wallet = config.wallet.map(Arc::new);
     if let Some(signer) = &wallet
         && !signer.is_current(chrono::Utc::now())
@@ -77,9 +86,17 @@ async fn run(sentry: bool) -> Result<()> {
         // The service starts, and WalletService returns WALLET_NOT_CONFIGURED.
         tracing::warn!(event = "wallet_certificate_not_current");
     }
+    let affiliation_verification = match config.affiliation_email_key {
+        Some(key) => Some(rpc::AffiliationVerification {
+            key: Arc::new(key),
+            mailer: Mailer::new(config.mail.clone()).context("Mail initialization failed")?,
+        }),
+        None => None,
+    };
     let capabilities = rpc::Capabilities {
         apple_sign_in: config.apple.is_some(),
         wallet,
+        affiliation_verification,
     };
     let auth = auth::build(
         database.clone(),
@@ -106,6 +123,30 @@ async fn run(sentry: bool) -> Result<()> {
         .await
         .context("HTTP server failed")?;
     database.close().await.context("Database close failed")?;
+    Ok(())
+}
+
+/// Write the bundled organization list to the database and log the result.
+async fn import_schools(database: &sea_orm::DatabaseConnection) -> Result<()> {
+    let catalog = import::bundled().context("The bundled organization list is invalid")?;
+    let report = import::import(database, &catalog)
+        .await
+        .context("Organization list import failed")?;
+    for organization in &report.retired {
+        // A retired organization keeps its verifications until they expire.
+        tracing::warn!(
+            event = "organization_retired",
+            key = %organization.key,
+            active_affiliations = organization.active_affiliations
+        );
+    }
+    tracing::info!(
+        event = "organizations_imported",
+        organizations = report.organizations,
+        domains = report.domains,
+        created = report.created,
+        retired = report.retired.len()
+    );
     Ok(())
 }
 

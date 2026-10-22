@@ -237,6 +237,7 @@ I have read the CLA Document and I hereby sign the CLA
 | Apple 设备边框（Apple Design Resources） | `ios/app-store/screenshots/public/frames/`、`websites/public/frames/`、`assets/public/screenshots/apple/watch/` |
 | 动作库 | `animations/src/exercises/library/`、`assets/public/previews/library/` |
 | Apple Root CA 证书 | `bizserver/assets/wallet/apple-root-ca.crt` |
+| 学校名单数据（Hipo university-domains-list，MIT 许可证） | `bizserver/data/schools/hipo.json`、`bizserver/data/schools/LICENSE-hipo.txt` |
 | 第三方依赖与字体 | — |
 
 如需使用动作库，须另行取得 AprilNEA LLC 的商业授权。

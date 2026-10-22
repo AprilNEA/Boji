@@ -50,6 +50,11 @@ message ServerConfig {
 
   // Output only. True when `ActivityService` accepts synchronization.
   bool activity_sync_enabled = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. True when `AffiliationService` can send and check
+  // affiliation verification codes. `OrganizationService` serves the
+  // organization lists and the rankings in either case.
+  bool organization_ranking_enabled = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // Request message for `SystemService.GetServerConfig`.

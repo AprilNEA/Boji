@@ -17,7 +17,7 @@ use serde::Deserialize;
 /// A key path with a `.` places the value in a group, for example
 /// `APPLE_TEAM_ID` becomes `apple.team_id`. The process ignores variables
 /// that are not in this table.
-pub const VARIABLES: [(&str, &str); 31] = [
+pub const VARIABLES: [(&str, &str); 32] = [
     ("APP_ENV", "app_env"),
     ("HOST", "host"),
     ("PORT", "port"),
@@ -52,6 +52,7 @@ pub const VARIABLES: [(&str, &str); 31] = [
         "wallet.signer_key_passphrase",
     ),
     ("WALLET_WWDR_CERT", "wallet.wwdr_cert"),
+    ("AFFILIATION_EMAIL_HMAC_KEY", "affiliation_email_hmac_key"),
 ];
 
 /// Return the environment variable for a figment key path.
@@ -167,6 +168,7 @@ pub struct Settings {
     pub smtp: SmtpSettings,
     pub apple: AppleSettings,
     pub wallet: WalletSettings,
+    pub affiliation_email_hmac_key: Option<String>,
 }
 
 /// `MAIL_*` variables.

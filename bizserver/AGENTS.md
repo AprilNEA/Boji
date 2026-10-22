@@ -13,13 +13,14 @@ Do not reimplement Connect framing or password and session algorithms. Use `app:
 | `src/apple.rs` | Sign in with Apple provider assembly and the stored-email fallback |
 | `src/wallet.rs`, `src/wallet/` | Apple Wallet signing material checks, pass packaging, and PKCS #7 signatures |
 | `assets/wallet/` | Pass icons and the Apple Root CA that `src/wallet.rs` embeds at build time |
-| `src/domain/` | Transport-independent membership, administration, and activity rules |
+| `data/schools/` | The school list: the pinned Hipo snapshot, its MIT notice and local corrections, which `src/domain/organization/import.rs` embeds at build time. See `data/schools/README.md` |
+| `src/domain/` | Transport-independent membership, administration, activity and organization-ranking rules |
 | `src/admin_auth.rs`, `src/admin_permissions.rs` | Native permission checks and application-owned business role grants |
 | `src/entities/` | SeaORM business entities |
 | `src/migrations*` | Versioned PostgreSQL migrations |
 | `src/rpc*` | ConnectRPC adapters: errors, resource names, page tokens, filters and conversions |
 | `src/telemetry.rs` | Optional Sentry error reporting: settings, the tracing layer, request tags and path redaction |
-| `proto/boji/v1/` | Canonical owner API: system, membership, activity and Wallet contracts, and `ErrorReason` |
+| `proto/boji/v1/` | Canonical owner API: system, membership, activity, Wallet and school contracts, and `ErrorReason` |
 | `proto/boji/admin/v1/` | Canonical operations API: entitlement catalog and membership administration |
 | `tests/` | Contract and database integration tests |
 | `docs/` | Chinese interface and migration documents |
@@ -48,7 +49,21 @@ To add a setting, add the variable to `VARIABLES` in `src/config/source.rs`, add
 
 Keep the `auth::UserDeletion` before-delete hook. It deletes the `user` row in one statement, so the cascades are atomic. Without it, Better Auth deletes sessions and accounts in separate statements, and then fails on the `api_keys` table that this service does not create. That failure leaves a user who cannot sign in. When you upgrade better-auth-rs, run `tests/account_contract.rs` before you remove or change the hook.
 
-The service has no request rate limiter and does not trust forwarding headers by default. The CDN and the gateway in front of it limit requests and terminate connections. `CLIENT_IP_HEADER` must name a header that the gateway overwrites. Do not add an in-process limiter without a documented need.
+The service has no request rate limiter and does not trust forwarding headers by default. The CDN and the gateway in front of it limit requests and terminate connections. `CLIENT_IP_HEADER` must name a header that the gateway overwrites. Do not add an in-process limiter without a documented need. The sending limits of affiliation verification codes are business rules stored in PostgreSQL, not a request limiter.
+
+## School ranking
+
+The API models a school as an organization of type `SCHOOL`. `Organization`, `OrganizationStanding` and `Affiliation` are generic, so a later type, such as a company, reuses the email domain verification and the ranking. Each type has its own list, its own `TypePolicy` in `policy` of `src/domain/organization.rs` and its own ranking. Never rank two types together. A user holds at most one organization of each type: the primary key of `affiliation` is `(user_id, organization_type)`. To add a type, add it to `OrganizationType` in `boji/v1/organization.proto` and in `src/domain/organization.rs`, and to `ORGANIZATION_TYPES` in `src/migrations/organization.rs` through a new migration.
+
+`boji.v1.OrganizationService`, `boji.v1.AffiliationService` and `boji.admin.v1.OrganizationService` are always registered. Verification is off when `AFFILIATION_EMAIL_HMAC_KEY` is unset: `ServerConfig.organization_ranking_enabled` is false and the verification methods return `AFFILIATION_VERIFICATION_NOT_CONFIGURED`. The design is `../docs/developers/school-ranking.mdx`. The public rules page is `../docs/guide/school-ranking.mdx`. When a rule that users see changes, update both documents.
+
+- Change the school list only through `data/schools/` and `cargo run --locked -- import-schools`. Do not add an API that edits schools or domains. Corrections cannot add a school that the Hipo snapshot lacks.
+- `COUNTED_CONDITION` in `src/domain/organization.rs` is the only definition of a counted member. The ranking and `Affiliation.counted` both use it. Do not repeat the rule elsewhere.
+- Store only the HMAC of a school address and of a code. Never store, log or report the address, the code or the HMAC. The response returns only the masked address and the domain.
+- Rows have no key version, so changing `AFFILIATION_EMAIL_HMAC_KEY` breaks the one-address-one-account rule. Add key versions before you support rotation.
+- `OrganizationStanding` returns counts only when `placement` is `RANKED`. Keep counts below the public threshold out of every public response. A frozen organization shows the counts that `organization_standing_freeze` saved, and the same threshold applies to them.
+- Every operations change of `boji.admin.v1.OrganizationService` writes its audit event in the same transaction and clears the ranking cache.
+- The ranking cache lives in one process for 60 seconds. Write ranking snapshots to PostgreSQL before the service runs more than one instance.
 
 ## Apple Wallet
 
@@ -68,7 +83,7 @@ The protobuf API follows Google AIPs. No released client uses it yet, so a contr
 - Return the resource from Get, Create and state-change methods. A state change whose target state already exists returns `FAILED_PRECONDITION` and writes no audit event, except `GrantEntitlement`, which returns the existing grant.
 - Run `buf lint`, the `buf format` check and `api-linter`. `api-linter` must report zero problems. Disable a rule only for one element, with a `(-- api-linter: ... aip.dev/not-precedent: ... --)` comment that states the reason. Explain every `buf.yaml` lint exception in a comment.
 
-`buf.yaml` defines the buf workspace, and `proto/` is its only module. `buf.lock` pins googleapis from the BSR. To update googleapis, run `buf dep update` here, then set the googleapis commit in `../ios/BojiAPI/buf.gen.yaml` to the new commit. `build.rs` runs `buf build` on the workspace and maps `google.rpc` to `aip_193::proto` with an `extern_path`. Generate only Boji files and `google/type/date.proto`; do not generate `google.rpc` here.
+`buf.yaml` defines the buf workspace, and `proto/` is its only module. `buf.lock` pins googleapis from the BSR. To update googleapis, run `buf dep update` here, then set the googleapis commit in `../ios/BojiAPI/buf.gen.yaml` and `../android/rpc/buf.gen.yaml` to the new commit. `build.rs` runs `buf build` on the workspace and maps `google.rpc` to `aip_193::proto` with an `extern_path`. Generate only Boji files, `google/type/date.proto` and `google/type/localized_text.proto`; do not generate `google.rpc` here. When a contract starts to use another `google.type` file, add it to `build.rs` and to the `paths` of the googleapis input in both client `buf.gen.yaml` files.
 
 Clients generate their code from this workspace. After a change to `proto/boji/v1/`, run `buf generate` in `../ios/BojiAPI/` and in `../android/rpc/`, and include the regenerated Swift and Kotlin files in the same change. This is the one exception to the rule against changes in client directories: a contract change must not leave the generated client code stale.
 
@@ -89,6 +104,7 @@ Run these commands in this directory inside the devenv shell of the repository r
 - `buf format -d --exit-code`
 - `api-linter` on an export of the workspace and its googleapis dependency: `buf export . -o ../.work/buf-export && (cd ../.work/buf-export && api-linter --set-exit-status -I . $(find boji -name '*.proto'))`
 - `cargo run --locked -- migrate`
+- `cargo run --locked -- import-schools`
 - `cargo run --locked -- serve`
 
 devenv does not provide `api-linter`. Install version 1.72.0 into the ignored root `.work/tools/bin/` with `GOBIN="$PWD/../.work/tools/bin" go install github.com/googleapis/api-linter/cmd/api-linter@v1.72.0`. This requires Go.

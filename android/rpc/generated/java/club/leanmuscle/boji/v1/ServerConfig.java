@@ -209,6 +209,50 @@ public  final class ServerConfig extends
     activitySyncEnabled_ = false;
   }
 
+  public static final int ORGANIZATION_RANKING_ENABLED_FIELD_NUMBER = 5;
+  private boolean organizationRankingEnabled_;
+  /**
+   * <pre>
+   * Output only. True when `AffiliationService` can send and check
+   * affiliation verification codes. `OrganizationService` serves the
+   * organization lists and the rankings in either case.
+   * </pre>
+   *
+   * <code>bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   * @return The organizationRankingEnabled.
+   */
+  @java.lang.Override
+  public boolean getOrganizationRankingEnabled() {
+    return organizationRankingEnabled_;
+  }
+  /**
+   * <pre>
+   * Output only. True when `AffiliationService` can send and check
+   * affiliation verification codes. `OrganizationService` serves the
+   * organization lists and the rankings in either case.
+   * </pre>
+   *
+   * <code>bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   * @param value The organizationRankingEnabled to set.
+   */
+  private void setOrganizationRankingEnabled(boolean value) {
+    
+    organizationRankingEnabled_ = value;
+  }
+  /**
+   * <pre>
+   * Output only. True when `AffiliationService` can send and check
+   * affiliation verification codes. `OrganizationService` serves the
+   * organization lists and the rankings in either case.
+   * </pre>
+   *
+   * <code>bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   */
+  private void clearOrganizationRankingEnabled() {
+
+    organizationRankingEnabled_ = false;
+  }
+
   public static club.leanmuscle.boji.v1.ServerConfig parseFrom(
       java.nio.ByteBuffer data)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -506,6 +550,52 @@ public  final class ServerConfig extends
       return this;
     }
 
+    /**
+     * <pre>
+     * Output only. True when `AffiliationService` can send and check
+     * affiliation verification codes. `OrganizationService` serves the
+     * organization lists and the rankings in either case.
+     * </pre>
+     *
+     * <code>bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return The organizationRankingEnabled.
+     */
+    @java.lang.Override
+    public boolean getOrganizationRankingEnabled() {
+      return instance.getOrganizationRankingEnabled();
+    }
+    /**
+     * <pre>
+     * Output only. True when `AffiliationService` can send and check
+     * affiliation verification codes. `OrganizationService` serves the
+     * organization lists and the rankings in either case.
+     * </pre>
+     *
+     * <code>bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param value The organizationRankingEnabled to set.
+     * @return This builder for chaining.
+     */
+    public Builder setOrganizationRankingEnabled(boolean value) {
+      copyOnWrite();
+      instance.setOrganizationRankingEnabled(value);
+      return this;
+    }
+    /**
+     * <pre>
+     * Output only. True when `AffiliationService` can send and check
+     * affiliation verification codes. `OrganizationService` serves the
+     * organization lists and the rankings in either case.
+     * </pre>
+     *
+     * <code>bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearOrganizationRankingEnabled() {
+      copyOnWrite();
+      instance.clearOrganizationRankingEnabled();
+      return this;
+    }
+
     // @@protoc_insertion_point(builder_scope:boji.v1.ServerConfig)
   }
   @java.lang.Override
@@ -526,10 +616,11 @@ public  final class ServerConfig extends
             "appleLoginEnabled_",
             "walletPassEnabled_",
             "activitySyncEnabled_",
+            "organizationRankingEnabled_",
           };
           java.lang.String info =
-              "\u0000\u0004\u0000\u0000\u0001\u0004\u0004\u0000\u0000\u0000\u0001\u0208\u0002\u0007" +
-              "\u0003\u0007\u0004\u0007";
+              "\u0000\u0005\u0000\u0000\u0001\u0005\u0005\u0000\u0000\u0000\u0001\u0208\u0002\u0007" +
+              "\u0003\u0007\u0004\u0007\u0005\u0007";
           return newMessageInfo(DEFAULT_INSTANCE, info, objects);
       }
       case GET_DEFAULT_INSTANCE: {

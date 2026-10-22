@@ -9,7 +9,7 @@
 | 服务端的 `google.rpc` Rust 类型 | [`aip-193`](https://crates.io/crates/aip-193) 的 `proto` 特性 |
 | 过滤条件解析 | [`aip-160`](https://crates.io/crates/aip-160) |
 
-修改协议后，必须运行 `buf lint`、`buf format -d --exit-code` 和 Google `api-linter`。三项检查的命令见 `AGENTS.md`。修改 `proto/boji/v1/` 后，还要在 `ios/BojiAPI/` 中运行 `buf generate`，并在同一次改动中提交重新生成的 Swift 代码。
+修改协议后，必须运行 `buf lint`、`buf format -d --exit-code` 和 Google `api-linter`。三项检查的命令见 `AGENTS.md`。修改 `proto/boji/v1/` 后，还要在 `ios/BojiAPI/` 和 `android/rpc/` 中运行 `buf generate`，并在同一次改动中提交重新生成的 Swift 和 Kotlin 代码。
 
 ## 包与文件
 
@@ -23,8 +23,13 @@
 | `boji/v1/membership_service.proto` | 会员本人的 `MembershipService` | 已注册 |
 | `boji/v1/activity_service.proto` | `ActivityService`、资源 `Activity` 与 `SyncState` | 已注册 |
 | `boji/v1/wallet_service.proto` | `WalletService` 与资源 `MembershipPass` | 已注册 |
+| `boji/v1/organization.proto` | 资源 `Organization`、`OrganizationStanding` 与枚举 `OrganizationType`，两个包共用 | 已使用 |
+| `boji/v1/organization_service.proto` | 公开的 `OrganizationService` | 已注册 |
+| `boji/v1/affiliation.proto` | 资源 `Affiliation` 与 `AffiliationEmailVerification`，两个包共用 | 已使用 |
+| `boji/v1/affiliation_service.proto` | 会员本人的 `AffiliationService` | 已注册 |
 | `boji/admin/v1/entitlement_service.proto` | 运营的 `EntitlementService` 与资源 `Entitlement` | 已注册 |
 | `boji/admin/v1/membership_service.proto` | 运营的 `MembershipService` 与资源 `EntitlementGrant` | 已注册 |
+| `boji/admin/v1/organization_service.proto` | 运营的 `OrganizationService` | 已注册 |
 
 
 新服务不提供旧 REST 业务路径。iOS 和 Android 必须改用 ConnectRPC 生成的客户端。
@@ -51,7 +56,7 @@ Authorization: Bearer <signed-session-token>
 
 业务接口只接受已验证邮箱的有效会话。客户端必须使用登录响应的 `set-auth-token`。服务不接受原始会话 token 或仅 Cookie 的业务请求。
 
-`SystemService/GetServerConfig` 不要求登录，请求为 `{"name":"serverConfig"}`。服务设置全部 `APPLE_*` 变量后，`appleLoginEnabled` 为 `true`。服务配置了 Wallet 签名材料，并且签名证书和 WWDR 证书都在有效期内时，`walletPassEnabled` 为 `true`。`activitySyncEnabled` 为 `true`。
+`SystemService/GetServerConfig` 和 `boji.v1.OrganizationService` 的方法不要求登录。`GetServerConfig` 的请求为 `{"name":"serverConfig"}`。服务设置全部 `APPLE_*` 变量后，`appleLoginEnabled` 为 `true`。服务配置了 Wallet 签名材料，并且签名证书和 WWDR 证书都在有效期内时，`walletPassEnabled` 为 `true`。`activitySyncEnabled` 为 `true`。服务设置了 `AFFILIATION_EMAIL_HMAC_KEY` 时，`organizationRankingEnabled` 为 `true`。
 
 ## 资源名
 
@@ -64,10 +69,14 @@ Authorization: Bearer <signed-session-token>
 | `MembershipPass` | `users/{user}/memberships/{membership}/pass` |
 | `SyncState` | `users/{user}/syncState` |
 | `Activity` | `users/{user}/activities/{activity}` |
+| `Organization` | `organizations/{organization}` |
+| `OrganizationStanding` | `organizations/{organization}/standing` |
+| `Affiliation` | `users/{user}/affiliations/{affiliation}` |
+| `AffiliationEmailVerification` | `users/{user}/affiliations/{affiliation}/emailVerifications/{email_verification}` |
 | `Entitlement` | `entitlements/{entitlement}` |
 | `EntitlementGrant` | `users/{user}/memberships/{membership}/entitlementGrants/{entitlement}` |
 
-`{user}` 是 Better Auth 的用户 ID。`{membership}`、`{activity}` 和 `{entitlement}` 是 UUID。会员本人调用 `boji.v1` 时，`{user}` 可以写成 `me`，也可以写成自己的用户 ID。资源名指向其他用户时，服务端在检查资源是否存在之前返回 `permission_denied` `RESOURCE_ACCESS_DENIED`。
+`{user}` 是 Better Auth 的用户 ID。`{membership}`、`{activity}`、`{organization}`、`{email_verification}` 和 `{entitlement}` 是 UUID。`{affiliation}` 是小写的组织类型，目前只有 `school`。会员本人调用 `boji.v1` 时，`{user}` 可以写成 `me`，也可以写成自己的用户 ID。资源名指向其他用户时，服务端在检查资源是否存在之前返回 `permission_denied` `RESOURCE_ACCESS_DENIED`。
 
 运营方法的 `{user}` 可以写成 `-`，表示按 `{membership}` 查找任意用户的会员卡（AIP-159）。资源名中的用户与会员卡不匹配时，服务端返回 `not_found`。
 
@@ -87,8 +96,18 @@ Authorization: Bearer <signed-session-token>
 | `boji.v1.ActivityService` | `SyncActivities` | 增量拉取变更，包括删除 |
 | `boji.v1.ActivityService` | `SummarizeActivities` | 读取日期范围内的每日汇总 |
 | `boji.v1.WalletService` | `GetMembershipPass` | 下载 Apple Wallet 会员卡 |
+| `boji.v1.OrganizationService` | `ListOrganizations` | 按类型、名称、域名或地区查找组织 |
+| `boji.v1.OrganizationService` | `GetOrganization` | 读取一个组织 |
+| `boji.v1.OrganizationService` | `ListOrganizationStandings` | 按名次分页列出一种类型的公开排名，或读取一个组织的排名 |
+| `boji.v1.OrganizationService` | `GetOrganizationStanding` | 读取一个组织的排名 |
+| `boji.v1.AffiliationService` | `GetAffiliation` | 读取本人一种类型的归属 |
+| `boji.v1.AffiliationService` | `ListAffiliations` | 列出本人每种类型的归属 |
+| `boji.v1.AffiliationService` | `CreateAffiliationEmailVerification` | 提交组织邮箱，发送验证码 |
+| `boji.v1.AffiliationService` | `GetAffiliationEmailVerification` | 读取一次邮箱验证 |
+| `boji.v1.AffiliationService` | `ConfirmAffiliationEmailVerification` | 提交验证码，建立、续期或更换归属 |
+| `boji.v1.AffiliationService` | `LeaveOrganization` | 结束本人一种类型的归属 |
 
-运营方法见[运营接口](#运营接口)。
+组织与归属的方法见[组织排名接口](#组织排名接口)，运营方法见[运营接口](#运营接口)。
 
 ## 分页
 
@@ -104,7 +123,10 @@ Authorization: Bearer <signed-session-token>
 | `boji.v1.MembershipService/ListMemberships` | 50 | 100 |
 | `ListActivities`、`SyncActivities` | 100 | 200 |
 | `SummarizeActivities` | 93 | 93 |
-| 运营的 `ListMemberships`、`ListEntitlements`、`ListEntitlementGrants` | 50 | 100 |
+| `ListOrganizations`、`ListOrganizationStandings` | 50 | 100 |
+| 运营的 `ListMemberships`、`ListEntitlements`、`ListEntitlementGrants`、`ListAffiliations` | 50 | 100 |
+
+本人的 `ListAffiliations` 每种类型返回一项，始终只有一页。它不接受 `pageToken`，`pageSize` 只检查是否为负数。
 
 ## 会员卡
 
@@ -230,11 +252,11 @@ Connect JSON 中的详情是 base64 编码的 protobuf。会员卡不存在时�
 
 认证接口 `/api/auth/*` 使用 `better-auth-rs` 的原生错误，不使用上述格式。
 
-请求体和解码后的消息上限均为 64 KiB。服务端不做请求限流，由 CDN 和网关负责。
+请求体和解码后的消息上限均为 64 KiB。服务端不做请求限流，由 CDN 和网关负责。唯一的例外是学校验证码的发送上限，见[邮箱验证码](#邮箱验证码)。
 
 ## 运营接口
 
-`boji.admin.v1.EntitlementService` 和 `boji.admin.v1.MembershipService` 已接入会员卡与权益运营。`m20261020_000004_admin` 迁移建立审计表。权限配置和运维边界见[运营说明](admin-operations.md)。
+`boji.admin.v1.EntitlementService` 和 `boji.admin.v1.MembershipService` 已接入会员卡与权益运营。`boji.admin.v1.OrganizationService` 已接入归属与排名运营，见[运营方法](#运营方法)。`m20261020_000004_admin` 迁移建立审计表。权限配置和运维边界见[运营说明](admin-operations.md)。
 
 ### 访问控制
 
@@ -250,6 +272,8 @@ Connect JSON 中的详情是 base64 编码的 protobuf。会员卡不存在时�
 | `MembershipService` | `SuspendMembership`、`ResumeMembership` | `membership.update` |
 | `MembershipService` | `GrantEntitlement` | `entitlement.grant` |
 | `MembershipService` | `RevokeEntitlementGrant` | `entitlement.revoke` |
+| `OrganizationService` | `GetAffiliation`、`ListAffiliations` | `organization.read` |
+| `OrganizationService` | `RevokeAffiliation`、`FreezeOrganizationStanding`、`UnfreezeOrganizationStanding` | `organization.update` |
 
 ### 查询
 
@@ -336,3 +360,132 @@ Wallet 错误使用与其他方法相同的 `ErrorInfo`。服务端完成会话�
 | `unavailable` | `WALLET_SIGNING_FAILED` | 稍后可以重试 |
 
 客户端收到其他 `reason` 时，按错误码处理。
+
+## 组织排名接口
+
+组织排名由两个服务组成。`boji.v1.OrganizationService` 公开组织名单和排名，不要求登录。`boji.v1.AffiliationService` 管理会员本人的归属，要求与其他本人方法相同的会话。计数规则、排序规则和隐私处理见[大学排名设计](../../docs/developers/school-ranking.mdx)。
+
+本节用到 3 个术语：
+
+- 组织（`Organization`）：会员可以用邮箱证明自己属于的单位，例如一所大学。
+- 组织类型（`OrganizationType`）：组织的类别。目前只有 `SCHOOL`。每种类型有自己的名单、验证规则和排名，不同类型不混排。
+- 归属（`Affiliation`）：一个用户与一种类型下一个组织的关系。每个用户每种类型最多有一个组织。
+
+### 组织名单
+
+`SCHOOL` 类型的名单来自 `data/schools/` 中的 Hipo 快照和本地修正，由 `import-schools` 命令写入数据库，见 `data/schools/README.md`。`Organization` 的主要字段如下：
+
+- `type`：组织类型，例如 `SCHOOL`。
+- `displayNames`：`google.type.LocalizedText` 列表。第一项是英文名，语言代码为 `en`。有中文名时，第二项的语言代码为 `zh-Hans`。客户端显示与用户语言匹配的一项，没有匹配项时显示英文名。
+- `regionCode`：ISO 3166-1 alpha-2 代码，例如 `CN`。
+- `emailDomains`：可用于验证的邮箱域名，例如 `xjtlu.edu.cn`。子域名的地址也匹配，例如 `student.xjtlu.edu.cn`。
+
+`ListOrganizations` 只列出有效的组织，按英文名排序。`filter` 支持 AIP-160 的一个子集，下面每种条件最多一项，用 `AND` 连接：
+
+- `type = SCHOOL`：按组织类型匹配。
+- `region_code = "CN"`：按地区精确匹配。
+- 一段文本：例如 `交通` 或 `"Jiao Tong"`，长度为 1～64 个字符。服务端在英文名、中文名和邮箱域名中做不区分大小写的子串匹配。含空格的文本必须加引号。
+
+其他表达式返回 `INVALID_FILTER`。页令牌绑定 `filter`。
+
+### 排名
+
+`OrganizationStanding` 是每个组织的单例资源。`placement` 的取值如下：
+
+| `placement` | 含义 | 计数字段 |
+| --- | --- | --- |
+| `RANKED` | 计入人数达到这种类型的公开门槛。`SCHOOL` 的门槛是 3 人 | `rank`、`memberCount`、`weeklyNewMemberCount` |
+| `BELOW_THRESHOLD` | 有计入的会员，但不足门槛 | 不返回 |
+| `NO_MEMBERS` | 没有计入的会员 | 不返回 |
+
+计数字段只在 `RANKED` 时返回，所以响应不会泄露不足门槛的人数。名次只在同一类型内计算。每个响应还带有 `weekStartTime`（北京时间本周一 0:00）、`computeTime`、`organizationDisplayNames`、`organizationRegionCode` 和 `organizationType`，所以排名页不需要再逐个调用 `GetOrganization`。
+
+运营人员冻结一个组织后，`frozen` 为 `true`，排名使用冻结时保存的人数和名次依据，直到解冻。排名页应把这个组织标为「审核中」。冻结时不足门槛的组织仍不返回计数字段。
+
+服务端在读取时按类型计算排名，并在进程内缓存 60 秒。新的一周开始时，或运营人员撤销归属、冻结或解冻组织后，缓存立即失效。`ListOrganizationStandings` 的 `parent` 有两种形式：
+
+- `organizations/-`：按名次列出一种类型中 `RANKED` 的组织。`filter` 必须是 `type = SCHOOL`，缺少类型时返回 `INVALID_FILTER`。页令牌绑定类型和 `computeTime`。缓存更新后，旧页令牌返回 `INVALID_PAGE_TOKEN`，客户端从第一页重新读取。
+- `organizations/{organization}`：返回这个组织的一条排名，`placement` 可以是任意值。这种形式不分页，`filter` 必须为空。携带 `pageToken` 时返回 `INVALID_PAGE_TOKEN`。
+
+`GetOrganizationStanding` 读取任意一个组织的排名，例如 `{"name":"organizations/<id>/standing"}`。
+
+### 邮箱验证码
+
+验证分两步。第一步提交组织邮箱。`parent` 是本人这种类型的归属：
+
+```json
+{
+  "parent": "users/me/affiliations/school",
+  "affiliationEmailVerification": {"email": "alice@student.xjtlu.edu.cn"}
+}
+```
+
+服务端在这种类型的组织中按最长域名后缀找到候选组织，向这个地址发送 6 位验证码，然后返回 `AffiliationEmailVerification`。响应不包含 `email`，只包含 `maskedEmail`（例如 `a***@student.xjtlu.edu.cn`）、`candidateOrganizations`、`expireTime` 和 `resendTime`。服务端只保存地址的 HMAC，不保存原文。邮件发送失败时，服务端删除这次记录并返回 `unavailable` `BACKEND_UNAVAILABLE`，这次失败不计入发送上限。
+
+第二步提交验证码：
+
+```json
+{"name": "users/me/affiliations/school/emailVerifications/<id>", "code": "123456"}
+```
+
+`candidateOrganizations` 多于一个时，请求还必须用 `organization` 选择其中一个。缺少 `organization`，或者 `organization` 不在候选组织中，服务端返回 `INVALID_INPUT`，`fieldViolations` 指向 `organization`。成功后，响应的 `affiliation` 是验证后的状态。同一个地址在同一类型下的有效归属属于另一个账号时，那个归属立即结束。
+
+`SCHOOL` 类型的验证码参数如下：
+
+| 参数 | 值 |
+| --- | --- |
+| 有效期 | 10 分钟 |
+| 错误次数上限 | 5 次，超过后验证码作废 |
+| 同一账号的重发间隔 | 60 秒 |
+| 同一账号的发送上限 | 每 24 小时 5 次 |
+| 同一地址的发送上限 | 每小时 3 次，所有账号合计 |
+
+超过上限时，服务端返回 `resource_exhausted` `RATE_LIMITED`，并附带 `google.rpc.RetryInfo`。`retryDelay` 向上取整到秒，至少为 1 秒。验证码记录保存 24 小时，之后在下一次发送时删除。
+
+### 归属
+
+每个用户每种类型都有一个 `Affiliation`，资源 ID 是小写的类型，例如 `users/me/affiliations/school`。`{affiliation}` 不是已知类型时，服务端返回 `INVALID_INPUT`。`ListAffiliations` 按 `OrganizationType` 的顺序返回每种类型的一项。
+
+`state` 为 `UNAFFILIATED`、`ACTIVE` 或 `EXPIRED`。`organizationType` 是这个归属的类型。`counted` 表示本人当前是否计入组织人数：归属有效、会员卡为 `ACTIVE` 且账号未被封禁时才为 `true`。会员卡暂停后，`state` 仍为 `ACTIVE`，`counted` 为 `false`。
+
+`SCHOOL` 归属的有效期为 365 天。用本校的任一邮箱重新验证会续期，`countStartTime` 不变。更换学校必须距离上次更换至少 30 天，`organizationChangeAvailableTime` 给出最早时间。`LeaveOrganization` 立即结束归属。
+
+### 运营方法
+
+`boji.admin.v1.OrganizationService` 使用[访问控制](#访问控制)中的规则。它与本人接口共用 `Affiliation` 和 `OrganizationStanding` 资源。组织名单没有运营方法，只能通过 `data/schools/` 中的文件和 `import-schools` 命令修改。
+
+| 方法 | 作用 |
+| --- | --- |
+| `GetAffiliation` | 读取任意用户一种类型的归属，例如 `users/<用户 ID>/affiliations/school`。`{user}` 不能写成 `-` |
+| `ListAffiliations` | 列出 `ACTIVE` 和 `EXPIRED` 的归属，按最近一次验证时间降序排列。`parent` 为 `users/-` 时列出全部用户 |
+| `RevokeAffiliation` | 立即结束一个有效归属。这个地址之后可以验证其他账号，本人也可以再次验证 |
+| `FreezeOrganizationStanding` | 保存组织当前的人数、本周新增人数和名次依据。解冻前，排名使用保存的值 |
+| `UnfreezeOrganizationStanding` | 删除冻结，排名重新使用当前人数 |
+
+`ListAffiliations` 的 `filter` 只支持一个等值比较，例如 `organization = "organizations/<id>"`。其他表达式返回 `INVALID_FILTER`。页令牌绑定 `parent` 和 `filter`。冻结期间保存的本周新增人数不会在新的一周清零。
+
+3 个变更方法都要求 `reason`，规则与会员卡运营的 `reason` 相同。每次变更在同一个事务中写入一条审计事件，动作如下。审计事件不保存邮箱地址或它的 HMAC。
+
+| 方法 | 审计动作 |
+| --- | --- |
+| `RevokeAffiliation` | `organization.affiliation.revoked` |
+| `FreezeOrganizationStanding` | `organization.standing.frozen` |
+| `UnfreezeOrganizationStanding` | `organization.standing.unfrozen` |
+
+重复撤销、重复冻结或解冻未冻结的组织时，服务端返回 `failed_precondition`，不改变数据，也不写审计事件。
+
+### 组织排名错误
+
+| Connect 错误码 | `reason` | 客户端处理 |
+| --- | --- | --- |
+| `failed_precondition` | `AFFILIATION_VERIFICATION_NOT_CONFIGURED` | 隐藏验证入口，不重试 |
+| `failed_precondition` | `MEMBERSHIP_REQUIRED` | 引导用户领卡 |
+| `failed_precondition` | `MEMBERSHIP_SUSPENDED` | 刷新会员卡，不重试 |
+| `invalid_argument` | `AFFILIATION_EMAIL_DOMAIN_UNKNOWN` | 显示「你的学校暂未收录」 |
+| `invalid_argument` | `AFFILIATION_VERIFICATION_CODE_INVALID` | 让用户重新输入验证码 |
+| `failed_precondition` | `AFFILIATION_VERIFICATION_EXPIRED` | 让用户重新获取验证码 |
+| `failed_precondition` | `ORGANIZATION_CHANGE_TOO_SOON` | 显示 `organizationChangeAvailableTime` |
+| `failed_precondition` | `AFFILIATION_INACTIVE` | 刷新归属 |
+| `not_found` | `ORGANIZATION_NOT_FOUND`、`AFFILIATION_EMAIL_VERIFICATION_NOT_FOUND` | 刷新页面 |
+| `resource_exhausted` | `RATE_LIMITED` | 等待 `RetryInfo.retryDelay` 后再发送 |
+| `failed_precondition` | `ORGANIZATION_STANDING_ALREADY_FROZEN`、`ORGANIZATION_STANDING_NOT_FROZEN` | 仅运营方法返回。刷新排名状态 |

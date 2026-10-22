@@ -17,10 +17,16 @@ const FILES: &[&str] = &[
     "boji/v1/membership_service.proto",
     "boji/v1/wallet_service.proto",
     "boji/v1/activity_service.proto",
+    "boji/v1/organization.proto",
+    "boji/v1/organization_service.proto",
+    "boji/v1/affiliation.proto",
+    "boji/v1/affiliation_service.proto",
     "boji/admin/v1/entitlement_service.proto",
     "boji/admin/v1/membership_service.proto",
-    // A googleapis type that appears in Boji messages.
+    "boji/admin/v1/organization_service.proto",
+    // The googleapis types that appear in Boji messages.
     "google/type/date.proto",
+    "google/type/localized_text.proto",
 ];
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

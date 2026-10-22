@@ -138,6 +138,35 @@ public object ServerConfigKt {
     public fun clearActivitySyncEnabled() {
       _builder.clearActivitySyncEnabled()
     }
+
+    /**
+     * ```
+     * Output only. True when `AffiliationService` can send and check
+     * affiliation verification codes. `OrganizationService` serves the
+     * organization lists and the rankings in either case.
+     * ```
+     *
+     * `bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];`
+     */
+    public var organizationRankingEnabled: kotlin.Boolean
+      @kotlin.jvm.JvmName("getOrganizationRankingEnabled")
+        get() = _builder.organizationRankingEnabled
+      @kotlin.jvm.JvmName("setOrganizationRankingEnabled")
+        set(value) {
+        _builder.organizationRankingEnabled = value
+      }
+    /**
+     * ```
+     * Output only. True when `AffiliationService` can send and check
+     * affiliation verification codes. `OrganizationService` serves the
+     * organization lists and the rankings in either case.
+     * ```
+     *
+     * `bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];`
+     */
+    public fun clearOrganizationRankingEnabled() {
+      _builder.clearOrganizationRankingEnabled()
+    }
   }
 }
 public inline fun club.leanmuscle.boji.v1.ServerConfig.copy(block: `club.leanmuscle.boji.v1`.ServerConfigKt.Dsl.() -> kotlin.Unit): club.leanmuscle.boji.v1.ServerConfig =

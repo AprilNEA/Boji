@@ -1,7 +1,7 @@
 //! Private real-HTTP and PostgreSQL fixture support for contract tests.
 //!
-//! `admin_contract`, `account_contract` and `wallet_contract` include this
-//! file. Each test crate uses only part of it.
+//! `admin_contract`, `account_contract`, `wallet_contract` and
+//! `organization_contract` include this file. Each test crate uses only part of it.
 #![allow(dead_code)]
 
 use axum::Router;
@@ -20,7 +20,7 @@ use sea_orm::{
     DbBackend, EntityTrait, QueryFilter, Set, Statement,
 };
 use serde_json::{Value, json};
-use std::{env, time::Duration};
+use std::{env, path::Path, time::Duration};
 use tempfile::TempDir;
 use tokio::{sync::oneshot, task::JoinHandle};
 use uuid::Uuid;
@@ -60,6 +60,12 @@ impl Harness {
     }
 
     pub async fn with_capabilities(capabilities: Capabilities) -> Self {
+        Self::with_mail_capabilities(|_| capabilities).await
+    }
+
+    /// Build the capabilities from the private mail directory, so that a
+    /// capability can deliver mail that [`Self::read_mail`] reads.
+    pub async fn with_mail_capabilities(capabilities: impl FnOnce(&Path) -> Capabilities) -> Self {
         let database_url = env::var("TEST_DATABASE_URL")
             .expect("admin contract tests require an isolated TEST_DATABASE_URL");
         let control = Database::connect(&database_url)
@@ -84,6 +90,7 @@ impl Harness {
             .expect("migrate the private test schema");
 
         let mail = TempDir::new().expect("create private authentication mail directory");
+        let capabilities = capabilities(mail.path());
         let listener = tokio::net::TcpListener::bind("127.0.0.1:0")
             .await
             .expect("bind private HTTP listener");

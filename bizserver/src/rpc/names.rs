@@ -5,6 +5,7 @@
 //! Pos: transport only. Domain code receives plain IDs.
 
 use super::error::{error, invalid_input};
+use crate::domain::organization::OrganizationType;
 use crate::proto::boji::v1::ErrorReason;
 use connectrpc::{ConnectError, ErrorCode};
 use uuid::Uuid;
@@ -62,6 +63,17 @@ pub fn uuid(field: &str, segment: &str) -> Result<Uuid, ConnectError> {
         .map_err(|_| invalid_input(field, "The resource ID segment must be a UUID."))
 }
 
+/// Parse the `{affiliation}` segment, which is an organization type in
+/// lowercase, or return `INVALID_ARGUMENT` for `field`.
+pub fn organization_type(field: &str, segment: &str) -> Result<OrganizationType, ConnectError> {
+    OrganizationType::parse(segment).ok_or_else(|| {
+        invalid_input(
+            field,
+            "The affiliation ID must be an organization type in lowercase, for example `school`.",
+        )
+    })
+}
+
 /// Check that the `{user}` segment of an owner method names the caller.
 ///
 /// Another user returns `PERMISSION_DENIED` before any lookup, so the caller
@@ -111,6 +123,38 @@ pub fn activity(user: &str, activity: &str) -> String {
 /// `users/{user}/syncState`.
 pub fn sync_state(user: &str) -> String {
     format!("users/{user}/syncState")
+}
+
+/// The `{organization}` wildcard of `ListOrganizationStandings` for the ranking
+/// of one type.
+pub const ANY_ORGANIZATION: &str = "-";
+
+/// `organizations/{organization}`.
+pub fn organization(organization: &Uuid) -> String {
+    format!("organizations/{organization}")
+}
+
+/// `organizations/{organization}/standing`.
+pub fn organization_standing(organization: &Uuid) -> String {
+    format!("organizations/{organization}/standing")
+}
+
+/// `users/{user}/affiliations/{affiliation}`, where `{affiliation}` is the
+/// organization type.
+pub fn affiliation(user: &str, kind: OrganizationType) -> String {
+    format!("users/{user}/affiliations/{}", kind.as_str())
+}
+
+/// `users/{user}/affiliations/{affiliation}/emailVerifications/{email_verification}`.
+pub fn affiliation_email_verification(
+    user: &str,
+    kind: OrganizationType,
+    verification: &Uuid,
+) -> String {
+    format!(
+        "users/{user}/affiliations/{}/emailVerifications/{verification}",
+        kind.as_str()
+    )
 }
 
 fn valid_id(segment: &str) -> bool {

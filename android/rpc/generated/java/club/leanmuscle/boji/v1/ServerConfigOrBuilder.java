@@ -60,4 +60,16 @@ public interface ServerConfigOrBuilder extends
    * @return The activitySyncEnabled.
    */
   boolean getActivitySyncEnabled();
+
+  /**
+   * <pre>
+   * Output only. True when `AffiliationService` can send and check
+   * affiliation verification codes. `OrganizationService` serves the
+   * organization lists and the rankings in either case.
+   * </pre>
+   *
+   * <code>bool organization_ranking_enabled = 5 [json_name = "organizationRankingEnabled", (.google.api.field_behavior) = OUTPUT_ONLY];</code>
+   * @return The organizationRankingEnabled.
+   */
+  boolean getOrganizationRankingEnabled();
 }

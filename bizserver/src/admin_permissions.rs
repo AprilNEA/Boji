@@ -12,7 +12,8 @@ use better_auth::plugins::admin::{AdminPlugin, RolePermissions};
 pub fn plugin() -> AdminPlugin {
     let business = RolePermissions::new()
         .allow("membership", ["read", "update"])
-        .allow("entitlement", ["read", "grant", "revoke"]);
+        .allow("entitlement", ["read", "grant", "revoke"])
+        .allow("organization", ["read", "update"]);
     AdminPlugin::new().roles(HashMap::from([
         ("user".to_owned(), RolePermissions::new()),
         ("operator".to_owned(), business.clone()),

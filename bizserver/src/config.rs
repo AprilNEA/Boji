@@ -8,6 +8,7 @@ pub mod source;
 
 use crate::apple::AppleSignIn;
 use crate::auth::{AccountLinking, ClientIp};
+use crate::domain::organization::AffiliationEmailKey;
 use crate::mail::{MailTransport, SmtpCredentials, SmtpRelay, SmtpSecurity};
 use crate::wallet::{PassSigner, WalletCredentials};
 use anyhow::{Context, Result, anyhow, bail};
@@ -51,6 +52,10 @@ pub struct Config {
     pub wallet: Option<PassSigner>,
     /// Rule for a social sign-in whose email already belongs to a user.
     pub account_linking: AccountLinking,
+    /// The key of the organization email and code digests. `None` when
+    /// `AFFILIATION_EMAIL_HMAC_KEY` is unset, which turns affiliation off.
+    /// Never log this field.
+    pub affiliation_email_key: Option<AffiliationEmailKey>,
 }
 
 impl Config {
@@ -112,6 +117,8 @@ impl Config {
             .unwrap_or_else(|| DEFAULT_LOG_FILTER.to_owned());
         tracing_subscriber::EnvFilter::try_new(&log_filter)
             .map_err(|_| anyhow!("RUST_LOG must contain tracing filter directives"))?;
+        let affiliation_email_key =
+            affiliation_email_key(settings.affiliation_email_hmac_key, &auth_secret)?;
         Ok(Self {
             database_url,
             bind: SocketAddr::new(host, port),
@@ -126,8 +133,30 @@ impl Config {
             apple: apple(settings.apple)?,
             wallet: wallet(settings.wallet)?,
             account_linking: account_linking(settings.account_linking.as_deref())?,
+            affiliation_email_key,
         })
     }
+}
+
+/// Parse `AFFILIATION_EMAIL_HMAC_KEY`. An unset value turns affiliation
+/// off.
+///
+/// The key must differ from `BETTER_AUTH_SECRET`, so that rotating one secret
+/// never changes the other. Changing this key later makes every stored
+/// address hash unusable, so users must verify again.
+fn affiliation_email_key(
+    value: Option<String>,
+    auth_secret: &str,
+) -> Result<Option<AffiliationEmailKey>> {
+    let Some(value) = value else {
+        return Ok(None);
+    };
+    if value == auth_secret {
+        bail!("AFFILIATION_EMAIL_HMAC_KEY must differ from BETTER_AUTH_SECRET");
+    }
+    AffiliationEmailKey::new(value.into_bytes())
+        .map(Some)
+        .map_err(|_| anyhow!("AFFILIATION_EMAIL_HMAC_KEY must contain at least 32 bytes"))
 }
 
 /// Parse `ACCOUNT_LINKING`. An unset value keeps linking disabled.
@@ -660,6 +689,31 @@ mod tests {
                 "ACCOUNT_LINKING must be disabled or enabled"
             );
         }
+    }
+
+    #[test]
+    fn the_affiliation_email_key_is_optional_long_and_separate() {
+        assert!(load(&[]).unwrap().affiliation_email_key.is_none());
+        assert!(
+            load(&[(
+                "AFFILIATION_EMAIL_HMAC_KEY",
+                "fedcba9876543210fedcba9876543210"
+            )])
+            .unwrap()
+            .affiliation_email_key
+            .is_some()
+        );
+        assert_eq!(
+            error(&[("AFFILIATION_EMAIL_HMAC_KEY", "short")]),
+            "AFFILIATION_EMAIL_HMAC_KEY must contain at least 32 bytes"
+        );
+        assert_eq!(
+            error(&[(
+                "AFFILIATION_EMAIL_HMAC_KEY",
+                "0123456789abcdef0123456789abcdef"
+            )]),
+            "AFFILIATION_EMAIL_HMAC_KEY must differ from BETTER_AUTH_SECRET"
+        );
     }
 
     #[test]

@@ -138,6 +138,34 @@ async fn deliver(mailer: &Mailer, to: Option<&str>, email: Email) -> AuthResult<
         .await
 }
 
+/// Code that verifies a school email address for the `school` affiliation.
+///
+/// The message holds no link, because the code is entered in the signed-in
+/// App. The lifetime comes from `domain::organization::policy::CODE_LIFETIME`.
+pub fn school_verification(code: &str) -> Email {
+    let minutes = crate::domain::organization::policy::CODE_LIFETIME.num_minutes();
+    let escaped = escape(code);
+    Email {
+        subject: "薄肌学校认证验证码",
+        text: format!(
+            "你正在用这个学校邮箱认证你在薄肌的学校。请在 App 中输入以下验证码：\n\n{code}\n\n\
+             验证码在 {minutes} 分钟内有效。薄肌不保存完整的邮箱地址。\n\n\
+             如果不是你发起的请求，请忽略此邮件。"
+        ),
+        html: format!(
+            "<p>你正在用这个学校邮箱认证你在薄肌的学校。请在 App 中输入以下验证码：</p>\
+             <p><code>{escaped}</code></p>\
+             <p>验证码在 {minutes} 分钟内有效。薄肌不保存完整的邮箱地址。</p>\
+             <p>如果不是你发起的请求，请忽略此邮件。</p>"
+        ),
+    }
+}
+
+/// Send a [`affiliation_verification`] message to an organization address.
+pub async fn send_school_verification(mailer: &Mailer, to: &str, code: &str) -> AuthResult<()> {
+    deliver(mailer, Some(to), school_verification(code)).await
+}
+
 /// Sends [`verification`] messages.
 #[derive(Clone, Debug)]
 pub struct VerificationEmailSender {
@@ -260,5 +288,9 @@ mod tests {
         assert!(deletion.text.contains("15 分钟内"));
         assert!(deletion.text.contains("0123abcd") && deletion.html.contains("0123abcd"));
         assert!(!deletion.html.contains("href"));
+        let organization = school_verification("012345");
+        assert!(organization.text.contains("10 分钟内"));
+        assert!(organization.text.contains("012345") && organization.html.contains("012345"));
+        assert!(!organization.html.contains("href"));
     }
 }

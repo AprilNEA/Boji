@@ -4,7 +4,7 @@ description: 大学排名的计数、排序、学校名单、学校邮箱认证�
 icon: Trophy
 ---
 
-状态：后端第一期已实现（2026-10-21）：学校名单、学校邮箱认证和公开排名。冻结、运营方法、网站页面和 App 入口尚未实现。实现与原设计的差异见[实现状态](#实现状态)。
+状态：后端已实现（2026-10-21）：学校名单、学校邮箱认证、公开排名、冻结和运营方法。网站页面和 App 入口尚未实现。实现与原设计的差异见[实现状态](#实现状态)。
 
 本文档设计「大学排名」及相关功能。排名单位是学校，指标是学校的「计入人数」。会员必须同时持有有效的会员卡和有效的学校认证，才计入人数。排名按计入人数从多到少排列。人数相同时，先凑齐当前人数的学校在前。公开页面只显示每所学校的聚合数字，不显示会员名单。学校名单只收录 Hipo university-domains-list 中的学校。
 
@@ -31,15 +31,18 @@ icon: Trophy
 
 ## 实现状态
 
-后端代码位于 `bizserver/src/domain/school/`、`bizserver/src/rpc/school.rs` 和 `bizserver/src/rpc/school_affiliation.rs`。接口说明见 [ConnectRPC 业务接口](https://github.com/AprilNEA/Boji/blob/master/bizserver/docs/connectrpc-api.md#学校排名接口)，名单数据见 `bizserver/data/schools/README.md`。
+后端代码位于 `bizserver/src/domain/organization/`、`bizserver/src/rpc/organization.rs`、`bizserver/src/rpc/affiliation.rs` 和 `bizserver/src/rpc/organization_admin.rs`。接口说明见 [ConnectRPC 业务接口](https://github.com/AprilNEA/Boji/blob/master/bizserver/docs/connectrpc-api.md#组织排名接口)，名单数据见 `bizserver/data/schools/README.md`。
+
+接口和数据表使用通用的「组织」模型，学校是 `SCHOOL` 类型的组织。以后加入公司或俱乐部等类型时，可以复用邮箱域名验证、计数和排名。每种类型有自己的名单、规则参数和排名，不同类型不混排。一个账号在每种类型下最多有一个组织。本文档的规则只针对学校。
 
 | 部分 | 状态 |
 | --- | --- |
 | 学校名单、导入命令 `import-schools` | 已实现 |
-| `SchoolService`：学校查询与公开排名 | 已实现 |
-| `SchoolAffiliationService`：学校邮箱认证、续期、更换和退出 | 已实现 |
+| `boji.v1.OrganizationService`：组织查询与公开排名 | 已实现 |
+| `boji.v1.AffiliationService`：学校邮箱认证、续期、更换和退出 | 已实现 |
 | 按账号和学校邮箱限制验证码发送 | 已实现 |
-| 冻结与 `boji.admin.v1.SchoolService` | 未实现 |
+| `boji.admin.v1.OrganizationService`：认证查询、撤销、冻结和解冻 | 已实现 |
+| 按学校和日期统计新认证数、查看域名排除项 | 未实现 |
 | 认证事件的定期清理 | 未实现。`bizserver` 没有后台任务 |
 | 网站页面、App 入口、名单申请 | 未实现 |
 | 隐私政策和守则文案的修改 | 未实现 |
@@ -48,11 +51,14 @@ icon: Trophy
 
 | 原设计 | 实现 |
 | --- | --- |
+| 资源 `School`，单例 `users/{user}/schoolAffiliation` | 资源 `Organization` 带 `type` 字段。学校认证是 `users/{user}/affiliations/school` |
 | 修正文件 `overrides.yaml`，ID 对应表 `ids.yaml` | 修正文件 `overrides.json`。没有 ID 对应表：数据库按学校键保存每所学校的 UUID |
 | 上游删除的学校标记为待审核 | 学校只有有效和停用两种状态。上游删除的学校停用，已有认证在到期前继续计入 |
 | 缺少会员卡时返回 `MEMBERSHIP_NOT_FOUND` | 返回 `failed_precondition` `MEMBERSHIP_REQUIRED`。`MEMBERSHIP_NOT_FOUND` 表示指定的会员卡不存在，含义不同 |
-| 没有读取单个验证码认证的方法 | 增加 `GetSchoolEmailVerification`，满足 AIP 对每个资源提供 Get 方法的要求 |
-| 没有规定 `ServerConfig.school_ranking_enabled` 何时为 `true` | 服务端设置了 `SCHOOL_EMAIL_HMAC_KEY` 时为 `true` |
+| 没有读取单个验证码认证的方法 | 增加 `GetAffiliationEmailVerification`，满足 AIP 对每个资源提供 Get 方法的要求 |
+| 没有规定 `ServerConfig` 的排名开关何时为 `true` | 字段名为 `organization_ranking_enabled`。服务端设置了 `AFFILIATION_EMAIL_HMAC_KEY` 时为 `true` |
+| 运营方法 `ListSchoolAffiliations` 按学校和时间查看认证 | `ListAffiliations` 按组织筛选，按最近一次验证时间降序排列，只列出有效和已过期的认证 |
+| 冻结记录保存原因 | 冻结表保存操作者和冻结时间，原因只写入审计事件 |
 
 学校键的格式为 `<alpha_two_code>:<name>`，例如 `CN:Xi'an Jiaotong-Liverpool University`。学校 ID 只保存在数据库中，所以新建的数据库会得到不同的学校 ID。上游给学校改名后，导入会创建新学校，并停用旧学校。
 
@@ -68,6 +74,8 @@ icon: Trophy
 | 凑齐时间 | 一所学校当前计入的会员中，最晚的计入时间。它表示学校在什么时间凑齐了当前人数 |
 | 本周新增 | 本周内开始计入、并且现在仍然计入的会员数 |
 | 冻结 | 运营人员暂停一所学校的公开计数。冻结期间，公开页面显示冻结时的数字 |
+| 组织 | 接口中的通用实体 `Organization`。学校是 `SCHOOL` 类型的组织 |
+| 归属 | 接口中的 `Affiliation`，即一个账号与一种类型下一个组织的关联。学校认证是 `SCHOOL` 类型的归属 |
 
 ## 计数规则
 
@@ -270,7 +278,7 @@ Issue 是公开的。表单必须提示：禁止填写完整邮箱地址、学�
 | 更换学校的冷却期 | 30 天 |
 | 公开门槛 | 3 人 |
 
-参数是 `bizserver/src/domain/school.rs` 中 `policy` 模块的常数，不是环境变量。验证码的发送上限也定义在这个模块中。
+参数是 `bizserver/src/domain/organization.rs` 中 `policy` 模块的常数，不是环境变量。上表的三项是 `policy::SCHOOL`，只用于学校。验证码的发送上限也定义在这个模块中，所有组织类型共用。
 
 ## 页面
 
@@ -309,54 +317,60 @@ Issue 是公开的。表单必须提示：禁止填写完整邮箱地址、学�
 
 ## 接口
 
-接口遵循现有的 AIP 约定，见 [ConnectRPC 业务接口](https://github.com/AprilNEA/Boji/blob/master/bizserver/docs/connectrpc-api.md)。下面的公开与本人方法已经实现，并通过了 `buf lint` 和 `api-linter`。运营方法尚未实现。修改 `bizserver/proto/boji/v1/` 后，必须在 `ios/BojiAPI/` 和 `android/rpc/` 中运行 `buf generate`。
+接口遵循现有的 AIP 约定，见 [ConnectRPC 业务接口](https://github.com/AprilNEA/Boji/blob/master/bizserver/docs/connectrpc-api.md#组织排名接口)。下面的方法已经实现，并通过了 `buf lint` 和 `api-linter`。修改 `bizserver/proto/boji/v1/` 后，必须在 `ios/BojiAPI/` 和 `android/rpc/` 中运行 `buf generate`。
 
 ### 资源
 
 | 资源 | 资源名 | 内容 |
 | --- | --- | --- |
-| `School` | `schools/{school}` | 中文名、英文名、国家或地区代码、可用于认证的邮箱域名 |
-| `SchoolStanding` | `schools/{school}/standing` | 单例：公开状态、名次、人数、本周新增、计算时间。冻结标注未实现 |
-| `SchoolAffiliation` | `users/{user}/schoolAffiliation` | 单例：本人的学校、认证邮箱的域名、状态、计入时间、到期时间 |
-| `SchoolEmailVerification` | `users/{user}/schoolEmailVerifications/{school_email_verification}` | 一次验证码认证：候选学校、遮盖后的邮箱、过期时间、可重发时间 |
+| `Organization` | `organizations/{organization}` | 类型、中文名、英文名、国家或地区代码、可用于认证的邮箱域名 |
+| `OrganizationStanding` | `organizations/{organization}/standing` | 单例：公开状态、名次、人数、本周新增、计算时间、冻结标记 |
+| `Affiliation` | `users/{user}/affiliations/{affiliation}` | 本人一种类型的组织、认证邮箱的域名、状态、计入时间、到期时间 |
+| `AffiliationEmailVerification` | `users/{user}/affiliations/{affiliation}/emailVerifications/{email_verification}` | 一次验证码认证：候选组织、遮盖后的邮箱、过期时间、可重发时间 |
 
-`{school}` 和 `{school_email_verification}` 是 UUID。`SchoolStanding` 不公开凑齐时间，因为凑齐时间是某一位会员的认证时间。人数不足公开门槛时，`SchoolStanding` 也不返回人数和本周新增。
+`{organization}` 和 `{email_verification}` 是 UUID。`{affiliation}` 是小写的组织类型，所以学校认证的资源名是 `users/{user}/affiliations/school`。`OrganizationStanding` 不公开凑齐时间，因为凑齐时间是某一位会员的认证时间。人数不足公开门槛时，`OrganizationStanding` 也不返回人数和本周新增。
 
-`SchoolAffiliation` 是单例资源。按照 AIP-156，单例资源没有 Create 和 Delete 方法。用户没有学校认证时，这个单例的状态为「无」。
+每个账号在每种类型下都有一个 `Affiliation`，所以它没有 Create 和 Delete 方法。账号没有这种类型的组织时，状态为 `UNAFFILIATED`。
 
 ### 公开与本人方法
 
 | 服务 | 方法 | 调用条件 | 用途 |
 | --- | --- | --- | --- |
-| `boji.v1.SchoolService` | `ListSchools` | 不要求登录 | 按校名或地区查找学校 |
-| `boji.v1.SchoolService` | `GetSchool` | 不要求登录 | 读取一所学校 |
-| `boji.v1.SchoolService` | `ListSchoolStandings` | 不要求登录 | 按名次分页列出公开排名，或读取一所学校的排名 |
-| `boji.v1.SchoolService` | `GetSchoolStanding` | 不要求登录 | 读取一所学校的排名信息 |
-| `boji.v1.SchoolAffiliationService` | `GetSchoolAffiliation` | 已验证邮箱的会话 | 读取本人的学校认证 |
-| `boji.v1.SchoolAffiliationService` | `CreateSchoolEmailVerification` | 已验证邮箱的会话 | 提交学校邮箱，发送验证码 |
-| `boji.v1.SchoolAffiliationService` | `GetSchoolEmailVerification` | 已验证邮箱的会话 | 读取一次验证码认证 |
-| `boji.v1.SchoolAffiliationService` | `ConfirmSchoolEmailVerification` | 已验证邮箱的会话 | 提交验证码，建立、续期或更换学校认证 |
-| `boji.v1.SchoolAffiliationService` | `LeaveSchool` | 已验证邮箱的会话 | 结束本人的学校认证 |
+| `boji.v1.OrganizationService` | `ListOrganizations` | 不要求登录 | 按类型、名称、域名或地区查找组织 |
+| `boji.v1.OrganizationService` | `GetOrganization` | 不要求登录 | 读取一个组织 |
+| `boji.v1.OrganizationService` | `ListOrganizationStandings` | 不要求登录 | 按名次分页列出一种类型的公开排名，或读取一个组织的排名 |
+| `boji.v1.OrganizationService` | `GetOrganizationStanding` | 不要求登录 | 读取一个组织的排名信息 |
+| `boji.v1.AffiliationService` | `GetAffiliation` | 已验证邮箱的会话 | 读取本人一种类型的归属 |
+| `boji.v1.AffiliationService` | `ListAffiliations` | 已验证邮箱的会话 | 列出本人每种类型的归属 |
+| `boji.v1.AffiliationService` | `CreateAffiliationEmailVerification` | 已验证邮箱的会话 | 提交学校邮箱，发送验证码 |
+| `boji.v1.AffiliationService` | `GetAffiliationEmailVerification` | 已验证邮箱的会话 | 读取一次验证码认证 |
+| `boji.v1.AffiliationService` | `ConfirmAffiliationEmailVerification` | 已验证邮箱的会话 | 提交验证码，建立、续期或更换学校认证 |
+| `boji.v1.AffiliationService` | `LeaveOrganization` | 已验证邮箱的会话 | 结束本人一种类型的归属，例如退出学校 |
 
-`SchoolService` 与 `SystemService` 一样不要求登录。`ListSchoolStandings` 的 `parent` 为 `schools/-` 时按名次分页，为 `schools/{school}` 时返回这所学校的一条排名（AIP-156 单例的 List 方法）。`pageSize` 默认为 50，上限为 100。页令牌绑定排名的计算时间。缓存更新后，旧页令牌返回 `INVALID_PAGE_TOKEN`，客户端从第一页重新读取。
+`OrganizationService` 与 `SystemService` 一样不要求登录。`ListOrganizationStandings` 的 `parent` 为 `organizations/-` 时按名次分页，`filter` 必须指定类型，例如 `type = SCHOOL`。`parent` 为 `organizations/{organization}` 时，方法返回这个组织的一条排名（AIP-156 单例的 List 方法）。`pageSize` 默认为 50，上限为 100。页令牌绑定类型和排名的计算时间。缓存更新后，旧页令牌返回 `INVALID_PAGE_TOKEN`，客户端从第一页重新读取。
 
 公开方法可以声明为无副作用，让 Connect 客户端使用 GET 请求，CDN 就能缓存响应。`bizserver` 使用的 ConnectRPC Rust 实现是否支持 GET 请求，未验证。
 
-`ServerConfig` 增加 `school_ranking_enabled`。服务端设置了 `SCHOOL_EMAIL_HMAC_KEY` 时，这个值为 `true`。客户端只在这个值为 `true` 时显示排名和认证入口。
+`ServerConfig` 增加 `organization_ranking_enabled`。服务端设置了 `AFFILIATION_EMAIL_HMAC_KEY` 时，这个值为 `true`。客户端只在这个值为 `true` 时显示排名和认证入口。
 
 ### 运营方法
 
-运营方法尚未实现。下面是设计。运营方法位于 `boji.admin.v1.SchoolService`，沿用[会员运营接口](https://github.com/AprilNEA/Boji/blob/master/bizserver/docs/admin-operations.md)的权限和会话要求。每次变更都必须填写原因，变更和审计事件在同一个事务中提交。
+运营方法位于 `boji.admin.v1.OrganizationService`，沿用[会员运营接口](https://github.com/AprilNEA/Boji/blob/master/bizserver/docs/admin-operations.md)的权限和会话要求。读取方法需要 `organization.read` 权限，变更方法需要 `organization.update` 权限。每次变更都必须填写原因，变更和审计事件在同一个事务中提交。
 
 运营方法不能修改学校名单和域名表。名单只通过仓库的数据文件修改，见[数据文件与导入](#数据文件与导入)。
 
-| 方法 | 用途 |
-| --- | --- |
-| `ListSchoolDomains` | 查看一所学校的域名、排除项和数据来源 |
-| `ListSchoolAffiliations` | 按学校和时间查看认证记录，不返回邮箱 HMAC |
-| `RevokeSchoolAffiliation` | 撤销一个学校认证 |
-| `FreezeSchoolStanding`、`UnfreezeSchoolStanding` | 冻结或解除冻结一所学校的公开计数 |
-| `ListSchoolDailyStats` | 按学校和日期列出新认证数 |
+| 方法 | 用途 | 状态 |
+| --- | --- | --- |
+| `GetAffiliation` | 读取任意账号一种类型的归属 | 已实现 |
+| `ListAffiliations` | 按组织列出有效和已过期的认证，不返回邮箱 HMAC | 已实现 |
+| `RevokeAffiliation` | 撤销一个有效的学校认证 | 已实现 |
+| `FreezeOrganizationStanding`、`UnfreezeOrganizationStanding` | 冻结或解除冻结一所学校的公开计数 | 已实现 |
+| 按学校和日期列出新认证数 | 发现异常增长 | 未实现 |
+| 查看一所学校的域名排除项和数据来源 | 核查域名 | 未实现。可用域名见公开的 `Organization.email_domains` |
+
+撤销后，这个地址可以认证其他账号，本人也可以再次认证。要阻止被滥用的域名，在名单中排除这个域名。要阻止一个账号，暂停它的会员卡。
+
+审计动作为 `organization.affiliation.revoked`、`organization.standing.frozen` 和 `organization.standing.unfrozen`。重复撤销、重复冻结或解冻没有冻结的学校时，服务端返回错误，不改变数据，也不写审计事件。
 
 ### 错误原因
 
@@ -365,45 +379,49 @@ Issue 是公开的。表单必须提示：禁止填写完整邮箱地址、学�
 | 错误原因 | 状态码 | 条件 |
 | --- | --- | --- |
 | `MEMBERSHIP_REQUIRED` | `failed_precondition` | 本人没有会员卡 |
-| `SCHOOL_VERIFICATION_NOT_CONFIGURED` | `failed_precondition` | 服务端没有设置 `SCHOOL_EMAIL_HMAC_KEY` |
-| `SCHOOL_EMAIL_DOMAIN_UNKNOWN` | `invalid_argument` | 域名不在域名表中，或者匹配到排除项 |
-| `SCHOOL_NOT_FOUND` | `not_found` | 学校不存在 |
-| `SCHOOL_EMAIL_VERIFICATION_NOT_FOUND` | `not_found` | 验证码认证不存在，或者已经超过 24 小时的保存期 |
-| `SCHOOL_VERIFICATION_CODE_INVALID` | `invalid_argument` | 验证码错误 |
-| `SCHOOL_VERIFICATION_EXPIRED` | `failed_precondition` | 验证码已过期、已用完错误次数或已经使用 |
-| `SCHOOL_CHANGE_TOO_SOON` | `failed_precondition` | 距离上次更换学校不足 30 天 |
-| `SCHOOL_AFFILIATION_INACTIVE` | `failed_precondition` | 退出学校时，本人没有有效的学校认证 |
+| `AFFILIATION_VERIFICATION_NOT_CONFIGURED` | `failed_precondition` | 服务端没有设置 `AFFILIATION_EMAIL_HMAC_KEY` |
+| `AFFILIATION_EMAIL_DOMAIN_UNKNOWN` | `invalid_argument` | 域名不在这种类型的域名表中，或者匹配到排除项 |
+| `ORGANIZATION_NOT_FOUND` | `not_found` | 组织不存在 |
+| `AFFILIATION_EMAIL_VERIFICATION_NOT_FOUND` | `not_found` | 验证码认证不存在，或者已经超过 24 小时的保存期 |
+| `AFFILIATION_VERIFICATION_CODE_INVALID` | `invalid_argument` | 验证码错误 |
+| `AFFILIATION_VERIFICATION_EXPIRED` | `failed_precondition` | 验证码已过期、已用完错误次数或已经使用 |
+| `ORGANIZATION_CHANGE_TOO_SOON` | `failed_precondition` | 距离上次更换学校不足 30 天 |
+| `AFFILIATION_INACTIVE` | `failed_precondition` | 退出学校或运营撤销时，账号没有有效的学校认证 |
 | `RATE_LIMITED` | `resource_exhausted` | 超过发送上限。错误附带 `google.rpc.RetryInfo` |
+| `ORGANIZATION_STANDING_ALREADY_FROZEN` | `failed_precondition` | 运营冻结一所已经冻结的学校 |
+| `ORGANIZATION_STANDING_NOT_FROZEN` | `failed_precondition` | 运营解冻一所没有冻结的学校 |
 
-`RATE_LIMITED` 以后也可以用于其他接口。实现冻结时，再加入 `SCHOOL_STANDING_ALREADY_FROZEN` 和 `SCHOOL_STANDING_NOT_FROZEN`，分别用于冻结已经冻结的学校和解除冻结没有冻结的学校。
+`RATE_LIMITED` 以后也可以用于其他接口。
 
 ## 数据模型
 
 | 表 | 主键 | 主要字段 |
 | --- | --- | --- |
-| `school` | `id` | `source_key`（学校键，唯一）、`english_name`、`chinese_name`、`region_code`、`state`（`active` 或 `retired`）、`imported_at`、`created_at` |
-| `school_domain` | `(domain, school_id)` | `kind`（`allow` 或 `exclude`）、`source`（`hipo` 或 `override`） |
-| `school_affiliation` | `user_id` | `school_id`、`state`（`active` 或 `ended`）、`email_hmac`、`email_domain`、`verified_at`、`counted_since`、`school_since`、`expires_at`、`ended_at` |
-| `school_affiliation_event` | `id` | `user_id`、`school_id`、`action`、`created_at` |
-| `school_email_verification` | `id` | `user_id`、`email_hmac`、`email_domain`、`masked_email`、`candidate_school_ids`、`code_hmac`、`failed_attempts`、`created_at`、`expires_at`、`consumed_at` |
-| `school_standing_freeze` | `school_id` | 未实现。冻结时的人数、本周新增和凑齐时间，以及原因、操作者、冻结时间 |
+| `organization` | `id` | `organization_type`（目前只有 `school`）、`source_key`（学校键，同一类型内唯一）、`english_name`、`chinese_name`、`region_code`、`state`（`active` 或 `retired`）、`imported_at`、`created_at` |
+| `organization_domain` | `(domain, organization_id)` | `kind`（`allow` 或 `exclude`）、`source`（`hipo` 或 `override`） |
+| `affiliation` | `(user_id, organization_type)` | `organization_id`、`state`（`active` 或 `ended`）、`email_hmac`、`email_domain`、`verified_at`、`counted_since`、`organization_since`、`expires_at`、`ended_at` |
+| `affiliation_event` | `id` | `user_id`、`organization_id`、`action`、`created_at` |
+| `affiliation_email_verification` | `id` | `user_id`、`organization_type`、`email_hmac`、`email_domain`、`masked_email`、`candidate_organization_ids`、`code_hmac`、`failed_attempts`、`created_at`、`expires_at`、`consumed_at` |
+| `organization_standing_freeze` | `organization_id` | `member_count`、`weekly_new_count`、`reach_time`（冻结时的凑齐时间，没有计入的会员时为空）、`actor_user_id`、`created_at` |
 
-`school_affiliation_event.action` 的取值为 `verified`（认证）、`renewed`（续期）、`changed`（更换学校）、`left`（退出）和 `displaced`（被另一个账号用同一邮箱顶替）。运营撤销尚未实现。
+`affiliation` 的主键保证一个账号在每种类型下最多有一个组织。`(organization_id, organization_type)` 是指向 `organization(id, organization_type)` 的复合外键，所以归属的类型必须与组织的类型一致。
 
-`school` 和 `school_domain` 只由导入命令写入。这两张表的修改记录在 Git 历史中，不写入审计表。
+`affiliation_event.action` 的取值为 `verified`（认证）、`renewed`（续期）、`changed`（更换学校）、`left`（退出）、`displaced`（被另一个账号用同一邮箱顶替）和 `revoked`（运营撤销）。
 
-`school_affiliation.email_hmac` 有唯一索引。认证结束时，服务端清除 `email_hmac`，所以唯一性只约束有效记录。过期不改写 `state`，查询时按 `expires_at` 判断。所以计数不依赖后台任务。`school_since` 是本次进入这所学校的时间，服务端用它计算更换学校的冷却期。
+`organization` 和 `organization_domain` 只由导入命令写入。这两张表的修改记录在 Git 历史中，不写入审计表。冻结和解冻写入审计表 `admin_audit_event`。
 
-三张引用 `user` 的表都使用 `ON DELETE CASCADE`。注销账号时，学校认证、认证事件和验证码记录一起删除，`bizserver/tests/account_contract.rs` 检查这一点。
+`affiliation` 的 `(organization_type, email_hmac)` 有唯一索引。认证结束时，服务端清除 `email_hmac`，所以唯一性只约束有效记录。过期不改写 `state`，查询时按 `expires_at` 判断。所以计数不依赖后台任务。`organization_since` 是本次进入这个组织的时间，服务端用它计算更换学校的冷却期。
 
-计数查询的示意如下。`$1` 是当前时间，`$2` 是本周一 0:00（北京时间）对应的 UTC 时间。`WHERE` 子句就是 `bizserver/src/domain/school.rs` 中的 `COUNTED_CONDITION`：
+`affiliation`、`affiliation_event` 和 `affiliation_email_verification` 引用 `user` 时使用 `ON DELETE CASCADE`。注销账号时，学校认证、认证事件和验证码记录一起删除，`bizserver/tests/account_contract.rs` 检查这一点。`organization_standing_freeze.actor_user_id` 使用 `ON DELETE SET NULL`，所以运营人员注销后，冻结仍然有效。
+
+计数查询的示意如下。`$1` 是当前时间，`$2` 是本周一 0:00（北京时间）对应的 UTC 时间，`$3` 是组织类型。`WHERE` 子句的前五个条件就是 `bizserver/src/domain/organization.rs` 中的 `COUNTED_CONDITION`：
 
 ```sql
-SELECT a.school_id,
+SELECT a.organization_id,
        count(*) AS member_count,
        max(a.counted_since) AS reach_time,
        count(*) FILTER (WHERE a.counted_since >= $2) AS weekly_new_count
-FROM school_affiliation AS a
+FROM affiliation AS a
 JOIN membership AS m ON m.user_id = a.user_id
 JOIN "user" AS u ON u.id = a.user_id
 WHERE a.state = 'active'
@@ -411,10 +429,11 @@ WHERE a.state = 'active'
   AND m.status = 'active'
   AND (m.expires_at IS NULL OR m.expires_at > $1)
   AND (NOT u.banned OR (u.ban_expires IS NOT NULL AND u.ban_expires <= $1))
-GROUP BY a.school_id;
+  AND a.organization_type = $3
+GROUP BY a.organization_id;
 ```
 
-服务端用查询结果按[排序键](#排序键)排序，再应用公开门槛。冻结尚未实现。
+服务端用冻结表中的数字替换冻结学校的查询结果，再按[排序键](#排序键)排序，最后应用公开门槛。
 
 ## 防刷与运营
 
@@ -422,7 +441,7 @@ GROUP BY a.school_id;
 
 - **认证门槛**：每个计入的人都必须收到一封学校邮箱的验证码。
 - **限流**：服务端限制验证码的发送次数。
-- **异常发现**：`ListSchoolDailyStats` 列出每所学校每天的新认证数。新认证数异常增长的学校由运营后台标记。运营人员核查后，可以冻结计数或撤销认证。
+- **异常发现**：运营后台按学校和日期统计新认证数，标记异常增长的学校。运营人员核查后，可以冻结计数或撤销认证。冻结和撤销已经实现，统计方法尚未实现。
 
 运营人员填写原因时，禁止写入邮箱、令牌或健康数据。这条规则与现有的会员运营规则相同。
 
@@ -468,10 +487,10 @@ GROUP BY a.school_id;
 
 1. **前置条件**：接入真实邮件服务，完成请求限流。这两项也是生产上线的阻塞项。状态：未完成。
 2. **学校名单**：提交 Hipo 快照和许可声明，编写导入命令。合并重复记录，填写中文名，核对接龙表中已收录学校的域名，并实测验证码送达。状态：快照、许可声明、导入命令、上海交通大学的合并和 39 个中文名已完成。其他重复记录的检查、域名核对和送达实测未完成。
-3. **学校认证**：实现 `SchoolAffiliationService`、相关数据表和运营的撤销操作。状态：除运营的撤销操作外已完成。
-4. **公开排名**：实现 `SchoolService`、排名缓存、公开门槛和冻结。状态：除冻结外已完成。
+3. **学校认证**：实现 `AffiliationService`、相关数据表和运营的撤销操作。状态：已完成。
+4. **公开排名**：实现 `OrganizationService`、排名缓存、公开门槛和冻结。状态：已完成。按学校和日期统计新认证数的运营方法未完成。
 5. **网站页面**：实现排名页、本校页、认证页和「我的学校」。
-6. **App 入口**：第一期不做。接口就绪后，iOS 和 Android 可以按 `school_ranking_enabled` 显示入口。
+6. **App 入口**：第一期不做。接口就绪后，iOS 和 Android 可以按 `organization_ranking_enabled` 显示入口。
 7. **名单申请**：以后设立。添加 issue 表单和「本地新增学校」规则，再在认证页加入「申请添加学校」入口。
 
 第 2 步要求的文档更新已经完成：`bizserver/AGENTS.md` 的目录表加入了 `data/schools/`，根 `README.md` 的许可证排除表加入了 Hipo 数据。实现第 7 步时，根 `AGENTS.md` 的 `.github/` 一行必须加入 issue 表单。
@@ -497,7 +516,7 @@ GROUP BY a.school_id;
 | 4 | 已领卡的会员是否需要确认新版守则 | 不强制。用户首次学校认证时确认 |
 | 5 | 网站登录方案 | 单独做安全评审 |
 | 6 | 网站域名用 `leanmuscleclub.com` 还是 `leanmuscle.club` | 待确认。社区海报和仓库不一致 |
-| 7 | 排名是否按国家或地区筛选 | 第二期考虑。`ListSchoolStandings` 预留 `filter` 字段 |
+| 7 | 排名是否按国家或地区筛选 | 第二期考虑。`ListOrganizationStandings` 的 `filter` 可以增加 `region_code` 条件 |
 | 8 | 更换学校的冷却期 | 30 天 |
 | 9 | 「本地新增学校」的审核标准 | 学校官方页面能证明学生邮箱域名 |
 | 10 | 没有 GitHub 账号的用户如何申请 | 设立 issue 机制时，增加支持邮箱作为备用入口 |

@@ -14,6 +14,7 @@
 - Apple Wallet 会员卡。设置 `WALLET_*` 变量后，服务端为有效会员卡签发通行证。
 - 主动授权的活动同步、冲突检测和每日汇总。
 - 会员运营：列表、查询、暂停、恢复和权益管理。变更与审计原子提交。
+- 学校排名：学校名单、学校邮箱验证码认证、公开的学校人数排名和运营的撤销与冻结。接口使用通用的组织模型，学校是 `SCHOOL` 类型的组织。设置 `AFFILIATION_EMAIL_HMAC_KEY` 后启用认证。名单数据见 [`data/schools/`](data/schools/README.md)，规则见[大学排名设计](../docs/developers/school-ranking.mdx)。
 - Axum 健康检查、CORS 和脱敏请求日志。
 - 可选的 Sentry 错误上报：设置 `SENTRY_DSN` 后，上报 `ERROR` 日志、panic 和启动错误。事件不含请求头、请求体、查询串和用户身份。详见 [Sentry 错误上报](../docs/developers/sentry.mdx)。
 - 版本化 SeaORM 迁移与 Docker 开发配置。
@@ -23,7 +24,8 @@
 - 可靠发件箱。服务端不保存待发邮件，也不自动重发。
 - 通行证更新和 Google Wallet。已保存的通行证不会随会员卡状态更新。
 - 注销账号时撤销 Apple 令牌。这一步需要 iOS 客户端提供授权码，详见[迁移状态](docs/migration-status.md)。
-- 请求限流、代理信任和压力测试。这些由 CDN 和网关负责。
+- 请求限流、代理信任和压力测试。这些由 CDN 和网关负责。学校验证码的发送上限是业务规则，不是请求限流。
+- 学校排名的网站页面和 App 入口。
 
 ## 配置
 
@@ -38,6 +40,7 @@
 | `CLIENT_IP_HEADER`、`TRUSTED_PROXIES` | 会话记录的客户端 IP | 可选。留空时不记录 IP |
 | `APPLE_*`、`ACCOUNT_LINKING` | Apple 登录 | 可选。全部填写或全部留空 |
 | `WALLET_*` | Apple Wallet 签名材料 | 可选。全部填写或全部留空 |
+| `AFFILIATION_EMAIL_HMAC_KEY` | 学校认证 | 可选。留空时关闭学校认证 |
 
 `CLIENT_IP_HEADER` 必须是网关覆盖写入的请求头，例如 `cf-connecting-ip`。客户端能自行设置的请求头会让会话记录伪造的 IP。
 
@@ -70,8 +73,11 @@ chmod 600 .env
 ```bash
 docker compose up -d postgres
 cargo run --locked -- migrate
+cargo run --locked -- import-schools
 cargo run --locked -- serve
 ```
+
+`import-schools` 把 `data/schools/` 中的学校名单写入数据库，可以重复运行。不运行这一步时，学校名单为空，所有学校邮箱都返回 `AFFILIATION_EMAIL_DOMAIN_UNKNOWN`。
 
 数据库只监听 `127.0.0.1:55439`，与 `.env.example` 中的 `DATABASE_URL` 一致。本机服务地址为 `http://localhost:3000`。`/healthz` 检查进程。`/readyz` 检查数据库。未设置 `SMTP_HOST` 时，开发邮件写入 `.data/mail/`，不会实际外发。
 
@@ -104,10 +110,11 @@ Docker 服务地址为 `http://localhost:3002`。Compose 等待数据库就绪�
 
 镜像包含 `linux/amd64` 和 `linux/arm64` 两个平台，两个平台分别在 GitHub 托管的原生 runner 上构建。每个平台附带 SBOM 和 SLSA 来源证明 (provenance)。仓库为私有仓库时，流程不签名来源证明，因为公共 Sigstore 服务会把仓库名和提交记录到公开日志中。
 
-镜像默认设置 `APP_ENV=production`，缺少生产配置时服务拒绝启动。`compose.yml` 为本地服务设置 `APP_ENV=development`。部署时先运行 `migrate`，再运行 `serve`：
+镜像默认设置 `APP_ENV=production`，缺少生产配置时服务拒绝启动。`compose.yml` 为本地服务设置 `APP_ENV=development`。部署时先运行 `migrate` 和 `import-schools`，再运行 `serve`：
 
 ```bash
 docker run --rm --env-file .env.production ghcr.io/aprilnea/boji-bizserver:0.1.0 migrate
+docker run --rm --env-file .env.production ghcr.io/aprilnea/boji-bizserver:0.1.0 import-schools
 docker run -d --env-file .env.production -p 3000:3000 ghcr.io/aprilnea/boji-bizserver:0.1.0
 ```
 
@@ -117,9 +124,10 @@ docker run -d --env-file .env.production -p 3000:3000 ghcr.io/aprilnea/boji-bizs
 
 认证保留 `/api/auth/*`。业务改用版本化 RPC 路径。协议按 Google AIP 设计，协议文件是接口的唯一来源：
 
-- [会员本人协议](proto/boji/v1/)：系统配置、会员卡、活动同步、Wallet 和错误原因
-- [运营协议](proto/boji/admin/v1/)：权益目录与会员运营
+- [会员本人协议](proto/boji/v1/)：系统配置、会员卡、活动同步、Wallet、学校排名和错误原因
+- [运营协议](proto/boji/admin/v1/)：权益目录、会员运营和学校排名运营
 - [iOS 客户端代码](../ios/BojiAPI/)：在该目录运行 `buf generate`，从 `proto/boji/v1/` 生成 Swift 消息和 Connect 客户端
+- [Android 客户端代码](../android/rpc/)：在该目录运行 `buf generate`，从 `proto/boji/v1/` 生成 Kotlin 消息和 Connect 客户端
 - [RPC 使用说明](docs/connectrpc-api.md)
 - [运营权限与审计说明](docs/admin-operations.md)
 - [认证迁移说明](docs/migration-auth.md)
