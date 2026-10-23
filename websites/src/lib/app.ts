@@ -108,7 +108,8 @@ export const COURSES = [
 ] as const;
 
 export const PLATFORMS = [
-  { label: "健康数据（只读）", ios: "Apple 健康：体重、腰围和睡眠", android: "Health Connect：体重和睡眠" },
+  { label: "读取健康数据", ios: "Apple 健康：体重、腰围和睡眠", android: "Health Connect：体重和睡眠" },
+  { label: "写入健康数据", ios: "Apple 健康：训练、体重和腰围", android: "暂不支持" },
   { label: "小组件", ios: "主屏幕和锁定屏幕", android: "主屏幕" },
   { label: "手表", ios: "Apple Watch", android: "Wear OS" },
 ] as const;

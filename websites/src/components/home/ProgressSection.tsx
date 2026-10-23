@@ -93,7 +93,7 @@ export function ProgressSection() {
                   ))}
                 </tbody>
               </table>
-              <p className="mt-5 text-[14px] text-ash">共享打卡状态和健康数据连接都默认关闭。健康数据只读展示，与手动记录分开。</p>
+              <p className="mt-5 text-[14px] text-ash">共享打卡状态、读取和写入健康数据都默认关闭。读取的健康数据与手动记录分开显示。</p>
             </Reveal>
           </div>
         </div>
