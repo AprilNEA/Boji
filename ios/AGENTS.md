@@ -154,6 +154,7 @@ xcrun xcstringstool sync Boji/Resources/Localizable.xcstrings \
 ### Tests
 
 - UI tests launch the app with `--uitesting`. This argument selects the in-memory store and the test membership service.
+- `BojiUITests/GuideScreenshotTests.swift` captures the screens of the user guide in `../docs/guide/`. When you change a screen that the guide shows, capture it again as "Guide screenshots" in the root `AGENTS.md` describes.
 - Tests assert the Simplified Chinese copy. The `Boji` scheme runs tests with `language: zh-Hans` and `region: CN`, and UI tests also pass `-AppleLanguages (zh-Hans)`. Without them, a simulator in another language shows English.
 - UI tests must not use the real backend, real HealthKit data or the user's records.
 - Membership UI tests can add `--membership-fixture=long-number`, `suspended`, or `offline`. These fixtures require the Debug `--uitesting` entry point.
