@@ -2,11 +2,15 @@
 
 **HealthKit、Apple 登录与 Wallet 已有客户端代码。** 0.4.0 使用已注册标识，并加入小组件和 Watch 配套。当前工程配置见[已注册能力实现说明](capability-implementation.md)。真实服务仍需单独验收。
 
-## 1. HealthKit 只读查询
+## 1. HealthKit 读取与写入
 
-入口为「设置 → 健康数据与授权」。用户点击「连接 Apple 健康」后，系统请求读取睡眠、体重和腰围。App 不请求写入权限，也不读取其他健康类型。
+入口为「设置 → 健康数据与授权」。读取和写入是两个独立的开关，默认都关闭。用户点击「连接 Apple 健康」后，系统请求读取睡眠、体重和腰围。用户打开「写入训练和身体记录」后，系统请求写入训练、体重和腰围。App 不读取或写入其他健康类型。
+
+### 读取
 
 查询范围为近 30 天。体重与腰围使用独立样本，保留来源和日期，不伪造缺失字段。相同 UUID 去重，每次刷新替换快照，不追加重复数据。
+
+查询排除薄肌自己写入的样本。否则，同一条手动记录会在「足迹」中出现两次。
 
 睡眠日为前日 18:00 至当日 18:00。算法用日历计算日期，适配夏令时。算法只累计睡眠区间，并合并重叠来源；卧床和清醒时间不计入睡眠。
 
@@ -16,6 +20,44 @@
 
 授权请求完成不代表每项读取权限都已授予。读取为空时，界面显示「暂无可读取数据」。App 不推断用户拒绝了权限，也不把缺失值当成零。[1] [2]
 
+### 写入
+
+`Models/HealthWriteStore.swift` 把本机记录写入 Apple 健康。本机记录仍是唯一的数据源，App 不从 Apple 健康读回自己写入的数据。
+
+| 本机操作 | Apple 健康中的结果 |
+| --- | --- |
+| 完成一次训练 | 一条训练，含开始和结束时间、暂停区间和室内标记 |
+| 新增身体记录 | 一条体重样本和一条腰围样本，标记为用户输入 |
+| 删除身体记录 | 删除这条记录的两个样本 |
+
+训练类型按课程分组映射：居家课程为功能性力量训练，健身房课程为传统力量训练，舒展课程为柔韧性训练。打卡仍按课程每天计一次，Apple 健康记录每一次完成的训练。App 不写入饮水和睡眠，也不估算热量。本机的饮水只有当天总量，睡眠只有时长，写入它们会产生不准确的数据。[6]
+
+每个对象带有 `HKMetadataKeySyncIdentifier` 和 `HKMetadataKeySyncVersion`。新对象的版本更高时，HealthKit 用它替换同一标识的旧对象。[7] Apple 没有说明版本相同时的行为，所以每次尝试都把版本加 1。写入只在开关打开后发生，不补写历史记录。用户拒绝的类型会被跳过，界面分别显示三种类型的写入权限。
+
+写入按调用顺序逐条执行。设备锁定时，HealthKit 仍接受写入，它先缓存数据，解锁后再存入。[5] 所以写入丢失的主要原因是 App 在写入中途退出，以及 HealthKit 返回错误。
+
+为此，App 把待写入项保存在本机的 `Application Support/Boji/health-write-queue.json`。顺序如下：
+
+1. 把这一项和新的尝试次数写入文件。
+2. 调用 HealthKit。尝试次数就是这次的同步版本。
+3. 成功后，把这一项移出文件。失败时，它留在文件中。
+
+App 启动和回到前台时，重放文件中的每一项。如果上次写入已经成功，重放的版本更高，会替换旧对象，不产生重复。队列最多 50 条，每项最多尝试 5 次。达到上限后，这一项不再重试，本机记录不受影响。
+
+队列文件的存储方式如下：
+
+| 选择 | 原因 |
+| --- | --- |
+| 放在 Application Support | `tmp` 和 `Library/Caches` 会被系统清理，队列不能丢失 [9] |
+| 使用独立的 JSON 文件和原子写入 | 队列最多 50 条，与 `state.json` 的写法相同，不需要数据库和迁移 |
+| 使用完整保护（`complete`） | 文件包含训练时间和身体数据。App 只在用户使用时读写它 [10] |
+| 排除在备份之外 | 队列属于本机的 HealthKit 权限。审核指南 5.1.3(ii) 不允许把个人健康信息存入 iCloud [6] |
+| 不使用 UserDefaults | Apple 要求不在 UserDefaults 中存个人或敏感信息，它不加密并随备份保存 [11] |
+
+设备锁定时，App 不能读取完整保护的文件。这时 App 不覆盖文件，下次操作时再读取。关闭写入和「删除全部本地数据」会删除队列文件。
+
+App 只能删除自己写入的对象。[8] 关闭写入开关和「删除全部本地数据」时，用户选择保留还是删除薄肌写入的训练、体重和腰围。删除不影响其他 App 写入的数据。
+
 ### 真机准备
 
 1. 确认签名团队 `8U3ZJ258K9` 的证书可用。
@@ -23,7 +65,9 @@
 3. 使用包含相应能力的签名配置构建。
 4. 在真机主动授权，检查已有样本和空数据场景。
 
-工程包含 HealthKit entitlement，以及读取和更新两项用途说明。[1] `NSHealthUpdateUsageDescription` 的文案明确不写入健康记录。这项声明满足 Apple 对当前构建的包校验要求。`typesToShare` 仍为空，不申请写入权限。HealthKit 仍是可选功能，不是安装设备的必需能力。
+工程包含 HealthKit entitlement，以及读取和更新两项用途说明。[1] `NSHealthUpdateUsageDescription` 说明写入训练、体重和腰围。HealthKit 仍是可选功能，不是安装设备的必需能力。
+
+写入功能尚未在真机验证。需要检查：Apple 健康和「健身」App 中的训练显示、拒绝部分类型、写入中途退出 App 后的重放不产生重复，以及两种删除选择。
 
 ## 2. Apple 登录
 
@@ -90,7 +134,7 @@ xcodebuild -project Boji.xcodeproj -scheme Boji \
 
 验证结果见[Apple 生态验证记录](apple-integration-verification.md)。自动测试使用隔离提供器，不读取真实健康数据。界面测试使用空健康数据，不打开真实 Apple 登录。
 
-当前还未实现 HealthKit 写入、Watch 独立登录或快捷指令。账号删除与 Apple 授权撤销仍需在上架前完善。「设置」的「关于」一节已链接网站上的隐私政策和用户协议，中文界面打开中文版，其他语言打开英文版。还需部署这两个页面，并完成真机签名和 App Store 审核。
+当前还未实现 Watch 独立登录或快捷指令。账号删除与 Apple 授权撤销仍需在上架前完善。「设置」的「关于」一节已链接网站上的隐私政策和用户协议，中文界面打开中文版，其他语言打开英文版。还需部署这两个页面，并完成真机签名和 App Store 审核。
 
 健康数据不能用于广告画像或出售。后续若增加云端健康功能，必须先设计独立同意和删除机制，不能沿用会员授权。[5]
 
@@ -101,3 +145,9 @@ xcodebuild -project Boji.xcodeproj -scheme Boji \
 [3]: https://developer.apple.com/documentation/signinwithapple/authenticating-users-with-sign-in-with-apple "Apple：Authenticating users with Sign in with Apple"
 [4]: https://developer.apple.com/documentation/walletpasses/building-a-pass "Apple：Building a Pass"
 [5]: https://developer.apple.com/documentation/healthkit/protecting-user-privacy "Apple：Protecting user privacy"
+[6]: https://developer.apple.com/app-store/review/guidelines/ "Apple：App Review Guidelines 5.1.3"
+[7]: https://developer.apple.com/documentation/healthkit/hkmetadatakeysyncidentifier "Apple：HKMetadataKeySyncIdentifier"
+[8]: https://developer.apple.com/documentation/healthkit/hkhealthstore/delete%28_:withcompletion:%29-17hzm "Apple：HKHealthStore delete"
+[9]: https://developer.apple.com/documentation/foundation/optimizing-your-app-s-data-for-icloud-backup "Apple：Optimizing your app’s data for iCloud backup"
+[10]: https://developer.apple.com/documentation/uikit/encrypting-your-app-s-files "Apple：Encrypting your app’s files"
+[11]: https://developer.apple.com/documentation/foundation/userdefaults "Apple：UserDefaults"

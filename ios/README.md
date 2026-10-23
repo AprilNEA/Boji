@@ -13,7 +13,7 @@ Boji 的原生 iOS 客户端，本地优先。界面采用 SwiftUI 和系统 Liq
 - 足迹：最近 7 天活动、身体数据和趋势图。
 - 俱乐部：本地每周挑战、免费会员身份卡和入门文章。
 - 会员：邮箱登录、验证提示、服务端领卡、状态同步和图片分享。
-- Apple 生态：HealthKit 只读查询、Apple 登录和 Wallet 接入代码。
+- Apple 生态：HealthKit 读取与可选写入、Apple 登录和 Wallet 接入代码。
 - 小组件与 Watch：用户主动开启后，共享当天打卡状态。
 - 设置：昵称、外观、JSON 导出和本地数据删除。
 
@@ -55,7 +55,7 @@ xcodebuild -project Boji.xcodeproj -scheme Boji \
   CODE_SIGNING_ALLOWED=NO test
 ```
 
-Debug 构建的 `--uitesting` 参数启用内存存储和会员测试服务。测试卡标明非真实会员，不连接后端。健康查询使用空数据测试提供器，不访问真实 HealthKit。界面测试不改写正常使用的身体记录。测试截图保存在 Xcode 测试结果中。
+Debug 构建的 `--uitesting` 参数启用内存存储和会员测试服务。测试卡标明非真实会员，不连接后端。健康查询使用空数据测试提供器，健康写入使用丢弃数据的测试写入器，都不访问真实 HealthKit。界面测试不改写正常使用的身体记录。测试截图保存在 Xcode 测试结果中。
 
 受限终端可能拦截 Swift 宏插件，或拦截 SwiftPM 加载 `BojiAPI` 等包的清单。出现 `sandbox_apply: Operation not permitted` 时，需要允许 Xcode 执行它们。不要删除 `@Observable` 或包来掩盖权限问题。
 
@@ -83,7 +83,7 @@ TestFlight 构建从 GitHub 环境 `ios-testflight` 的同名变量读取正式�
 
 ## Apple 生态配置
 
-设置页提供可选的 Apple 健康只读连接。健康样本仅在内存展示，不会覆盖手动记录或上传后端。Apple 登录与 Wallet 的客户端标识已配置，实际可用性仍由后端能力接口控制。
+设置页提供两个可选开关，默认都关闭。「连接 Apple 健康」读取睡眠、体重和腰围。健康样本仅在内存展示，不会覆盖手动记录或上传后端。「写入训练和身体记录」把完成的训练和手动记录的体重、腰围写入 Apple 健康。设计见 [Apple 生态接入说明](docs/apple-integration.md)。Apple 登录与 Wallet 的客户端标识已配置，实际可用性仍由后端能力接口控制。
 
 小组件和 Watch 首版显示当天手动打卡状态，不共享健康样本或账号信息。共享默认关闭。实现范围和前置条件见[已注册能力实现说明](docs/capability-implementation.md)。代码接入不等于真实 Apple 服务验收。
 
@@ -109,7 +109,7 @@ TestFlight 构建从 GitHub 环境 `ios-testflight` 的同名变量读取正式�
 
 Liquid Glass 只用于标签栏、导航栏、工具栏和底部操作栏。内容卡片使用实色，不使用玻璃。界面支持深色模式、高对比度和 Dynamic Type，iPad 上标签栏可以切换为侧边栏。
 
-当前不包含照片分析、AI 识餐或 HealthKit 写入。多人社区、支付和训练视频也未接入。课程是通用参考，不提供医疗诊断。
+当前不包含照片分析或 AI 识餐。多人社区、支付和训练视频也未接入。课程是通用参考，不提供医疗诊断。
 
 App 图标使用 Icon Composer，支持默认、深色和系统着色外观。用 Icon Composer 打开 `Boji/Resources/AppIcon.icon` 编辑，Xcode 会在构建时编译图标。
 

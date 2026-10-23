@@ -9,10 +9,10 @@ struct HealthConnectionView: View {
             Section {
                 Label("让记录少一点，让生活多一点", systemImage: "heart.text.clipboard")
                     .font(.headline)
-                Text("只读近 30 天的睡眠、体重和腰围。数据来自 Apple 健康，不会上传到俱乐部，也不会写回健康 App。")
+                Text("查看近 30 天的睡眠、体重和腰围，也可以把训练和身体记录写入 Apple 健康。健康数据不会上传到俱乐部。")
                     .font(.footnote).foregroundStyle(.secondary)
             }
-            Section("连接状态") {
+            Section("查看健康数据") {
                 if !health.isAvailable {
                     Label("此设备暂不支持健康数据", systemImage: "exclamationmark.circle")
                     Text("你仍可使用所有手动记录功能。")
@@ -68,6 +68,10 @@ struct HealthConnectionView: View {
                     Button("断开健康数据查询", role: .destructive) { confirmDisconnect = true }
                 }
             }
+            // Writing has its own switch. It follows the read results, so that the read status and its data stay together.
+            if health.isAvailable {
+                HealthWriteSection()
+            }
             Section("你决定分享哪些数据") {
                 Text("完成授权窗口不代表每项读取权限都已授予。没有可读取的样本时，这里不会把缺失值当成零。")
                 Text("样本只在 App 运行时展示，不写入本地导出文件。手动记录单独保存，不会被健康数据覆盖。")
@@ -99,7 +103,7 @@ struct HealthSummaryView: View {
                                 .accessibilityHidden(true)
                         }
                         HealthValuesView().foregroundStyle(.primary)
-                        Text("只读展示 · 与手动记录分开").font(.footnote).foregroundStyle(.secondary)
+                        Text("来自其他 App 和设备 · 与手动记录分开").font(.footnote).foregroundStyle(.secondary)
                         if health.errorMessage != nil {
                             Text("本次查询未完成，请到健康连接页重试。").font(.footnote).foregroundStyle(.secondary)
                         }
@@ -108,6 +112,60 @@ struct HealthSummaryView: View {
             }
             .buttonStyle(PressableCardStyle())
             .accessibilityHint("查看健康数据与来源")
+        }
+    }
+}
+
+/// The switch that writes the records of Boji to Apple Health, and the write permissions.
+private struct HealthWriteSection: View {
+    @Environment(HealthWriteStore.self) private var healthWrite
+    @State private var confirmDisable = false
+
+    var body: some View {
+        Section {
+            Toggle(isOn: Binding(get: { healthWrite.isEnabled }, set: { isOn in
+                if isOn { healthWrite.enable() } else { confirmDisable = true }
+            })) {
+                Label("写入训练和身体记录", systemImage: "square.and.arrow.down.on.square")
+            }
+            .disabled(healthWrite.isWorking)
+            .accessibilityIdentifier("health-write-toggle")
+            if healthWrite.isEnabled {
+                permissionRow(Text("训练记录"), healthWrite.status.workout)
+                permissionRow(Text(.Shared.bodyWeight), healthWrite.status.weight)
+                permissionRow(Text(.Shared.bodyWaist), healthWrite.status.waist)
+                if [healthWrite.status.workout, healthWrite.status.weight, healthWrite.status.waist].contains(.denied) {
+                    Text("未允许的类型不会写入。你可以在健康 App 中更改薄肌的访问权限。")
+                        .font(.footnote).foregroundStyle(.secondary)
+                }
+            }
+            if healthWrite.isWorking { ProgressView() }
+            if healthWrite.pendingCount > 0 {
+                Text("\(healthWrite.pendingCount) 条记录尚未写入，App 回到前台时会重试。")
+                    .font(.footnote).foregroundStyle(.secondary)
+            }
+            if let error = healthWrite.errorMessage { Text(error).foregroundStyle(.red).font(.footnote) }
+        } header: {
+            Text("写入 Apple 健康")
+        } footer: {
+            Text("开启后，完成训练或新增、删除身体记录时，薄肌会同步更新 Apple 健康。只写入开启后产生的记录，不写入饮水和睡眠。查看健康数据时，不显示薄肌写入的数据。")
+        }
+        .confirmationDialog("停止写入 Apple 健康？", isPresented: $confirmDisable, titleVisibility: .visible) {
+            Button("停止写入，保留已写入的数据") { healthWrite.disable(deletingSavedData: false) }
+            Button("停止写入，并删除薄肌写入的数据", role: .destructive) { healthWrite.disable(deletingSavedData: true) }
+            Button(.Shared.actionCancel, role: .cancel) {}
+        } message: { Text("删除只影响薄肌写入的训练、体重和腰围，不影响其他 App 的健康数据。") }
+    }
+
+    private func permissionRow(_ title: Text, _ permission: HealthWritePermission) -> some View {
+        LabeledContent {
+            switch permission {
+            case .authorized: Text("已允许")
+            case .denied: Text("未允许")
+            case .notDetermined: Text("未设置")
+            }
+        } label: {
+            title
         }
     }
 }

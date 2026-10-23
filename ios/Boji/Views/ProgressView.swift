@@ -3,6 +3,7 @@ import Charts
 
 struct ProgressViewScreen: View {
     @Environment(BojiStore.self) private var store
+    @Environment(HealthWriteStore.self) private var healthWrite
     @State private var entry = false
     @State private var metric = BodyMetric.weight
     private var shareText: String {
@@ -122,15 +123,21 @@ struct ProgressViewScreen: View {
                         .padding(.horizontal, 16).frame(minHeight: 48)
                         .contentShape(.rect)
                         .contextMenu {
-                            Button(.Shared.progressEntryDelete, systemImage: "trash", role: .destructive) { store.deleteBodyEntry(id: item.id) }
+                            Button(.Shared.progressEntryDelete, systemImage: "trash", role: .destructive) { deleteBodyEntry(id: item.id) }
                         }
                         .accessibilityElement(children: .combine)
-                        .accessibilityAction(named: .Shared.progressEntryDelete) { store.deleteBodyEntry(id: item.id) }
+                        .accessibilityAction(named: .Shared.progressEntryDelete) { deleteBodyEntry(id: item.id) }
                     }
                 }
                 Text("长按一条记录可以删除。").font(.footnote).foregroundStyle(.secondary)
             }
         }
+    }
+
+    /// Deletes the entry here and, when writing is on, the samples that Boji saved for it.
+    private func deleteBodyEntry(id: UUID) {
+        store.deleteBodyEntry(id: id)
+        healthWrite.removeBodyEntry(id: id)
     }
 
     /// The VoiceOver label of one day in the week card. Each case is one full sentence, so that

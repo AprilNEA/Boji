@@ -6,7 +6,7 @@
 
 | 目标 | Bundle ID | 本轮使用的能力 |
 | --- | --- | --- |
-| iPhone / iPad | `club.leanmuscle.boji` | HealthKit 只读、Apple 登录、App Groups |
+| iPhone / iPad | `club.leanmuscle.boji` | HealthKit 读取与可选写入、Apple 登录、App Groups |
 | Widget Extension | `club.leanmuscle.boji.widgets` | App Groups、WidgetKit |
 | Watch App | `club.leanmuscle.boji.watchkitapp` | App Groups、WatchConnectivity |
 

@@ -66,7 +66,7 @@ final class HealthDataStore {
         self.isEnabled = preferences.bool(forKey: Self.enabledDefaultsKey)
     }
 
-    /// Creates the app's read-only store. Every live store shares one HKHealthStore.
+    /// Creates the app's read store. Every live store, also `HealthWriteStore`, shares one HKHealthStore.
     static func live() -> HealthDataStore {
         #if os(iOS) && canImport(HealthKit)
         return HealthDataStore(provider: HealthKitDataProvider(healthStore: liveHealthStore))
@@ -187,7 +187,8 @@ final class HealthDataStore {
     }
 
     #if os(iOS) && canImport(HealthKit)
-    private static let liveHealthStore = HKHealthStore()
+    /// The one HKHealthStore of the app. `HealthWriteStore.live()` uses it too.
+    static let liveHealthStore = HKHealthStore()
     #endif
 }
 
@@ -324,11 +325,17 @@ private final class HealthKitDataProvider: HealthDataProvider, @unchecked Sendab
         since: Date,
         until: Date
     ) async throws -> [HKSample] {
-        let predicate = HKQuery.predicateForSamples(
+        let period = HKQuery.predicateForSamples(
             withStart: since,
             end: until,
             options: .strictStartDate
         )
+        // Boji writes the body records of `BojiStore` to HealthKit. Its own samples are excluded,
+        // so that the progress screen does not show a manual record twice.
+        let fromOtherSources = NSCompoundPredicate(
+            notPredicateWithSubpredicate: HKQuery.predicateForObjects(from: HKSource.default())
+        )
+        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [period, fromOtherSources])
         let sortDescriptors = [
             NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
         ]

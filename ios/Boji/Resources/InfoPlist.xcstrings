@@ -38,19 +38,19 @@
       }
     },
     "NSHealthUpdateUsageDescription" : {
-      "comment" : "Required HealthKit purpose string. Authorization remains read-only; the app never requests write types.",
+      "comment" : "HealthKit write permission prompt. The app requests write permission for workouts, weight and waist only after the user turns on writing.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lean Muscle only reads the health data you allow. It does not save or change data in Apple Health."
+            "value" : "Lean Muscle saves the workouts that you finish and the weight and waist that you log in the app to Apple Health. It saves only the types that you allow."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "薄肌只读取你授权的健康数据，不向「健康」写入或修改记录。"
+            "value" : "把你在薄肌完成的训练和记录的体重、腰围写入 Apple 健康。只写入你允许的类型。"
           }
         }
       }

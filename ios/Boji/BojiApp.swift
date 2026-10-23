@@ -5,6 +5,7 @@ struct BojiApp: App {
     @State private var store: BojiStore
     @State private var membership: MembershipStore
     @State private var health: HealthDataStore
+    @State private var healthWrite: HealthWriteStore
     @State private var companion: CompanionSharingStore
     @AppStorage("appearance") private var appearance = "system"
     init() {
@@ -18,11 +19,13 @@ struct BojiApp: App {
         _store = State(initialValue: BojiStore(inMemory: ProcessInfo.processInfo.arguments.contains("--uitesting")))
         _membership = State(initialValue: ProcessInfo.processInfo.arguments.contains("--uitesting") ? MembershipStore.uiTesting() : MembershipStore.live())
         _health = State(initialValue: ProcessInfo.processInfo.arguments.contains("--uitesting") ? HealthDataStore.uiTesting() : HealthDataStore.live())
+        _healthWrite = State(initialValue: ProcessInfo.processInfo.arguments.contains("--uitesting") ? HealthWriteStore.uiTesting() : HealthWriteStore.live())
         _companion = State(initialValue: CompanionSharingStore(isTesting: ProcessInfo.processInfo.arguments.contains("--uitesting")))
         #else
         _store = State(initialValue: BojiStore())
         _membership = State(initialValue: MembershipStore.live())
         _health = State(initialValue: HealthDataStore.live())
+        _healthWrite = State(initialValue: HealthWriteStore.live())
         _companion = State(initialValue: CompanionSharingStore())
         #endif
     }
@@ -32,6 +35,7 @@ struct BojiApp: App {
                 .environment(store)
                 .environment(membership)
                 .environment(health)
+                .environment(healthWrite)
                 .environment(companion)
                 .environment(\.locale, .bojiDisplay)
                 .tint(BojiTheme.accent)
@@ -46,6 +50,7 @@ struct RootView: View {
     @Environment(BojiStore.self) private var store
     @Environment(MembershipStore.self) private var membership
     @Environment(HealthDataStore.self) private var health
+    @Environment(HealthWriteStore.self) private var healthWrite
     @Environment(CompanionSharingStore.self) private var companion
     @Environment(\.scenePhase) private var scenePhase
     @State private var tab = 0
@@ -76,6 +81,7 @@ struct RootView: View {
                 companion.update(companionProgress, force: true)
                 if membership.account != nil { Task { await membership.refresh() } }
                 Task { await health.refresh() }
+                healthWrite.retryPending()
             } else if phase == .background {
                 // Ask for background time, so iOS does not suspend the app before the last write finishes.
                 let task = UIApplication.shared.beginBackgroundTask(withName: "Save local data")

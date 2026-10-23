@@ -170,6 +170,7 @@ struct WorkoutDetailView: View {
 struct WorkoutSessionView: View {
     let workout: Workout
     @Environment(BojiStore.self) private var store
+    @Environment(HealthWriteStore.self) private var healthWrite
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
     @State private var index = 0
@@ -179,6 +180,8 @@ struct WorkoutSessionView: View {
     @State private var running = true
     @State private var finished = false
     @State private var confirmExit = false
+    /// Starts when the session opens. Only the first value is kept.
+    @State private var timeline = WorkoutSessionTimeline(start: .now)
     @Namespace private var controls
     @ScaledMetric(relativeTo: .largeTitle) private var countdownSize: CGFloat = 96
     private static let restSeconds = 30
@@ -224,6 +227,10 @@ struct WorkoutSessionView: View {
             }
         }
         .onChange(of: scenePhase) { _, phase in if phase != .active { running = false } }
+        .onChange(of: running) { _, isRunning in
+            guard !finished else { return }
+            if isRunning { timeline.resume(at: .now) } else { timeline.pause(at: .now) }
+        }
     }
 
     @ViewBuilder private var activeContent: some View {
@@ -345,6 +352,11 @@ struct WorkoutSessionView: View {
     private func nextSet() {
         if currentSet < exercise.sets { currentSet += 1; restRemaining = Self.restSeconds }
         else if index < workout.exercises.count - 1 { index += 1; currentSet = 1; restRemaining = Self.restSeconds }
-        else { store.completeWorkout(workout); finished = true; running = false }
+        else {
+            // The check-in counts the course once per day. Apple Health gets every finished session.
+            store.completeWorkout(workout)
+            healthWrite.record(timeline.record(group: workout.group, end: .now))
+            finished = true; running = false
+        }
     }
 }

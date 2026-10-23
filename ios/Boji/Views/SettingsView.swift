@@ -13,6 +13,7 @@ struct SettingsView: View {
     @Environment(BojiStore.self) private var store
     @Environment(MembershipStore.self) private var membership
     @Environment(HealthDataStore.self) private var health
+    @Environment(HealthWriteStore.self) private var healthWrite
     @Environment(CompanionSharingStore.self) private var companion
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
@@ -59,7 +60,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Apple 健康")
                 } footer: {
-                    Text("可选的只读连接。不上传健康样本，不替代手动记录。")
+                    Text("可选连接。可以查看健康数据，也可以把训练和身体记录写入 Apple 健康。不上传健康样本。")
                 }
                 Section {
                     Toggle(isOn: Binding(get: { companion.isEnabled }, set: { companion.setEnabled($0) })) {
@@ -117,9 +118,21 @@ struct SettingsView: View {
                 .sheet(isPresented: $showMembership) { MembershipCenterView() }
                 .sheet(isPresented: $showAccountSecurity) { AccountSecurityView() }
                 .confirmationDialog(Text(.Shared.settingsDeleteConfirmTitle), isPresented: $confirmDelete, titleVisibility: .visible) {
-                    Button(.Shared.settingsDeleteConfirm, role: .destructive) { companion.disconnect(); health.disconnect(); membership.clearLocalSession(); store.resetAll(); dismiss() }
+                    // With write permission, Apple Health can hold data that Boji saved. The user decides whether it stays.
+                    if healthWrite.status.allowsAny {
+                        Button("删除，保留 Apple 健康中的数据", role: .destructive) { deleteAllLocalData(deletingHealthData: false) }
+                        Button("删除，并删除薄肌写入 Apple 健康的数据", role: .destructive) { deleteAllLocalData(deletingHealthData: true) }
+                    } else {
+                        Button(.Shared.settingsDeleteConfirm, role: .destructive) { deleteAllLocalData(deletingHealthData: false) }
+                    }
                     Button(.Shared.actionCancel, role: .cancel) {}
-                } message: { Text("删除本机记录及会员缓存，并断开健康数据查询。不会注销账号、删除服务器会员身份或健康 App 中的数据。此操作无法撤销。") }
+                } message: {
+                    if healthWrite.status.allowsAny {
+                        Text("删除本机记录及会员缓存，断开健康数据查询，并停止写入 Apple 健康。你可以同时删除薄肌写入的训练、体重和腰围。不会注销账号，也不会删除服务器会员身份或其他 App 的健康数据。此操作无法撤销。")
+                    } else {
+                        Text("删除本机记录及会员缓存，并断开健康数据查询。不会注销账号、删除服务器会员身份或健康 App 中的数据。此操作无法撤销。")
+                    }
+                }
                 .fileExporter(isPresented: $exporting, document: document, contentType: .json, defaultFilename: "boji-records") { result in
                     if case .failure(let error) = result { exportError = error.localizedDescription }
                 }
@@ -127,6 +140,15 @@ struct SettingsView: View {
                     Button(.Shared.actionOk) { exportError = nil }
                 } message: { Text(exportError ?? "") }
         }
+    }
+
+    private func deleteAllLocalData(deletingHealthData: Bool) {
+        companion.disconnect()
+        health.disconnect()
+        healthWrite.disable(deletingSavedData: deletingHealthData)
+        membership.clearLocalSession()
+        store.resetAll()
+        dismiss()
     }
 }
 

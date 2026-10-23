@@ -538,15 +538,19 @@ final class BojiStore {
         upsert(record, calendar: calendar)
     }
 
-    func addBodyEntry(weight: Double, waist: Double) {
-        guard weight.isFinite, waist.isFinite else { return }
-        guard (30...300).contains(weight), (30...250).contains(waist) else { return }
+    /// Returns the new entry, or `nil` when a value is out of range. The caller sends the entry
+    /// to `HealthWriteStore`, so that Apple Health gets the same ID and date.
+    @discardableResult
+    func addBodyEntry(weight: Double, waist: Double) -> BodyEntry? {
+        guard weight.isFinite, waist.isFinite else { return nil }
+        guard (30...300).contains(weight), (30...250).contains(waist) else { return nil }
 
         let entry = BodyEntry(weight: weight, waist: waist)
         // The clock can move back, so a new entry is not always the latest one.
         let index = bodyEntries.lastIndex { $0.date <= entry.date }.map { $0 + 1 } ?? 0
         bodyEntries.insert(entry, at: index)
         persistIfNeeded()
+        return entry
     }
 
     func deleteBodyEntry(id: UUID) {

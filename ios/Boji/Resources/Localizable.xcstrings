@@ -128,6 +128,28 @@
         }
       }
     },
+    "%lld 条记录尚未写入，App 回到前台时会重试。" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld record isn’t saved yet. The app tries again when it opens."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld records aren’t saved yet. The app tries again when it opens."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld/24" : {},
     "0" : {},
     "16" : {},
@@ -814,6 +836,36 @@
         }
       }
     },
+    "停止写入 Apple 健康？" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop Saving to Apple Health?"
+          }
+        }
+      }
+    },
+    "停止写入，保留已写入的数据" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop and Keep Saved Data"
+          }
+        }
+      }
+    },
+    "停止写入，并删除薄肌写入的数据" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop and Delete Saved Data"
+          }
+        }
+      }
+    },
     "健康数据与授权" : {
       "localizations" : {
         "en" : {
@@ -1024,6 +1076,26 @@
         }
       }
     },
+    "写入 Apple 健康" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save to Apple Health"
+          }
+        }
+      }
+    },
+    "写入训练和身体记录" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save Workouts and Body Records"
+          }
+        }
+      }
+    },
     "准备好了，再进一步 · %lld 分钟" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1105,6 +1177,16 @@
         }
       }
     },
+    "删除只影响薄肌写入的训练、体重和腰围，不影响其他 App 的健康数据。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deleting removes only the workouts, weight and waist data that Lean Muscle saved. Health data from other apps stays."
+          }
+        }
+      }
+    },
     "删除后会发生什么" : {
       "localizations" : {
         "en" : {
@@ -1125,12 +1207,42 @@
         }
       }
     },
+    "删除本机记录及会员缓存，断开健康数据查询，并停止写入 Apple 健康。你可以同时删除薄肌写入的训练、体重和腰围。不会注销账号，也不会删除服务器会员身份或其他 App 的健康数据。此操作无法撤销。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This deletes the records and the membership cache on this device, disconnects health data and stops saving to Apple Health. You can also delete the workouts, weight and waist data that Lean Muscle saved. Your account, your membership on the server and health data from other apps are not deleted. This can’t be undone."
+          }
+        }
+      }
+    },
     "删除账号" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Delete Account"
+          }
+        }
+      }
+    },
+    "删除，保留 Apple 健康中的数据" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete and Keep Apple Health Data"
+          }
+        }
+      }
+    },
+    "删除，并删除薄肌写入 Apple 健康的数据" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete, Including Data Saved to Apple Health"
           }
         }
       }
@@ -1377,32 +1489,12 @@
         }
       }
     },
-    "只读展示 · 与手动记录分开" : {
+    "可选连接。可以查看健康数据，也可以把训练和身体记录写入 Apple 健康。不上传健康样本。" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Read-only · Separate from manual logs"
-          }
-        }
-      }
-    },
-    "只读近 30 天的睡眠、体重和腰围。数据来自 Apple 健康，不会上传到俱乐部，也不会写回健康 App。" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reads only sleep, weight and waist from the last 30 days. The data comes from Apple Health. It isn’t uploaded to the club or written back to the Health app."
-          }
-        }
-      }
-    },
-    "可选的只读连接。不上传健康样本，不替代手动记录。" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "An optional read-only connection. It doesn’t upload health samples or replace manual logs."
+            "value" : "Optional. View health data, and save workouts and body records to Apple Health. Health samples are not uploaded."
           }
         }
       }
@@ -1707,6 +1799,16 @@
         }
       }
     },
+    "已允许" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allowed"
+          }
+        }
+      }
+    },
     "已加入俱乐部" : {
       "localizations" : {
         "en" : {
@@ -1895,6 +1997,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Development service: %@"
+          }
+        }
+      }
+    },
+    "开启后，完成训练或新增、删除身体记录时，薄肌会同步更新 Apple 健康。只写入开启后产生的记录，不写入饮水和睡眠。查看健康数据时，不显示薄肌写入的数据。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When this is on, Lean Muscle updates Apple Health when you finish a workout or add or delete a body record. It saves only records created after you turn this on, and it doesn’t save water or sleep. The health data view doesn’t show the data that Lean Muscle saved."
           }
         }
       }
@@ -2286,6 +2398,16 @@
         }
       }
     },
+    "无法删除薄肌写入 Apple 健康的数据：%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t delete the data that Lean Muscle saved to Apple Health: %@"
+          }
+        }
+      }
+    },
     "无法安全保存登录状态，请稍后重试。" : {
       "localizations" : {
         "en" : {
@@ -2362,6 +2484,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Can’t confirm the current session. Refresh and try again."
+          }
+        }
+      }
+    },
+    "无法请求写入权限：%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t request permission to save: %@"
           }
         }
       }
@@ -2797,6 +2929,46 @@
         }
       }
     },
+    "未允许" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not Allowed"
+          }
+        }
+      }
+    },
+    "未允许的类型不会写入。你可以在健康 App 中更改薄肌的访问权限。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Types that aren’t allowed are not saved. You can change the access of Lean Muscle in the Health app."
+          }
+        }
+      }
+    },
+    "未获得写入权限。你可以在健康 App 中允许薄肌写入数据。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lean Muscle has no permission to save data. You can allow it in the Health app."
+          }
+        }
+      }
+    },
+    "未设置" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not Set"
+          }
+        }
+      }
+    },
     "本周已训练 %lld 天，目标 2 天" : {
       "localizations" : {
         "en" : {
@@ -2919,12 +3091,32 @@
         }
       }
     },
+    "来自其他 App 和设备 · 与手动记录分开" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "From other apps and devices · Separate from manual logs"
+          }
+        }
+      }
+    },
     "松林" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pine"
+          }
+        }
+      }
+    },
+    "查看健康数据" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View Health Data"
           }
         }
       }
@@ -2995,6 +3187,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Account and Membership Data"
+          }
+        }
+      }
+    },
+    "查看近 30 天的睡眠、体重和腰围，也可以把训练和身体记录写入 Apple 健康。健康数据不会上传到俱乐部。" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View sleep, weight and waist data from the last 30 days, and save workouts and body records to Apple Health. Health data is not uploaded to the club."
           }
         }
       }
@@ -3961,6 +4163,16 @@
         }
       }
     },
+    "训练记录" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Workouts"
+          }
+        }
+      }
+    },
     "训练进度" : {
       "localizations" : {
         "en" : {
@@ -4353,16 +4565,6 @@
         }
       }
     },
-    "连接状态" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Connection Status"
-          }
-        }
-      }
-    },
     "退出其他会话" : {
       "localizations" : {
         "en" : {
@@ -4529,6 +4731,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Email Password"
+          }
+        }
+      }
+    },
+    "部分记录未能写入 Apple 健康：%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Some records couldn’t be saved to Apple Health: %@"
           }
         }
       }

@@ -21,6 +21,7 @@
 		1B6C2F31C52117A2978F4E77 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 95D6C7CE2B162F64784AF160 /* Lottie */; };
 		1DC1E3341B17EF56315044ED /* Shared.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D9FCBE76E0C8017D6AB44D93 /* Shared.xcstrings */; };
 		20413095BB3990CBB995A2E2 /* HealthModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AAF1AB2D0AE96C9E8BFC6AB /* HealthModels.swift */; };
+		2125CE9B7ACB6A7A8172ABF8 /* HealthWriteStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A53330EA451D4DAB9107D7C /* HealthWriteStoreTests.swift */; };
 		23F17C6EAD5963B6F33821DA /* ExerciseAnimationNativeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7CD40F329AE5313C544681 /* ExerciseAnimationNativeTests.swift */; };
 		254BCD51FD325EA2575157A9 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D10F7EF26E239B652E0E2AF9 /* Localizable.xcstrings */; };
 		25F823C9CE7414E10C816C0C /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C8A1C0B6584F9060F92CAAAC /* Localizable.xcstrings */; };
@@ -32,6 +33,7 @@
 		352016E5B270E99C0DA6E065 /* MembershipRPCFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52902C7BFFB3D07FB320C4F9 /* MembershipRPCFixtures.swift */; };
 		3B0A9512235FB99171894270 /* BojiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F4EEA7892D89748155D924 /* BojiUITests.swift */; };
 		40613947F1DBA770A474CF9B /* BojiWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 661AE16B78FF2F30E57965DC /* BojiWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		46B3FD18AEAE412EF80E715D /* HealthWriteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379E57157EB62391A025A55E /* HealthWriteStore.swift */; };
 		46C3FC42A747EC9FACFB5B49 /* ExerciseAnimationRemoteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DDA3A08368EF5F72F3CBDE4 /* ExerciseAnimationRemoteStore.swift */; };
 		4BE11F2893AB2F064E9D90FB /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8B234B8805CB455487EB328C /* InfoPlist.xcstrings */; };
 		4DEC67005C3A8A3D36037E37 /* BojiStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8245B383B494406D2112F93C /* BojiStoreTests.swift */; };
@@ -175,6 +177,7 @@
 		288FDAFDA8D447DB48BC7F66 /* MembershipScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipScannerView.swift; sourceTree = "<group>"; };
 		289FEADA3B5814EB470D4F4B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2AFDF41C9C885E6DDE1070C1 /* AppleIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntegrationTests.swift; sourceTree = "<group>"; };
+		379E57157EB62391A025A55E /* HealthWriteStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthWriteStore.swift; sourceTree = "<group>"; };
 		37AD3A872C22D2EEEB321535 /* BojiUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BojiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3855B4273A5444BEDD1A3079 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		3B37D16693B56D0C5C393052 /* CrashReportingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrashReportingTests.swift; sourceTree = "<group>"; };
@@ -205,6 +208,7 @@
 		736340937938B43AC99C0B3C /* MembershipEnrollmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipEnrollmentView.swift; sourceTree = "<group>"; };
 		741CEA2B76902756BAC5F5F0 /* Boji.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Boji.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		76F4EEA7892D89748155D924 /* BojiUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BojiUITests.swift; sourceTree = "<group>"; };
+		7A53330EA451D4DAB9107D7C /* HealthWriteStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthWriteStoreTests.swift; sourceTree = "<group>"; };
 		7F263C1AD0BD13701D036898 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		80A0A478621B74FB3ACE6C3E /* BojiWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BojiWidgets.entitlements; sourceTree = "<group>"; };
 		81140111BAB62BAEC3D44093 /* AppleIntegrationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntegrationModels.swift; sourceTree = "<group>"; };
@@ -311,6 +315,7 @@
 				8DDA3A08368EF5F72F3CBDE4 /* ExerciseAnimationRemoteStore.swift */,
 				21905AB8E7B0CE32504579D7 /* HealthDataStore.swift */,
 				1AAF1AB2D0AE96C9E8BFC6AB /* HealthModels.swift */,
+				379E57157EB62391A025A55E /* HealthWriteStore.swift */,
 				1BC9E35155AD090D46105762 /* LegalDocument.swift */,
 				491E8393498E63062E9C40F4 /* MembershipAPI.swift */,
 				DA3BE6B2E759D849F1ECB57C /* MembershipCode.swift */,
@@ -438,6 +443,7 @@
 				CF7CD40F329AE5313C544681 /* ExerciseAnimationNativeTests.swift */,
 				64E2BDA8BA4453BF2D000EFF /* HealthDataStoreTests.swift */,
 				B15C9B68AF3F3BA6693740F2 /* HealthModelsTests.swift */,
+				7A53330EA451D4DAB9107D7C /* HealthWriteStoreTests.swift */,
 				6BEFC24EA81BB69F3C8B0B39 /* LegalDocumentTests.swift */,
 				26ED9E884634733D489F5BD6 /* MembershipBoundaryTests.swift */,
 				B35DC21436315BA9461D6416 /* MembershipCodeTests.swift */,
@@ -702,6 +708,7 @@
 				23F17C6EAD5963B6F33821DA /* ExerciseAnimationNativeTests.swift in Sources */,
 				BC9FCC9D20F279F305021487 /* HealthDataStoreTests.swift in Sources */,
 				ECC0752898E65CD0B3F38B60 /* HealthModelsTests.swift in Sources */,
+				2125CE9B7ACB6A7A8172ABF8 /* HealthWriteStoreTests.swift in Sources */,
 				E32A200EE0CEDFEF2DC9E6FF /* LegalDocumentTests.swift in Sources */,
 				EA839609A4BF2A3352AFBC3A /* MembershipBoundaryTests.swift in Sources */,
 				FB49861BEEEAB388283DA840 /* MembershipCodeTests.swift in Sources */,
@@ -740,6 +747,7 @@
 				2D3C6DD55721463172DA1E0D /* HealthConnectionView.swift in Sources */,
 				27FE2609C62109FE7A50DE17 /* HealthDataStore.swift in Sources */,
 				20413095BB3990CBB995A2E2 /* HealthModels.swift in Sources */,
+				46B3FD18AEAE412EF80E715D /* HealthWriteStore.swift in Sources */,
 				CDB72F7C2DBE92403FC9DB0B /* LegalDocument.swift in Sources */,
 				F6B7625E452F04C099BB12D7 /* MembershipAPI.swift in Sources */,
 				54672DA0B79BD336B41FFC31 /* MembershipAuthenticationView.swift in Sources */,

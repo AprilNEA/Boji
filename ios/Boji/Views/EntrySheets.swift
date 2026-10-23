@@ -15,6 +15,7 @@ enum DailySheet: String, Identifiable {
 struct DailyEntrySheet: View {
     let kind: DailySheet
     @Environment(BojiStore.self) private var store
+    @Environment(HealthWriteStore.self) private var healthWrite
     @Environment(\.dismiss) private var dismiss
     @State private var water = 250
     @State private var sleep = 8.0
@@ -140,7 +141,7 @@ struct DailyEntrySheet: View {
         case .sleep: store.setSleep(sleep)
         case .body:
             guard let w = Double(weight), let c = Double(waist), valid else { return }
-            store.addBodyEntry(weight: w, waist: c)
+            if let entry = store.addBodyEntry(weight: w, waist: c) { healthWrite.record(entry) }
         }
         dismiss()
     }
