@@ -175,7 +175,7 @@
     <string name="terms_data_share">Share images contain your nickname and join date. The card number is hidden by default, and you can turn it on in the preview. Nothing is uploaded or shared until you confirm.</string>
     <string name="terms_boundary">What the Card Is Not</string>
     <string name="terms_boundary_text">The free member card records your club membership. It grants no paid benefits and can’t be used for payment or gym entry. Images are keepsake copies only. The server decides your membership status.</string>
-    <string name="terms_deletion">The app has no account deletion option yet. Account deletion and a formal privacy policy must be added before the public release.</string>
+    <string name="terms_deletion">After signing in, delete your account in Account and Security. After email confirmation, your account and membership data are deleted from the server. Local records are kept. If you cannot sign in, contact privacy@leanmuscle.club.</string>
     <string name="terms_version">Guidelines version: %1$s</string>
 
     <!-- Account security -->

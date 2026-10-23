@@ -69,12 +69,10 @@
 
     <!-- Club -->
     <string name="club_subtitle">在这里，照顾自己就是入场券。</string>
-    <string name="club_membership_title">会员卡</string>
-    <string name="club_membership_text">Android 版暂未接入俱乐部账号和会员卡。日常记录不需要账号。</string>
     <string name="club_challenge_day">第 %1$d 天：%2$s</string>
     <string name="club_challenge_day_done">已完成</string>
     <string name="club_challenge_day_pending">未完成</string>
-    <string name="club_footnote">日常记录留在本机。会员卡、多人小队和线上社区尚未在 Android 版开放。</string>
+    <string name="club_footnote">会员身份由俱乐部服务保存，日常记录仍留在本机。多人小队和线上社区尚未开放。</string>
 
     <!-- Settings -->
     <string name="settings_privacy_local">训练和身体记录只保存在此设备</string>

@@ -76,12 +76,10 @@
 
     <!-- Club -->
     <string name="club_subtitle">Here, taking care of yourself is your ticket in.</string>
-    <string name="club_membership_title">Membership Card</string>
-    <string name="club_membership_text">The Android app doesn’t support club accounts or membership cards yet. Daily logging doesn’t need an account.</string>
     <string name="club_challenge_day">Day %1$d: %2$s</string>
     <string name="club_challenge_day_done">Done</string>
     <string name="club_challenge_day_pending">Not yet</string>
-    <string name="club_footnote">Your daily records stay on this device. Membership cards, group squads and the online community aren’t available on Android yet.</string>
+    <string name="club_footnote">The club service stores your membership. Your daily records stay on this device. Group squads and the online community aren’t available yet.</string>
 
     <!-- Settings -->
     <string name="settings_privacy_local">Workout and body records stay on this device only</string>

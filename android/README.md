@@ -501,6 +501,6 @@ Credential Manager 对密码只是强烈建议声明 Digital Asset Links，对�
 
 已知警告：
 
-- Lint 的 7 个 `PluralsCandidate` 警告来自英文 `strings.xml` 和生成的 `strings_shared.xml`。2 个 `UnusedResources` 警告是 `club_membership_title` 和 `club_membership_text`，俱乐部页改为会员卡入口后不再使用。
+- Lint 的 7 个 `PluralsCandidate` 警告来自英文 `strings.xml` 和生成的 `strings_shared.xml`。
 - AGP 或 Kotlin 插件在配置阶段调用了已弃用的 `Configuration.setVisible`。Gradle 计划在 11 版移除该方法。工程脚本没有调用该方法，具体来源未验证。
 - 构建提示无法 strip `libandroidx.graphics.path.so` 和 `libdatastore_shared_counter.so`，这两个库按原样打包。可能原因是本机未安装 AGP 默认的 NDK 28.2.13676358（未验证）。

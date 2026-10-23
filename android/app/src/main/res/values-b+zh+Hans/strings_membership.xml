@@ -168,7 +168,7 @@
     <string name="terms_data_share">分享图片包含昵称和入会日期。卡号默认隐藏，可以在预览中主动开启。确认前，图片不会自动上传或分享。</string>
     <string name="terms_boundary">卡片的边界</string>
     <string name="terms_boundary_text">免费会员卡是俱乐部身份记录，不代表付费权益，也不能用于支付或场馆核销。图片只是纪念副本，会员状态以服务器为准。</string>
-    <string name="terms_deletion">当前尚无 App 内账号注销入口。公开发布前需补齐账号删除与正式隐私政策。</string>
+    <string name="terms_deletion">登录后，可在「账号与安全」中删除账号。确认邮箱后，服务器删除账号和会员资料，本机记录仍保留。无法登录时，可联系 privacy@leanmuscle.club。</string>
     <string name="terms_version">守则版本：%1$s</string>
 
     <!-- Account security -->
