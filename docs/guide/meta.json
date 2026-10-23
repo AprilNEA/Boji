@@ -3,5 +3,22 @@
   "description": "怎样使用 Boji App",
   "icon": "BookOpen",
   "root": true,
-  "pages": ["index", "school-ranking"]
+  "pages": [
+    "index",
+    "getting-started",
+    "daily-log",
+    "training",
+    "progress",
+    "club",
+    "---账号与会员---",
+    "account",
+    "membership",
+    "---设备与数据---",
+    "health",
+    "widgets-and-watch",
+    "data",
+    "---即将推出---",
+    "school-ranking",
+    "roadmap"
+  ]
 }

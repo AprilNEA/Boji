@@ -1,0 +1,252 @@
+---
+title: 课程与跟练
+description: 14 套课程、动作动画和逐组跟练。
+icon: Dumbbell
+---
+
+App 有 14 套课程，分为居家、健身房、拉伸与放松三组。选好课程后，App 逐组带你练完，完成后自动记录当天的训练。
+
+<Screenshots
+  shots={[
+    { name: "app:training", alt: "训练页：训练场景切换和三组课程", caption: "训练页" },
+    { name: "workout", alt: "舒缓拉伸的课程详情：10 分钟、3 个动作，下方列出猫牛式、髋屈肌拉伸和开胸拉伸", caption: "课程详情" },
+  ]}
+/>
+
+## 课程列表
+
+刚开始训练时，每周安排 2～3 次，训练日之间留出休息。先用轻负荷熟悉动作，再逐步增加。
+
+<Tabs items={["居家", "健身房", "拉伸与放松"]}>
+  <Tab value="居家">
+    **居家基础训练** · 20 分钟 · 新手
+
+    <ExerciseRow exercises={[
+      { id: "bodyweight-squat", name: "徒手深蹲" },
+      { id: "wall-push-up", name: "墙壁俯卧撑" },
+      { id: "glute-bridge", name: "臀桥" },
+      { id: "bird-dog", name: "鸟狗式" },
+    ]} />
+
+    **居家进阶训练** · 25 分钟 · 进阶
+
+    <ExerciseRow exercises={[
+      { id: "reverse-lunge", name: "后撤步弓步蹲" },
+      { id: "knee-push-up", name: "跪姿俯卧撑" },
+      { id: "dead-bug", name: "死虫式" },
+      { id: "wall-sit", name: "靠墙静蹲" },
+      { id: "plank", name: "平板支撑" },
+    ]} />
+
+    **居家强化训练** · 30 分钟 · 进阶
+
+    <ExerciseRow exercises={[
+      { id: "push-up", name: "标准俯卧撑", group: "library" },
+      { id: "bodyweight-split-squat", name: "徒手分腿蹲", group: "library" },
+      { id: "single-leg-glute-bridge", name: "单腿臀桥", group: "library" },
+      { id: "bench-dip", name: "凳上反向臂屈伸", group: "library" },
+      { id: "superman", name: "俯卧超人挺身", group: "library" },
+      { id: "bodyweight-forearm-side-plank", name: "前臂侧平板", group: "library" },
+    ]} />
+
+    **核心训练** · 15 分钟 · 新手
+
+    <ExerciseRow exercises={[
+      { id: "crunch", name: "卷腹", group: "library" },
+      { id: "reverse-crunch", name: "反向卷腹", group: "library" },
+      { id: "bicycle-crunch", name: "自行车卷腹", group: "library" },
+      { id: "russian-twist", name: "俄罗斯转体", group: "library" },
+      { id: "flutter-kick", name: "仰卧交替打腿", group: "library" },
+      { id: "plank", name: "平板支撑" },
+    ]} />
+
+    **燃脂循环** · 15 分钟 · 进阶
+
+    <ExerciseRow exercises={[
+      { id: "jumping-jack", name: "开合跳", group: "library" },
+      { id: "wall-high-knees", name: "扶墙高抬腿", group: "library" },
+      { id: "mountain-climber", name: "登山者", group: "library" },
+      { id: "jump-squat", name: "深蹲跳", group: "library" },
+      { id: "bear-crawl", name: "熊爬", group: "library" },
+      { id: "bodyweight-burpee", name: "波比跳", group: "library" },
+    ]} />
+
+    **哑铃居家训练** · 25 分钟 · 新手
+
+    <ExerciseRow exercises={[
+      { id: "dumbbell-goblet-squat", name: "高脚杯深蹲", group: "library" },
+      { id: "dumbbell-floor-press", name: "地板卧推", group: "library" },
+      { id: "dumbbell-bent-over-row", name: "俯身划船", group: "library" },
+      { id: "dumbbell-romanian-deadlift", name: "罗马尼亚硬拉", group: "library" },
+      { id: "dumbbell-reverse-lunge", name: "后撤弓步蹲", group: "library" },
+      { id: "dumbbell-lateral-raise", name: "侧平举", group: "library" },
+    ]} />
+  </Tab>
+  <Tab value="健身房">
+    **器械基础训练** · 30 分钟 · 新手
+
+    <ExerciseRow exercises={[
+      { id: "chest-press", name: "坐姿推胸" },
+      { id: "seated-row", name: "坐姿划船" },
+      { id: "leg-press", name: "坐姿腿举" },
+      { id: "lat-pulldown", name: "高位下拉" },
+    ]} />
+
+    **自由重量入门** · 35 分钟 · 新手
+
+    <ExerciseRow exercises={[
+      { id: "dumbbell-goblet-squat", name: "高脚杯深蹲", group: "library" },
+      { id: "dumbbell-bench-press", name: "哑铃卧推", group: "library" },
+      { id: "dumbbell-bent-over-row", name: "俯身划船", group: "library" },
+      { id: "dumbbell-romanian-deadlift", name: "罗马尼亚硬拉", group: "library" },
+      { id: "dumbbell-seated-shoulder-press", name: "坐姿肩上推举", group: "library" },
+      { id: "dumbbell-biceps-curl", name: "哑铃弯举", group: "library" },
+    ]} />
+
+    **上肢器械训练** · 35 分钟 · 进阶
+
+    <ExerciseRow exercises={[
+      { id: "machine-chest-press", name: "器械推胸", group: "library" },
+      { id: "machine-shoulder-press", name: "器械肩上推举", group: "library" },
+      { id: "machine-assisted-pull-up", name: "辅助引体向上", group: "library" },
+      { id: "machine-pec-deck-fly", name: "蝴蝶机夹胸", group: "library" },
+      { id: "cable-face-pull", name: "绳索面拉", group: "library" },
+      { id: "cable-rope-triceps-pushdown", name: "绳把下压", group: "library" },
+    ]} />
+
+    **下肢器械训练** · 35 分钟 · 进阶
+
+    <ExerciseRow exercises={[
+      { id: "leg-press", name: "坐姿腿举" },
+      { id: "machine-leg-extension", name: "器械腿屈伸", group: "library" },
+      { id: "machine-seated-leg-curl", name: "坐姿腿弯举", group: "library" },
+      { id: "machine-seated-hip-abduction", name: "坐姿髋外展", group: "library" },
+      { id: "machine-seated-hip-adduction", name: "坐姿髋内收", group: "library" },
+      { id: "back-extension", name: "背部伸展", group: "library" },
+    ]} />
+  </Tab>
+  <Tab value="拉伸与放松">
+    **舒缓拉伸** · 10 分钟 · 轻松
+
+    <ExerciseRow exercises={[
+      { id: "cat-cow", name: "猫牛式" },
+      { id: "hip-flexor-stretch", name: "髋屈肌拉伸" },
+      { id: "chest-stretch", name: "开胸拉伸" },
+    ]} />
+
+    **训练后下肢拉伸** · 10 分钟 · 轻松
+
+    <ExerciseRow exercises={[
+      { id: "standing-hamstring-stretch", name: "腘绳肌拉伸", group: "library" },
+      { id: "prone-quadriceps-stretch", name: "股四头肌拉伸", group: "library" },
+      { id: "supine-figure-four-glute-stretch", name: "四字臀肌拉伸", group: "library" },
+      { id: "runners-lunge-stretch", name: "跑步弓步拉伸", group: "library" },
+      { id: "wall-standing-calf-stretch", name: "小腿拉伸", group: "library" },
+    ]} />
+
+    **久坐肩颈放松** · 8 分钟 · 轻松
+
+    <ExerciseRow exercises={[
+      { id: "neck-side-stretch", name: "颈部侧屈", group: "library" },
+      { id: "cross-body-shoulder-stretch", name: "交叉抱臂", group: "library" },
+      { id: "overhead-triceps-stretch", name: "过顶三头拉伸", group: "library" },
+      { id: "chair-seated-chest-and-shoulder-stretch", name: "坐椅胸肩拉伸", group: "library" },
+      { id: "seated-chair-hamstring-stretch", name: "坐姿腘绳肌", group: "library" },
+    ]} />
+
+    **晨间唤醒** · 8 分钟 · 轻松
+
+    <ExerciseRow exercises={[
+      { id: "worlds-greatest-stretch", name: "世界最佳拉伸", group: "library" },
+      { id: "inchworm", name: "毛毛虫爬行", group: "library" },
+      { id: "bodyweight-good-morning", name: "早安式体前屈", group: "library" },
+      { id: "knees-to-chest-stretch", name: "仰卧抱膝", group: "library" },
+      { id: "childs-pose", name: "婴儿式", group: "library" },
+    ]} />
+  </Tab>
+</Tabs>
+
+力量课程的每个动作做 3 组，拉伸课程做 2 组。每组的要求写成次数或时间，例如「8～10 次」「每侧 20 秒」。
+
+## 查看动作说明
+
+在课程详情中，每个动作都列出组数、次数和要点，组间休息 30 秒。在 iOS 上，点一个动作可以打开动作说明。
+
+<ShotWithText name="app:exercise" alt="动作说明：深色模式下徒手深蹲的代表姿势、组数和主要肌群" caption="动作说明">
+
+- 循环播放动作动画，跟随系统切换深浅色。
+- 「暂停演示」停止动画，「代表姿势」显示一个静止姿势。
+- 「演示速度」可以选「慢速 0.5×」，方便观察。演示速度不是训练节拍。
+- 列出组数、次数、要点和主要肌群。
+
+<ExerciseLoop id="bodyweight-squat" alt="徒手深蹲的循环动画，臀部和大腿前侧标为发力肌群" caption="动作动画用颜色标出主要发力的肌群" />
+
+</ShotWithText>
+
+如果系统开启了「减少动态效果」，动作说明只显示代表姿势。
+
+<Callout type="warn" title="动画只是示意">
+动画是通用示意，没有经过专业动作审核。不要只照着动画训练。
+</Callout>
+
+## 动作动画的下载
+
+居家基础训练、居家进阶训练、器械基础训练和舒缓拉伸的动画随 App 安装。其余 10 套课程的动画在你第一次打开课程详情时下载，之后离线也能播放。
+
+| 状态 | 课程详情显示 |
+| --- | --- |
+| 正在下载 | 正在下载动作动画 |
+| 设备离线或下载失败 | 联网后可查看动作动画 |
+
+没有动画时，课程照常可以练，跟练页显示动作的文字要点。
+
+## 跟练
+
+<Callout type="warn" title="先热身">
+开始前先热身。出现疼痛、头晕或其他不适时，立即停止训练。
+</Callout>
+
+<Screenshots
+  shots={[
+    { name: "app:session", alt: "跟练页：猫牛式第 1 组，共 2 组，下方是暂停按钮和完成这一组按钮", caption: "逐组跟练" },
+    { name: "rest", alt: "组间休息：30 秒倒计时，显示下一个动作，下方是跳过休息按钮", caption: "组间休息" },
+    { name: "finished", alt: "训练完成页：舒缓拉伸已记录，显示用时、动作数和组数", caption: "训练完成" },
+  ]}
+/>
+
+<Steps>
+  <Step>
+    在课程详情点「开始训练」。
+  </Step>
+  <Step>
+    跟练页显示当前动作、第几组和要求的次数或时间。按要求做完一组。App 不替你计数，每组的次数由你自己掌握。
+  </Step>
+  <Step>
+    点「完成这一组」。App 自动开始 30 秒休息倒计时，并显示下一个动作。不需要休息时，点「跳过休息」。
+  </Step>
+  <Step>
+    重复上面两步，直到最后一组。最后一组完成后，App 显示「训练完成」和本次用时。
+  </Step>
+  <Step>
+    点「完成」返回。
+  </Step>
+</Steps>
+
+训练中可以随时暂停：
+
+- 点暂停按钮，暂停后「完成这一组」不可用。点「继续训练」恢复。
+- 切换到其他 App 或锁屏时，训练自动暂停。
+
+要提前结束，点左上角「结束」，然后选「结束训练」。提前结束的训练不会记录。
+
+## 训练怎样记录
+
+完成最后一组后，App 把这套课程记入当天：
+
+- 今天页的训练项变为已记录。
+- 足迹页的累计训练次数增加。
+- 当天的训练分钟数按课程的计划时长增加，不按实际用时计算。
+
+同一天重复完成同一套课程，只记录一次。课程详情的按钮会变为「再次练习」。
+
+在 iOS 上开启写入 Apple 健康后，每次完成的训练还会作为一条体能训练写入 Apple 健康，包含实际的开始、结束和暂停时间。详见[健康数据](/docs/guide/health/)。

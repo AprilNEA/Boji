@@ -93,6 +93,40 @@ EOF
 
 The script writes RGB PNG files without metadata. If you add a device or a locale, use the same layout and update the screenshot tables in the `## 功能` section of `README.md`.
 
+### Guide screenshots
+
+The user guide in `docs/guide/` shows iPhone captures from `screenshots/apple/iphone/zh-Hans/guide/`, through the `Screenshot` components of `websites/src/components/docs/Screenshots.tsx`. A page can also show the README captures with the `app:` prefix, for example `app:today`. `ios/BojiUITests/GuideScreenshotTests.swift` captures the guide screens with the in-memory store and the test membership service, so the membership screens show 测试卡 and 界面测试环境. Each attachment is named `guide-<name>`, and `<name>` is the file name in the guide.
+
+To capture the screens again, run the test on an iPhone 17 Pro simulator with the test command of `ios/AGENTS.md`, `-only-testing:BojiUITests/GuideScreenshotTests` and `-resultBundlePath ../.work/boji-ios/guide.xcresult`. Then export and scale the captures at the repository root in the devenv shell:
+
+```sh
+rm -rf .work/guide-shots
+xcrun xcresulttool export attachments --path .work/boji-ios/guide.xcresult --output-path .work/guide-shots
+python - .work/guide-shots assets/public/screenshots/apple/iphone/zh-Hans/guide <<'EOF'
+import json
+import sys
+from pathlib import Path
+from PIL import Image
+
+src, dst = map(Path, sys.argv[1:])
+dst.mkdir(parents=True, exist_ok=True)
+for test in json.loads((src / "manifest.json").read_text()):
+    for attachment in test["attachments"]:
+        name = attachment["suggestedHumanReadableName"]
+        if not name.startswith("guide-"):
+            continue
+        # XCTest appends "_<index>_<UUID>.png" to the attachment name.
+        screen = name.removeprefix("guide-").rsplit("_", 2)[0]
+        with Image.open(src / attachment["exportedFileName"]) as im:
+            im = im.convert("RGB")
+            im = im.resize((603, round(im.height * 603 / im.width)), Image.LANCZOS)
+            im.save(dst / f"{screen}.png", optimize=True)
+        print(dst / f"{screen}.png")
+EOF
+```
+
+Check every capture before you commit it: the test data must not show personal data, and a sheet must not be caught in its transition. When a guide page uses a new capture, add a `capture("<name>")` call to the test.
+
 `screenshots/apple/watch/zh-Hans/today/` holds the 今日进度 screen of the watch app inside every Apple Product Bezel of Apple Watch Ultra 3 and Apple Watch Series 11: 57 RGBA PNG files with a transparent background. Each path has the form `today/<model>/<variant>.png`. `<variant>` is the case and band from the bezel file name, in lowercase with hyphens, for example `today/ultra-3-49mm/natural-ocean-band-anchor-blue.png`. `README.md` shows that file and `today/series-11-46mm/titanium-natural-milanese-loop.png`. `websites/src/lib/app.ts` loads the same Ultra 3 file from the asset host, so keep the file names stable.
 
 | Model | Directory | Bezel | Screen opening |

@@ -1,0 +1,67 @@
+---
+title: 小组件与手表
+description: 在主屏幕、锁定屏幕和手表上查看当天的记录状态。
+icon: Watch
+---
+
+小组件和手表显示当天的训练、饮水和睡眠是否已经记录。它们只显示是否记录，不显示具体数值、健康数据或会员信息。
+
+<Row>
+  <AssetImage src="screenshots/apple/watch/zh-Hans/today/ultra-3-49mm/natural-ocean-band-anchor-blue.png" alt="Apple Watch Ultra 3 上的今日进度：已连接 iPhone，计划为居家训练，手动训练未记录，饮水和睡眠已记录" caption="Apple Watch Ultra 3" width={200} />
+  <AssetImage src="screenshots/apple/watch/zh-Hans/today/series-11-46mm/titanium-natural-milanese-loop.png" alt="Apple Watch Series 11 上的今日进度：手动训练未记录，饮水和睡眠已记录" caption="Apple Watch Series 11" width={187} />
+</Row>
+
+## 开启共享
+
+小组件和手表默认不显示记录。使用前，先开启共享：
+
+<Steps>
+  <Step>
+    打开「设置」>「小组件与 Apple Watch」（Android 上为「小组件与手表」）。
+  </Step>
+  <Step>
+    打开「共享当天打卡状态」。
+  </Step>
+</Steps>
+
+开启后，开关下方显示手表的连接状态，例如「已连接手表」或「请先在 Apple Watch 安装薄肌」。
+
+关闭共享后，小组件显示「未开启记录共享」，手表在下次连接时清除显示。
+
+## 添加小组件
+
+小组件的名称是「薄肌今日记录」。按系统的方法添加：在主屏幕上长按空白处，然后添加小组件。
+
+| 位置 | iOS | Android |
+| --- | --- | --- |
+| 主屏幕 | 小号：三行状态<br />中号：三个方块 | 可调整大小。窄时显示三行，宽时显示三个方块 |
+| 锁定屏幕 | 矩形和圆形，用「训」「饮」「眠」表示三项 | 不支持 |
+
+点小组件打开今天页。在中号或宽的小组件上点训练方块，打开训练页。
+
+记录变化后，小组件会自动更新。过了 0:00，小组件会切换到新的一天。在 iOS 上，小组件在你打开 App 之前可能显示「记录待同步」。
+
+## 使用手表
+
+<Tabs items={["Apple Watch", "Wear OS"]}>
+  <Tab value="Apple Watch">
+    Apple Watch 上的薄肌显示「今日进度」：当前的训练场景，以及训练、饮水和睡眠是否已记录。
+
+    - 需要配对的 iPhone 已安装薄肌，并开启了「共享当天打卡状态」。
+    - 需要 watchOS 26 或更高版本。
+    - 手表只能查看，不能记录或训练。
+    - 点「刷新」可以向 iPhone 请求更新。iPhone 不在附近时，手表显示上次同步的结果和同步时间，只显示当天的数据。
+
+  </Tab>
+  <Tab value="Wear OS">
+    Wear OS 手表上的薄肌显示与 Apple Watch 相同的「今日进度」。
+
+    - 需要配对的 Android 手机已安装薄肌，并开启了「共享当天打卡状态」。
+    - 需要 Wear OS 3 或更高版本。
+    - 手表只能查看，不能记录或训练。
+    - 点「刷新」可以向手机请求更新。
+
+  </Tab>
+</Tabs>
+
+Apple Watch 只能与 iPhone 配合使用，Wear OS 手表只能与 Android 手机配合使用。
