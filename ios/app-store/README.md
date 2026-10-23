@@ -73,7 +73,10 @@ app-store/
 │       ├── 0.7.0/
 │       │   ├── en-US.json
 │       │   └── zh-Hans.json
-│       └── 1.0/
+│       ├── 1.0/
+│       │   ├── en-US.json
+│       │   └── zh-Hans.json
+│       └── 1.0.1/
 │           ├── en-US.json
 │           └── zh-Hans.json
 ├── release-checklist.md
