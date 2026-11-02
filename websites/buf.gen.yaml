@@ -1,0 +1,23 @@
+# TypeScript code generation for the public school ranking pages. The website
+# calls only the public services that need no session: OrganizationService
+# and SystemService. Run `buf generate` in this directory and commit the
+# output. The input is the buf workspace in bizserver/, the owner of the API
+# contract.
+version: v2
+clean: true
+plugins:
+  # Messages and service descriptors for Connect-ES. Keep the version equal to
+  # @bufbuild/protobuf in package.json.
+  - remote: buf.build/bufbuild/es:v2.16.0
+    out: src/gen
+    include_imports: true
+    opt:
+      - target=ts
+      - import_extension=none
+inputs:
+  # Do not add services that need a session. The website has no sign-in.
+  # buf resolves `paths` of a directory input against this directory.
+  - directory: ../bizserver
+    paths:
+      - ../bizserver/proto/boji/v1/organization_service.proto
+      - ../bizserver/proto/boji/v1/system_service.proto

@@ -120,3 +120,9 @@ export const APP_FOOTNOTES = [
   "体脂 13%、每天 1700 mL 水、每晚 7–9 小时睡眠来自薄肌理论，是一种审美偏好和生活习惯主张，不是医学健康标准。饮水量参考《中国居民膳食指南（2022）》。",
   "截图使用测试数据。App 界面以实际版本为准。",
 ] as const;
+
+/** Footer notes of the school ranking pages under /ranking/. */
+export const RANKING_FOOTNOTES = [
+  "本校人数是持有薄肌会员卡、并通过本校邮箱认证的会员数。学校邮箱不能区分学生、教职工和校友，所以其中不一定都是在校学生。",
+  "学校名称和邮箱域名来自 Hipo university-domains-list（MIT 许可证）。大学排名与所列学校没有关联，不代表任何学校的官方立场。",
+] as const;

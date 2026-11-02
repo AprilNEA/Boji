@@ -23,7 +23,11 @@ This directory holds the 薄肌俱乐部 website and the Boji docs site under `/
 | `src/components/docs/mdx.tsx` | Components that docs MDX can use |
 | `src/components/docs/StandalonePage.tsx` | Renders a standalone page of `../docs/sites/` in a given language, without a sidebar |
 | `src/lib/content.ts` | Copy, data tables and asset paths (`IMG`, `LAUNCH_FILM`) of the parody pages, the navigation links and the footer notes |
-| `src/lib/app.ts` | Copy and data of the app home page: the App Store URL, the screenshot and exercise image URLs on the asset host, the courses and the home page footer notes |
+| `src/lib/app.ts` | Copy and data of the app home page: the App Store URL, the screenshot and exercise image URLs on the asset host, the courses the home page footer notes and the footer notes of the ranking pages |
+| `src/lib/ranking.ts` | The Connect clients of the school ranking pages, the member service URL from `NEXT_PUBLIC_BOJI_API_BASE_URL`, and name and time helpers |
+| `src/components/ranking/` | The school ranking page `/ranking/` and the school page `/ranking/school/?id=<organization ID>` |
+| `src/gen/` | TypeScript code that `buf generate` writes from `../bizserver/proto/`. Do not edit it |
+| `buf.gen.yaml` | Code generation of `src/gen/`: the plugin version and the proto files that the website uses |
 | `src/lib/colors.ts` | Color values that JavaScript needs (Motion animations, SVG attributes) |
 | `src/lib/source.ts` | Fumadocs content source for `../docs/` and `../docs/sites/`, the languages, and the page tree and params of the docs section |
 | `src/lib/docs.tsx` | Navigation options of the docs section and the standalone pages, `PageLinks`, and the Chinese UI strings of Fumadocs |
@@ -50,7 +54,11 @@ Run these commands in this directory:
 ## Rules
 
 - The site is self-hosted as static files. Do not add runtime requests to Manus or other third-party services, and do not add Manus proxy hosts to `next.config.ts`. The site must not read `app.config.ts` or `public/manus-routes.json`.
-- Sentry is the only exception. `src/instrumentation-client.ts` loads `@sentry/browser` only when the build sets `NEXT_PUBLIC_SENTRY_DSN`. A build without it must not load the Sentry chunk or send a request. Keep the `BrowserSession` integration removed, keep `dataCollection` off, and do not add tracing or Session Replay. See `../docs/developers/sentry.mdx`.
+- Sentry is one exception. `src/instrumentation-client.ts` loads `@sentry/browser` only when the build sets `NEXT_PUBLIC_SENTRY_DSN`. A build without it must not load the Sentry chunk or send a request. Keep the `BrowserSession` integration removed, keep `dataCollection` off, and do not add tracing or Session Replay. See `../docs/developers/sentry.mdx`.
+- The school ranking pages are the other exception. In the browser, they call the public methods of the Boji member service (`../bizserver/`) at `NEXT_PUBLIC_BOJI_API_BASE_URL`. A build without it must not send a request, and the pages show that the ranking is not open. The pages show the ranking only when `ServerConfig.organization_ranking_enabled` is true. The member service must list the site origin in `CORS_ORIGINS`.
+- The site has no sign-in. Call only `boji.v1.OrganizationService` and `boji.v1.SystemService`, which need no session. School email verification and 我的学校 wait for a reviewed sign-in design; see `../docs/developers/school-ranking.mdx`.
+- Use the generated code in `src/gen/` for every member service call. Do not hand-write request or response types. To regenerate it, run `buf generate` in this directory. `buf.gen.yaml` lists the proto files; add a file there only for a public method. Keep the `bufbuild/es` plugin version equal to `@bufbuild/protobuf` in `package.json`, and run `buf generate` here after a change to those proto files.
+- The school page takes the organization ID as the `id` query parameter, because the static export cannot prerender one page per school. Check that the ID is a UUID before a request.
 - Keep the files that only this site uses in `public/` and reference them by local path. Use the asset host `https://assets.leanmuscle.club` only for the generic files in the repository-level `assets/public/`, such as the app icon, the app screenshots and the exercise images. `src/lib/app.ts` builds these URLs. A new file in `assets/public/` returns 404 until the asset host is deployed.
 - The community channel is GitHub Discussions at `DISCUSSIONS_URL` in `src/lib/content.ts`. The website footer and the docs navigation link to it with `GitHubIcon`. Do not add Discord or other chat links. Account and privacy requests go to `privacy@leanmuscle.club`, not to the public channel. `CONTACT_EMAIL` in `src/lib/content.ts` is `support@leanmuscle.club`. `public/.well-known/security.txt` names `security@leanmuscle.club`; update its `Expires` field before 2027-10-21.
 - Do not add `/manus-storage/` paths, `files.manuscdn.com` URLs or other hosted storage URLs.

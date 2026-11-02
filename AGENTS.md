@@ -238,6 +238,8 @@ The iOS code is the local Swift package `ios/BojiAPI/`. Its `buf.gen.yaml` pins 
 
 The Android code is the library module `android/rpc/`. Its `buf.gen.yaml` pins the plugin versions, and `android/gradle/libs.versions.toml` pins the runtime versions. Keep `protocolbuffers/java` and `protocolbuffers/kotlin` at the protoc release of `protobuf`, and `connectrpc/kotlin` equal to `connectKotlin`.
 
+The website code is `websites/src/gen/`. `websites/buf.gen.yaml` generates only the public services that the ranking pages call, `OrganizationService` and `SystemService`, with their imports. Keep the `bufbuild/es` plugin version equal to `@bufbuild/protobuf` in `websites/package.json`. After a change to those proto files, also run `buf generate` in `websites/`.
+
 Keep the googleapis commit in each `buf.gen.yaml` equal to `bizserver/buf.lock`. Both clients also generate `bizserver/proto/boji/admin/v1/membership_code_service.proto`, because staff scan membership codes in the apps. Do not add other `boji.admin.v1` files to a client. After a change to `bizserver/proto/boji/v1/` or to that file, run `buf generate` in `ios/BojiAPI/` and in `android/rpc/`. Commit the regenerated files of both clients in the same change.
 
 ### Asset host
