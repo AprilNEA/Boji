@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { APP_FOOTNOTES } from "@/lib/app";
+import { APP_FOOTNOTES, RANKING_FOOTNOTES } from "@/lib/app";
 import { CONTACT_EMAIL, DISCUSSIONS_URL, FOOTNOTES } from "@/lib/content";
 import { GitHubIcon } from "@/components/ui/GitHubIcon";
 import { Logo } from "@/components/ui/Logo";
@@ -46,8 +46,9 @@ const LEGAL_LINKS = [
 ] as const;
 
 export function Footer() {
-  // 首页介绍 App，只需要 App 的声明；其他页面是发布会恶搞，沿用原来的声明。
-  const notes = usePathname() === "/" ? APP_FOOTNOTES : FOOTNOTES;
+  // 首页介绍 App，只需要 App 的声明；大学排名是真实数据，用排名的声明；其他页面是发布会恶搞，沿用原来的声明。
+  const pathname = usePathname();
+  const notes = pathname === "/" ? APP_FOOTNOTES : pathname?.startsWith("/ranking") ? RANKING_FOOTNOTES : FOOTNOTES;
   return (
     <footer className="bg-mist text-[12px] leading-[1.34] text-ash">
       <div className="container-apple pb-5 pt-10">

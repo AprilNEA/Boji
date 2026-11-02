@@ -20,7 +20,7 @@ const QUICK_LINKS = [
 ];
 
 /** Pages whose first screen is white get Apple's light glass nav; everything else stays dark. */
-const LIGHT_ROUTES = ["/pro", "/compare", "/store", "/calculator", "/founders", "/join"];
+const LIGHT_ROUTES = ["/pro", "/compare", "/store", "/calculator", "/founders", "/join", "/ranking"];
 
 /** The home link "/" is a prefix of every path, so it only matches exactly. */
 const isActive = (pathname: string | null, href: string) =>

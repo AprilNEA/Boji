@@ -16,13 +16,21 @@ pnpm build      # 静态构建，产物在 out/
 
 ## 独立托管
 
-网站不依赖 Manus 或其他后端服务。`pnpm build` 生成的 `out/` 是纯静态文件，可以放到任意静态服务器或 CDN 上。站点专用的图片、视频和字体都在 `out/` 内。首页的 App 图标、截图和动作图来自仓库根目录的 `assets/public/`，运行时从 `https://assets.leanmuscle.club` 加载。除此之外，页面只请求本站资源。外部链接只有两个：App Store 下载链接，以及官网页脚和文档侧边栏中的 GitHub Discussions 链接，都只在用户点击时打开。
+网站不依赖 Manus 或其他后端服务。`pnpm build` 生成的 `out/` 是纯静态文件，可以放到任意静态服务器或 CDN 上。站点专用的图片、视频和字体都在 `out/` 内。首页的 App 图标、截图和动作图来自仓库根目录的 `assets/public/`，运行时从 `https://assets.leanmuscle.club` 加载。除此之外和下面两个例外，页面只请求本站资源。外部链接只有两个：App Store 下载链接，以及官网页脚和文档侧边栏中的 GitHub Discussions 链接，都只在用户点击时打开。
 
 构建时设置了 `NEXT_PUBLIC_SENTRY_DSN`，网站才会把未捕获的错误上报到 Sentry，这是唯一的例外。默认构建不加载 Sentry，也不向 Sentry 发出请求。启用方式和上报字段见 [Sentry 错误上报](../docs/developers/sentry.mdx)。
 
 ```sh
 NEXT_PUBLIC_SENTRY_DSN='https://<公钥>@<主机>/<项目编号>' pnpm build
 ```
+
+大学排名页 `/ranking/` 和本校页 `/ranking/school/` 在浏览器中调用 Boji 会员服务（`bizserver/`）的公开接口，这是第二个例外。构建时设置 `NEXT_PUBLIC_BOJI_API_BASE_URL`，页面才会发出请求，并且只在服务端的 `organization_ranking_enabled` 为 `true` 时显示排名。没有这个值时，两个页面显示「大学排名尚未开放」，不发出请求。地址必须是 HTTPS，本机调试时可以用 `http://localhost` 或 `http://127.0.0.1`。会员服务必须把网站的域名加入 `CORS_ORIGINS`。
+
+```sh
+NEXT_PUBLIC_BOJI_API_BASE_URL='https://<会员服务地址>' pnpm build
+```
+
+网站没有登录功能，只调用不需要登录的 `OrganizationService` 和 `SystemService`。接口代码由 `buf generate` 从 `bizserver/proto/` 生成，见 [AGENTS.md](AGENTS.md)。
 
 部署时注意三点：
 
@@ -51,6 +59,8 @@ Python 自带的服务器不会返回 `404.html`，所以用它预览时看不�
 | `/founders/` | 创始人 |
 | `/join/` | 入会：宣誓并领取会员卡 |
 | `/calculator/` | 旧链接，在客户端跳转到 `/store/` |
+| `/ranking/` | 大学排名：公开的学校人数排名、学校搜索和排名规则 |
+| `/ranking/school/?id=<学校 ID>` | 本校页：一所学校的人数、本周新增和名次。学校 ID 在查询参数中，因为静态导出不能为每所学校生成页面 |
 | `/support/` | 支持：Boji iOS App 的求助方式和常见问题 |
 | `/privacy/`、`/en/privacy/` | 隐私政策，中文版和英文版 |
 | `/terms/`、`/en/terms/` | 用户协议，中文版和英文版 |
