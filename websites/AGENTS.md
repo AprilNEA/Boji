@@ -7,6 +7,7 @@ This directory holds the 薄肌俱乐部 website and the Boji docs site under `/
 - Use the devenv shell from the repository root (`devenv shell`, or direnv with `.envrc`). It provides Node.js 26 and pnpm 12. The `websites:install` task runs `pnpm install --frozen-lockfile` in this directory.
 - devenv also provides Python 3 with Pillow and rembg for `scripts/`. Run the scripts with `python3` in the devenv shell. To add a Python package, add it to `languages.python.package` in the root `devenv.nix`. Do not add `requirements.txt` or a virtual environment.
 - Use pnpm only. Do not add `package-lock.json`, `yarn.lock` or `bun.lock`.
+- A deploy of this site installs with a minimum release age of 7 days, and rejects a lockfile with a newer package version (`ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION`). Pick a version that is at least 7 days old, or add it to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` only when the user decides so. Check with `pnpm install --frozen-lockfile --config.minimum-release-age=10080` in a copy of the package.
 - Keep `tsconfig.json` strict. Import project files with the `@/` alias, which points to `src/`.
 
 ## Directory map
